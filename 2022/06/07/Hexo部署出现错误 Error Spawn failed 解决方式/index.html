@@ -16,12 +16,12 @@
   <meta name="author" content="Loora1N">
   <meta name="keywords" content="">
   
-    <meta name="description" content="记录一次报错处理方式，在更新了自己的必读书目之后，执行 hexo clean &amp;&amp; hexo g -d 时出现如下错误  错误信息1234567891011121314151617181920212223242526Missing or invalid credentials.Error: connect ECONNREFUSED &#x2F;run&#x2F;user&#x2F;1000&#x2F;vscode-gi">
+    <meta name="description" content="记录一次报错处理方式，在更新了自己的必读书目之后，执行 hexo clean &amp;&amp; hexo g -d 时出现如下错误  错误信息一1234567891011121314151617181920212223242526Missing or invalid credentials.Error: connect ECONNREFUSED &#x2F;run&#x2F;user&#x2F;1000&#x2F;vscode-g">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Hexo部署出现错误 Error Spawn failed 解决方式(code 128)">
 <meta property="og:url" content="http://loora1n.github.io/2022/06/07/Hexo%E9%83%A8%E7%BD%B2%E5%87%BA%E7%8E%B0%E9%94%99%E8%AF%AF%20Error%20Spawn%20failed%20%E8%A7%A3%E5%86%B3%E6%96%B9%E5%BC%8F/index.html">
 <meta property="og:site_name" content="Loora1N&#39;s Blog">
-<meta property="og:description" content="记录一次报错处理方式，在更新了自己的必读书目之后，执行 hexo clean &amp;&amp; hexo g -d 时出现如下错误  错误信息1234567891011121314151617181920212223242526Missing or invalid credentials.Error: connect ECONNREFUSED &#x2F;run&#x2F;user&#x2F;1000&#x2F;vscode-gi">
+<meta property="og:description" content="记录一次报错处理方式，在更新了自己的必读书目之后，执行 hexo clean &amp;&amp; hexo g -d 时出现如下错误  错误信息一1234567891011121314151617181920212223242526Missing or invalid credentials.Error: connect ECONNREFUSED &#x2F;run&#x2F;user&#x2F;1000&#x2F;vscode-g">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://loora1n.github.io/img/article/error128/vscode1.png">
 <meta property="og:image" content="http://loora1n.github.io/img/article/error128/vscode2.png">
@@ -201,7 +201,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.3k 字
+          2k 字
         
       </span>
     
@@ -212,7 +212,7 @@
         
         
         
-          11 分钟
+          17 分钟
         
       </span>
     
@@ -265,14 +265,18 @@
               <blockquote>
 <p>记录一次报错处理方式，在更新了自己的必读书目之后，执行 hexo clean &amp;&amp; hexo g -d 时出现如下错误</p>
 </blockquote>
-<h2 id="错误信息"><a href="#错误信息" class="headerlink" title="错误信息"></a>错误信息</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs bash">Missing or invalid credentials.<br>Error: connect ECONNREFUSED /run/user/1000/vscode-git-2098f677fa.sock<br>    at PipeConnectWrap.afterConnect [as oncomplete] (node:net:1161:16) &#123;<br>  errno: -111,<br>  code: <span class="hljs-string">&#x27;ECONNREFUSED&#x27;</span>,<br>  syscall: <span class="hljs-string">&#x27;connect&#x27;</span>,<br>  address: <span class="hljs-string">&#x27;/run/user/1000/vscode-git-2098f677fa.sock&#x27;</span><br>&#125;<br>Missing or invalid credentials.<br>Error: connect ECONNREFUSED /run/user/1000/vscode-git-2098f677fa.sock<br>    at PipeConnectWrap.afterConnect [as oncomplete] (node:net:1161:16) &#123;<br>  errno: -111,<br>  code: <span class="hljs-string">&#x27;ECONNREFUSED&#x27;</span>,<br>  syscall: <span class="hljs-string">&#x27;connect&#x27;</span>,<br>  address: <span class="hljs-string">&#x27;/run/user/1000/vscode-git-2098f677fa.sock&#x27;</span><br>&#125;<br>remote: No anonymous write access.<br>fatal: Authentication failed <span class="hljs-keyword">for</span> <span class="hljs-string">&#x27;https://github.com/Loora1N/Loora1N.github.io/&#x27;</span><br>FATAL &#123;<br>  err: Error: Spawn failed<br>      at ChildProcess.&lt;anonymous&gt; (/home/loorain/myBlog/node_modules/hexo-util/lib/spawn.js:51:21)<br>      at ChildProcess.emit (node:events:527:28)<br>      at ChildProcess._handle.onexit (node:internal/child_process:291:12) &#123;<br>    code: 128<br>  &#125;<br>&#125; Something<span class="hljs-string">&#x27;s wrong. Maybe you can find the solution here: %s https://hexo.io/docs/troubleshooting.html</span><br></code></pre></td></tr></table></figure>
+<h2 id="错误信息一"><a href="#错误信息一" class="headerlink" title="错误信息一"></a>错误信息一</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs bash">Missing or invalid credentials.<br>Error: connect ECONNREFUSED /run/user/1000/vscode-git-2098f677fa.sock<br>    at PipeConnectWrap.afterConnect [as oncomplete] (node:net:1161:16) &#123;<br>  errno: -111,<br>  code: <span class="hljs-string">&#x27;ECONNREFUSED&#x27;</span>,<br>  syscall: <span class="hljs-string">&#x27;connect&#x27;</span>,<br>  address: <span class="hljs-string">&#x27;/run/user/1000/vscode-git-2098f677fa.sock&#x27;</span><br>&#125;<br>Missing or invalid credentials.<br>Error: connect ECONNREFUSED /run/user/1000/vscode-git-2098f677fa.sock<br>    at PipeConnectWrap.afterConnect [as oncomplete] (node:net:1161:16) &#123;<br>  errno: -111,<br>  code: <span class="hljs-string">&#x27;ECONNREFUSED&#x27;</span>,<br>  syscall: <span class="hljs-string">&#x27;connect&#x27;</span>,<br>  address: <span class="hljs-string">&#x27;/run/user/1000/vscode-git-2098f677fa.sock&#x27;</span><br>&#125;<br>remote: No anonymous write access.<br>fatal: Authentication failed <span class="hljs-keyword">for</span> <span class="hljs-string">&#x27;https://github.com/Loora1N/Loora1N.github.io/&#x27;</span><br>FATAL &#123;<br>  err: Error: Spawn failed<br>      at ChildProcess.&lt;anonymous&gt; (/home/loorain/myBlog/node_modules/hexo-util/lib/spawn.js:51:21)<br>      at ChildProcess.emit (node:events:527:28)<br>      at ChildProcess._handle.onexit (node:internal/child_process:291:12) &#123;<br>    code: 128<br>  &#125;<br>&#125; Something<span class="hljs-string">&#x27;s wrong. Maybe you can find the solution here: %s https://hexo.io/docs/troubleshooting.html</span><br></code></pre></td></tr></table></figure>
 
-<h2 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h2><p>一、打开vscode设置界面，搜索git.terminal Authentication，将他前面的 √ 去掉</p>
+<h3 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h3><p>一、打开vscode设置界面，搜索git.terminal Authentication，将他前面的 √ 去掉</p>
 <p><img src="/img/article/error128/vscode1.png" srcset="/img/loading.gif" lazyload alt="image-20220607164521802"></p>
 <p>二、crtl + shift + p 打开搜索框，搜索reload window并运行</p>
 <p><img src="/img/article/error128/vscode2.png" srcset="/img/loading.gif" lazyload alt="image-20220607164739265"></p>
 <p>三、再次尝试hexo g，解决成功</p>
 <p><img src="/img/article/error128/vscode3.png" srcset="/img/loading.gif" lazyload alt="image-20220607164850847"></p>
+<h2 id="错误信息二"><a href="#错误信息二" class="headerlink" title="错误信息二"></a>错误信息二</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs bash">fatal: unable to access <span class="hljs-string">&#x27;https://github.com/Loora1N/Loora1N.github.io/&#x27;</span>: gnutls_handshake() failed: Error <span class="hljs-keyword">in</span> the pull <span class="hljs-keyword">function</span>.<br>FATAL &#123;<br>  err: Error: Spawn failed<br>      at ChildProcess.&lt;anonymous&gt; (/home/loorain/myBlog/node_modules/hexo-util/lib/spawn.js:51:21)<br>      at ChildProcess.emit (node:events:527:28)<br>      at ChildProcess._handle.onexit (node:internal/child_process:291:12) &#123;<br>    code: 128<br>  &#125;<br>&#125; Something<span class="hljs-string">&#x27;s wrong. Maybe you can find the solution here: %s https://hexo.io/docs/troubleshooting.html</span><br></code></pre></td></tr></table></figure>
+<h3 id="解决方法-1"><a href="#解决方法-1" class="headerlink" title="解决方法"></a>解决方法</h3><p>打开_config.yml文件，更改https仓库地址为ssh地址,配置ssh密钥即可</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-comment"># Deployment</span><br><span class="hljs-comment">## Docs: https://hexo.io/docs/one-command-deployment</span><br><span class="hljs-attr">deploy:</span><br>  <span class="hljs-attr">type:</span> <span class="hljs-string">git</span><br>  <span class="hljs-attr">repo:</span>	<span class="hljs-string">https://github.com/YourName/YourName.github.io.git(不要使用这个)</span><br>  		<span class="hljs-string">git@github.com:YourName/YourName.github.io.git(用这个)</span><br>  <span class="hljs-attr">branch:</span> <span class="hljs-string">master</span><br></code></pre></td></tr></table></figure>
+
 
               
             </div>
