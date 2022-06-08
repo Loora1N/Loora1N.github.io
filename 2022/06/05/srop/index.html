@@ -1,0 +1,746 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" >
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/icon/hai.png">
+  <link rel="icon" href="/img/icon/hai.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#ffc0cb">
+  <meta name="author" content="Loora1N">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="前言 SROP(Sigreturn Oriented Programming) 于 2014 年被 Vrije Universiteit Amsterdam 的 Erik Bosman 提出，其相关研究Framing Signals — A Return to Portable Shellcode 其中相关的 paper 以及如下：paper  机制详解signal 机制是类 unix 系统中进程">
+<meta property="og:type" content="article">
+<meta property="og:title" content="setcontext &amp; SROP">
+<meta property="og:url" content="http://loora1n.github.io/2022/06/05/srop/index.html">
+<meta property="og:site_name" content="Loora1N&#39;s Blog">
+<meta property="og:description" content="前言 SROP(Sigreturn Oriented Programming) 于 2014 年被 Vrije Universiteit Amsterdam 的 Erik Bosman 提出，其相关研究Framing Signals — A Return to Portable Shellcode 其中相关的 paper 以及如下：paper  机制详解signal 机制是类 unix 系统中进程">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://loora1n.github.io/img/article/srop/srop1.png">
+<meta property="og:image" content="http://loora1n.github.io/img/article/srop/srop2.png">
+<meta property="og:image" content="http://loora1n.github.io/img/article/srop/srop3.png">
+<meta property="og:image" content="http://loora1n.github.io/img/article/srop/srop4.png">
+<meta property="og:image" content="http://loora1n.github.io/img/article/srop/srop5.png">
+<meta property="article:published_time" content="2022-06-05T04:34:36.000Z">
+<meta property="article:modified_time" content="2022-06-05T04:34:36.000Z">
+<meta property="article:author" content="Loora1N">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://loora1n.github.io/img/article/srop/srop1.png">
+  
+  
+  
+  <title>setcontext &amp; SROP - Loora1N&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"loora1n.github.io","root":"/","version":"1.9.1","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"7FyeJtpFNeVe68sybCfYzEW9-MdYXbMMI","app_key":"6eOvW7ArePsBmdpA5pwVSuzQ","server_url":null,"path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Loora1N</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/bg/2.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="setcontext &amp; SROP"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-06-05 12:34" pubdate>
+          2022年6月5日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.6k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          22 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          阅读量 <span id="leancloud-page-views"></span>
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">setcontext &amp; SROP</h1>
+            
+            <div class="markdown-body">
+              
+              <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><blockquote>
+<p>SROP(Sigreturn Oriented Programming) 于 2014 年被 Vrije Universiteit Amsterdam 的 Erik Bosman 提出，其相关研究<strong>Framing Signals — A Return to Portable Shellcode</strong> 其中相关的 paper 以及如下：<br><a target="_blank" rel="noopener" href="https://www.ieee-security.org/TC/SP2014/papers/FramingSignals-AReturntoPortableShellcode.pdf">paper</a></p>
+</blockquote>
+<h2 id="机制详解"><a href="#机制详解" class="headerlink" title="机制详解"></a>机制详解</h2><p>signal 机制是类 unix 系统中进程之间相互传递信息的一种方法。一般，我们也称其为软中断信号，或者软中断。比如说，进程之间可以通过系统调用 kill 来发送软中断信号。一般来说，信号机制常见的步骤如下图所示：</p>
+<p><img src="/img/article/srop/srop1.png" srcset="/img/loading.gif" lazyload alt="Untitled"></p>
+<ol>
+<li>内核向某个进程发送 signal 机制，该进程会被暂时挂起，进入内核态。</li>
+<li>内核会为该进程保存相应的上下文，<strong>主要是将所有寄存器压入栈中，以及压入 signal 信息，以及指向 <code>sigreturn</code> 的系统调用地址</strong>。此时栈的结构如下图所示，我们称 <code>ucontext</code> 以及 <code>siginfo</code> 这一段为 <strong>Signal Frame</strong>。<strong>需要注意的是，这一部分是在用户进程的地址空间的。</strong>之后会跳转到注册过的 signal handler 中处理相应的 signal。因此，当 signal handler 执行完之后，就会执行 <code>sigreturn</code> 代码。</li>
+<li><code>signal handler</code> 返回后，内核为执行 <code>sigreturn</code> 系统调用，为该进程恢复之前保存的上下文，其中包括将所有压入的寄存器，重新 pop 回对应的寄存器，最后恢复进程的执行。其中，32 位的 <code>sigreturn</code> 的调用号为 77，64 位的系统调用号为 15。</li>
+</ol>
+<p><img src="/img/article/srop/srop2.png" srcset="/img/loading.gif" lazyload alt="Untitled"></p>
+<p>上述谈到的从栈中POP出寄存器内容的过程由 <code>setcontext</code> 函数实现，如下图所示：</p>
+<p><img src="/img/article/srop/srop3.png" srcset="/img/loading.gif" lazyload alt="Untitled"></p>
+<p>我们可以看到，从指令<code>mov rsp, [rdi+0A0h]</code>开始，便是一连串对于寄存器的恢复操作。而且结构由Signal Frame结构体实现，以下是结构源码</p>
+<p><strong>X86</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sigcontext</span></span><br><span class="hljs-class">&#123;</span><br>  <span class="hljs-type">unsigned</span> <span class="hljs-type">short</span> gs, __gsh;<br>  <span class="hljs-type">unsigned</span> <span class="hljs-type">short</span> fs, __fsh;<br>  <span class="hljs-type">unsigned</span> <span class="hljs-type">short</span> es, __esh;<br>  <span class="hljs-type">unsigned</span> <span class="hljs-type">short</span> ds, __dsh;<br>  <span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> edi;<br>  <span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> esi;<br>  <span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> ebp;<br>  <span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> esp;<br>  <span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> ebx;<br>  <span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> edx;<br>  <span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> ecx;<br>  <span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> eax;<br>  <span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> trapno;<br>  <span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> err;<br>  <span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> eip;<br>  <span class="hljs-type">unsigned</span> <span class="hljs-type">short</span> cs, __csh;<br>  <span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> eflags;<br>  <span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> esp_at_signal;<br>  <span class="hljs-type">unsigned</span> <span class="hljs-type">short</span> ss, __ssh;<br>  <span class="hljs-class"><span class="hljs-keyword">struct</span> _<span class="hljs-title">fpstate</span> * <span class="hljs-title">fpstate</span>;</span><br>  <span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> oldmask;<br>  <span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> cr2;<br>&#125;;<br></code></pre></td></tr></table></figure>
+
+<p><strong>X64</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> _<span class="hljs-title">fpstate</span></span><br><span class="hljs-class">&#123;</span><br>  <span class="hljs-comment">/* FPU environment matching the 64-bit FXSAVE layout.  */</span><br>  <span class="hljs-type">__uint16_t</span>        cwd;<br>  <span class="hljs-type">__uint16_t</span>        swd;<br>  <span class="hljs-type">__uint16_t</span>        ftw;<br>  <span class="hljs-type">__uint16_t</span>        fop;<br>  <span class="hljs-type">__uint64_t</span>        rip;<br>  <span class="hljs-type">__uint64_t</span>        rdp;<br>  <span class="hljs-type">__uint32_t</span>        mxcsr;<br>  <span class="hljs-type">__uint32_t</span>        mxcr_mask;<br>  <span class="hljs-class"><span class="hljs-keyword">struct</span> _<span class="hljs-title">fpxreg</span>    _<span class="hljs-title">st</span>[8];</span><br>  <span class="hljs-class"><span class="hljs-keyword">struct</span> _<span class="hljs-title">xmmreg</span>    _<span class="hljs-title">xmm</span>[16];</span><br>  <span class="hljs-type">__uint32_t</span>        padding[<span class="hljs-number">24</span>];<br>&#125;;<br><br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sigcontext</span></span><br><span class="hljs-class">&#123;</span><br>  <span class="hljs-type">__uint64_t</span> r8;<br>  <span class="hljs-type">__uint64_t</span> r9;<br>  <span class="hljs-type">__uint64_t</span> r10;<br>  <span class="hljs-type">__uint64_t</span> r11;<br>  <span class="hljs-type">__uint64_t</span> r12;<br>  <span class="hljs-type">__uint64_t</span> r13;<br>  <span class="hljs-type">__uint64_t</span> r14;<br>  <span class="hljs-type">__uint64_t</span> r15;<br>  <span class="hljs-type">__uint64_t</span> rdi;<br>  <span class="hljs-type">__uint64_t</span> rsi;<br>  <span class="hljs-type">__uint64_t</span> rbp;<br>  <span class="hljs-type">__uint64_t</span> rbx;<br>  <span class="hljs-type">__uint64_t</span> rdx;<br>  <span class="hljs-type">__uint64_t</span> rax;<br>  <span class="hljs-type">__uint64_t</span> rcx;<br>  <span class="hljs-type">__uint64_t</span> rsp;<br>  <span class="hljs-type">__uint64_t</span> rip;<br>  <span class="hljs-type">__uint64_t</span> eflags;<br>  <span class="hljs-type">unsigned</span> <span class="hljs-type">short</span> cs;<br>  <span class="hljs-type">unsigned</span> <span class="hljs-type">short</span> gs;<br>  <span class="hljs-type">unsigned</span> <span class="hljs-type">short</span> fs;<br>  <span class="hljs-type">unsigned</span> <span class="hljs-type">short</span> __pad0;<br>  <span class="hljs-type">__uint64_t</span> err;<br>  <span class="hljs-type">__uint64_t</span> trapno;<br>  <span class="hljs-type">__uint64_t</span> oldmask;<br>  <span class="hljs-type">__uint64_t</span> cr2;<br>  __extension__ <span class="hljs-class"><span class="hljs-keyword">union</span></span><br><span class="hljs-class">    &#123;</span><br>      <span class="hljs-class"><span class="hljs-keyword">struct</span> _<span class="hljs-title">fpstate</span> * <span class="hljs-title">fpstate</span>;</span><br>      <span class="hljs-type">__uint64_t</span> __fpstate_word;<br>    &#125;;<br>  <span class="hljs-type">__uint64_t</span> __reserved1 [<span class="hljs-number">8</span>];<br>&#125;;<br></code></pre></td></tr></table></figure>
+
+<h2 id="攻击方式"><a href="#攻击方式" class="headerlink" title="攻击方式"></a>攻击方式</h2><h3 id="直接getshell"><a href="#直接getshell" class="headerlink" title="直接getshell"></a>直接getshell</h3><p><strong>示意图</strong></p>
+<p><img src="/img/article/srop/srop4.png" srcset="/img/loading.gif" lazyload alt="Untitled"></p>
+<p>我们可以直接在栈上伪造Signal Frame，利用syscall(0xF)来触发对于伪造寄存器的恢复，在<code>setcontext</code> 执行完毕后，便会getshell（或利用栈转移到其他地址也可以，但无论怎样都要保证在syscall时，rsp需指向Fake Frame 的开头)</p>
+<h3 id="SROP"><a href="#SROP" class="headerlink" title="SROP"></a>SROP</h3><p>在上面直接getshell的基础上，我们可以自然的想到，通过不断伪造sigframe可以实现类似ROP的效果，只需要将其中rsp控制到下一个fakeframe的开头,rip加上ret即可。</p>
+<p><strong>示意图</strong></p>
+<p><img src="/img/article/srop/srop5.png" srcset="/img/loading.gif" lazyload alt="Untitled"></p>
+<h3 id="栈转移"><a href="#栈转移" class="headerlink" title="栈转移"></a>栈转移</h3><p>由于其可以轻易的控制几乎所有寄存器的值，栈转移这样的操作也可以轻松实现</p>
+<h3 id="堆中直接利用setcontext"><a href="#堆中直接利用setcontext" class="headerlink" title="堆中直接利用setcontext"></a>堆中直接利用setcontext</h3><p>在面对堆题目时，我们很难直接在栈上构造内容并且控制rsp指向frame开头。此时可以直接通过劫持hook为<code>setcontext+53</code> 处(<strong>mov rsp, [rdi+0A0h]</strong>)，直接触发对于寄存器的一系列pop操作。且由于free时，rip指向chunk的mem域，那么我们只需要在将要free的chunk里写上Fake Frame，并合理控制与rip的距离即可。</p>
+<h2 id="例题"><a href="#例题" class="headerlink" title="例题"></a>例题</h2><p>平台题目SROP、 ciscn 2021 silverwolf</p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>setcontext &amp; SROP</div>
+      <div>http://loora1n.github.io/2022/06/05/srop/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Loora1N</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年6月5日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/06/05/%E7%BD%91%E7%BB%9C%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E4%B8%8A%E6%9C%BA/" title="Python实现shamir加密和图像加密隐写">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Python实现shamir加密和图像加密隐写</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/06/05/%E3%80%8A%E6%A0%BC%E8%B0%83%EF%BC%9A%E7%A4%BE%E4%BC%9A%E7%AD%89%E7%BA%A7%E4%B8%8E%E7%94%9F%E6%B4%BB%E5%93%81%E5%91%B3%E3%80%8B/" title="我的必读书目表(仍在更新)">
+                        <span class="hidden-mobile">我的必读书目表(仍在更新)</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#comments', function() {
+      var light = 'github-light';
+      var dark = 'github-dark';
+      var schema = document.documentElement.getAttribute('data-user-color-scheme');
+      if (schema === 'dark') {
+        schema = dark;
+      } else {
+        schema = light;
+      }
+      window.UtterancesThemeLight = light;
+      window.UtterancesThemeDark = dark;
+      var s = document.createElement('script');
+      s.setAttribute('src', 'https://utteranc.es/client.js');
+      s.setAttribute('repo', 'loora1n/comment');
+      s.setAttribute('issue-term', 'pathname');
+      
+      s.setAttribute('label', 'utterances');
+      
+      s.setAttribute('theme', schema);
+      s.setAttribute('crossorigin', 'anonymous');
+      document.getElementById('comments').appendChild(s);
+    })
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://github.com/Loora1N" target="_blank" rel="nofollow noopener"><span>Loora1N</span></a> <i class="iconfont icon-love"></i> <a href="https://space.bilibili.com/33242548?spm_id_from=333.1007.0.0" target="_blank" rel="nofollow noopener"><span>鹭雨君</span></a>
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"right","width":250,"height":500},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>

@@ -1,0 +1,787 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" >
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/icon/hai.png">
+  <link rel="icon" href="/img/icon/hai.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#ffc0cb">
+  <meta name="author" content="Loora1N">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="文章很多图源来自NTUSTISC例会视频，油管链接：NTUSTISC - Pwn 3 - YouTube目前只支持到libc2.34版本  Heap-Based Buffer Overflow最最基本的攻击方式，由于未对输入长度限制，且堆块是一片连续存储的内存空间特性。导致可以对其后高地址的chunk的各种信息进行覆写。   UAF(Use-after-free)在free()掉chunk之后，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HEAP 攻击方式记录以及总结">
+<meta property="og:url" content="http://loora1n.github.io/2022/06/03/HEAP%20%E6%94%BB%E5%87%BB%E6%96%B9%E5%BC%8F%E8%AE%B0%E5%BD%95%E4%BB%A5%E5%8F%8A%E6%80%BB%E7%BB%93/index.html">
+<meta property="og:site_name" content="Loora1N&#39;s Blog">
+<meta property="og:description" content="文章很多图源来自NTUSTISC例会视频，油管链接：NTUSTISC - Pwn 3 - YouTube目前只支持到libc2.34版本  Heap-Based Buffer Overflow最最基本的攻击方式，由于未对输入长度限制，且堆块是一片连续存储的内存空间特性。导致可以对其后高地址的chunk的各种信息进行覆写。   UAF(Use-after-free)在free()掉chunk之后，">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://loora1n.github.io/img/article/1.png">
+<meta property="og:image" content="http://loora1n.github.io/img/article/2.png">
+<meta property="og:image" content="http://loora1n.github.io/img/article/3.png">
+<meta property="og:image" content="http://loora1n.github.io/img/article/4.png">
+<meta property="og:image" content="http://loora1n.github.io/img/article/5.png">
+<meta property="og:image" content="http://loora1n.github.io/img/article/6.png">
+<meta property="article:published_time" content="2022-06-03T13:52:14.520Z">
+<meta property="article:modified_time" content="2022-06-03T13:52:14.520Z">
+<meta property="article:author" content="Loora1N">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://loora1n.github.io/img/article/1.png">
+  
+  
+  
+  <title>HEAP 攻击方式记录以及总结 - Loora1N&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"loora1n.github.io","root":"/","version":"1.9.1","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"7FyeJtpFNeVe68sybCfYzEW9-MdYXbMMI","app_key":"6eOvW7ArePsBmdpA5pwVSuzQ","server_url":null,"path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Loora1N</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/bg/2.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="HEAP 攻击方式记录以及总结"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-06-03 21:52" pubdate>
+          2022年6月3日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          4.4k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          37 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          阅读量 <span id="leancloud-page-views"></span>
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">HEAP 攻击方式记录以及总结</h1>
+            
+            <div class="markdown-body">
+              
+              <blockquote>
+<p>文章很多图源来自NTUSTISC例会视频，油管链接：<a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=ItpJY9Lpw-o&list=PLHP-B3mcSY_5r5AJsZyTZLwjX9z8v_b5x">NTUSTISC - Pwn 3 - YouTube</a><br>目前只支持到libc2.34版本</p>
+</blockquote>
+<h2 id="Heap-Based-Buffer-Overflow"><a href="#Heap-Based-Buffer-Overflow" class="headerlink" title="Heap-Based Buffer Overflow"></a>Heap-Based Buffer Overflow</h2><p>最最基本的攻击方式，由于未对输入长度限制，且堆块是一片连续存储的内存空间特性。导致可以对其后高地址的chunk的各种信息进行覆写。</p>
+<p><img src="/img/article/1.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/img/article/2.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="UAF-Use-after-free"><a href="#UAF-Use-after-free" class="headerlink" title="UAF(Use-after-free)"></a>UAF(Use-after-free)</h2><p>在free()掉chunk之后，原本指向chunk的指针由于程序猿自身的懒惰，没有将pointer &#x3D; NULL; 导致依然可以使用该指针进行额外的操作</p>
+<p>UAF漏洞一般常用于泄露，或者更改已经free掉的chunk中的信息，最常见便是libc的泄露,以及对Tcache&#x2F;Fastbin链表的控制</p>
+<blockquote>
+<p>当第一块chunk进入unsorted bin后，他的fd和bk指针会共同指向main_arena+88(具体偏移似乎会随着版本变化，做题时手动调试即可)，意味着当存在UAF漏洞时，我们可以输出这个chunk的内容即能得到libc</p>
+</blockquote>
+<h2 id="Fastbin-Dup"><a href="#Fastbin-Dup" class="headerlink" title="Fastbin Dup"></a>Fastbin Dup</h2><p>fastbin dup 实际是在fastbin链上实现的狭义的double free。由于fastbin 自身源码的缺陷，在对double free 的检测机制仅仅验证了当前free掉的chunk与fast bin 第一个chunk是否相同，而对于其他chunk则没有做检测。另外fastbin在free时会检测当前当前的chunk于头部chunk的size大小是否相同。</p>
+<p>那么构造double free 时只需要穿插一块其他的chunk即可实现</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-built_in">free</span>(<span class="hljs-number">1</span>);<br><span class="hljs-built_in">free</span>(<span class="hljs-number">2</span>);<br><span class="hljs-built_in">free</span>(<span class="hljs-number">1</span>);<br></code></pre></td></tr></table></figure>
+
+
+
+<p><img src="/img/article/3.png" srcset="/img/loading.gif" lazyload></p>
+<p>在完成double free 之后我们只需要malloc 这里的chunk1 就能得到一块 既是allocated 又是 free 状态的chunk。接下来我们就能对其fd指针进行修改，从而控制fastbin链表的方向是我们想要的地方，便能实现对任意地址的控制(读写)</p>
+<p><img src="/img/article/4.png" srcset="/img/loading.gif" lazyload></p>
+<blockquote>
+<p>额外需要注意的点：</p>
+<ul>
+<li>fastbin会对chunk头的大小进行检测，那么图中malice处chunk的size需要控制好</li>
+<li>libc2.26之后，free的小于0x410的chunk会先进入Tcache中，最多承纳7个chunk</li>
+<li>且在tcache填满之后，malloc优先会取出tcache中的chunk，可以利用calloc不会申请tcache的特点</li>
+</ul>
+</blockquote>
+<h2 id="Tcache-Dup"><a href="#Tcache-Dup" class="headerlink" title="Tcache Dup"></a>Tcache Dup</h2><blockquote>
+<p>Tcache 在最近的几个libc中加入了多个机制，用于保证其安全性，这里我将分不同版本讨论</p>
+</blockquote>
+<h3 id="libc2-26-libc2-28"><a href="#libc2-26-libc2-28" class="headerlink" title="libc2.26-libc2.28"></a>libc2.26-libc2.28</h3><p>在这几个版本中，几乎没有检测机制，对同一块chunk直接进行double free即可，甚至比fastbin dup还要简易</p>
+<h3 id="libc2-29-libc2-31"><a href="#libc2-29-libc2-31" class="headerlink" title="libc2.29-libc2.31"></a>libc2.29-libc2.31</h3><p>在这几个版本中，tcache 的 bk指针处存放了一个8byte的随机数作为key，即代表这块chunk在tcache链中。每次free时，检测bk的位置的值是否为key，若是，则为doublefree。</p>
+<blockquote>
+<p>绕过方式：存在UAF漏洞的情况下，我们可以直接更改，tcache中chunk的key值即可</p>
+</blockquote>
+<h3 id="libc2-32"><a href="#libc2-32" class="headerlink" title="libc2.32"></a>libc2.32</h3><h4 id="Safe-linking-ptr-xor"><a href="#Safe-linking-ptr-xor" class="headerlink" title="Safe-linking(ptr xor)"></a>Safe-linking(ptr xor)</h4><p>libc2.32中引入了Safe-linking机制，应用于fastbin和tcache中</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">static</span> __always_inline <span class="hljs-type">void</span><br><span class="hljs-title function_">tcache_put</span> <span class="hljs-params">(mchunkptr chunk, <span class="hljs-type">size_t</span> tc_idx)</span><br>&#123;<br>tcache_entry *e = (tcache_entry *) chunk2mem (chunk);<br><br><span class="hljs-comment">/* Mark this chunk as “in the tcache” so the test in _int_free will</span><br><span class="hljs-comment">detect a double free.  */</span><br>e-&gt;key = tcache;<br><br>e-&gt;next = PROTECT_PTR (&amp;e-&gt;next, tcache-&gt;entries[tc_idx]);<br>tcache-&gt;entries[tc_idx] = e;<br>++(tcache-&gt;counts[tc_idx]);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>可以看到经glibc-2.32更新后，e-&gt;next不再是直接指向原来的tcache头指针，而是指向了经PROTECT_PTR处理过的指针，查看PROTECT_PTR定义：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">define</span> PROTECT_PTR(pos, ptr) \</span><br><span class="hljs-meta">((__typeof (ptr)) ((((size_t) pos) &gt;&gt; 12) ^ ((size_t) ptr)));</span><br></code></pre></td></tr></table></figure>
+
+<p>结合tcache_put()函数可以得出e-&gt;next最终指向了e-&gt;next地址右移12位后的值与当前tcache头指针值异或的结果，这里引用Safe-Linking设计师文章[1]中的一张图描述此过程：</p>
+<p><img src="/img/article/5.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>其实就是一个简单的异或操作，这里所有的指针都进行了处理，具体细节可以自行查询，不过多赘述</p>
+<h4 id="内存对齐检测"><a href="#内存对齐检测" class="headerlink" title="内存对齐检测"></a>内存对齐检测</h4><p>此外，在glibc-2.32版本中还引入了对tcache和fastbins中申请及释放内存地址的对齐检测，以tcache_get()为例：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">static</span> __always_inline <span class="hljs-type">void</span> *<br><br><span class="hljs-title function_">tcache_get</span> <span class="hljs-params">(<span class="hljs-type">size_t</span> tc_idx)</span><br><br>&#123;<br><br>tcache_entry *e = tcache-&gt;entries[tc_idx];<br><br><span class="hljs-keyword">if</span> (__glibc_unlikely (!aligned_OK (e)))<br><br>malloc_printerr (“<span class="hljs-built_in">malloc</span>(): unaligned tcache chunk detected”);<br><br>tcache-&gt;entries[tc_idx] = REVEAL_PTR (e-&gt;next);<br><br>–(tcache-&gt;counts[tc_idx]);<br><br>e-&gt;key = <span class="hljs-literal">NULL</span>;<br><br><span class="hljs-keyword">return</span> (<span class="hljs-type">void</span> *) e;<br><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>aligned_OK()定义为：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">define</span> aligned_OK(m)  (((unsigned long)(m) &amp; MALLOC_ALIGN_MASK) == 0)</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> MALLOC_ALIGN_MASK (MALLOC_ALIGNMENT – 1)</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> MALLOC_ALIGNMENT (2 * SIZE_SZ &lt; __alignof__ (long double) \</span><br><span class="hljs-meta">? __alignof__ (long double) : 2 * SIZE_SZ)</span><br></code></pre></td></tr></table></figure>
+
+<p>可以看到内存地址需要以0x10字节对齐。</p>
+<h3 id="libc-2-34"><a href="#libc-2-34" class="headerlink" title="libc-2.34"></a>libc-2.34</h3><p>glibc-2.34 的到来给予了hook劫持沉重的一击，移除了以下几个hook符号：</p>
+<blockquote>
+<p>__free_hook</p>
+<p>__malloc_hook</p>
+<p>__realloc_hook</p>
+<p>__memalign_hook</p>
+<p>__after_morecore_hook</p>
+</blockquote>
+<h4 id="绕过思路"><a href="#绕过思路" class="headerlink" title="绕过思路"></a>绕过思路</h4><ol>
+<li>利用IO_vtable</li>
+<li>利用exit_hook</li>
+<li>劫持返回地址进行ROP</li>
+</ol>
+<h2 id="unsafe-unlink"><a href="#unsafe-unlink" class="headerlink" title="unsafe unlink"></a>unsafe unlink</h2><p>unsafe-unlink利用chunkfree时的合并机制，实现了地址的任意读写</p>
+<blockquote>
+<p>使用条件：</p>
+<ul>
+<li>能够利用溢出或其他漏洞，将某chunk的size域的最低16进制位修改为0，例: 0x91 –&gt; 0x90</li>
+</ul>
+</blockquote>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">/*这是一段unsafe-unlink的示例代码，我们在最后成功利用这个漏洞，</span><br><span class="hljs-comment">实现了对非堆上地址victimstring的内容更改*/</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdlib.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdint.h&gt;</span></span><br><br><span class="hljs-type">uint64_t</span> * chunk0_ptr;<br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span><br>&#123;<br>    chunk0_ptr = (<span class="hljs-type">uint64_t</span>*)<span class="hljs-built_in">malloc</span>(<span class="hljs-number">0x80</span>);       <span class="hljs-comment">//chunk0</span><br>    <span class="hljs-type">uint64_t</span> *chunk1_ptr = (<span class="hljs-type">uint64_t</span>*) <span class="hljs-built_in">malloc</span>(<span class="hljs-number">0x80</span>);        <span class="hljs-comment">//chunk1</span><br>    <span class="hljs-built_in">fprintf</span>(<span class="hljs-built_in">stderr</span>, <span class="hljs-string">&quot;chunk0_ptr: %p -&gt; %p\n&quot;</span>,&amp;chunk0_ptr, chunk0_ptr);<br>    <span class="hljs-built_in">fprintf</span>(<span class="hljs-built_in">stderr</span>, <span class="hljs-string">&quot;victim chunk: %p\n\n&quot;</span>,chunk1_ptr);<br><br>    <span class="hljs-comment">/*pass the check:   (chunksize(p) != prev_size(next_chunk(P)) == False)</span><br><span class="hljs-comment">                        chunk0_ptr[1] = 0x0;// or 0x8, 0x80*/</span><br><br>    <span class="hljs-comment">//pass the check:   (p-&gt;fd-&gt;bk != p || p-&gt;bk-&gt;fd != p) == False</span><br><br>    chunk0_ptr [<span class="hljs-number">2</span>] = (<span class="hljs-type">uint64_t</span>) &amp;chunk0_ptr - <span class="hljs-number">0x18</span>;<br>    chunk0_ptr [<span class="hljs-number">3</span>] = (<span class="hljs-type">uint64_t</span>) &amp;chunk0_ptr - <span class="hljs-number">0x10</span>;<br>    <span class="hljs-built_in">fprintf</span>(<span class="hljs-built_in">stderr</span>, <span class="hljs-string">&quot;fake fd: %p = &amp;chunk0_ptr - 0x18&quot;</span>, (<span class="hljs-type">void</span>*)chunk0_ptr[<span class="hljs-number">2</span>]);<br>    <span class="hljs-built_in">fprintf</span>(<span class="hljs-built_in">stderr</span>, <span class="hljs-string">&quot;fake bk: %p = &amp;chunk0_ptr - 0x10&quot;</span>, (<span class="hljs-type">void</span>*)chunk0_ptr[<span class="hljs-number">3</span>]);<br>    <br>    <span class="hljs-type">uint64_t</span> *chunk1_hdr = (<span class="hljs-type">void</span>*) chunk1_ptr - <span class="hljs-number">0x10</span>;<br>    chunk1_hdr[<span class="hljs-number">0</span>] = <span class="hljs-number">0x80</span>;<br>    chunk1_hdr[<span class="hljs-number">1</span>] &amp;= ~<span class="hljs-number">1</span>;<br><br>    <span class="hljs-comment">/*  int *t[10], i;                  //tcache</span><br><span class="hljs-comment">        for(i=0; i&lt;7; i++)&#123;</span><br><span class="hljs-comment">            t[i] = malloc(0x80);</span><br><span class="hljs-comment">        &#125;</span><br><span class="hljs-comment">        for(i=0;i&lt;7;i++)&#123;</span><br><span class="hljs-comment">            free(t[i]);</span><br><span class="hljs-comment">        &#125;;  */</span><br><br>    <span class="hljs-built_in">free</span>(chunk1_ptr);               <span class="hljs-comment">//unlink</span><br><br>    <span class="hljs-type">char</span> victim_string[<span class="hljs-number">8</span>] = <span class="hljs-string">&quot;AAAAAAA&quot;</span>;<br>    chunk0_ptr[<span class="hljs-number">3</span>] = (<span class="hljs-type">uint64_t</span>) victim_string;   <span class="hljs-comment">//overwrite itself</span><br>    <span class="hljs-built_in">fprintf</span>(<span class="hljs-built_in">stderr</span>, <span class="hljs-string">&quot;old value: %s\n&quot;</span>, victim_string);<br><br>    chunk0_ptr[<span class="hljs-number">0</span>] = <span class="hljs-number">0x42424242424242</span>LL;     <span class="hljs-comment">//over wirting victim_string</span><br>    <span class="hljs-built_in">fprintf</span>(<span class="hljs-built_in">stderr</span>, <span class="hljs-string">&quot;new Value: %s\n&quot;</span>, victim_string);<br><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h4 id="示例图"><a href="#示例图" class="headerlink" title="示例图"></a>示例图</h4><p><img src="/img/article/6.png" srcset="/img/loading.gif" lazyload></p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>HEAP 攻击方式记录以及总结</div>
+      <div>http://loora1n.github.io/2022/06/03/HEAP 攻击方式记录以及总结/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Loora1N</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年6月3日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/06/04/ciscn2022/" title="【ciscn2022】PWN部分writeup">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">【ciscn2022】PWN部分writeup</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#comments', function() {
+      var light = 'github-light';
+      var dark = 'github-dark';
+      var schema = document.documentElement.getAttribute('data-user-color-scheme');
+      if (schema === 'dark') {
+        schema = dark;
+      } else {
+        schema = light;
+      }
+      window.UtterancesThemeLight = light;
+      window.UtterancesThemeDark = dark;
+      var s = document.createElement('script');
+      s.setAttribute('src', 'https://utteranc.es/client.js');
+      s.setAttribute('repo', 'loora1n/comment');
+      s.setAttribute('issue-term', 'pathname');
+      
+      s.setAttribute('label', 'utterances');
+      
+      s.setAttribute('theme', schema);
+      s.setAttribute('crossorigin', 'anonymous');
+      document.getElementById('comments').appendChild(s);
+    })
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://github.com/Loora1N" target="_blank" rel="nofollow noopener"><span>Loora1N</span></a> <i class="iconfont icon-love"></i> <a href="https://space.bilibili.com/33242548?spm_id_from=333.1007.0.0" target="_blank" rel="nofollow noopener"><span>鹭雨君</span></a>
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"right","width":250,"height":500},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>
