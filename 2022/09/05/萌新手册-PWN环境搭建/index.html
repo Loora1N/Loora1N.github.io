@@ -16,25 +16,28 @@
   <meta name="author" content="Loora1N">
   <meta name="keywords" content="">
   
-    <meta name="description" content="本文用于介绍信息安全大赛中不少题目需要使用的 nc&#x2F;ncat 工具。 nc 是什么nc&#x2F;ncat 是 netcat 的缩写，它可以读写 TCP 与 UDP 端口——或许你看不懂这句话，这没有关系。简单地说，它可以在字符界面下，让你和服务器沟通交流。 一般来说，有很多题目都会要求你使用 nc 连接到他们的服务器，并且进行交互，获得 flag。 如何安装 ncnc 命令在 macOS 中是自">
+    <meta name="description" content="IDA PRO-反汇编利器 推荐版本7.6及以上，高版本增添了对于go语言程序的反汇编，寻找资源需要谨慎哦 写文章的时候顺便看了眼价格，，，，，算了还是自己找资源吧   IDA可以对可执行程序反汇编操作，能够看到整个程序的框架、汇编代码、伪代码、函数调用、以及一些字符串的全局遍变量。无论对于Reverse还是PWN都是最核心的工具之一，这也是我放在最前面提及的原因，大概界面如下图。  Linux发">
 <meta property="og:type" content="article">
-<meta property="og:title" content="nc&#x2F;ncat 使用教学">
-<meta property="og:url" content="http://loora1n.github.io/2022/09/05/nc%20%E6%98%AF%E4%BB%80%E4%B9%88/index.html">
+<meta property="og:title" content="PWN环境搭建（萌新入门）">
+<meta property="og:url" content="http://loora1n.github.io/2022/09/05/%E8%90%8C%E6%96%B0%E6%89%8B%E5%86%8C-PWN%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/index.html">
 <meta property="og:site_name" content="鷺雨のBlog">
-<meta property="og:description" content="本文用于介绍信息安全大赛中不少题目需要使用的 nc&#x2F;ncat 工具。 nc 是什么nc&#x2F;ncat 是 netcat 的缩写，它可以读写 TCP 与 UDP 端口——或许你看不懂这句话，这没有关系。简单地说，它可以在字符界面下，让你和服务器沟通交流。 一般来说，有很多题目都会要求你使用 nc 连接到他们的服务器，并且进行交互，获得 flag。 如何安装 ncnc 命令在 macOS 中是自">
+<meta property="og:description" content="IDA PRO-反汇编利器 推荐版本7.6及以上，高版本增添了对于go语言程序的反汇编，寻找资源需要谨慎哦 写文章的时候顺便看了眼价格，，，，，算了还是自己找资源吧   IDA可以对可执行程序反汇编操作，能够看到整个程序的框架、汇编代码、伪代码、函数调用、以及一些字符串的全局遍变量。无论对于Reverse还是PWN都是最核心的工具之一，这也是我放在最前面提及的原因，大概界面如下图。  Linux发">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://loora1n.github.io/img/article/nc/explorer-1024x510.png">
-<meta property="og:image" content="http://loora1n.github.io/img/article/nc/cmdncat-1024x596.png">
-<meta property="og:image" content="http://loora1n.github.io/img/article/nc/nc-1024x596.png">
-<meta property="article:published_time" content="2022-09-05T05:03:10.023Z">
-<meta property="article:modified_time" content="2022-09-05T05:03:10.023Z">
+<meta property="og:image" content="http://loora1n.github.io/img/article/pwn-envir/image-20220905153059189-1662367638683-2.png">
+<meta property="og:image" content="http://loora1n.github.io/img/article/pwn-envir/image-20220905153323145.png">
+<meta property="og:image" content="http://loora1n.github.io/img/article/pwn-envir/image-20220905164622966.png">
+<meta property="og:image" content="http://loora1n.github.io/img/article/pwn-envir/image-20220905161539363.png">
+<meta property="og:image" content="http://loora1n.github.io/img/article/pwn-envir/image-20220905162034730.png">
+<meta property="og:image" content="http://loora1n.github.io/img/article/pwn-envir/image-20220905164504590.png">
+<meta property="article:published_time" content="2022-09-05T08:48:18.666Z">
+<meta property="article:modified_time" content="2022-09-05T08:48:18.666Z">
 <meta property="article:author" content="Loora1N">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://loora1n.github.io/img/article/nc/explorer-1024x510.png">
+<meta name="twitter:image" content="http://loora1n.github.io/img/article/pwn-envir/image-20220905153059189-1662367638683-2.png">
   
   
   
-  <title>nc/ncat 使用教学 - 鷺雨のBlog</title>
+  <title>PWN环境搭建（萌新入门） - 鷺雨のBlog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -178,7 +181,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="nc/ncat 使用教学"></span>
+            <span id="subtitle" data-typed-text="PWN环境搭建（萌新入门）"></span>
           
         </div>
 
@@ -189,7 +192,7 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2022-09-05 13:03" pubdate>
+        <time datetime="2022-09-05 16:48" pubdate>
           2022年9月5日 下午
         </time>
       </span>
@@ -201,7 +204,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.9k 字
+          2k 字
         
       </span>
     
@@ -258,45 +261,75 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">nc/ncat 使用教学</h1>
+            <h1 style="display: none">PWN环境搭建（萌新入门）</h1>
             
             <div class="markdown-body">
               
-              <p>本文用于介绍信息安全大赛中不少题目需要使用的 nc&#x2F;ncat 工具。</p>
-<h2 id="nc-是什么"><a href="#nc-是什么" class="headerlink" title="nc 是什么"></a>nc 是什么</h2><p><code>nc/ncat</code> 是 netcat 的缩写，它可以读写 TCP 与 UDP 端口——或许你看不懂这句话，这没有关系。简单地说，它可以在字符界面下，让你和服务器沟通交流。</p>
-<p>一般来说，有很多题目都会要求你使用 <code>nc</code> 连接到他们的服务器，并且进行交互，获得 flag。</p>
-<h2 id="如何安装-nc"><a href="#如何安装-nc" class="headerlink" title="如何安装 nc"></a>如何安装 nc</h2><p><code>nc</code> 命令在 macOS 中是自带的，在 Linux 中一般自带，或是可以使用相应的软件包管理器安装（如在 Debian&#x2F;Ubuntu 中这个包名叫 netcat）。</p>
-<p>当然，如果你在看这篇手册，你的操作系统很有可能是 Windows。它不自带 <code>nc</code>，尽管可以用 WSL 或者虚拟机的方式解决，但是如果你觉得这样太麻烦了，也有另外一些方法。</p>
-<h3 id="使用静态链接的-ncat-程序"><a href="#使用静态链接的-ncat-程序" class="headerlink" title="使用静态链接的 ncat 程序"></a>使用静态链接的 ncat 程序</h3><p>前往 <a target="_blank" rel="noopener" href="https://github.com/andrew-d/static-binaries/blob/master/binaries/windows/x86/ncat.exe">https://github.com/andrew-d/static-binaries/blob/master/binaries/windows/x86/ncat.exe</a> 下载此程序。我们也在这里提供了一份。下载下来即可。</p>
-<p><a target="_blank" rel="noopener" href="https://planet.ustclug.org/wp-content/uploads/2019/09/ncat.zip">ncat.zip 下载</a></p>
-<p><em>注：<code>nc</code>&#x2F;<code>ncat</code> 事实上是两个不同的程序，但在我们接下来的使用上，基本没有区别。<code>ncat</code> 是由 Nmap 项目开发的“重置版的 Netcat”。</em></p>
-<h4 id="我的杀毒软件报毒！"><a href="#我的杀毒软件报毒！" class="headerlink" title="我的杀毒软件报毒！"></a>我的杀毒软件报毒！</h4><p>这是 virustotal 的检测结果：<a target="_blank" rel="noopener" href="https://www.virustotal.com/gui/file/d0baada87420dd7c2e63d0dd3248749c06b53806d3021863c4fa659608053a8a/detection">https://www.virustotal.com/gui/file/d0baada87420dd7c2e63d0dd3248749c06b53806d3021863c4fa659608053a8a/detection</a></p>
-<p>如果你不相信此来源，也可以下载 <code>nmap</code>（一个网络探测、扫描工具），它会附带一个 <code>ncat</code>。</p>
-<h2 id="如何使用-nc"><a href="#如何使用-nc" class="headerlink" title="如何使用 nc?"></a>如何使用 nc?</h2><h3 id="Windows"><a href="#Windows" class="headerlink" title="Windows"></a>Windows</h3><p>直接双击，你会看到一个窗口一扫而过——这是正常现象。你需要使用「命令提示符」或者「PowerShell」来访问这个程序。</p>
-<p>Windows 10 中，你可以使用资源管理器 -&gt; 文件来在你存放 <code>nc</code> 的目录中打开命令提示符或 PowerShell。</p>
-<p><img src="/img/article/nc/explorer-1024x510.png" srcset="/img/loading.gif" lazyload alt="img">在 Windows 资源管理器中打开命令提示符或 PowerShell</p>
-<p>或者，你也可以在开始菜单 -&gt; Windows 系统中打开命令提示符，或者在开始菜单 -&gt; Windows PowerShell 中打开 PowerShell，然后使用 <code>cd</code> 命令转移到对应的目录：输入 <code>cd 文件夹名</code> 可以让你转移到对应的文件夹，输入 <code>cd ..</code> 可以让你转移到上面一层目录。使用 <code>dir</code> 命令，可以显示当前目录下所有文件。同时，使用 Tab 键可以帮助你补全名称。</p>
-<p>当跳转到你存放 <code>nc</code> 的文件夹后：</p>
-<ul>
-<li>如果你使用的是 PowerShell（蓝色背景），输入 <code>./ncat</code>（根据 <code>nc</code> 对应的名称不同而不同）。</li>
-<li>如果你使用的是命令提示符（黑色背景），输入 <code>ncat</code>（根据 <code>nc</code> 对应的名称不同而不同）。</li>
-</ul>
-<p>当显示以下内容时，说明你成功运行了它。</p>
-<p><img src="/img/article/nc/cmdncat-1024x596.png" srcset="/img/loading.gif" lazyload alt="img">成功运行 <code>ncat</code></p>
-<h3 id="Linux-amp-macOS"><a href="#Linux-amp-macOS" class="headerlink" title="Linux &amp; macOS"></a>Linux &amp; macOS</h3><p>打开「终端」，输入 <code>nc</code>。</p>
-<figure class="highlight inform7"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs inform7">$ nc<br>usage: nc <span class="hljs-comment">[-46AacCDdEFhklMnOortUuvz]</span> <span class="hljs-comment">[-K tc]</span> <span class="hljs-comment">[-b boundif]</span> <span class="hljs-comment">[-i interval]</span> <span class="hljs-comment">[-p source_port]</span> <span class="hljs-comment">[--apple-delegate-pid pid]</span> <span class="hljs-comment">[--apple-delegate-uuid uuid]</span><br>	  <span class="hljs-comment">[-s source_ip_address]</span> <span class="hljs-comment">[-w timeout]</span> <span class="hljs-comment">[-X proxy_version]</span><br>	  <span class="hljs-comment">[-x proxy_address<span class="hljs-comment">[:port]</span>]</span> <span class="hljs-comment">[hostname]</span> <span class="hljs-comment">[port<span class="hljs-comment">[s]</span>]</span><br></code></pre></td></tr></table></figure>
+              <h2 id="IDA-PRO-反汇编利器"><a href="#IDA-PRO-反汇编利器" class="headerlink" title="IDA PRO-反汇编利器"></a>IDA PRO-反汇编利器</h2><blockquote>
+<p>推荐版本7.6及以上，高版本增添了对于go语言程序的反汇编，寻找资源需要谨慎哦</p>
+<p>写文章的时候顺便看了眼价格，，，，，算了还是自己找资源吧</p>
+</blockquote>
+<p><img src="/img/article/pwn-envir/image-20220905153059189-1662367638683-2.png" srcset="/img/loading.gif" lazyload alt="image-20220905153059189"></p>
+<p>IDA可以对可执行程序反汇编操作，能够看到整个程序的框架、汇编代码、伪代码、函数调用、以及一些字符串的全局遍变量。无论对于Reverse还是PWN都是最核心的工具之一，这也是我放在最前面提及的原因，大概界面如下图。</p>
+<p><img src="/img/article/pwn-envir/image-20220905153323145.png" srcset="/img/loading.gif" lazyload alt="image-20220905153323145"></p>
+<h2 id="Linux发行版选择"><a href="#Linux发行版选择" class="headerlink" title="Linux发行版选择"></a>Linux发行版选择</h2><p>这里我主要推荐Ubuntu，相比于其他发行版，Ubuntu的图形化界面比较方便新人入手学习Linux. 另外一方面，CTF中大多数PWN题环境都是在ubuntu下的，一般为近几年的版本。</p>
+<blockquote>
+<p>以2022年PWN题目环境为例，Ubuntu版本基本集中在Ubuntu18，Ubuntu20，Ubuntu22. 同理在2024年，不出意外的话题目环境将会变化为Ubuntu20，Ubuntu22，Ubuntu24. 主要是因为Ubuntu发行为LTS制(Long Term Support)即版本支持年份为6年，且每两年发布一次新版本</p>
+</blockquote>
+<p>那么在选择时就推荐选择距离时间最近的偶数年份版本，比如Ubuntu20或22. Ubuntu系统的iso镜像文件可以自行在网上寻找，也可以在大工镜像网站下载：<a target="_blank" rel="noopener" href="http://mirror.dlut.edu.cn/ubuntu-releases/22.04/">大连理工大学开源软件镜像站 (dlut.edu.cn)</a></p>
+<p><img src="/img/article/pwn-envir/image-20220905164622966.png" srcset="/img/loading.gif" lazyload alt="image-20220905164622966"></p>
+<p>虚拟机安装Windows环境下建议使用VMware。同样建议版本尽量新一些，如VM16以上，这样可以避免一部分的蓝屏BUG发生。</p>
+<blockquote>
+<p>Linux安装教学不在这里赘述了，毕竟本文的核心是PWN环境的搭建，如需安装的相关资源，可自行网络搜索</p>
+</blockquote>
+<h2 id="Pwntools安装"><a href="#Pwntools安装" class="headerlink" title="Pwntools安装"></a>Pwntools安装</h2><p>Ubuntu安装完成后默认应该是有python3的，可以用python -V或python3 -V来查看版本</p>
+<p><img src="/img/article/pwn-envir/image-20220905161539363.png" srcset="/img/loading.gif" lazyload alt="image-20220905161539363"></p>
+<blockquote>
+<p>这里推荐使用python3, 虽然有人说Pwntools对于python2的适配性更好，但由于python2过于古老，新版本反倒在其他方面更加稳定一些。在拥有其他更多插件和包的情况下，个人感觉还是python3更优一些。</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ sudo apt-get update<br>$ sudo apt-get install python3 python3-pip python3-dev git libssl-dev libffi-dev build-essential<br>$ sudo python3 -m pip install --upgrade pip<br>$ sudo python3 -m pip install --upgrade pwntools<br></code></pre></td></tr></table></figure>
 
-<p>出现了类似上面的输出，说明运行成功了。</p>
-<h3 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h3><p>在我们使用浏览器上网的时候，我们和服务器使用了 HTTP 协议进行连接。关于 HTTP 协议的更多细节，你需要自己上网搜索。一般来说，默认是 80 端口。</p>
-<p>我们可以使用 <code>nc</code>，尝试一次与网页服务器的连接，以百度为例。</p>
-<p>输入 <code>nc www.baidu.com 80</code>（或者 <code>ncat www.baidu.com 80</code>，或者 <code>./ncat www.baidu.com 80</code>，请根据以上的介绍自行修改），程序会等待你的输入。</p>
-<p>输入 <code>GET / HTTP/1.0</code>。这表示，我们使用 <code>HTTP/1.0</code> 这个协议版本，用 <code>GET</code> 的方式请求根 <code>/</code>。输入两下回车，代表我们的 HTTP 请求完成。如果你的网络畅通，百度的网页服务器会立刻返回大量信息，可以自行搜索，了解它们的含义。现在，你成功（在不使用浏览器的情况下）完成了一次与百度网站的连接！</p>
-<p><img src="/img/article/nc/nc-1024x596.png" srcset="/img/loading.gif" lazyload alt="img">Success!</p>
-<p>如果你成功了，那么你可以开始愉快地完成我们的题目了！</p>
-<p>除了使用 <code>nc</code> 直接与服务器交互之外，也可以编程与服务器交互。例如：</p>
-<ul>
-<li>在信息安全类的竞赛中一个常用的工具是 Python 的 <a target="_blank" rel="noopener" href="https://docs.pwntools.com/en/stable/intro.html"><code>pwntools</code></a>，具体使用方法可以自行搜索了解。</li>
-</ul>
+<p>之后我们可以使用<code>import pwn</code>来测试一些是否成功安装,出现下方情况基本就可以了</p>
+<p><img src="/img/article/pwn-envir/image-20220905162034730.png" srcset="/img/loading.gif" lazyload alt="image-20220905162034730"></p>
+<h2 id="pwndbg-amp-pwngdb安装"><a href="#pwndbg-amp-pwngdb安装" class="headerlink" title="pwndbg &amp; pwngdb安装"></a>pwndbg &amp; pwngdb安装</h2><p>这两个均是GDB的插件之一，用于在Linux对程序进行动态调试，而动态调试也是PWN最核心的部分之一。拥有这些工具，我们能更加方便的查看程序运行过程中，内存变化。如栈、堆、寄存器等等地方的内容。</p>
+<blockquote>
+<p>pwndbg安装</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">git <span class="hljs-built_in">clone</span> https://github.com/pwndbg/pwndbg<br><span class="hljs-built_in">cd</span> pwndbg<br>./setup.sh<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>pwngdb安装</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">cd</span> ~/<br>git <span class="hljs-built_in">clone</span> https://github.com/scwuaptx/Pwngdb.git <br><span class="hljs-built_in">cp</span> ~/Pwngdb/.gdbinit ~/<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注意：上述两个插件并不兼容，但可以通过更改.gdbinit文件切换使用</p>
+<p>.gdbinit文件配置如下</p>
+</blockquote>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs js">source /home/pwnki/pwndbg/gdbinit.<span class="hljs-property">py</span> <br>#source ~<span class="hljs-regexp">/peda/</span>peda.<span class="hljs-property">py</span> <span class="hljs-comment">//使用 pwndbg 就要把 peda 注释掉，反过来也一样</span><br>source ~<span class="hljs-regexp">/Pwngdb/</span>pwngdb.<span class="hljs-property">py</span><br>source ~<span class="hljs-regexp">/Pwngdb/</span>angelheap/gdbinit.<span class="hljs-property">py</span><br><br>define hook-run<br>python<br><span class="hljs-keyword">import</span> angelheap<br>angelheap.<span class="hljs-title function_">init_angelheap</span>()<br>end<br>end<br></code></pre></td></tr></table></figure>
+
+<h2 id="checksec安装"><a href="#checksec安装" class="headerlink" title="checksec安装"></a>checksec安装</h2><p>用于检测程序开启了哪些保护机制，往往是PWN解题的第一步，安装方式：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ sudo apt install checksec<br></code></pre></td></tr></table></figure>
+
+<p>使用方式:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ checksec 程序文件<br></code></pre></td></tr></table></figure>
+
+<p><img src="/img/article/pwn-envir/image-20220905164504590.png" srcset="/img/loading.gif" lazyload alt="image-20220905164504590"></p>
+<h2 id="更多插件"><a href="#更多插件" class="headerlink" title="更多插件"></a>更多插件</h2><blockquote>
+<p>虽然还有很多插件并没有提及，但对于刚刚接触pwn的同学来说，以上插件已经够完成一部分简单的pwn题目，更多的插件需要在将来自己学习的过程中慢慢补充。下面只做一列举，有兴趣的同学可以自行搜索查看</p>
+</blockquote>
+<h3 id="glibc-all-in-one"><a href="#glibc-all-in-one" class="headerlink" title="glibc-all-in-one"></a>glibc-all-in-one</h3><blockquote>
+<p>可以用于下载各种版本的glibc文件，在本地模拟其他libc环境时非常实用</p>
+</blockquote>
+<h3 id="seccomp-tools"><a href="#seccomp-tools" class="headerlink" title="seccomp-tools"></a>seccomp-tools</h3><blockquote>
+<p>用于检测程序沙盒防护开启情况，往往在一些会用到ORW等方法解题时会用来检测</p>
+</blockquote>
+<h3 id="one-gadget"><a href="#one-gadget" class="headerlink" title="one_gadget"></a>one_gadget</h3><blockquote>
+<p>这个工具可以用查找libc中可以用来getshell的片段地址，在各类题目中都应用广泛</p>
+</blockquote>
+<h3 id="LibcSeacher"><a href="#LibcSeacher" class="headerlink" title="LibcSeacher"></a>LibcSeacher</h3><blockquote>
+<p>该工具往往用于确定libc版本并确定其libc版本下的函数偏移，可以被网页端的libc库替代</p>
+</blockquote>
 
               
             </div>
@@ -313,8 +346,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>nc/ncat 使用教学</div>
-      <div>http://loora1n.github.io/2022/09/05/nc 是什么/</div>
+      <div>PWN环境搭建（萌新入门）</div>
+      <div>http://loora1n.github.io/2022/09/05/萌新手册-PWN环境搭建/</div>
     </div>
     <div class="license-meta">
       
@@ -356,18 +389,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2022/09/05/%E8%90%8C%E6%96%B0%E6%89%8B%E5%86%8C-PWN%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" title="PWN环境搭建（萌新入门）">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">PWN环境搭建（萌新入门）</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2022/06/30/LLVM%20Pass%20%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" title="LLVM PASS环境搭建与基本使用">
-                        <span class="hidden-mobile">LLVM PASS环境搭建与基本使用</span>
+                      <a href="/2022/09/05/nc%20%E6%98%AF%E4%BB%80%E4%B9%88/" title="nc/ncat 使用教学">
+                        <span class="hidden-mobile">nc/ncat 使用教学</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
