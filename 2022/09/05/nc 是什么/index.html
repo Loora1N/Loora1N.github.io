@@ -274,7 +274,7 @@
 <p>如果你不相信此来源，也可以下载 <code>nmap</code>（一个网络探测、扫描工具），它会附带一个 <code>ncat</code>。</p>
 <h2 id="如何使用-nc"><a href="#如何使用-nc" class="headerlink" title="如何使用 nc?"></a>如何使用 nc?</h2><h3 id="Windows"><a href="#Windows" class="headerlink" title="Windows"></a>Windows</h3><p>直接双击，你会看到一个窗口一扫而过——这是正常现象。你需要使用「命令提示符」或者「PowerShell」来访问这个程序。</p>
 <p>Windows 10 中，你可以使用资源管理器 -&gt; 文件来在你存放 <code>nc</code> 的目录中打开命令提示符或 PowerShell。</p>
-<p><img src="/img/article/nc/explorer-1024x510.png" srcset="/img/loading.gif" lazyload alt="img">在 Windows 资源管理器中打开命令提示符或 PowerShell</p>
+<p><img src="/img/article/nc/explorer-1024x510.png" srcset="/img/loading.gif" lazyload alt="在 Windows 资源管理器中打开命令提示符或 PowerShell"></p>
 <p>或者，你也可以在开始菜单 -&gt; Windows 系统中打开命令提示符，或者在开始菜单 -&gt; Windows PowerShell 中打开 PowerShell，然后使用 <code>cd</code> 命令转移到对应的目录：输入 <code>cd 文件夹名</code> 可以让你转移到对应的文件夹，输入 <code>cd ..</code> 可以让你转移到上面一层目录。使用 <code>dir</code> 命令，可以显示当前目录下所有文件。同时，使用 Tab 键可以帮助你补全名称。</p>
 <p>当跳转到你存放 <code>nc</code> 的文件夹后：</p>
 <ul>
@@ -282,7 +282,7 @@
 <li>如果你使用的是命令提示符（黑色背景），输入 <code>ncat</code>（根据 <code>nc</code> 对应的名称不同而不同）。</li>
 </ul>
 <p>当显示以下内容时，说明你成功运行了它。</p>
-<p><img src="/img/article/nc/cmdncat-1024x596.png" srcset="/img/loading.gif" lazyload alt="img">成功运行 <code>ncat</code></p>
+<p><img src="/img/article/nc/cmdncat-1024x596.png" srcset="/img/loading.gif" lazyload alt="成功运行 ncat"></p>
 <p>成功运行之后我们便可以通过下面这样的指令来运行程序服务了</p>
 <figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs armasm"><span class="hljs-symbol">ncat</span> &lt;<span class="hljs-built_in">ip</span>&gt; &lt;port&gt; <br><span class="hljs-comment">//例如：ncat 192.168.1.1 1234</span><br></code></pre></td></tr></table></figure>
 <h3 id="Linux-amp-macOS"><a href="#Linux-amp-macOS" class="headerlink" title="Linux &amp; macOS"></a>Linux &amp; macOS</h3><p>打开「终端」，输入 <code>nc</code>。</p>
@@ -293,7 +293,7 @@
 <p>我们可以使用 <code>nc</code>，尝试一次与网页服务器的连接，以百度为例。</p>
 <p>输入 <code>nc www.baidu.com 80</code>（或者 <code>ncat www.baidu.com 80</code>，或者 <code>./ncat www.baidu.com 80</code>，请根据以上的介绍自行修改），程序会等待你的输入。</p>
 <p>输入 <code>GET / HTTP/1.0</code>。这表示，我们使用 <code>HTTP/1.0</code> 这个协议版本，用 <code>GET</code> 的方式请求根 <code>/</code>。输入两下回车，代表我们的 HTTP 请求完成。如果你的网络畅通，百度的网页服务器会立刻返回大量信息，可以自行搜索，了解它们的含义。现在，你成功（在不使用浏览器的情况下）完成了一次与百度网站的连接！</p>
-<p><img src="/img/article/nc/nc-1024x596.png" srcset="/img/loading.gif" lazyload alt="img">Success!</p>
+<p><img src="/img/article/nc/nc-1024x596.png" srcset="/img/loading.gif" lazyload alt="Success!"></p>
 <p>如果你成功了，那么你可以开始愉快地完成我们的题目了！</p>
 <p>除了使用 <code>nc</code> 直接与服务器交互之外，也可以编程与服务器交互。例如：</p>
 <ul>
