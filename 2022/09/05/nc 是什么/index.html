@@ -283,12 +283,14 @@
 </ul>
 <p>当显示以下内容时，说明你成功运行了它。</p>
 <p><img src="/img/article/nc/cmdncat-1024x596.png" srcset="/img/loading.gif" lazyload alt="成功运行 ncat"></p>
-<p>成功运行之后我们便可以通过下面这样的指令来运行程序服务了</p>
+<p>成功运行之后我们便可以通过下面这样的指令来运行程序服务并打开题目了</p>
 <figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs armasm"><span class="hljs-symbol">ncat</span> &lt;<span class="hljs-built_in">ip</span>&gt; &lt;port&gt; <br><span class="hljs-comment">//例如：ncat 192.168.1.1 1234</span><br></code></pre></td></tr></table></figure>
 <h3 id="Linux-amp-macOS"><a href="#Linux-amp-macOS" class="headerlink" title="Linux &amp; macOS"></a>Linux &amp; macOS</h3><p>打开「终端」，输入 <code>nc</code>。</p>
 <figure class="highlight inform7"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs inform7">$ nc<br>usage: nc <span class="hljs-comment">[-46AacCDdEFhklMnOortUuvz]</span> <span class="hljs-comment">[-K tc]</span> <span class="hljs-comment">[-b boundif]</span> <span class="hljs-comment">[-i interval]</span> <span class="hljs-comment">[-p source_port]</span> <span class="hljs-comment">[--apple-delegate-pid pid]</span> <span class="hljs-comment">[--apple-delegate-uuid uuid]</span><br>	  <span class="hljs-comment">[-s source_ip_address]</span> <span class="hljs-comment">[-w timeout]</span> <span class="hljs-comment">[-X proxy_version]</span><br>	  <span class="hljs-comment">[-x proxy_address<span class="hljs-comment">[:port]</span>]</span> <span class="hljs-comment">[hostname]</span> <span class="hljs-comment">[port<span class="hljs-comment">[s]</span>]</span><br></code></pre></td></tr></table></figure>
 
-<p>出现了类似上面的输出，说明运行成功了。</p>
+<p>出现了类似上面的输出，说明运行成功了。我们可以用如下指令来连接题目</p>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs armasm"><span class="hljs-symbol">nc</span> &lt;<span class="hljs-built_in">ip</span>&gt; &lt;port&gt; <br><span class="hljs-comment">//例如：nc 192.168.1.1 1234</span><br></code></pre></td></tr></table></figure>
+
 <h3 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h3><p>在我们使用浏览器上网的时候，我们和服务器使用了 HTTP 协议进行连接。关于 HTTP 协议的更多细节，你需要自己上网搜索。一般来说，默认是 80 端口。</p>
 <p>我们可以使用 <code>nc</code>，尝试一次与网页服务器的连接，以百度为例。</p>
 <p>输入 <code>nc www.baidu.com 80</code>（或者 <code>ncat www.baidu.com 80</code>，或者 <code>./ncat www.baidu.com 80</code>，请根据以上的介绍自行修改），程序会等待你的输入。</p>
