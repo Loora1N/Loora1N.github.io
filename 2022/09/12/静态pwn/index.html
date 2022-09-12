@@ -16,29 +16,24 @@
   <meta name="author" content="Loora1N">
   <meta name="keywords" content="">
   
-    <meta name="description" content="IDA PRO-反汇编利器 推荐版本7.6及以上，高版本增添了对于go语言程序的反汇编，寻找资源需要谨慎哦 写文章的时候顺便看了眼价格，，，，，算了还是自己找资源吧   IDA可以对可执行程序反汇编操作，能够看到整个程序的框架、汇编代码、伪代码、函数调用、以及一些字符串的全局遍变量。无论对于Reverse还是PWN都是最核心的工具之一，这也是我放在最前面提及的原因，大概界面如下图。  Linux发">
+    <meta name="description" content="前言 本文部分引用合天网安实验室微信文章，原文链接：如何安全快速地部署多道 ctf pwn 比赛题目 (qq.com)  我们平时见到的多数PWN题，是采用动态端口，动态flag，这种形式在一定程度上减少了比赛中py的数量。即便有，也是思路py，而不是直接传递flag，提升了py的门槛。但有时受限于环境及服务器负担原因，被迫采用静态端口的PWN也不在少数比如pwnable.tw以及星盟的chall">
 <meta property="og:type" content="article">
-<meta property="og:title" content="PWN环境搭建（萌新入门）">
-<meta property="og:url" content="http://loora1n.github.io/2022/09/05/%E8%90%8C%E6%96%B0%E6%89%8B%E5%86%8C-PWN%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/index.html">
+<meta property="og:title" content="如何安全快速部署多道静态端口PWN题目">
+<meta property="og:url" content="http://loora1n.github.io/2022/09/12/%E9%9D%99%E6%80%81pwn/index.html">
 <meta property="og:site_name" content="鷺雨のBlog">
-<meta property="og:description" content="IDA PRO-反汇编利器 推荐版本7.6及以上，高版本增添了对于go语言程序的反汇编，寻找资源需要谨慎哦 写文章的时候顺便看了眼价格，，，，，算了还是自己找资源吧   IDA可以对可执行程序反汇编操作，能够看到整个程序的框架、汇编代码、伪代码、函数调用、以及一些字符串的全局遍变量。无论对于Reverse还是PWN都是最核心的工具之一，这也是我放在最前面提及的原因，大概界面如下图。  Linux发">
+<meta property="og:description" content="前言 本文部分引用合天网安实验室微信文章，原文链接：如何安全快速地部署多道 ctf pwn 比赛题目 (qq.com)  我们平时见到的多数PWN题，是采用动态端口，动态flag，这种形式在一定程度上减少了比赛中py的数量。即便有，也是思路py，而不是直接传递flag，提升了py的门槛。但有时受限于环境及服务器负担原因，被迫采用静态端口的PWN也不在少数比如pwnable.tw以及星盟的chall">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://loora1n.github.io/img/article/pwn-envir/image-20220905153059189-1662367638683-2.png">
-<meta property="og:image" content="http://loora1n.github.io/img/article/pwn-envir/image-20220905153323145.png">
-<meta property="og:image" content="http://loora1n.github.io/img/article/pwn-envir/image-20220905164622966.png">
-<meta property="og:image" content="http://loora1n.github.io/img/article/pwn-envir/image-20220905161539363.png">
-<meta property="og:image" content="http://loora1n.github.io/img/article/pwn-envir/image-20220905162034730.png">
-<meta property="og:image" content="http://loora1n.github.io/img/article/pwn-envir/image-20220905165859512.png">
-<meta property="og:image" content="http://loora1n.github.io/img/article/pwn-envir/image-20220905164504590.png">
-<meta property="article:published_time" content="2022-09-05T08:48:18.666Z">
-<meta property="article:modified_time" content="2022-09-05T08:48:18.666Z">
+<meta property="og:image" content="http://loora1n.github.io/img/article/static_port/image-20220912135756313.png">
+<meta property="og:image" content="http://loora1n.github.io/img/article/static_port/QQ%E5%9B%BE%E7%89%8720220912141715.png">
+<meta property="article:published_time" content="2022-09-12T06:25:09.387Z">
+<meta property="article:modified_time" content="2022-09-12T06:25:09.387Z">
 <meta property="article:author" content="Loora1N">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://loora1n.github.io/img/article/pwn-envir/image-20220905153059189-1662367638683-2.png">
+<meta name="twitter:image" content="http://loora1n.github.io/img/article/static_port/image-20220912135756313.png">
   
   
   
-  <title>PWN环境搭建（萌新入门） - 鷺雨のBlog</title>
+  <title>如何安全快速部署多道静态端口PWN题目 - 鷺雨のBlog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -182,7 +177,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="PWN环境搭建（萌新入门）"></span>
+            <span id="subtitle" data-typed-text="如何安全快速部署多道静态端口PWN题目"></span>
           
         </div>
 
@@ -193,8 +188,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2022-09-05 16:48" pubdate>
-          2022年9月5日 下午
+        <time datetime="2022-09-12 14:25" pubdate>
+          2022年9月12日 下午
         </time>
       </span>
     
@@ -205,7 +200,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          2k 字
+          2.2k 字
         
       </span>
     
@@ -216,7 +211,7 @@
         
         
         
-          17 分钟
+          19 分钟
         
       </span>
     
@@ -262,75 +257,75 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">PWN环境搭建（萌新入门）</h1>
+            <h1 style="display: none">如何安全快速部署多道静态端口PWN题目</h1>
             
             <div class="markdown-body">
               
-              <h2 id="IDA-PRO-反汇编利器"><a href="#IDA-PRO-反汇编利器" class="headerlink" title="IDA PRO-反汇编利器"></a>IDA PRO-反汇编利器</h2><blockquote>
-<p>推荐版本7.6及以上，高版本增添了对于go语言程序的反汇编，寻找资源需要谨慎哦</p>
-<p>写文章的时候顺便看了眼价格，，，，，算了还是自己找资源吧</p>
+              <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><blockquote>
+<p>本文部分引用合天网安实验室微信文章，原文链接：<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MjM5MTYxNjQxOA==&mid=2652848854&idx=1&sn=ff537cc73e76e1ab058bd36cb76749a0&chksm=bd593e1b8a2eb70d41627a1d04c1abec2c071f28c2649ddd9e313c4eda854ca4a26db20a1985&mpshare=1&scene=1&srcid=1011dGXhepYahcla33btEWte#rd">如何安全快速地部署多道 ctf pwn 比赛题目 (qq.com)</a></p>
 </blockquote>
-<p><img src="/img/article/pwn-envir/image-20220905153059189-1662367638683-2.png" srcset="/img/loading.gif" lazyload alt="image-20220905153059189"></p>
-<p>IDA可以对可执行程序反汇编操作，能够看到整个程序的框架、汇编代码、伪代码、函数调用、以及一些字符串的全局遍变量。无论对于Reverse还是PWN都是最核心的工具之一，这也是我放在最前面提及的原因，大概界面如下图。</p>
-<p><img src="/img/article/pwn-envir/image-20220905153323145.png" srcset="/img/loading.gif" lazyload alt="image-20220905153323145"></p>
-<h2 id="Linux发行版选择"><a href="#Linux发行版选择" class="headerlink" title="Linux发行版选择"></a>Linux发行版选择</h2><p>这里我主要推荐Ubuntu，相比于其他发行版，Ubuntu的图形化界面比较方便新人入手学习Linux. 另外一方面，CTF中大多数PWN题环境都是在ubuntu下的，一般为近几年的版本。</p>
-<blockquote>
-<p>以2022年PWN题目环境为例，Ubuntu版本基本集中在Ubuntu18，Ubuntu20，Ubuntu22. 同理在2024年，不出意外的话题目环境将会变化为Ubuntu20，Ubuntu22，Ubuntu24. 主要是因为Ubuntu发行为LTS制(Long Term Support)即版本支持年份为6年，且每两年发布一次新版本</p>
+<p>我们平时见到的多数PWN题，是采用动态端口，动态flag，这种形式在一定程度上减少了比赛中py的数量。即便有，也是思路py，而不是直接传递flag，提升了py的门槛。但有时受限于环境及服务器负担原因，被迫采用静态端口的PWN也不在少数比如<a target="_blank" rel="noopener" href="https://pwnable.tw/challenge/">pwnable.tw</a>以及星盟的<a target="_blank" rel="noopener" href="http://pwn.eonew.cn/challenge.php">challenge (eonew.cn)</a></p>
+<p>2022年的招新便是如此，由于疫情被迫线上上课，线上安排比赛，无法使用校内的服务器资源。受限于自身服务器的性能，只好采取如此下策（但还好只是招新，11月的DUTCTF希望能有好点的资源&#x2F;(ㄒoㄒ)&#x2F;~~）</p>
+<p>🆘🆘🆘🆘🆘🆘🆘🆘🆘🆘🆘🆘🆘</p>
+<p><img src="/img/article/static_port/image-20220912135756313.png" srcset="/img/loading.gif" lazyload alt="可怜的学姐"></p>
+<p>🆘🆘🆘🆘🆘🆘🆘🆘🆘🆘🆘🆘🆘</p>
+<p>幸运的是找到了合天在2018年创建的项目<code>pwn_depoly_chroot</code>，可以非常方便的搭建多个静态题目，且比较安全，用于这种小型比赛以及普通的训练题库都非常合适。</p>
+<h2 id="pwn-depoly-chroot项目介绍"><a href="#pwn-depoly-chroot项目介绍" class="headerlink" title="pwn_depoly_chroot项目介绍"></a>pwn_depoly_chroot项目介绍</h2><blockquote>
+<p>原项目链接：<a target="_blank" rel="noopener" href="https://github.com/giantbranch/pwn_deploy_chroot">Github: pwn_depoly_chroot</a></p>
 </blockquote>
-<p>那么在选择时就推荐选择距离时间最近的偶数年份版本，比如Ubuntu20或22. Ubuntu系统的iso镜像文件可以自行在网上寻找，也可以在大工镜像网站下载：<a target="_blank" rel="noopener" href="http://mirror.dlut.edu.cn/ubuntu-releases/22.04/">大连理工大学开源软件镜像站 (dlut.edu.cn)</a></p>
-<p><img src="/img/article/pwn-envir/image-20220905164622966.png" srcset="/img/loading.gif" lazyload alt="image-20220905164622966"></p>
-<p>虚拟机安装Windows环境下建议使用VMware。同样建议版本尽量新一些，如VM16以上，这样可以避免一部分的蓝屏BUG发生。</p>
-<blockquote>
-<p>Linux安装教学不在这里赘述了，毕竟本文的核心是PWN环境的搭建，如需安装的相关资源，可自行网络搜索</p>
-</blockquote>
-<h2 id="Pwntools安装"><a href="#Pwntools安装" class="headerlink" title="Pwntools安装"></a>Pwntools安装</h2><p>Ubuntu安装完成后默认应该是有python3的，可以用python -V或python3 -V来查看版本</p>
-<p><img src="/img/article/pwn-envir/image-20220905161539363.png" srcset="/img/loading.gif" lazyload alt="image-20220905161539363"></p>
-<blockquote>
-<p>这里推荐使用python3, 虽然有人说Pwntools对于python2的适配性更好，但由于python2过于古老，新版本反倒在其他方面更加稳定一些。在拥有其他更多插件和包的情况下，个人感觉还是python3更优一些。</p>
-</blockquote>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ sudo apt-get update<br>$ sudo apt-get install python3 python3-pip python3-dev git libssl-dev libffi-dev build-essential<br>$ sudo python3 -m pip install --upgrade pip<br>$ sudo python3 -m pip install --upgrade pwntools<br></code></pre></td></tr></table></figure>
+<ul>
+<li><p>一次可以部署多个题目到一个 <code>docker</code> 容器中</p>
+</li>
+<li><p>自动生成 flag,并备份到当前目录(不过需注意是静态的flag)</p>
+</li>
+<li><p>基于 <code>xinted + docker + chroot</code></p>
+</li>
+<li><p>利用 python 脚本根据 PWN 的文件名自动化地生成 3 个文件：<code>pwn.xinetd</code>，<code>Dockerfile</code> 和 <code>docker-compose.yml</code></p>
+</li>
+<li><p>在 &#x2F;bin 目录，利用自己编写的静态编译的 <code>catflag</code> 程序作为 <code>/bin/sh</code>，这样的话，<code>system(&quot;/bin/sh&quot;)</code> 实际执行的只是读取 flag 文件的内容，完全不给搅屎棍任何操作的余地</p>
+</li>
+<li><p>默认从 10000 端口监听，多一个程序就 +1，起始的监听端口可以在 <code>config.py</code> 配置，或者生成 <code>pwn.xinetd 和 docker-compose.yml</code> 后自己修改这两个文件</p>
+</li>
+</ul>
+<h2 id="环境配置"><a href="#环境配置" class="headerlink" title="环境配置"></a>环境配置</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">#安装docker</span><br>$ curl -s https://get.docker.com/ | sh<br><br><span class="hljs-comment">#安装 docker compose 和 git</span><br>$ apt install docker-compose git<br><br><span class="hljs-comment">#下载PWN题搭建项目</span><br>$ git <span class="hljs-built_in">clone</span> https://github.com/giantbranch/pwn_deploy_chroot.git<br></code></pre></td></tr></table></figure>
 
-<p>之后我们可以使用<code>import pwn</code>来测试一些是否成功安装,出现下方情况基本就可以了</p>
-<p><img src="/img/article/pwn-envir/image-20220905162034730.png" srcset="/img/loading.gif" lazyload alt="image-20220905162034730"></p>
-<h2 id="pwndbg-amp-pwngdb安装"><a href="#pwndbg-amp-pwngdb安装" class="headerlink" title="pwndbg &amp; pwngdb安装"></a>pwndbg &amp; pwngdb安装</h2><p>这两个均是GDB的插件之一，用于在Linux对程序进行动态调试，而动态调试也是PWN最核心的部分之一。拥有这些工具，我们能更加方便的查看程序运行过程中，内存变化。如栈、堆、寄存器等等地方的内容。</p>
-<blockquote>
-<p>pwndbg安装</p>
-</blockquote>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">git <span class="hljs-built_in">clone</span> https://github.com/pwndbg/pwndbg<br><span class="hljs-built_in">cd</span> pwndbg<br>./setup.sh<br></code></pre></td></tr></table></figure>
 
-<blockquote>
-<p>pwngdb安装</p>
-</blockquote>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">cd</span> ~/<br>git <span class="hljs-built_in">clone</span> https://github.com/scwuaptx/Pwngdb.git <br><span class="hljs-built_in">cp</span> ~/Pwngdb/.gdbinit ~/<br></code></pre></td></tr></table></figure>
 
-<blockquote>
-<p>注意：上述两个插件并不兼容，但可以通过更改.gdbinit文件切换使用</p>
-<p>.gdbinit文件配置如下</p>
-</blockquote>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs js">source /home/pwnki/pwndbg/gdbinit.<span class="hljs-property">py</span> <br>#source ~<span class="hljs-regexp">/peda/</span>peda.<span class="hljs-property">py</span> <span class="hljs-comment">//使用 pwndbg 就要把 peda 注释掉，反过来也一样</span><br>source ~<span class="hljs-regexp">/Pwngdb/</span>pwngdb.<span class="hljs-property">py</span><br>source ~<span class="hljs-regexp">/Pwngdb/</span>angelheap/gdbinit.<span class="hljs-property">py</span><br><br>define hook-run<br>python<br><span class="hljs-keyword">import</span> angelheap<br>angelheap.<span class="hljs-title function_">init_angelheap</span>()<br>end<br>end<br></code></pre></td></tr></table></figure>
+<h2 id="使用教学"><a href="#使用教学" class="headerlink" title="使用教学"></a>使用教学</h2><p>只需要 3 步：</p>
+<ol>
+<li>将所有 pwn 题目放入 bin 目录（注意名字不带特殊字符，因为会将文件名作为 linux 用户名）</li>
+<li>python initialize.py  </li>
+<li>docker-compose up –build -d</li>
+</ol>
+<h3 id="详细操作："><a href="#详细操作：" class="headerlink" title="详细操作："></a>详细操作：</h3><ul>
+<li><strong>将你要部署的 pwn 题目放到 bin 目录</strong></li>
+</ul>
+<p>这个项目已经将一个程序 copy 了 3 份作为示例，注意文件名不要含有特殊字符，文件名建议使用字母，下划线，横杆和数字，当然全字母的当然最好了</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">root@instance-1:~/pwn_deploy_chroot<span class="hljs-comment"># ls bin/</span><br>pwn1 pwn1_copy1 pwn1_copy2<br></code></pre></td></tr></table></figure>
 
-<p><img src="/img/article/pwn-envir/image-20220905165859512.png" srcset="/img/loading.gif" lazyload alt="image-20220905165859512"></p>
-<h2 id="checksec安装"><a href="#checksec安装" class="headerlink" title="checksec安装"></a>checksec安装</h2><p>用于检测程序开启了哪些保护机制，往往是PWN解题的第一步，安装方式：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ sudo apt install checksec<br></code></pre></td></tr></table></figure>
+<ul>
+<li><strong>运行 initialize.py</strong></li>
+</ul>
+<p>运行脚本后会输出每个 pwn 的监听端口，</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash">root@instance-1:~/pwn_deploy_chroot<span class="hljs-comment"># python initialize.py</span><br><br>pwn1<span class="hljs-string">&#x27;s port: 10000</span><br><span class="hljs-string">pwn1_copy1&#x27;</span>s port: 10001<br>pwn1_copy2<span class="hljs-string">&#x27;s port: 10002</span><br></code></pre></td></tr></table></figure>
 
-<p>使用方式:</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ checksec 程序文件<br></code></pre></td></tr></table></figure>
+<p>文件与端口信息，还有随机生成的 flag 默认备份到 flags.txt </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs bash">root@instance-1:~/pwn_deploy_chroot<span class="hljs-comment"># cat flags.txt </span><br>pwn1: flag&#123;93aa6da5-db45-46fa-a2e1-af2be6698692&#125;<br>pwn1_copy1: flag&#123;f9966c51-52e4-4212-ac44-97bf16620b41&#125;<br>pwn1_copy2: flag&#123;b17949ce-e3fa-4ca7-9fcc-44b8dc997cb3&#125;<br><br>pwn1<span class="hljs-string">&#x27;s port: 10000</span><br><span class="hljs-string">pwn1_copy1&#x27;</span>s port: 10001<br>pwn1_copy2<span class="hljs-string">&#x27;s port: 10002</span><br></code></pre></td></tr></table></figure>
 
-<p><img src="/img/article/pwn-envir/image-20220905164504590.png" srcset="/img/loading.gif" lazyload alt="image-20220905164504590"></p>
-<h2 id="更多插件"><a href="#更多插件" class="headerlink" title="更多插件"></a>更多插件</h2><blockquote>
-<p>虽然还有很多插件并没有提及，但对于刚刚接触pwn的同学来说，以上插件已经够完成一部分简单的pwn题目，更多的插件需要在将来自己学习的过程中慢慢补充。下面只做一列举，有兴趣的同学可以自行搜索查看</p>
-</blockquote>
-<h3 id="glibc-all-in-one"><a href="#glibc-all-in-one" class="headerlink" title="glibc-all-in-one"></a>glibc-all-in-one</h3><blockquote>
-<p>可以用于下载各种版本的glibc文件，在本地模拟其他libc环境时非常实用</p>
-</blockquote>
-<h3 id="seccomp-tools"><a href="#seccomp-tools" class="headerlink" title="seccomp-tools"></a>seccomp-tools</h3><blockquote>
-<p>用于检测程序沙盒防护开启情况，往往在一些会用到ORW等方法解题时会用来检测</p>
-</blockquote>
-<h3 id="one-gadget"><a href="#one-gadget" class="headerlink" title="one_gadget"></a>one_gadget</h3><blockquote>
-<p>这个工具可以用查找libc中可以用来getshell的片段地址，在各类题目中都应用广泛</p>
-</blockquote>
-<h3 id="LibcSeacher"><a href="#LibcSeacher" class="headerlink" title="LibcSeacher"></a>LibcSeacher</h3><blockquote>
-<p>该工具往往用于确定libc版本并确定其libc版本下的函数偏移，可以被网页端的libc库替代</p>
+<ul>
+<li><strong>启动环境</strong></li>
+</ul>
+<p>请使用 root 用户执行命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker-compose up --build-d<br></code></pre></td></tr></table></figure>
+
+<p>不出意外，题目就启动起来了</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash">root@instance-1:~/pwn_deploy_chroot<span class="hljs-comment"># netstat -antp | grep docker</span><br>tcp6       0     0:::10002               :::*                   LISTEN      19828/docker-proxy<br>tcp6       0     0:::10000               :::*                   LISTEN      19887/docker-proxy<br>tcp6       0     0:::10001               :::*                   LISTEN      19873/docker-proxy<br></code></pre></td></tr></table></figure>
+
+<p>我们测试一下 pwn1,看看效果</p>
+<p><img src="/img/article/static_port/QQ%E5%9B%BE%E7%89%8720220912141715.png" srcset="/img/loading.gif" lazyload alt="测试示例"></p>
+<p>可以看到，虽然执行的是 <code>system(&quot;/bin/sh&quot;)</code>，但是实际功能只是输出 flag，这样就非常安全了</p>
+<h3 id="另外"><a href="#另外" class="headerlink" title="另外"></a>另外</h3><blockquote>
+<p>如有二次开发意愿或想了解更多详细内容，可自行查看开头的文章链接或github项目链接，内有部分关键代码讲解</p>
 </blockquote>
 
               
@@ -348,8 +343,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>PWN环境搭建（萌新入门）</div>
-      <div>http://loora1n.github.io/2022/09/05/萌新手册-PWN环境搭建/</div>
+      <div>如何安全快速部署多道静态端口PWN题目</div>
+      <div>http://loora1n.github.io/2022/09/12/静态pwn/</div>
     </div>
     <div class="license-meta">
       
@@ -361,7 +356,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2022年9月5日</div>
+          <div>2022年9月12日</div>
         </div>
       
       
@@ -391,18 +386,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2022/09/12/%E9%9D%99%E6%80%81pwn/" title="如何安全快速部署多道静态端口PWN题目">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">如何安全快速部署多道静态端口PWN题目</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2022/09/05/nc%20%E6%98%AF%E4%BB%80%E4%B9%88/" title="nc/ncat 使用教学">
-                        <span class="hidden-mobile">nc/ncat 使用教学</span>
+                      <a href="/2022/09/05/%E8%90%8C%E6%96%B0%E6%89%8B%E5%86%8C-PWN%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" title="PWN环境搭建（萌新入门）">
+                        <span class="hidden-mobile">PWN环境搭建（萌新入门）</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
