@@ -24,7 +24,7 @@
 <meta property="og:description" content="前言 本文部分引用合天网安实验室微信文章，原文链接：如何安全快速地部署多道 ctf pwn 比赛题目 (qq.com)  我们平时见到的多数PWN题，是采用动态端口，动态flag，这种形式在一定程度上减少了比赛中py的数量。即便有，也是思路py，而不是直接传递flag，提升了py的门槛。但有时受限于环境及服务器负担原因，被迫采用静态端口的PWN也不在少数比如pwnable.tw以及星盟的chall">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://loora1n.github.io/img/article/static_port/image-20220912135756313.png">
-<meta property="og:image" content="http://loora1n.github.io/img/article/static_port/QQ%E5%9B%BE%E7%89%8720220912141715.png">
+<meta property="og:image" content="http://loora1n.github.io/img/article/static_port/20220912141715.png">
 <meta property="article:published_time" content="2022-09-12T06:25:09.387Z">
 <meta property="article:modified_time" content="2022-09-12T06:25:09.387Z">
 <meta property="article:author" content="Loora1N">
@@ -322,7 +322,7 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash">root@instance-1:~/pwn_deploy_chroot<span class="hljs-comment"># netstat -antp | grep docker</span><br>tcp6       0     0:::10002               :::*                   LISTEN      19828/docker-proxy<br>tcp6       0     0:::10000               :::*                   LISTEN      19887/docker-proxy<br>tcp6       0     0:::10001               :::*                   LISTEN      19873/docker-proxy<br></code></pre></td></tr></table></figure>
 
 <p>我们测试一下 pwn1,看看效果</p>
-<p><img src="/img/article/static_port/QQ%E5%9B%BE%E7%89%8720220912141715.png" srcset="/img/loading.gif" lazyload alt="测试示例"></p>
+<p><img src="/img/article/static_port/20220912141715.png" srcset="/img/loading.gif" lazyload alt="测试示例"></p>
 <p>可以看到，虽然执行的是 <code>system(&quot;/bin/sh&quot;)</code>，但是实际功能只是输出 flag，这样就非常安全了</p>
 <h3 id="另外"><a href="#另外" class="headerlink" title="另外"></a>另外</h3><blockquote>
 <p>如有二次开发意愿或想了解更多详细内容，可自行查看开头的文章链接或github项目链接，内有部分关键代码讲解</p>
