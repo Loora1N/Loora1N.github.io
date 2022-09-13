@@ -314,7 +314,7 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">nc &lt;ip&gt; &lt;port&gt; <br>//例如这次招新赛：nc 121.4.113.135 20001<br></code></pre></td></tr></table></figure>
 
 <p><img src="/img/article/nc/image-20220913101349105.png" srcset="/img/loading.gif" lazyload alt="开始做题吧"></p>
-<h3 id="此外"><a href="#此外" class="headerlink" title="此外"></a>此外</h3><p>在我们使用浏览器上网的时候，我们和服务器使用了 HTTP 协议进行连接。关于 HTTP 协议的更多细节，你需要自己上网搜索。一般来说，默认是 80 端口。</p>
+<h2 id="此外"><a href="#此外" class="headerlink" title="此外"></a>此外</h2><p>在我们使用浏览器上网的时候，我们和服务器使用了 HTTP 协议进行连接。关于 HTTP 协议的更多细节，你需要自己上网搜索。一般来说，默认是 80 端口。</p>
 <p>我们可以使用 <code>nc</code>，尝试一次与网页服务器的连接，以百度为例。</p>
 <p>输入 <code>nc www.baidu.com 80</code>（或者 <code>ncat www.baidu.com 80</code>，或者 <code>./ncat www.baidu.com 80</code>，请根据以上的介绍自行修改），程序会等待你的输入。</p>
 <p>输入 <code>GET / HTTP/1.0</code>。这表示，我们使用 <code>HTTP/1.0</code> 这个协议版本，用 <code>GET</code> 的方式请求根 <code>/</code>。输入两下回车，代表我们的 HTTP 请求完成。如果你的网络畅通，百度的网页服务器会立刻返回大量信息，可以自行搜索，了解它们的含义。现在，你成功（在不使用浏览器的情况下）完成了一次与百度网站的连接！</p>
