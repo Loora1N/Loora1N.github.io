@@ -16,31 +16,28 @@
   <meta name="author" content="Loora1N">
   <meta name="keywords" content="">
   
-    <meta name="description" content="本文用于介绍信息安全大赛中不少题目需要使用的 nc&#x2F;ncat 工具。如果有什么建议，可以在页面底部登录Github使用评论功能，我看不到账号密码的，不用担心🤩  nc 是什么nc&#x2F;ncat 是 netcat 的缩写，它可以读写 TCP 与 UDP 端口——或许你看不懂这句话，这没有关系。简单地说，它可以在字符界面下，让你和服务器沟通交流。 一般来说，有很多题目都会要求你使用 nc 连">
+    <meta name="description" content="硬件资源太多辣，以后看需求慢慢购入吧  万用表，主要的功能是用来测试UART(TLL)中的几个接口，比如RX、TX、GND。 CH340G设备(USB转TTL)，这个设备主要的将电脑与IoT设备用TTL线连接，方便进入IoT设备的终端(Shell)。 电烙铁，这里买电烙铁的主要用途是焊接UART接口的针脚。 焊锡丝 针脚，针脚主要用来焊接UART接口 编辑器，编程器主要是用来帮助我们dump Io">
 <meta property="og:type" content="article">
-<meta property="og:title" content="nc&#x2F;ncat 使用教学">
-<meta property="og:url" content="http://loora1n.github.io/2022/09/13/nc%20%E6%98%AF%E4%BB%80%E4%B9%88/index.html">
+<meta property="og:title" content="【IOT PWN】环境搭建">
+<meta property="og:url" content="http://loora1n.github.io/2022/09/13/[IOT%20PWN]%20%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/index.html">
 <meta property="og:site_name" content="鷺雨のBlog">
-<meta property="og:description" content="本文用于介绍信息安全大赛中不少题目需要使用的 nc&#x2F;ncat 工具。如果有什么建议，可以在页面底部登录Github使用评论功能，我看不到账号密码的，不用担心🤩  nc 是什么nc&#x2F;ncat 是 netcat 的缩写，它可以读写 TCP 与 UDP 端口——或许你看不懂这句话，这没有关系。简单地说，它可以在字符界面下，让你和服务器沟通交流。 一般来说，有很多题目都会要求你使用 nc 连">
+<meta property="og:description" content="硬件资源太多辣，以后看需求慢慢购入吧  万用表，主要的功能是用来测试UART(TLL)中的几个接口，比如RX、TX、GND。 CH340G设备(USB转TTL)，这个设备主要的将电脑与IoT设备用TTL线连接，方便进入IoT设备的终端(Shell)。 电烙铁，这里买电烙铁的主要用途是焊接UART接口的针脚。 焊锡丝 针脚，针脚主要用来焊接UART接口 编辑器，编程器主要是用来帮助我们dump Io">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://loora1n.github.io/img/article/nc/explorer-1024x510-1663035408603-1.png">
-<meta property="og:image" content="http://loora1n.github.io/img/article/nc/image-20220913095851978.png">
-<meta property="og:image" content="http://loora1n.github.io/img/article/nc/image-20220913100512883.png">
-<meta property="og:image" content="http://loora1n.github.io/img/article/nc/image-20220913100455215.png">
-<meta property="og:image" content="http://loora1n.github.io/img/article/nc/image-20220913100732337.png">
-<meta property="og:image" content="http://loora1n.github.io/img/article/nc/cmdncat-1024x596-1663035419107-3.png">
-<meta property="og:image" content="http://loora1n.github.io/img/article/nc/image-20220913101045325.png">
-<meta property="og:image" content="http://loora1n.github.io/img/article/nc/image-20220913101349105.png">
-<meta property="og:image" content="http://loora1n.github.io/img/article/nc/nc-1024x596.png">
-<meta property="article:published_time" content="2022-09-13T02:17:18.712Z">
-<meta property="article:modified_time" content="2022-09-13T02:17:18.712Z">
+<meta property="og:image" content="http://loora1n.github.io/img/article/iot-envir/image-20220913113915723.png">
+<meta property="og:image" content="http://loora1n.github.io/img/article/iot-envir/image-20220913114057712.png">
+<meta property="og:image" content="http://loora1n.github.io/img/article/iot-envir/image-20220913122554653.png">
+<meta property="og:image" content="http://loora1n.github.io/img/article/iot-envir/image-20220913133114466.png">
+<meta property="og:image" content="http://loora1n.github.io/img/article/iot-envir/image-20220913133817467.png">
+<meta property="og:image" content="http://loora1n.github.io/img/article/iot-envir/image-20220913143102694.png">
+<meta property="article:published_time" content="2022-09-13T06:32:48.502Z">
+<meta property="article:modified_time" content="2022-09-13T06:32:48.502Z">
 <meta property="article:author" content="Loora1N">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://loora1n.github.io/img/article/nc/explorer-1024x510-1663035408603-1.png">
+<meta name="twitter:image" content="http://loora1n.github.io/img/article/iot-envir/image-20220913113915723.png">
   
   
   
-  <title>nc/ncat 使用教学 - 鷺雨のBlog</title>
+  <title>【IOT PWN】环境搭建 - 鷺雨のBlog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -184,7 +181,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="nc/ncat 使用教学"></span>
+            <span id="subtitle" data-typed-text="【IOT PWN】环境搭建"></span>
           
         </div>
 
@@ -195,8 +192,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2022-09-13 10:17" pubdate>
-          2022年9月13日 上午
+        <time datetime="2022-09-13 14:32" pubdate>
+          2022年9月13日 下午
         </time>
       </span>
     
@@ -207,7 +204,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          2.4k 字
+          2.1k 字
         
       </span>
     
@@ -218,7 +215,7 @@
         
         
         
-          21 分钟
+          18 分钟
         
       </span>
     
@@ -264,66 +261,66 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">nc/ncat 使用教学</h1>
+            <h1 style="display: none">【IOT PWN】环境搭建</h1>
             
             <div class="markdown-body">
               
-              <blockquote>
-<p>本文用于介绍信息安全大赛中不少题目需要使用的 nc&#x2F;ncat 工具。<br>如果有什么建议，可以在页面底部登录Github使用评论功能，我看不到账号密码的，不用担心🤩</p>
+              <h2 id="硬件资源"><a href="#硬件资源" class="headerlink" title="硬件资源"></a>硬件资源</h2><p>太多辣，以后看需求慢慢购入吧</p>
+<ul>
+<li>万用表，主要的功能是用来测试UART(TLL)中的几个接口，比如<code>RX</code>、<code>TX</code>、<code>GND</code>。</li>
+<li>CH340G设备(USB转TTL)，这个设备主要的将电脑与IoT设备用TTL线连接，方便进入IoT设备的终端(Shell)。</li>
+<li>电烙铁，这里买电烙铁的主要用途是焊接UART接口的针脚。</li>
+<li>焊锡丝</li>
+<li>针脚，针脚主要用来焊接UART接口</li>
+<li>编辑器，编程器主要是用来帮助我们dump IoT设备上例如<code>闪存芯片</code>里面的数据，一般都为固件包。编程器的话一般买CH341A够用了，基本上8脚的芯片都支持。如果富裕的话编程器可以买个爱修的RT80H编程器，或者RT809F也不错。</li>
+<li>热风枪，这个其实可有可无，相对于技术比较高的人用，因为热风枪主要是吹出芯片然后放到编程器上面用来dump估计，但是一般来说用夹子就可以把固件dump出来。</li>
+<li>测试夹、探针，这个的主要用途是省的我们去焊接UART接口的针脚了，直接用这夹子加上去用CH340G设备连接即可，不过UART接口要规则才行，要一排的那种。</li>
+<li>免拆芯片通用测试夹，这设备主要也是帮助用来dump芯片固件的，我们买的编程器夹子一般只能用来夹8脚，当超过8脚就不好用了，所以可以用这种通用测试夹来夹住芯片然后dump估计。</li>
+</ul>
+<h2 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h2><h3 id="Binwalk"><a href="#Binwalk" class="headerlink" title="Binwalk"></a>Binwalk</h3><p>binwalk是一个固件解包的工具，当我们用编程器dump出一个固件用，需要用binwalk来解压。一般做misc也会经常用到。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">sudo apt install binwalk<br></code></pre></td></tr></table></figure>
+
+<p><img src="/img/article/iot-envir/image-20220913113915723.png" srcset="/img/loading.gif" lazyload alt="image-20220913113915723"></p>
+<p>固件解包命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">binwalk -Me file.bin<br></code></pre></td></tr></table></figure>
+
+<p>家里旧路由器解包出来的文件，太多了没截全</p>
+<p><img src="/img/article/iot-envir/image-20220913114057712.png" srcset="/img/loading.gif" lazyload alt="家里旧路由器的固件"></p>
+<h3 id="Firmadyne（固件仿真）"><a href="#Firmadyne（固件仿真）" class="headerlink" title="Firmadyne（固件仿真）"></a>Firmadyne（固件仿真）</h3><p>这工具主要是用来仿真，将固件用qemu模拟启动起来，不过不是百分百模拟成功的，经常会仿失败，常见就是环境等问题。(建议还是买真机好)</p>
+<blockquote>
+<p>安装可参考github上的文章：<a target="_blank" rel="noopener" href="https://github.com/firmadyne/firmadyne#introduction">https://github.com/firmadyne/firmadyne#introduction</a></p>
 </blockquote>
-<h2 id="nc-是什么"><a href="#nc-是什么" class="headerlink" title="nc 是什么"></a>nc 是什么</h2><p><code>nc/ncat</code> 是 netcat 的缩写，它可以读写 TCP 与 UDP 端口——或许你看不懂这句话，这没有关系。简单地说，它可以在字符界面下，让你和服务器沟通交流。</p>
-<p>一般来说，有很多题目都会要求你使用 <code>nc</code> 连接到他们的服务器，并且进行交互，获得 flag。</p>
-<h2 id="如何安装-nc"><a href="#如何安装-nc" class="headerlink" title="如何安装 nc"></a>如何安装 nc</h2><p><code>nc</code> 命令在 macOS 中是自带的，在 Linux 中一般自带，或是可以使用相应的软件包管理器安装（如在 Debian&#x2F;Ubuntu 中这个包名叫 netcat）。</p>
-<p>当然，如果你在看这篇手册，你的操作系统很有可能是 Windows。它不自带 <code>nc</code>，尽管可以用 WSL 或者虚拟机的方式解决，但是如果你觉得这样太麻烦了，也有另外一些方法。</p>
-<h3 id="使用静态链接的-ncat-程序"><a href="#使用静态链接的-ncat-程序" class="headerlink" title="使用静态链接的 ncat 程序"></a>使用静态链接的 ncat 程序</h3><p>前往 <a target="_blank" rel="noopener" href="https://github.com/andrew-d/static-binaries/blob/master/binaries/windows/x86/ncat.exe">https://github.com/andrew-d/static-binaries/blob/master/binaries/windows/x86/ncat.exe</a> 下载此程序。我们也在这里提供了一份。下载下来即可。</p>
-<p><a target="_blank" rel="noopener" href="https://planet.ustclug.org/wp-content/uploads/2019/09/ncat.zip">ncat.zip 下载</a></p>
-<p><em>注：<code>nc</code>&#x2F;<code>ncat</code> 事实上是两个不同的程序，但在我们接下来的使用上，基本没有区别。<code>ncat</code> 是由 Nmap 项目开发的“重置版的 Netcat”。</em></p>
-<h4 id="我的杀毒软件报毒！"><a href="#我的杀毒软件报毒！" class="headerlink" title="我的杀毒软件报毒！"></a>我的杀毒软件报毒！</h4><p>这是 virustotal 的检测结果：<a target="_blank" rel="noopener" href="https://www.virustotal.com/gui/file/d0baada87420dd7c2e63d0dd3248749c06b53806d3021863c4fa659608053a8a/detection">https://www.virustotal.com/gui/file/d0baada87420dd7c2e63d0dd3248749c06b53806d3021863c4fa659608053a8a/detection</a></p>
-<p>如果你不相信此来源，也可以下载 <code>nmap</code>（一个网络探测、扫描工具），它会附带一个 <code>ncat</code>。</p>
-<h2 id="如何使用-nc"><a href="#如何使用-nc" class="headerlink" title="如何使用 nc?"></a>如何使用 nc?</h2><h3 id="Windows"><a href="#Windows" class="headerlink" title="Windows"></a>Windows</h3><p>直接双击解压出来的<code>ncat.exe</code>，你会看到一个窗口一扫而过——这是正常现象。你需要使用「命令提示符」或者「PowerShell」来访问这个程序。</p>
-<p>Windows 10 中，你可以使用资源管理器 -&gt; 文件来在你存放 <code>nc</code> 的目录中打开命令提示符或 PowerShell。</p>
-<p><img src="/img/article/nc/explorer-1024x510-1663035408603-1.png" srcset="/img/loading.gif" lazyload alt="在 Windows 资源管理器中打开命令提示符或 PowerShell"></p>
-<p>或者，在Windows 11中，你也可以在开始菜单中搜索PowerShell，然后使用 <code>cd</code> 命令转移到<code>ncat.exe</code>对应的目录：输入 <code>cd 文件夹名</code> 可以让你转移到对应的文件夹，输入 <code>cd ..</code> 可以让你转移到上面一层目录。使用 <code>dir</code> 命令，可以显示当前目录下所有文件。同时，使用 Tab 键可以帮助你补全名称。操作如下</p>
-<ul>
-<li>首先在开始菜单中搜索Windows PowerShell并打开，在Windows 11和Windows 10中PowerShell的背景颜色不同，会存在蓝色和黑色两种背景，不用特别在意</li>
-</ul>
-<p><img src="/img/article/nc/image-20220913095851978.png" srcset="/img/loading.gif" lazyload alt="在开始菜单中搜索PowerShell"></p>
-<ul>
-<li>复制解压出来的<code>ncat.exe</code>文件的地址，我这里是<code>E:\迅雷下载\ncat</code></li>
-</ul>
-<p><img src="/img/article/nc/image-20220913100512883.png" srcset="/img/loading.gif" lazyload alt="复制文件地址"></p>
-<ul>
-<li>然后在PowerShell中输入<code>cd 你的文件地址</code>，例如<code>cd E:\迅雷下载\ncat</code>，便可进入对应文件夹地址，cmd操作相同</li>
-</ul>
-<p><img src="/img/article/nc/image-20220913100455215.png" srcset="/img/loading.gif" lazyload alt="进入文件地址"></p>
-<p>当跳转到你存放 <code>nc</code> 的文件夹后：</p>
-<ul>
-<li>如果你使用的是 PowerShell，输入 <code>./ncat</code>（根据 <code>nc</code> 对应的名称不同而不同）。</li>
-<li>如果你使用的是命令提示符cmd，输入 <code>ncat</code>（根据 <code>nc</code> 对应的名称不同而不同）。</li>
-</ul>
-<p>当显示以下内容时，说明你成功运行了它。<img src="/img/article/nc/image-20220913100732337.png" srcset="/img/loading.gif" lazyload alt="成功运行 ncat"></p>
-<p><img src="/img/article/nc/cmdncat-1024x596-1663035419107-3.png" srcset="/img/loading.gif" lazyload alt="成功运行 ncat"></p>
-<p>成功运行之后我们便可以通过下面这样的指令来运行程序服务并打开题目了</p>
-<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs gherkin"><span class="hljs-comment">#PowerShell中使用</span><br>./ncat <span class="hljs-variable">&lt;ip&gt;</span> <span class="hljs-variable">&lt;port&gt;</span> <br><span class="hljs-comment">#例如本题：./ncat 121.4.113.135 20001</span><br><br><span class="hljs-comment">#cmd命令提示符中使用</span><br>ncat <span class="hljs-variable">&lt;ip&gt;</span> <span class="hljs-variable">&lt;port&gt;</span> <br><span class="hljs-comment">#例如本题：ncat 121.4.113.135 20001</span><br></code></pre></td></tr></table></figure>
+<h4 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">sudo apt-get install busybox-static fakeroot git dmsetup kpartx netcat-openbsd nmap python-psycopg2 python3-psycopg2 snmp uml-utilities util-linux vlan<br>git <span class="hljs-built_in">clone</span> --recursive https://github.com/firmadyne/firmadyne.git<br></code></pre></td></tr></table></figure>
 
-<p><img src="/img/article/nc/image-20220913101045325.png" srcset="/img/loading.gif" lazyload alt="开始做题吧！"></p>
-<h3 id="Linux-amp-macOS"><a href="#Linux-amp-macOS" class="headerlink" title="Linux &amp; macOS"></a>Linux &amp; macOS</h3><p>在Linux和macOS中，由于系统自带<code>nc</code>功能，我们的操作就很简便了。首先打开「终端」，输入 <code>nc</code>。</p>
-<figure class="highlight inform7"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs inform7">$ nc<br>usage: nc <span class="hljs-comment">[-46AacCDdEFhklMnOortUuvz]</span> <span class="hljs-comment">[-K tc]</span> <span class="hljs-comment">[-b boundif]</span> <span class="hljs-comment">[-i interval]</span> <span class="hljs-comment">[-p source_port]</span> <span class="hljs-comment">[--apple-delegate-pid pid]</span> <span class="hljs-comment">[--apple-delegate-uuid uuid]</span><br>	  <span class="hljs-comment">[-s source_ip_address]</span> <span class="hljs-comment">[-w timeout]</span> <span class="hljs-comment">[-X proxy_version]</span><br>	  <span class="hljs-comment">[-x proxy_address<span class="hljs-comment">[:port]</span>]</span> <span class="hljs-comment">[hostname]</span> <span class="hljs-comment">[port<span class="hljs-comment">[s]</span>]</span><br></code></pre></td></tr></table></figure>
+<h4 id="重新构建binwalk"><a href="#重新构建binwalk" class="headerlink" title="重新构建binwalk"></a>重新构建binwalk</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash">git <span class="hljs-built_in">clone</span> https://github.com/ReFirmLabs/binwalk.git<br><span class="hljs-built_in">cd</span> binwalk<br>sudo ./deps.sh<br>sudo python3 ./setup.py install<br></code></pre></td></tr></table></figure>
 
-<p>出现了类似上面的输出，说明我们的系统确实存在<code>nc</code>指令。那么我们只需要如下输入即可，因为我没有mac，所以就没有mac成功运行的截图了😭😭😭</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">nc &lt;ip&gt; &lt;port&gt; <br>//例如这次招新赛：nc 121.4.113.135 20001<br></code></pre></td></tr></table></figure>
+<h4 id="数据库安装"><a href="#数据库安装" class="headerlink" title="数据库安装"></a>数据库安装</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash">sudo apt-get install postgresql<br>sudo -u postgres createuser -P firmadyne，带密码firmadyne<br>sudo -u postgres createdb -O firmadyne firmware<br>sudo -u postgres psql -d firmware &lt; ./firmadyne/database/schema<br></code></pre></td></tr></table></figure>
 
-<p><img src="/img/article/nc/image-20220913101349105.png" srcset="/img/loading.gif" lazyload alt="开始做题吧"></p>
-<h2 id="此外"><a href="#此外" class="headerlink" title="此外"></a>此外</h2><p>在我们使用浏览器上网的时候，我们和服务器使用了 HTTP 协议进行连接。关于 HTTP 协议的更多细节，你需要自己上网搜索。一般来说，默认是 80 端口。</p>
-<p>我们可以使用 <code>nc</code>，尝试一次与网页服务器的连接，以百度为例。</p>
-<p>输入 <code>nc www.baidu.com 80</code>（或者 <code>ncat www.baidu.com 80</code>，或者 <code>./ncat www.baidu.com 80</code>，请根据以上的介绍自行修改），程序会等待你的输入。</p>
-<p>输入 <code>GET / HTTP/1.0</code>。这表示，我们使用 <code>HTTP/1.0</code> 这个协议版本，用 <code>GET</code> 的方式请求根 <code>/</code>。输入两下回车，代表我们的 HTTP 请求完成。如果你的网络畅通，百度的网页服务器会立刻返回大量信息，可以自行搜索，了解它们的含义。现在，你成功（在不使用浏览器的情况下）完成了一次与百度网站的连接！</p>
-<p><img src="/img/article/nc/nc-1024x596.png" srcset="/img/loading.gif" lazyload alt="Success!"></p>
-<p>如果你成功了，那么你可以开始愉快地完成我们的题目了！</p>
-<p>除了使用 <code>nc</code> 直接与服务器交互之外，也可以编程与服务器交互。例如：</p>
-<ul>
-<li>在信息安全类的竞赛中一个常用的工具是 Python 的 <a target="_blank" rel="noopener" href="https://docs.pwntools.com/en/stable/intro.html"><code>pwntools</code></a>，具体使用方法可以自行搜索了解。</li>
-</ul>
+<h4 id="设置Firmadyne"><a href="#设置Firmadyne" class="headerlink" title="设置Firmadyne"></a>设置Firmadyne</h4><p>替换config文件中的绝对文件路径</p>
+<p><img src="/img/article/iot-envir/image-20220913122554653.png" srcset="/img/loading.gif" lazyload alt="image-20220913122554653"></p>
+<p>构建二进制文件</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">cd</span> ./firmadyne; ./download.sh<br></code></pre></td></tr></table></figure>
+
+<p>安装所需的其他<code>qemu</code>相关依赖</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">sudo apt-get install qemu-system-arm qemu-system-mips qemu-system-x86 qemu-utils<br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="仿真Netgear-网络路由器-WNAP320测试"><a href="#仿真Netgear-网络路由器-WNAP320测试" class="headerlink" title="仿真Netgear(网络路由器) WNAP320测试"></a>仿真Netgear(网络路由器) WNAP320测试</h2><h4 id="固件包下载"><a href="#固件包下载" class="headerlink" title="固件包下载"></a>固件包下载</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">wget http://www.downloads.netgear.com/files/GDC/WNAP320/WNAP320%20Firmware%20Version%202.0.3.zip<br><br><span class="hljs-built_in">mv</span> WNAP320\ Firmware\ Version\ 2.0.3.zip WNAP320.zip  <br></code></pre></td></tr></table></figure>
+
+<p><img src="/img/article/iot-envir/image-20220913133114466.png" srcset="/img/loading.gif" lazyload alt="image-20220913133114466"></p>
+<h4 id="解压固件包"><a href="#解压固件包" class="headerlink" title="解压固件包"></a>解压固件包</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs bash">sudo python3 ./sources/extractor/extractor.py -b Netgear -sql 127.0.0.1 -np -nk <span class="hljs-string">&quot;WNAP320.zip&quot;</span> images<br><br><span class="hljs-comment">#参数解释</span><br>-b   <span class="hljs-string">&quot;brand 品牌&quot;</span><br>-sql <span class="hljs-string">&quot;连接本地数据库&quot;</span><br>-np  <span class="hljs-string">&quot;代表没有并行操作&quot;</span><br>-nk  <span class="hljs-string">&quot;代表不提取内核&quot;</span><br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>如出现No module named ‘magic’错误，可以尝试使用pip3 install python-magic解决</p>
+</blockquote>
+<p><img src="/img/article/iot-envir/image-20220913133817467.png" srcset="/img/loading.gif" lazyload alt="image-20220913133817467"></p>
+<h4 id="识别CPU框架"><a href="#识别CPU框架" class="headerlink" title="识别CPU框架"></a>识别CPU框架</h4><p>接着是执行<code>./script/getArch.sh</code>脚本来获取路由器固件的CPU架构。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">sudo ./scripts/getArch.sh ./images/1.tar.gz<br></code></pre></td></tr></table></figure>
+
+<p>焯，这里卡住了. 但是找到了一个issue: <a target="_blank" rel="noopener" href="https://github.com/attify/firmware-analysis-toolkit/issues/27">.&#x2F;images&#x2F;1.tar.gz: Cannot open: No such file or directory · Issue #27 · attify&#x2F;firmware-analysis-toolkit (github.com)</a></p>
+<p>暂时不知道怎么解决</p>
+<p><img src="/img/article/iot-envir/image-20220913143102694.png" srcset="/img/loading.gif" lazyload alt="image-20220913143102694"></p>
 
               
             </div>
@@ -340,8 +337,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>nc/ncat 使用教学</div>
-      <div>http://loora1n.github.io/2022/09/13/nc 是什么/</div>
+      <div>【IOT PWN】环境搭建</div>
+      <div>http://loora1n.github.io/2022/09/13/[IOT PWN] 环境搭建/</div>
     </div>
     <div class="license-meta">
       
@@ -383,18 +380,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2022/09/13/%5BIOT%20PWN%5D%20%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" title="【IOT PWN】环境搭建">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">【IOT PWN】环境搭建</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2022/09/12/%E9%9D%99%E6%80%81pwn/" title="如何安全快速部署多道静态端口PWN题目">
-                        <span class="hidden-mobile">如何安全快速部署多道静态端口PWN题目</span>
+                      <a href="/2022/09/13/nc%20%E6%98%AF%E4%BB%80%E4%B9%88/" title="nc/ncat 使用教学">
+                        <span class="hidden-mobile">nc/ncat 使用教学</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
