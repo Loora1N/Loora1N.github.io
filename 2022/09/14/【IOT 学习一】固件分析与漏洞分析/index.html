@@ -1,0 +1,853 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/icon/hai.png">
+  <link rel="icon" href="/img/icon/hai.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#80d1c8">
+  <meta name="author" content="Loora1N">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文内容是基于《物联网渗透测试》-美·亚伦古兹曼的学习总结  固件提取 在硬件厂商网站内直接下载  固件更新时，利用中间人攻击，转发代理流量  通过物理连接，直接从设备转储固件。固件存储为bin文件指令:  $ flashrom -p ft2232_spi:type&#x3D;232H -r spidump.bin  利用搜索引擎搜集固件，还可以利用 Google Hacking数据库搜索固件或设备">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【IOT 学习一】固件分析与漏洞利用">
+<meta property="og:url" content="http://loora1n.github.io/2022/09/14/%E3%80%90IOT%20%E5%AD%A6%E4%B9%A0%E4%B8%80%E3%80%91%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E4%B8%8E%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/index.html">
+<meta property="og:site_name" content="鷺雨のBlog">
+<meta property="og:description" content="本文内容是基于《物联网渗透测试》-美·亚伦古兹曼的学习总结  固件提取 在硬件厂商网站内直接下载  固件更新时，利用中间人攻击，转发代理流量  通过物理连接，直接从设备转储固件。固件存储为bin文件指令:  $ flashrom -p ft2232_spi:type&#x3D;232H -r spidump.bin  利用搜索引擎搜集固件，还可以利用 Google Hacking数据库搜索固件或设备">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://loora1n.github.io/img/article/iot-1/image-20220914135931400.png">
+<meta property="og:image" content="http://loora1n.github.io/img/article/iot-1/image-20220914134344716.png">
+<meta property="og:image" content="http://loora1n.github.io/img/article/iot-1/image-20220914135308518.png">
+<meta property="og:image" content="http://loora1n.github.io/img/article/iot-1/image-20220914145816127.png">
+<meta property="og:image" content="http://loora1n.github.io/img/article/iot-1/image-20220914192637485.png">
+<meta property="og:image" content="http://loora1n.github.io/img/article/iot-1/image-20220914192719147.png">
+<meta property="og:image" content="http://loora1n.github.io/img/article/iot-1/image-20220914194404354.png">
+<meta property="og:image" content="http://loora1n.github.io/img/article/iot-1/image-20220914195009565.png">
+<meta property="og:image" content="http://loora1n.github.io/img/article/iot-1/image-20220914195346782.png">
+<meta property="og:image" content="http://loora1n.github.io/img/article/iot-1/image-20220914195118433.png">
+<meta property="og:image" content="http://loora1n.github.io/img/article/iot-1/image-20220914202334231.png">
+<meta property="og:image" content="http://loora1n.github.io/img/article/iot-1/image-20220914204146429.png">
+<meta property="og:image" content="http://loora1n.github.io/img/article/iot-1/image-20220914214159035.png">
+<meta property="og:image" content="http://loora1n.github.io/img/article/iot-1/image-20220914214951502.png">
+<meta property="og:image" content="http://loora1n.github.io/img/article/iot-1/image-20220914215128332.png">
+<meta property="og:image" content="http://loora1n.github.io/img/article/iot-1/image-20220914223737117.png">
+<meta property="og:image" content="http://loora1n.github.io/img/article/iot-1/image-20220914223809561.png">
+<meta property="og:image" content="http://loora1n.github.io/img/article/iot-1/image-20220914231714471.png">
+<meta property="og:image" content="http://loora1n.github.io/img/article/iot-1/image-20220914231829944.png">
+<meta property="og:image" content="http://loora1n.github.io/img/article/iot-1/image-20220914232237866.png">
+<meta property="og:image" content="http://loora1n.github.io/img/article/iot-1/image-20220914232710172.png">
+<meta property="og:image" content="http://loora1n.github.io/img/article/iot-1/image-20220914212925067.png">
+<meta property="article:published_time" content="2022-09-14T15:31:24.023Z">
+<meta property="article:modified_time" content="2022-09-14T15:31:24.023Z">
+<meta property="article:author" content="Loora1N">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://loora1n.github.io/img/article/iot-1/image-20220914135931400.png">
+  
+  
+  
+  <title>【IOT 学习一】固件分析与漏洞利用 - 鷺雨のBlog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"loora1n.github.io","root":"/","version":"1.9.1","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"7FyeJtpFNeVe68sybCfYzEW9-MdYXbMMI","app_key":"6eOvW7ArePsBmdpA5pwVSuzQ","server_url":null,"path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>鷺雨のBlog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/bg/5.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="【IOT 学习一】固件分析与漏洞利用"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-09-14 23:31" pubdate>
+          2022年9月14日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3.1k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          26 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          阅读量 <span id="leancloud-page-views"></span>
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">【IOT 学习一】固件分析与漏洞利用</h1>
+            
+            <div class="markdown-body">
+              
+              <blockquote>
+<p>本文内容是基于《物联网渗透测试》-美·亚伦古兹曼的学习总结</p>
+</blockquote>
+<h2 id="固件提取"><a href="#固件提取" class="headerlink" title="固件提取"></a>固件提取</h2><ul>
+<li><p>在硬件厂商网站内直接下载</p>
+</li>
+<li><p>固件更新时，利用中间人攻击，转发代理流量</p>
+</li>
+<li><p>通过物理连接，直接从设备转储固件。固件存储为bin文件指令:</p>
+<p> <code>$ flashrom -p ft2232_spi:type=232H -r spidump.bin</code></p>
+</li>
+<li><p>利用搜索引擎搜集固件，还可以利用 <a target="_blank" rel="noopener" href="https://www.exploit-db.com/google-hacking-database">Google Hacking数据库</a>搜索固件或设备</p>
+</li>
+</ul>
+<p><img src="/img/article/iot-1/image-20220914135931400.png" srcset="/img/loading.gif" lazyload alt="image-20220914135931400"></p>
+<h3 id="MITM转发代理流量流程"><a href="#MITM转发代理流量流程" class="headerlink" title="MITM转发代理流量流程"></a>MITM转发代理流量流程</h3><blockquote>
+<p>接下来，我们简要介绍了如何使用Kali Linux、SSLstrip、 Ettercap和Wireshark搭建MITM测试环境，以在设备更新期间捕获设备 流量</p>
+</blockquote>
+<ol>
+<li><p>启用IP转发功能<code>echo 1 &gt; /proc/sys/net/ipv4/ip_forward</code></p>
+</li>
+<li><p>配置iptables，将目的端口80的流量重定向至SSLstrip监听的端口10000。<code>iptables -t nat -p tcp -A PREROUTING --dport 80 -j REDIRECT --to-port 10000</code></p>
+</li>
+<li><p>启动SSLstrips: <code>sslstrip -a</code></p>
+</li>
+<li><p>启动Ettercap GUI：<code>ettercap -G</code></p>
+</li>
+</ol>
+<p><img src="/img/article/iot-1/image-20220914134344716.png" srcset="/img/loading.gif" lazyload alt="image-20220914134344716"></p>
+<ol start="5">
+<li>在<code>primary interface</code>选择要监听的设备，这里选择网卡<code>eth0</code></li>
+<li>启动Wireshark程序，对<code>eth0</code>进行抓包</li>
+</ol>
+<p><img src="/img/article/iot-1/image-20220914135308518.png" srcset="/img/loading.gif" lazyload alt="image-20220914135308518"></p>
+<ol start="7">
+<li>根据实际需求过滤关注的报文</li>
+</ol>
+<h2 id="固件文件分析"><a href="#固件文件分析" class="headerlink" title="固件文件分析"></a>固件文件分析</h2><blockquote>
+<p>一般直接使用 <code>binwalk -eM file.bin</code> 即可分解文件</p>
+</blockquote>
+<h3 id="D-Link-923B固件文件系统获取"><a href="#D-Link-923B固件文件系统获取" class="headerlink" title="D-Link 923B固件文件系统获取"></a>D-Link 923B固件文件系统获取</h3><blockquote>
+<p>固件压缩包<a target="_blank" rel="noopener" href="https://media.dlink.eu/ftp/products/dwr/dwr-932/driver_software/DWR-932_fw_revB_2_02_eu_en_20150709.zip">下载链接</a>，版本号为DWR-932_fw_revB_2_02_eu_en_20150709。安全研究员Gianni Carabelli和Pierre Kim已经在这款固件中挖掘出了漏洞，这里我们只是用于练习</p>
+</blockquote>
+<p>首先是从固件中提取文件系统，内有加密过的zip压缩包，可以使用<code>fcrackzip</code>进行密码爆破，这里省略爆破过程，直接输入密码 <strong>beUT9Z</strong></p>
+<p><img src="/img/article/iot-1/image-20220914145816127.png" srcset="/img/loading.gif" lazyload alt="压缩包已加密"></p>
+<p>接下来可以使用针对yaffs2格式 的工具解压文件系统来提取2K-mdm-image-mdm9625.yaffs2文件，也可以直接通过Binwalk来完成提取工作。</p>
+<blockquote>
+<p>这里我采用的是unyaffs，下载链接 <a target="_blank" rel="noopener" href="https://code.google.com/archive/p/unyaffs/downloads">Google Code Archive - Long-term storage for Google Code Project Hosting.</a></p>
+</blockquote>
+<p>下载可执行程序后，使用<code>./unyaffs file.yaffs2</code>指令即可</p>
+<p><img src="/img/article/iot-1/image-20220914192637485.png" srcset="/img/loading.gif" lazyload alt="image-20220914192637485"></p>
+<p><img src="/img/article/iot-1/image-20220914192719147.png" srcset="/img/loading.gif" lazyload alt="解压出的文件系统"></p>
+<h3 id="手动信息挖掘"><a href="#手动信息挖掘" class="headerlink" title="手动信息挖掘"></a>手动信息挖掘</h3><p>然后我们需要在这个文件目录中查找有用的信息，如下</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs bash">find . -name <span class="hljs-string">&quot;*.conf&quot;</span><br>find . -name <span class="hljs-string">&quot;shadow&quot;</span><br>find . -name <span class="hljs-string">&quot;passwd&quot;</span><br>find . -name <span class="hljs-string">&quot;*config*&quot;</span><br>find . -name <span class="hljs-string">&quot;*history*&quot;</span><br>find . -name <span class="hljs-string">&quot;*ssh*_config*&quot;</span><br>find . -name <span class="hljs-string">&quot;*ssh_host*&quot;</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/img/article/iot-1/image-20220914194404354.png" srcset="/img/loading.gif" lazyload alt="搜索示例"></p>
+<p>在<code>inadyn-mt.conf </code>文件中存储了路由器的no-IP配置信息，包括用于访问网站 <a target="_blank" rel="noopener" href="https://www.no-ip.com/">no-ip</a>的用户名和口令</p>
+<p><img src="/img/article/iot-1/image-20220914195009565.png" srcset="/img/loading.gif" lazyload alt="image-20220914195009565"></p>
+<p>查看shadow文件</p>
+<p><img src="/img/article/iot-1/image-20220914195346782.png" srcset="/img/loading.gif" lazyload alt="image-20220914195346782"></p>
+<p>查看passwd文件</p>
+<p><img src="/img/article/iot-1/image-20220914195118433.png" srcset="/img/loading.gif" lazyload alt="image-20220914195118433"></p>
+<h3 id="利用Firmwalker搜索敏感信息"><a href="#利用Firmwalker搜索敏感信息" class="headerlink" title="利用Firmwalker搜索敏感信息"></a>利用Firmwalker搜索敏感信息</h3><p>安装firmwalker</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">npm i -g eslint                                                                       <br><br>git <span class="hljs-built_in">clone</span> https://github.com/craigz28/firmwalker.git <br></code></pre></td></tr></table></figure>
+
+<p>使用方式</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">./firmwalker.sh &#123;floder path&#125;<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Firmwalker脚本能够识别出多种敏感信息，包括二进制文件、 证书、IP地址、私钥等，同时将输出结果都保存在<strong>firmwalker.txt</strong>文 件之中</p>
+</blockquote>
+<p><img src="/img/article/iot-1/image-20220914202334231.png" srcset="/img/loading.gif" lazyload alt="image-20220914202334231"></p>
+<p><img src="/img/article/iot-1/image-20220914204146429.png" srcset="/img/loading.gif" lazyload alt="firmwalker.txt"></p>
+<h3 id="查看启动项"><a href="#查看启动项" class="headerlink" title="查看启动项"></a>查看启动项</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">cd</span> /etc/init.d<br></code></pre></td></tr></table></figure>
+
+<p><img src="/img/article/iot-1/image-20220914214159035.png" srcset="/img/loading.gif" lazyload alt="image-20220914214159035"></p>
+<p>这里可以查看 <strong>start_appmgr</strong>脚本，一般来说mgr就是主控程序的意思  </p>
+<p><img src="/img/article/iot-1/image-20220914214951502.png" srcset="/img/loading.gif" lazyload alt="image-20220914214951502"></p>
+<p>可以看到该脚本在开机时会以服务的形式运行<code>/bin/appmgr</code>程序，同时该脚本还会开启<strong>telnet</strong>服务</p>
+<p><img src="/img/article/iot-1/image-20220914215128332.png" srcset="/img/loading.gif" lazyload alt="image-20220914215128332"></p>
+<h3 id="appmgr分析"><a href="#appmgr分析" class="headerlink" title="appmgr分析"></a>appmgr分析</h3><p>用IDA PRO打开<code>/bin/appmg</code>程序进行逆向分析，可以发现有一个线程会持续监听 0.0.0.0:39889（UDP）（这个IP和端口还是没有确定出来），并等待传入控制命令,如果某个用户向目标路由器发送了一个 <code>HELODBG</code> 字符串，那么路由器将会执行 <code>/sbin/telnetd -l /bin/sh</code> ，并允许这名用户在未经身份验证的情况下以 root 用户的身份登录路由器。</p>
+<blockquote>
+<p>这里的-11877转换二进制后，末尾两字节为port，前面都是0，末尾字节为<strong>\xD1\x9B</strong>注意小段存储方式，则port号为<strong>9BD1</strong>即<strong>39889</strong></p>
+</blockquote>
+<p><img src="/img/article/iot-1/image-20220914223737117.png" srcset="/img/loading.gif" lazyload alt="image-20220914223737117"></p>
+<p><img src="/img/article/iot-1/image-20220914223809561.png" srcset="/img/loading.gif" lazyload alt="image-20220914223809561"></p>
+<p>搜索 <strong>mod_sysadm_config_passwd</strong> 函数，可以得到admin默认密码</p>
+<p><img src="/img/article/iot-1/image-20220914231714471.png" srcset="/img/loading.gif" lazyload alt="image-20220914231714471"></p>
+<p>路由器的管理员账号。设备的管理员账号默认为“admin”，而密码同样也是“admin”。</p>
+<p>搜索 <strong>wifi_get_default_wps_pin</strong> 函数</p>
+<p><img src="/img/article/iot-1/image-20220914231829944.png" srcset="/img/loading.gif" lazyload alt="image-20220914231829944"></p>
+<p>默认配置下，该路由器 WPS 系统的 PIN 码永远都是 <code>28296607</code> 因为这个 PIN 码是硬编码在 <code>/bin/appmgr</code> 程序中</p>
+<h3 id="fotad-分析"><a href="#fotad-分析" class="headerlink" title="fotad 分析"></a>fotad 分析</h3><p>路由器与 FOTA 服务器进行通信时的凭证数据硬编码在 <code>/sbin/fotad</code> 代码中，我们用 IDA 进行分析</p>
+<p>搜索 <code>sub_CAAC </code>函数,可以发现被 base64 过的凭证</p>
+<p><img src="/img/article/iot-1/image-20220914232237866.png" srcset="/img/loading.gif" lazyload alt="image-20220914232237866"></p>
+<p>用户&#x2F;密码如下</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs routeros">cWRwYzpxZHBj        qdpc:qdpc<br>cWRwZTpxZHBl        qdpe:qdpe<br><span class="hljs-attribute">cWRwOnFkcA</span>==        qdp:qdp<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="UPnP安全问题"><a href="#UPnP安全问题" class="headerlink" title="UPnP安全问题"></a>UPnP安全问题</h3><p>UPnP 允许用户动态添加防火墙规则。因为这种做法会带来一定的安全风险，因此设备通常都会对这种操作进行限制，以避免不受信任的客户端添加不安全的防火墙规则。</p>
+<p>UPnP 的不安全性早在2006年就已经是众所周知的事情了。而该路由器中 UPnP 程序的安全等级仍然非常的低，处于局域网内的攻击者可以随意修改路由器的端口转发规则。</p>
+<p>文件 <code>/var/miniupnpd.conf</code> 是由 <code>/bin/appmgr</code> 程序生成的：</p>
+<p>搜索 sub_2AE0C 函数</p>
+<p><img src="/img/article/iot-1/image-20220914232710172.png" srcset="/img/loading.gif" lazyload alt="image-20220914232710172"></p>
+<p>该程序会生成 <code>/var/miniupnpd.conf</code>：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs ini"><span class="hljs-attr">ext_ifname</span>=rmnet0<br><span class="hljs-attr">listening_ip</span>=bridge0<br><span class="hljs-attr">port</span>=<span class="hljs-number">2869</span><br><span class="hljs-attr">enable_natpmp</span>=<span class="hljs-literal">yes</span><br><span class="hljs-attr">enable_upnp</span>=<span class="hljs-literal">yes</span><br><span class="hljs-attr">bitrate_up</span>=<span class="hljs-number">14000000</span><br><span class="hljs-attr">bitrate_down</span>=<span class="hljs-number">14000000</span><br><span class="hljs-attr">secure_mode</span>=<span class="hljs-literal">no</span>      <span class="hljs-comment"># &quot;secure&quot; mode : when enabled, UPnP client are allowed to add mappings only to their IP.</span><br><span class="hljs-attr">presentation_url</span>=http://<span class="hljs-number">192.168</span>.<span class="hljs-number">1.1</span><br><span class="hljs-attr">system_uptime</span>=<span class="hljs-literal">yes</span><br><span class="hljs-attr">notify_interval</span>=<span class="hljs-number">30</span><br><span class="hljs-attr">upnp_forward_chain</span>=MINIUPNPD<br><span class="hljs-attr">upnp_nat_chain</span>=MINIUPNPD<br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="基于固件仿真的动态分析"><a href="#基于固件仿真的动态分析" class="headerlink" title="基于固件仿真的动态分析"></a>基于固件仿真的动态分析</h2><h3 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h3><p>安装<strong>FAT(Firmware-Analysis-Toolkit)<strong>，执行以下命令即可，但需注意环境需同时具有</strong>python2</strong>和<strong>python3</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">git <span class="hljs-built_in">clone</span> https://github.com/attify/firmware-analysis-toolkit<br><span class="hljs-built_in">cd</span> firmware-analysis-toolkit<br>./setup.sh<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Kali和Ubuntu安装都出现了一些问题人麻了</p>
+</blockquote>
+<p><img src="/img/article/iot-1/image-20220914212925067.png" srcset="/img/loading.gif" lazyload alt="Ubuntu安装错误"></p>
+<p>Kali则是报找不到<strong>Package ‘lsb-core’ has no installation candidate</strong></p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>【IOT 学习一】固件分析与漏洞利用</div>
+      <div>http://loora1n.github.io/2022/09/14/【IOT 学习一】固件分析与漏洞分析/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Loora1N</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年9月14日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/09/14/firmwalker-DLINK923B/" title="D-Link 923B路由器敏感信息搜集">
+                        <span class="hidden-mobile">D-Link 923B路由器敏感信息搜集</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#comments', function() {
+      var light = 'github-light';
+      var dark = 'github-dark';
+      var schema = document.documentElement.getAttribute('data-user-color-scheme');
+      if (schema === 'dark') {
+        schema = dark;
+      } else {
+        schema = light;
+      }
+      window.UtterancesThemeLight = light;
+      window.UtterancesThemeDark = dark;
+      var s = document.createElement('script');
+      s.setAttribute('src', 'https://utteranc.es/client.js');
+      s.setAttribute('repo', 'loora1n/comment');
+      s.setAttribute('issue-term', 'pathname');
+      
+      s.setAttribute('label', 'utterances');
+      
+      s.setAttribute('theme', schema);
+      s.setAttribute('crossorigin', 'anonymous');
+      document.getElementById('comments').appendChild(s);
+    })
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://github.com/Loora1N" target="_blank" rel="nofollow noopener"><span>Loora1N</span></a> <i class="iconfont icon-love"></i> <a href="https://space.bilibili.com/33242548?spm_id_from=333.1007.0.0" target="_blank" rel="nofollow noopener"><span>鷺雨君</span></a>
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"right","width":250,"height":500},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>

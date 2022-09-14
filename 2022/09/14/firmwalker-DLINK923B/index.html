@@ -1,0 +1,778 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/icon/hai.png">
+  <link rel="icon" href="/img/icon/hai.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#80d1c8">
+  <meta name="author" content="Loora1N">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Firmware Directory&#x2F;root&#x2F;iot&#x2F;D-LINK923B&#x2F;2k&#x2F;rootSearch for password files##################################### passwdt&#x2F;bin&#x2F;passwdt&#x2F;etc&#x2F;passwdt&#x2F;var&#x2F;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="D-Link 923B路由器敏感信息搜集">
+<meta property="og:url" content="http://loora1n.github.io/2022/09/14/firmwalker-DLINK923B/index.html">
+<meta property="og:site_name" content="鷺雨のBlog">
+<meta property="og:description" content="Firmware Directory&#x2F;root&#x2F;iot&#x2F;D-LINK923B&#x2F;2k&#x2F;rootSearch for password files##################################### passwdt&#x2F;bin&#x2F;passwdt&#x2F;etc&#x2F;passwdt&#x2F;var&#x2F;">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-09-14T15:30:36.146Z">
+<meta property="article:modified_time" content="2022-09-14T15:30:36.146Z">
+<meta property="article:author" content="Loora1N">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>D-Link 923B路由器敏感信息搜集 - 鷺雨のBlog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"loora1n.github.io","root":"/","version":"1.9.1","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"7FyeJtpFNeVe68sybCfYzEW9-MdYXbMMI","app_key":"6eOvW7ArePsBmdpA5pwVSuzQ","server_url":null,"path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>鷺雨のBlog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/bg/5.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="D-Link 923B路由器敏感信息搜集"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-09-14 23:30" pubdate>
+          2022年9月14日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          16k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          136 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          阅读量 <span id="leancloud-page-views"></span>
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">D-Link 923B路由器敏感信息搜集</h1>
+            
+            <div class="markdown-body">
+              
+              <p><em><strong>Firmware Directory</strong></em><br>&#x2F;root&#x2F;iot&#x2F;D-LINK923B&#x2F;2k&#x2F;root<br><em><strong>Search for password files</strong></em><br>##################################### passwd<br>t&#x2F;bin&#x2F;passwd<br>t&#x2F;etc&#x2F;passwd<br>t&#x2F;var&#x2F;lib&#x2F;opkg&#x2F;alternatives&#x2F;passwd</p>
+<p>##################################### shadow<br>t&#x2F;etc&#x2F;shadow</p>
+<p>##################################### *.psk</p>
+<p><em><strong>Search for Unix-MD5 hashes</strong></em></p>
+<p><em><strong>Search for SSL related files</strong></em><br>##################################### *.crt</p>
+<p>##################################### *.pem</p>
+<p>##################################### *.cer</p>
+<p>##################################### *.p7b</p>
+<p>##################################### *.p12</p>
+<p>##################################### *.key</p>
+<p><em><strong>Search for SSH related files</strong></em><br>##################################### authorized_keys</p>
+<p>##################################### <em>authorized_keys</em></p>
+<p>##################################### host_key</p>
+<p>##################################### <em>host_key</em></p>
+<p>##################################### id_rsa</p>
+<p>##################################### <em>id_rsa</em></p>
+<p>##################################### id_dsa</p>
+<p>##################################### <em>id_dsa</em></p>
+<p>##################################### *.pub</p>
+<p><em><strong>Search for files</strong></em><br>##################################### *.conf<br>t&#x2F;etc&#x2F;wpa_supplicant.conf<br>t&#x2F;etc&#x2F;avahi&#x2F;avahi-daemon.conf<br>t&#x2F;etc&#x2F;pimd.conf<br>t&#x2F;etc&#x2F;mdev.conf<br>t&#x2F;etc&#x2F;AR6004_AP1_hostapd.conf<br>t&#x2F;etc&#x2F;inadyn-mt.conf<br>t&#x2F;etc&#x2F;dbus-1&#x2F;system.d&#x2F;avahi-dbus.conf<br>t&#x2F;etc&#x2F;dbus-1&#x2F;session.conf<br>t&#x2F;etc&#x2F;dbus-1&#x2F;system.conf<br>t&#x2F;etc&#x2F;hostapd.conf<br>t&#x2F;etc&#x2F;host.conf<br>t&#x2F;etc&#x2F;AR6003_hostapd.conf<br>t&#x2F;etc&#x2F;igd&#x2F;miniupnpd.conf<br>t&#x2F;etc&#x2F;nsswitch.conf<br>t&#x2F;etc&#x2F;AR6004_hostapd.conf<br>t&#x2F;etc&#x2F;radvd.conf<br>t&#x2F;etc&#x2F;AR6003_AP1_hostapd.conf</p>
+<p>##################################### *.cfg</p>
+<p>##################################### *.ini</p>
+<p><em><strong>Search for database related files</strong></em><br>##################################### *.db</p>
+<p>##################################### *.sqlite</p>
+<p>##################################### *.sqlite3</p>
+<p><em><strong>Search for shell scripts</strong></em><br>##################################### shell scripts<br>t&#x2F;etc&#x2F;rc4.d&#x2F;S99rmnologin.sh<br>t&#x2F;etc&#x2F;mdev&#x2F;usb.sh<br>t&#x2F;etc&#x2F;mdev&#x2F;automountsdcard.sh<br>t&#x2F;etc&#x2F;mdev&#x2F;automounthdd.sh<br>t&#x2F;etc&#x2F;mdev&#x2F;find-touchscreen.sh<br>t&#x2F;etc&#x2F;bash_completion.d&#x2F;gdbus-bash-completion.sh<br>t&#x2F;etc&#x2F;bash_completion.d&#x2F;gsettings-bash-completion.sh<br>t&#x2F;etc&#x2F;rc2.d&#x2F;S99rmnologin.sh<br>t&#x2F;etc&#x2F;rcS.d&#x2F;S04modutils.sh<br>t&#x2F;etc&#x2F;rcS.d&#x2F;S02sysfs.sh<br>t&#x2F;etc&#x2F;rcS.d&#x2F;S38devpts.sh<br>t&#x2F;etc&#x2F;rcS.d&#x2F;S06alignment.sh<br>t&#x2F;etc&#x2F;rcS.d&#x2F;S45mountnfs.sh<br>t&#x2F;etc&#x2F;rcS.d&#x2F;S39hostname.sh<br>t&#x2F;etc&#x2F;rcS.d&#x2F;S10checkroot.sh<br>t&#x2F;etc&#x2F;rcS.d&#x2F;S02banner.sh<br>t&#x2F;etc&#x2F;rcS.d&#x2F;S37populate-volatile.sh<br>t&#x2F;etc&#x2F;rcS.d&#x2F;S35mountall.sh<br>t&#x2F;etc&#x2F;rcS.d&#x2F;S55bootmisc.sh<br>t&#x2F;etc&#x2F;rcS.d&#x2F;S01keymap.sh<br>t&#x2F;etc&#x2F;rc0.d&#x2F;S25save-rtc.sh<br>t&#x2F;etc&#x2F;rc0.d&#x2F;S31umountnfs.sh<br>t&#x2F;etc&#x2F;rc6.d&#x2F;S25save-rtc.sh<br>t&#x2F;etc&#x2F;rc6.d&#x2F;S31umountnfs.sh<br>t&#x2F;etc&#x2F;init.d&#x2F;modutils.sh<br>t&#x2F;etc&#x2F;init.d&#x2F;banner.sh<br>t&#x2F;etc&#x2F;init.d&#x2F;devpts.sh<br>t&#x2F;etc&#x2F;init.d&#x2F;checkroot.sh<br>t&#x2F;etc&#x2F;init.d&#x2F;hostname.sh<br>t&#x2F;etc&#x2F;init.d&#x2F;bootmisc.sh<br>t&#x2F;etc&#x2F;init.d&#x2F;save-rtc.sh<br>t&#x2F;etc&#x2F;init.d&#x2F;sysfs.sh<br>t&#x2F;etc&#x2F;init.d&#x2F;set-hwver.sh<br>t&#x2F;etc&#x2F;init.d&#x2F;mountnfs.sh<br>t&#x2F;etc&#x2F;init.d&#x2F;keymap.sh<br>t&#x2F;etc&#x2F;init.d&#x2F;hwclock.sh<br>t&#x2F;etc&#x2F;init.d&#x2F;mountall.sh<br>t&#x2F;etc&#x2F;init.d&#x2F;umountnfs.sh<br>t&#x2F;etc&#x2F;init.d&#x2F;alignment.sh<br>t&#x2F;etc&#x2F;init.d&#x2F;populate-volatile.sh<br>t&#x2F;etc&#x2F;init.d&#x2F;rmnologin.sh<br>t&#x2F;etc&#x2F;rc5.d&#x2F;S99rmnologin.sh<br>t&#x2F;etc&#x2F;qdt_rc0clean.sh<br>t&#x2F;etc&#x2F;rc3.d&#x2F;S99rmnologin.sh</p>
+<p><em><strong>Search for other .bin files</strong></em><br>##################################### bin files<br>t&#x2F;lib&#x2F;firmware&#x2F;ath6k&#x2F;AR6004&#x2F;hw3.0&#x2F;bdata.bin<br>t&#x2F;lib&#x2F;firmware&#x2F;ath6k&#x2F;AR6004&#x2F;hw3.0&#x2F;otp.bin<br>t&#x2F;lib&#x2F;firmware&#x2F;ath6k&#x2F;AR6004&#x2F;hw3.0&#x2F;fw-3.bin<br>t&#x2F;lib&#x2F;firmware&#x2F;ath6k&#x2F;AR6004&#x2F;hw3.0&#x2F;utf.bin<br>t&#x2F;lib&#x2F;firmware&#x2F;ath6k&#x2F;AR6003&#x2F;hw2.1.1&#x2F;otp.bin<br>t&#x2F;lib&#x2F;firmware&#x2F;ath6k&#x2F;AR6003&#x2F;hw2.1.1&#x2F;bdata.SD31.bin<br>t&#x2F;lib&#x2F;firmware&#x2F;ath6k&#x2F;AR6003&#x2F;hw2.1.1&#x2F;athtcmd_ram.bin<br>t&#x2F;lib&#x2F;firmware&#x2F;ath6k&#x2F;AR6003&#x2F;hw2.1.1&#x2F;data.patch.hw3_0.bin<br>t&#x2F;lib&#x2F;firmware&#x2F;ath6k&#x2F;AR6003&#x2F;hw2.1.1&#x2F;athwlan_router.bin</p>
+<p><em><strong>Search for patterns in files</strong></em><br>——————– upgrade ——————–<br>t&#x2F;sbin&#x2F;fotad<br>t&#x2F;bin&#x2F;lcdd<br>t&#x2F;bin&#x2F;qmiweb<br>t&#x2F;bin&#x2F;tinyproxy<br>t&#x2F;bin&#x2F;agent<br>t&#x2F;bin&#x2F;lcdtest<br>t&#x2F;var&#x2F;lib&#x2F;opkg&#x2F;info&#x2F;busybox-syslog.prerm</p>
+<p>——————– admin ——————–<br>t&#x2F;bin&#x2F;amapi<br>t&#x2F;bin&#x2F;tr069<br>t&#x2F;bin&#x2F;qmiweb<br>t&#x2F;bin&#x2F;appmgr<br>t&#x2F;bin&#x2F;agent<br>t&#x2F;etc&#x2F;services<br>t&#x2F;etc&#x2F;passwd<br>t&#x2F;etc&#x2F;passwd-<br>t&#x2F;lib&#x2F;libamapi.so<br>t&#x2F;WEBSERVER&#x2F;www&#x2F;cgi-bin&#x2F;qcmap_auth<br>t&#x2F;WEBSERVER&#x2F;www&#x2F;QCMAP_login.html<br>t&#x2F;var&#x2F;lib&#x2F;opkg&#x2F;info&#x2F;base-passwd.preinst</p>
+<p>——————– root ——————–<br>t&#x2F;sbin&#x2F;ip.iproute2<br>t&#x2F;sbin&#x2F;readprofile.util-linux<br>t&#x2F;sbin&#x2F;shutdown.sysvinit<br>t&#x2F;sbin&#x2F;fdisk.util-linux<br>t&#x2F;sbin&#x2F;dnsmasq_qmi<br>t&#x2F;sbin&#x2F;swapon.util-linux<br>t&#x2F;sbin&#x2F;dlna6_dms<br>t&#x2F;sbin&#x2F;adbd<br>t&#x2F;sbin&#x2F;tc<br>t&#x2F;sbin&#x2F;miniupnpd<br>t&#x2F;sbin&#x2F;ddns_qmi<br>t&#x2F;sbin&#x2F;ctrlaltdel<br>t&#x2F;sbin&#x2F;killall5<br>t&#x2F;sbin&#x2F;cfdisk<br>t&#x2F;bin&#x2F;tinylogin<br>t&#x2F;bin&#x2F;busybox<br>t&#x2F;bin&#x2F;qmiweb<br>t&#x2F;bin&#x2F;mount.util-linux<br>t&#x2F;bin&#x2F;radvd<br>t&#x2F;bin&#x2F;login.shadow<br>t&#x2F;bin&#x2F;tinyproxy<br>t&#x2F;bin&#x2F;ramond<br>t&#x2F;bin&#x2F;agent<br>t&#x2F;bin&#x2F;umount.util-linux<br>t&#x2F;etc&#x2F;login.defs<br>t&#x2F;etc&#x2F;default&#x2F;rcS<br>t&#x2F;etc&#x2F;default&#x2F;volatiles&#x2F;00_core<br>t&#x2F;etc&#x2F;shadow<br>t&#x2F;etc&#x2F;securetty<br>t&#x2F;etc&#x2F;dbus-1&#x2F;system.d&#x2F;avahi-dbus.conf<br>t&#x2F;etc&#x2F;limits<br>t&#x2F;etc&#x2F;init.d&#x2F;checkroot.sh<br>t&#x2F;etc&#x2F;init.d&#x2F;bootmisc.sh<br>t&#x2F;etc&#x2F;init.d&#x2F;usb<br>t&#x2F;etc&#x2F;init.d&#x2F;hwclock.sh<br>t&#x2F;etc&#x2F;init.d&#x2F;power_config<br>t&#x2F;etc&#x2F;init.d&#x2F;avahi-daemon<br>t&#x2F;etc&#x2F;group<br>t&#x2F;etc&#x2F;udhcpc.d&#x2F;udhcpc.script<br>t&#x2F;etc&#x2F;gshadow<br>t&#x2F;etc&#x2F;passwd<br>t&#x2F;etc&#x2F;group-<br>t&#x2F;etc&#x2F;passwd-<br>t&#x2F;lib&#x2F;libjansson.so<br>t&#x2F;lib&#x2F;libmount.so.1<br>t&#x2F;lib&#x2F;libqutils.so<br>t&#x2F;lib&#x2F;libblkid.so.1<br>t&#x2F;var&#x2F;lib&#x2F;opkg&#x2F;info&#x2F;shadow.postinst<br>t&#x2F;var&#x2F;lib&#x2F;opkg&#x2F;info&#x2F;dbus-1.preinst<br>t&#x2F;var&#x2F;lib&#x2F;opkg&#x2F;info&#x2F;base-passwd.preinst<br>t&#x2F;var&#x2F;lib&#x2F;opkg&#x2F;info&#x2F;base-passwd.control<br>t&#x2F;var&#x2F;lib&#x2F;opkg&#x2F;info&#x2F;avahi-daemon.preinst<br>t&#x2F;var&#x2F;lib&#x2F;opkg&#x2F;info&#x2F;base-files.list</p>
+<p>——————– password ——————–<br>t&#x2F;sbin&#x2F;losetup.util-linux<br>t&#x2F;sbin&#x2F;ddns_qmi<br>t&#x2F;bin&#x2F;amapi<br>t&#x2F;bin&#x2F;tr069<br>t&#x2F;bin&#x2F;tinylogin<br>t&#x2F;bin&#x2F;busybox<br>t&#x2F;bin&#x2F;qmiweb<br>t&#x2F;bin&#x2F;mount.util-linux<br>t&#x2F;bin&#x2F;login.shadow<br>t&#x2F;bin&#x2F;appmgr<br>t&#x2F;bin&#x2F;agent<br>t&#x2F;bin&#x2F;qmodmd<br>t&#x2F;bin&#x2F;umount.util-linux<br>t&#x2F;etc&#x2F;login.defs<br>t&#x2F;etc&#x2F;tr069&#x2F;param.xml<br>t&#x2F;etc&#x2F;tr069&#x2F;igd_10.xml<br>t&#x2F;etc&#x2F;inadyn-mt.conf<br>t&#x2F;lib&#x2F;libc.so.6<br>t&#x2F;lib&#x2F;libqutils.so<br>t&#x2F;WEBSERVER&#x2F;www&#x2F;QCMAP_Account.html<br>t&#x2F;WEBSERVER&#x2F;www&#x2F;QCMAP_login.html<br>t&#x2F;WEBSERVER&#x2F;www&#x2F;QCMAP_Account_Help.html<br>t&#x2F;var&#x2F;lib&#x2F;opkg&#x2F;info&#x2F;base-passwd.control<br>t&#x2F;var&#x2F;lib&#x2F;opkg&#x2F;info&#x2F;avahi-autoipd.postinst<br>t&#x2F;var&#x2F;lib&#x2F;opkg&#x2F;info&#x2F;shadow.control<br>t&#x2F;disk&#x2F;internal-storage.iso</p>
+<p>——————– passwd ——————–<br>t&#x2F;sbin&#x2F;vipw.shadow<br>t&#x2F;bin&#x2F;amapi<br>t&#x2F;bin&#x2F;tinylogin<br>t&#x2F;bin&#x2F;amgrevt<br>t&#x2F;bin&#x2F;busybox<br>t&#x2F;bin&#x2F;qmiweb<br>t&#x2F;bin&#x2F;login.shadow<br>t&#x2F;bin&#x2F;appmgr<br>t&#x2F;bin&#x2F;agent<br>t&#x2F;bin&#x2F;qmodmd<br>t&#x2F;etc&#x2F;login.defs<br>t&#x2F;etc&#x2F;services<br>t&#x2F;etc&#x2F;init.d&#x2F;populate-volatile.sh<br>t&#x2F;etc&#x2F;nsswitch.conf<br>t&#x2F;etc&#x2F;busybox.links<br>t&#x2F;lib&#x2F;libc.so.6<br>t&#x2F;lib&#x2F;libnss_compat.so.2<br>t&#x2F;lib&#x2F;libqutils.so<br>t&#x2F;lib&#x2F;libnss_files.so.2<br>t&#x2F;lib&#x2F;libamapi.so<br>t&#x2F;var&#x2F;lib&#x2F;opkg&#x2F;alternatives&#x2F;passwd<br>t&#x2F;var&#x2F;lib&#x2F;opkg&#x2F;info&#x2F;shadow.postinst<br>t&#x2F;var&#x2F;lib&#x2F;opkg&#x2F;info&#x2F;busybox-mountall.control<br>t&#x2F;var&#x2F;lib&#x2F;opkg&#x2F;info&#x2F;busybox-mdev.control<br>t&#x2F;var&#x2F;lib&#x2F;opkg&#x2F;info&#x2F;dbus-1.preinst<br>t&#x2F;var&#x2F;lib&#x2F;opkg&#x2F;info&#x2F;base-passwd.preinst<br>t&#x2F;var&#x2F;lib&#x2F;opkg&#x2F;info&#x2F;base-passwd.control<br>t&#x2F;var&#x2F;lib&#x2F;opkg&#x2F;info&#x2F;avahi-daemon.preinst<br>t&#x2F;var&#x2F;lib&#x2F;opkg&#x2F;info&#x2F;avahi-autoipd.postinst<br>t&#x2F;var&#x2F;lib&#x2F;opkg&#x2F;info&#x2F;shadow.prerm<br>t&#x2F;var&#x2F;lib&#x2F;opkg&#x2F;info&#x2F;avahi-daemon.control<br>t&#x2F;var&#x2F;lib&#x2F;opkg&#x2F;info&#x2F;shadow.list<br>t&#x2F;var&#x2F;lib&#x2F;opkg&#x2F;info&#x2F;router.list<br>t&#x2F;var&#x2F;lib&#x2F;opkg&#x2F;info&#x2F;dbus-1.control<br>t&#x2F;var&#x2F;lib&#x2F;opkg&#x2F;info&#x2F;busybox-syslog.control<br>t&#x2F;var&#x2F;lib&#x2F;opkg&#x2F;info&#x2F;busybox.control<br>t&#x2F;var&#x2F;lib&#x2F;opkg&#x2F;info&#x2F;tinylogin.list<br>t&#x2F;var&#x2F;lib&#x2F;opkg&#x2F;info&#x2F;task-core-boot.control<br>t&#x2F;var&#x2F;lib&#x2F;opkg&#x2F;status</p>
+<p>——————– pwd ——————–<br>t&#x2F;bin&#x2F;amapi<br>t&#x2F;bin&#x2F;tinylogin<br>t&#x2F;bin&#x2F;busybox<br>t&#x2F;bin&#x2F;qmiweb<br>t&#x2F;bin&#x2F;login.shadow<br>t&#x2F;bin&#x2F;appmgr<br>t&#x2F;bin&#x2F;ramond<br>t&#x2F;bin&#x2F;qmodmd<br>t&#x2F;etc&#x2F;busybox.links<br>t&#x2F;lib&#x2F;libc.so.6<br>t&#x2F;WEBSERVER&#x2F;www&#x2F;QCMAP_login.html<br>t&#x2F;var&#x2F;lib&#x2F;opkg&#x2F;alternatives&#x2F;pwd</p>
+<p>——————– dropbear ——————–<br>t&#x2F;etc&#x2F;init.d&#x2F;dropbear<br>t&#x2F;var&#x2F;lib&#x2F;opkg&#x2F;info&#x2F;dropbear.postrm<br>t&#x2F;var&#x2F;lib&#x2F;opkg&#x2F;info&#x2F;dropbear.control<br>t&#x2F;var&#x2F;lib&#x2F;opkg&#x2F;info&#x2F;dropbear.prerm<br>t&#x2F;var&#x2F;lib&#x2F;opkg&#x2F;info&#x2F;dropbear.list<br>t&#x2F;var&#x2F;lib&#x2F;opkg&#x2F;info&#x2F;dropbear.postinst<br>t&#x2F;var&#x2F;lib&#x2F;opkg&#x2F;status</p>
+<p>——————– ssl ——————–<br>t&#x2F;bin&#x2F;tinyproxy<br>t&#x2F;bin&#x2F;agent<br>t&#x2F;etc&#x2F;services<br>t&#x2F;var&#x2F;lib&#x2F;opkg&#x2F;info&#x2F;libcrypto1.0.0.control<br>t&#x2F;var&#x2F;lib&#x2F;opkg&#x2F;info&#x2F;libssl1.0.0.control<br>t&#x2F;var&#x2F;lib&#x2F;opkg&#x2F;info&#x2F;openssl.control<br>t&#x2F;var&#x2F;lib&#x2F;opkg&#x2F;info&#x2F;openssl.list</p>
+<p>——————– private key ——————–<br>t&#x2F;bin&#x2F;agent</p>
+<p>——————– telnet ——————–<br>t&#x2F;bin&#x2F;busybox<br>t&#x2F;etc&#x2F;services<br>t&#x2F;etc&#x2F;default&#x2F;rcS<br>t&#x2F;etc&#x2F;busybox.links<br>t&#x2F;var&#x2F;lib&#x2F;opkg&#x2F;alternatives&#x2F;telnet</p>
+<p>——————– secret ——————–<br>t&#x2F;bin&#x2F;dhcp6s<br>t&#x2F;bin&#x2F;dhcp6c</p>
+<p>——————– pgp ——————–<br>t&#x2F;lib&#x2F;libresolv.so.2</p>
+<p>——————– gpg ——————–<br>t&#x2F;disk&#x2F;internal-storage.iso</p>
+<p>——————– token ——————–<br>t&#x2F;sbin&#x2F;iwconfig<br>t&#x2F;sbin&#x2F;adbd<br>t&#x2F;sbin&#x2F;tc<br>t&#x2F;bin&#x2F;busybox<br>t&#x2F;bin&#x2F;qmiweb<br>t&#x2F;bin&#x2F;radvd<br>t&#x2F;bin&#x2F;ramond<br>t&#x2F;lib&#x2F;libjansson.so<br>t&#x2F;lib&#x2F;libc.so.6<br>t&#x2F;lib&#x2F;ld-linux.so.3<br>t&#x2F;lib&#x2F;libsqlite3.so.0<br>t&#x2F;lib&#x2F;libmount.so.1<br>t&#x2F;lib&#x2F;libqutils.so<br>t&#x2F;lib&#x2F;libblkid.so.1<br>t&#x2F;lib&#x2F;libpcap.so.1<br>t&#x2F;WEBSERVER&#x2F;www&#x2F;QCMAP_Firewall.html<br>t&#x2F;WEBSERVER&#x2F;www&#x2F;QCMAP_WLAN.html</p>
+<p>——————– api key ——————–</p>
+<p>——————– oauth ——————–</p>
+<p><em><strong>Search for web servers</strong></em><br>##################################### search for web servers<br>##################################### apache</p>
+<p>##################################### lighttpd</p>
+<p>##################################### alphapd</p>
+<p>##################################### httpd<br>t&#x2F;sbin&#x2F;httpd<br>t&#x2F;var&#x2F;lib&#x2F;opkg&#x2F;alternatives&#x2F;httpd</p>
+<p><em><strong>Search for important binaries</strong></em><br>##################################### important binaries<br>##################################### ssh<br>t&#x2F;var&#x2F;lib&#x2F;opkg&#x2F;alternatives&#x2F;ssh</p>
+<p>##################################### sshd</p>
+<p>##################################### scp<br>t&#x2F;var&#x2F;lib&#x2F;opkg&#x2F;alternatives&#x2F;scp</p>
+<p>##################################### sftp</p>
+<p>##################################### tftp<br>t&#x2F;bin&#x2F;tftp<br>t&#x2F;var&#x2F;lib&#x2F;opkg&#x2F;alternatives&#x2F;tftp</p>
+<p>##################################### dropbear<br>t&#x2F;etc&#x2F;dropbear<br>t&#x2F;etc&#x2F;init.d&#x2F;dropbear</p>
+<p>##################################### busybox<br>t&#x2F;bin&#x2F;busybox</p>
+<p>##################################### telnet<br>t&#x2F;bin&#x2F;telnet<br>t&#x2F;var&#x2F;lib&#x2F;opkg&#x2F;alternatives&#x2F;telnet</p>
+<p>##################################### telnetd<br>t&#x2F;sbin&#x2F;telnetd<br>t&#x2F;var&#x2F;lib&#x2F;opkg&#x2F;alternatives&#x2F;telnetd</p>
+<p>##################################### openssl</p>
+<p><em><strong>Search for ip addresses</strong></em><br>##################################### ip addresses<br>0.0.0.0<br>127.0.0.1<br>1.4.12.1<br>169.254.0.0<br>169.254.255.255<br>192.168.0.0<br>192.168.0.1<br>192.168.0.20<br>192.168.0.40<br>192.168.1.0<br>192.168.10.1<br>192.168.10.109<br>192.168.1.1<br>192.168.1.20<br>192.168.1.40<br>192.168.1.8<br>192.168.2.1<br>192.168.2.20<br>192.168.2.40<br>192.168.50.1<br>192.168.50.2<br>192.168.7.0<br>192.168.7.1<br>192.168.7.113<br>192.168.7.2<br>224.0.0.0<br>255.255.0.0<br>255.255.255.0<br>255.255.255.255<br>4.1.4.2<br>4.1.4.3<br>88.22.44.13</p>
+<p><em><strong>Search for urls</strong></em><br>##################################### urls<br><a target="_blank" rel="noopener" href="http://0pointer.de/">http://0pointer.de</a><br><a target="_blank" rel="noopener" href="http://avahi.org/">http://avahi.org</a><br><a target="_blank" rel="noopener" href="http://codeaurora.org/">http://codeaurora.org</a><br><a target="_blank" rel="noopener" href="http://code.google.com/">http://code.google.com</a><br><a target="_blank" rel="noopener" href="http://dbus.freedesktop.org/">http://dbus.freedesktop.org</a><br><a target="_blank" rel="noopener" href="http://developer.android.com/">http://developer.android.com</a><br><a target="_blank" rel="noopener" href="http://download.savannah.gnu.org/">http://download.savannah.gnu.org</a><br><a target="_blank" rel="noopener" href="http://downloads.sourceforge.net/">http://downloads.sourceforge.net</a><br><a target="_blank" rel="noopener" href="http://ebtables.sourceforge.net/">http://ebtables.sourceforge.net</a><br><a target="_blank" rel="noopener" href="http://expat.sourceforge.net/">http://expat.sourceforge.net</a><br><a target="_blank" rel="noopener" href="http://ftp.gnome.org/">http://ftp.gnome.org</a><br><a target="_blank" rel="noopener" href="http://kernel.org/">http://kernel.org</a><br><a target="_blank" rel="noopener" href="http://linuxwireless.org/">http://linuxwireless.org</a><br><a target="_blank" rel="noopener" href="http://matt.ucc.asn.au/">http://matt.ucc.asn.au</a><br><a target="_blank" rel="noopener" href="http://miniupnp.free.fr/">http://miniupnp.free.fr</a><br><a target="_blank" rel="noopener" href="http://netfilter.org/">http://netfilter.org</a><br><a target="_blank" rel="noopener" href="http://packages.debian.org/">http://packages.debian.org</a><br><a target="_blank" rel="noopener" href="http://pkg-shadow.alioth.debian.org/">http://pkg-shadow.alioth.debian.org</a><br><a target="_blank" rel="noopener" href="http://savannah.nongnu.org/">http://savannah.nongnu.org</a><br><a target="_blank" rel="noopener" href="http://sites.google.com/">http://sites.google.com</a><br><a target="_blank" rel="noopener" href="http://sourceforge.net/">http://sourceforge.net</a><br><a target="_blank" rel="noopener" href="http://support.cdmatech.com/">http://support.cdmatech.com</a><br><a target="_blank" rel="noopener" href="http://theory.uwinnipeg.ca/">http://theory.uwinnipeg.ca</a><br><a target="_blank" rel="noopener" href="http://tinylogin.busybox.net/">http://tinylogin.busybox.net</a><br><a target="_blank" rel="noopener" href="http://wireless.kernel.org/">http://wireless.kernel.org</a><br><a target="_blank" rel="noopener" href="http://www.angstrom-distribution.org/">http://www.angstrom-distribution.org</a><br><a target="_blank" rel="noopener" href="http://www.busybox.net/">http://www.busybox.net</a><br><a target="_blank" rel="noopener" href="http://www.eglibc.org/">http://www.eglibc.org</a><br><a target="_blank" rel="noopener" href="http://www.freebsd.org/">http://www.freebsd.org</a><br><a target="_blank" rel="noopener" href="http://www.freedesktop.org/">http://www.freedesktop.org</a><br><a target="_blank" rel="noopener" href="http://www.gnu.org/">http://www.gnu.org</a><br><a target="_blank" rel="noopener" href="http://www.hpl.hp.com/">http://www.hpl.hp.com</a><br><a target="_blank" rel="noopener" href="http://www.iana.org/">http://www.iana.org</a><br><a target="_blank" rel="noopener" href="http://www.info-zip.org/">http://www.info-zip.org</a><br><a target="_blank" rel="noopener" href="http://www.infradead.org/">http://www.infradead.org</a><br><a target="_blank" rel="noopener" href="http://www.linuxfoundation.org/">http://www.linuxfoundation.org</a><br><a target="_blank" rel="noopener" href="http://www.linux-mtd.infradead.org/">http://www.linux-mtd.infradead.org</a><br><a target="_blank" rel="noopener" href="http://www.mylan/">http://www.mylan</a><br><a target="_blank" rel="noopener" href="http://www.netfilter.org/">http://www.netfilter.org</a><br><a target="_blank" rel="noopener" href="http://www.openssl.org/">http://www.openssl.org</a><br><a target="_blank" rel="noopener" href="http://www.quantatw.com/">http://www.quantatw.com</a><br><a target="_blank" rel="noopener" href="http://www.tcpdump.org/">http://www.tcpdump.org</a><br><a target="_blank" rel="noopener" href="http://www.w3.org/">http://www.w3.org</a><br><a target="_blank" rel="noopener" href="http://www.xmlsoft.org/">http://www.xmlsoft.org</a><br><a target="_blank" rel="noopener" href="http://www.zlib.net/">http://www.zlib.net</a><br><a target="_blank" rel="noopener" href="http://zlib.net/">http://zlib.net</a></p>
+<p><em><strong>Search for emails</strong></em><br>##################################### emails<br><a href="mailto:&#x61;&#x6a;&#116;&#64;&#x64;&#101;&#x62;&#x69;&#x61;&#110;&#x2e;&#111;&#x72;&#x67;">&#x61;&#x6a;&#116;&#64;&#x64;&#101;&#x62;&#x69;&#x61;&#110;&#x2e;&#111;&#x72;&#x67;</a><br><a href="mailto:&#x62;&#x64;&#x73;&#99;&#104;&#117;&#121;&#109;&#x40;&#112;&#97;&#110;&#100;&#111;&#114;&#x61;&#46;&#98;&#101;">&#x62;&#x64;&#x73;&#99;&#104;&#117;&#121;&#109;&#x40;&#112;&#97;&#110;&#100;&#111;&#114;&#x61;&#46;&#98;&#101;</a><br><a href="mailto:&#x42;&#x72;&#117;&#x63;&#101;&#x40;&#x50;&#105;&#x78;&#x61;&#114;&#x2e;&#x63;&#x6f;&#x6d;">&#x42;&#x72;&#117;&#x63;&#101;&#x40;&#x50;&#105;&#x78;&#x61;&#114;&#x2e;&#x63;&#x6f;&#x6d;</a><br><a href="mailto:&#x62;&#x72;&#x75;&#x6e;&#111;&#x2e;&#114;&#97;&#x6e;&#100;&#x6f;&#x6c;&#x66;&#x40;&#x34;&#103;&#45;&#x73;&#x79;&#115;&#x74;&#101;&#109;&#x73;&#46;&#98;&#105;&#122;">&#x62;&#x72;&#x75;&#x6e;&#111;&#x2e;&#114;&#97;&#x6e;&#100;&#x6f;&#x6c;&#x66;&#x40;&#x34;&#103;&#45;&#x73;&#x79;&#115;&#x74;&#101;&#109;&#x73;&#46;&#98;&#105;&#122;</a><br><a href="mailto:&#x64;&#97;&#103;&#64;&#119;&#105;&#101;&#101;&#114;&#115;&#46;&#99;&#111;&#109;">&#x64;&#97;&#103;&#64;&#119;&#105;&#101;&#101;&#114;&#115;&#46;&#99;&#111;&#109;</a><br><a href="mailto:&#100;&#101;&#x66;&#97;&#117;&#108;&#116;&#64;&#110;&#x6f;&#x2d;&#105;&#x70;&#46;&#99;&#111;&#x6d;">&#100;&#101;&#x66;&#97;&#117;&#108;&#116;&#64;&#110;&#x6f;&#x2d;&#105;&#x70;&#46;&#99;&#111;&#x6d;</a><br><a href="mailto:&#x6d;&#105;&#x71;&#117;&#x65;&#x6c;&#x73;&#x40;&#x63;&#x69;&#x73;&#x74;&#x72;&#x6f;&#110;&#x2e;&#x6e;&#x6c;">&#x6d;&#105;&#x71;&#117;&#x65;&#x6c;&#x73;&#x40;&#x63;&#x69;&#x73;&#x74;&#x72;&#x6f;&#110;&#x2e;&#x6e;&#x6c;</a><br><a href="mailto:&#111;&#x70;&#x65;&#x6e;&#x65;&#109;&#98;&#101;&#100;&#x64;&#x65;&#x64;&#x2d;&#x63;&#x6f;&#114;&#101;&#x40;&#108;&#105;&#x73;&#116;&#x73;&#x2e;&#x6f;&#x70;&#x65;&#110;&#x65;&#109;&#98;&#101;&#100;&#x64;&#x65;&#x64;&#46;&#111;&#x72;&#x67;">&#111;&#x70;&#x65;&#x6e;&#x65;&#109;&#98;&#101;&#100;&#x64;&#x65;&#x64;&#x2d;&#x63;&#x6f;&#114;&#101;&#x40;&#108;&#105;&#x73;&#116;&#x73;&#x2e;&#x6f;&#x70;&#x65;&#110;&#x65;&#109;&#98;&#101;&#100;&#x64;&#x65;&#x64;&#46;&#111;&#x72;&#x67;</a><br><a href="mailto:&#114;&#111;&#x6b;&#46;&#x70;&#x61;&#x70;&#x65;&#122;&#x40;&#97;&#114;&#110;&#101;&#x73;&#x2e;&#x73;&#105;">&#114;&#111;&#x6b;&#46;&#x70;&#x61;&#x70;&#x65;&#122;&#x40;&#97;&#114;&#110;&#101;&#x73;&#x2e;&#x73;&#105;</a><br><a href="mailto:&#114;&#112;&#117;&#114;&#x64;&#105;&#101;&#64;&#x6f;&#112;&#101;&#x6e;&#x65;&#100;&#104;&#x61;&#110;&#100;&#x2e;&#x63;&#x6f;&#x6d;">&#114;&#112;&#117;&#114;&#x64;&#105;&#101;&#64;&#x6f;&#112;&#101;&#x6e;&#x65;&#100;&#104;&#x61;&#110;&#100;&#x2e;&#x63;&#x6f;&#x6d;</a><br><a href="mailto:&#x73;&#97;&#110;&#x64;&#x6d;&#97;&#x6e;&#x40;&#x68;&#x61;&#x6e;&#100;&#104;&#x65;&#x6c;&#x64;&#x73;&#x2e;&#111;&#x72;&#103;">&#x73;&#97;&#110;&#x64;&#x6d;&#97;&#x6e;&#x40;&#x68;&#x61;&#x6e;&#100;&#104;&#x65;&#x6c;&#x64;&#x73;&#x2e;&#111;&#x72;&#103;</a><br><a href="mailto:&#115;&#101;&#x62;&#x61;&#115;&#x74;&#x69;&#101;&#110;&#x2e;&#101;&#x73;&#116;&#x69;&#101;&#110;&#x6e;&#x65;&#x40;&#103;&#109;&#x61;&#x69;&#x6c;&#x2e;&#99;&#x6f;&#109;">&#115;&#101;&#x62;&#x61;&#115;&#x74;&#x69;&#101;&#110;&#x2e;&#101;&#x73;&#116;&#x69;&#101;&#110;&#x6e;&#x65;&#x40;&#103;&#109;&#x61;&#x69;&#x6c;&#x2e;&#99;&#x6f;&#109;</a><br><a href="mailto:&#115;&#114;&#98;&#64;&#99;&#x75;&#99;&#105;&#x2e;&#x6e;&#108;">&#115;&#114;&#98;&#64;&#99;&#x75;&#99;&#105;&#x2e;&#x6e;&#108;</a><br><a href="mailto:&#84;&#x69;&#109;&#64;&#82;&#105;&#x6b;&#101;&#114;&#115;&#x2e;&#111;&#114;&#103;">&#84;&#x69;&#109;&#64;&#82;&#105;&#x6b;&#101;&#114;&#115;&#x2e;&#111;&#114;&#103;</a><br><a href="mailto:&#x77;&#97;&#108;&#x74;&#x65;&#114;&#x73;&#64;&#100;&#x65;&#x62;&#105;&#97;&#110;&#46;&#x6f;&#114;&#103;">&#x77;&#97;&#108;&#x74;&#x65;&#114;&#x73;&#64;&#100;&#x65;&#x62;&#105;&#97;&#110;&#46;&#x6f;&#114;&#103;</a></p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>D-Link 923B路由器敏感信息搜集</div>
+      <div>http://loora1n.github.io/2022/09/14/firmwalker-DLINK923B/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Loora1N</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年9月14日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/09/14/%E3%80%90IOT%20%E5%AD%A6%E4%B9%A0%E4%B8%80%E3%80%91%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E4%B8%8E%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/" title="【IOT 学习一】固件分析与漏洞利用">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">【IOT 学习一】固件分析与漏洞利用</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/09/13/%E7%89%A9%E8%81%94%E7%BD%91%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95%E8%BD%AF%E4%BB%B6%E9%9C%80%E6%B1%82/" title="【IOT】物联网渗透测试-工具要求">
+                        <span class="hidden-mobile">【IOT】物联网渗透测试-工具要求</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#comments', function() {
+      var light = 'github-light';
+      var dark = 'github-dark';
+      var schema = document.documentElement.getAttribute('data-user-color-scheme');
+      if (schema === 'dark') {
+        schema = dark;
+      } else {
+        schema = light;
+      }
+      window.UtterancesThemeLight = light;
+      window.UtterancesThemeDark = dark;
+      var s = document.createElement('script');
+      s.setAttribute('src', 'https://utteranc.es/client.js');
+      s.setAttribute('repo', 'loora1n/comment');
+      s.setAttribute('issue-term', 'pathname');
+      
+      s.setAttribute('label', 'utterances');
+      
+      s.setAttribute('theme', schema);
+      s.setAttribute('crossorigin', 'anonymous');
+      document.getElementById('comments').appendChild(s);
+    })
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://github.com/Loora1N" target="_blank" rel="nofollow noopener"><span>Loora1N</span></a> <i class="iconfont icon-love"></i> <a href="https://space.bilibili.com/33242548?spm_id_from=333.1007.0.0" target="_blank" rel="nofollow noopener"><span>鷺雨君</span></a>
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"right","width":250,"height":500},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>
