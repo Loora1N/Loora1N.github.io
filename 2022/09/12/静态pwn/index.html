@@ -71,7 +71,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"loora1n.github.io","root":"/","version":"1.9.1","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"7FyeJtpFNeVe68sybCfYzEW9-MdYXbMMI","app_key":"6eOvW7ArePsBmdpA5pwVSuzQ","server_url":null,"path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
+    var CONFIG = {"hostname":"loora1n.github.io","root":"/","version":"1.9.1","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"7FyeJtpFNeVe68sybCfYzEW9-MdYXbMMI","app_key":"6eOvW7ArePsBmdpA5pwVSuzQ","server_url":null,"path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -274,7 +274,7 @@
 <p>我们平时见到的多数PWN题，是采用动态端口，动态flag，这种形式在一定程度上减少了比赛中py的数量。即便有，也是思路py，而不是直接传递flag，提升了py的门槛。但有时受限于环境及服务器负担原因，被迫采用静态端口的PWN也不在少数比如<a target="_blank" rel="noopener" href="https://pwnable.tw/challenge/">pwnable.tw</a>以及星盟的<a target="_blank" rel="noopener" href="http://pwn.eonew.cn/challenge.php">challenge (eonew.cn)</a></p>
 <p>2022年的招新便是如此，由于疫情被迫线上上课，线上安排比赛，无法使用校内的服务器资源。受限于自身服务器的性能，只好采取如此下策（但还好只是招新，11月的DUTCTF希望能有好点的资源&#x2F;(ㄒoㄒ)&#x2F;~~）</p>
 <p>🆘🆘🆘🆘🆘🆘🆘🆘🆘🆘🆘🆘🆘</p>
-<p><img src="/img/article/static_port/image-20220912135756313.png" srcset="/img/loading.gif" lazyload alt="可怜的学姐"></p>
+<p><img src="/img/article/static_port/image-20220912135756313.png" alt="可怜的学姐"></p>
 <p>🆘🆘🆘🆘🆘🆘🆘🆘🆘🆘🆘🆘🆘</p>
 <p>幸运的是找到了合天在2018年创建的项目<code>pwn_depoly_chroot</code>，可以非常方便的搭建多个静态题目，且比较安全，用于这种小型比赛以及普通的训练题库都非常合适。</p>
 <h2 id="pwn-depoly-chroot项目介绍"><a href="#pwn-depoly-chroot项目介绍" class="headerlink" title="pwn_depoly_chroot项目介绍"></a>pwn_depoly_chroot项目介绍</h2><blockquote>
@@ -329,7 +329,7 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash">root@instance-1:~/pwn_deploy_chroot<span class="hljs-comment"># netstat -antp | grep docker</span><br>tcp6       0     0:::10002               :::*                   LISTEN      19828/docker-proxy<br>tcp6       0     0:::10000               :::*                   LISTEN      19887/docker-proxy<br>tcp6       0     0:::10001               :::*                   LISTEN      19873/docker-proxy<br></code></pre></td></tr></table></figure>
 
 <p>我们测试一下 pwn1,看看效果</p>
-<p><img src="/img/article/static_port/20220912141715.png" srcset="/img/loading.gif" lazyload alt="测试示例"></p>
+<p><img src="/img/article/static_port/20220912141715.png" alt="测试示例"></p>
 <p>可以看到，虽然执行的是 <code>system(&quot;/bin/sh&quot;)</code>，但是实际功能只是输出 flag，这样就非常安全了</p>
 <h3 id="另外"><a href="#另外" class="headerlink" title="另外"></a>另外</h3><blockquote>
 <p>如有二次开发意愿或想了解更多详细内容，可自行查看开头的文章链接或github项目链接，内有部分关键代码讲解</p>
@@ -415,7 +415,7 @@
             </div>
 
             
-  <article id="comments" lazyload>
+  <article id="comments">
     
   <script type="text/javascript">
     Fluid.utils.loadComments('#comments', function() {
@@ -626,10 +626,6 @@
 
 
 
-
-  
-    <script  src="/js/img-lazyload.js" ></script>
-  
 
 
 

@@ -73,7 +73,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"loora1n.github.io","root":"/","version":"1.9.1","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"7FyeJtpFNeVe68sybCfYzEW9-MdYXbMMI","app_key":"6eOvW7ArePsBmdpA5pwVSuzQ","server_url":null,"path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
+    var CONFIG = {"hostname":"loora1n.github.io","root":"/","version":"1.9.1","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"7FyeJtpFNeVe68sybCfYzEW9-MdYXbMMI","app_key":"6eOvW7ArePsBmdpA5pwVSuzQ","server_url":null,"path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -277,17 +277,17 @@
 <p>书接上一篇文章的安装错误，在我几乎连续不断的尝试了10余个小时后，环境终于搭建完毕，这里采用Ubuntu20.04，Kali有各种各样奇葩问题是真有点麻烦。</p>
 <p>本篇文章写于2020&#x2F;9&#x2F;15，由于时间有效性的存在，本篇文章仅供参考</p>
 </blockquote>
-<p><img src="/img/article/iot-2/image-20220915191611191-1663245953755-2.png" srcset="/img/loading.gif" lazyload alt="运行成功截图"></p>
+<p><img src="/img/article/iot-2/image-20220915191611191-1663245953755-2.png" alt="运行成功截图"></p>
 <h4 id="项目下载"><a href="#项目下载" class="headerlink" title="项目下载"></a>项目下载</h4><p>首先下载下来项目FAT</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">git <span class="hljs-built_in">clone</span> https://github.com/attify/firmware-analysis-toolkit<br><span class="hljs-built_in">cd</span> firmware-analysis-toolkit<br></code></pre></td></tr></table></figure>
 
 <p><strong>这里注意注意：先打开编辑setup.sh，不是运行不是运行！！！</strong></p>
 <p>先注释掉安装binwalk的部分，我们采用手动编译的方式</p>
-<p><img src="/img/article/iot-2/image-20220915191827246.png" srcset="/img/loading.gif" lazyload alt="image-20220915191827246"></p>
+<p><img src="/img/article/iot-2/image-20220915191827246.png" alt="image-20220915191827246"></p>
 <h4 id="手动编译binwalk"><a href="#手动编译binwalk" class="headerlink" title="手动编译binwalk"></a>手动编译binwalk</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">git <span class="hljs-built_in">clone</span> --depth=1 https://github.com/ReFirmLabs/binwalk.git<br><span class="hljs-built_in">cd</span> binwalk<br>sed -i <span class="hljs-string">&#x27;/REQUIRED_UTILS=&quot;wget tar python&quot;/c\REQUIRED_UTILS=&quot;wget tar python3&quot;&#x27;</span> deps.sh<br></code></pre></td></tr></table></figure>
 
 <p>这时候要注意一个点，其中的一部分链接404找不到了。我突然发现<strong>binwalk</strong>多了一个4小时前的<strong>issue</strong>更新了链接，是真服了。<a target="_blank" rel="noopener" href="https://github.com/ReFirmLabs/binwalk/pull/613">fix stuffit archive’s download url by dev2ero · Pull Request #613 · ReFirmLabs&#x2F;binwalk (github.com)</a></p>
-<p><img src="/img/article/iot-2/image-20220915154244272.png" srcset="/img/loading.gif" lazyload alt="image-20220915154244272"></p>
+<p><img src="/img/article/iot-2/image-20220915154244272.png" alt="image-20220915154244272"></p>
 <p>需要参照这个issue确定自己的下载地址没有问题后，运行</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">sudo ./deps.sh --<span class="hljs-built_in">yes</span><br>sudo python3 ./setup.py install<br>sudo apt-get install libmagic1<br></code></pre></td></tr></table></figure>
 
@@ -303,7 +303,7 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">./setup.sh<br></code></pre></td></tr></table></figure>
 
 <p>安装成功后，更改<code>fat.config</code>文件内的<code>root</code>密码为当前系统的<code>root</code>账户密码</p>
-<p><img src="/img/article/iot-2/image-20220915193111383.png" srcset="/img/loading.gif" lazyload alt="image-20220915193111383"></p>
+<p><img src="/img/article/iot-2/image-20220915193111383.png" alt="image-20220915193111383"></p>
 <p>然后正常运行即可，我存放了一些固件在GitHub上可以用于练习：<a target="_blank" rel="noopener" href="https://github.com/Loora1N/IOT-Frameware">Loora1N&#x2F;IOT-Frameware (github.com)</a></p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">./fat.py &lt;firmware file&gt;<br></code></pre></td></tr></table></figure>
 
@@ -388,7 +388,7 @@
             </div>
 
             
-  <article id="comments" lazyload>
+  <article id="comments">
     
   <script type="text/javascript">
     Fluid.utils.loadComments('#comments', function() {
@@ -599,10 +599,6 @@
 
 
 
-
-  
-    <script  src="/js/img-lazyload.js" ></script>
-  
 
 
 

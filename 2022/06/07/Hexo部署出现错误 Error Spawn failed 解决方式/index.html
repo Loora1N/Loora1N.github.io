@@ -72,7 +72,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"loora1n.github.io","root":"/","version":"1.9.1","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"7FyeJtpFNeVe68sybCfYzEW9-MdYXbMMI","app_key":"6eOvW7ArePsBmdpA5pwVSuzQ","server_url":null,"path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
+    var CONFIG = {"hostname":"loora1n.github.io","root":"/","version":"1.9.1","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"7FyeJtpFNeVe68sybCfYzEW9-MdYXbMMI","app_key":"6eOvW7ArePsBmdpA5pwVSuzQ","server_url":null,"path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -275,11 +275,11 @@
 <h2 id="错误信息一"><a href="#错误信息一" class="headerlink" title="错误信息一"></a>错误信息一</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs bash">Missing or invalid credentials.<br>Error: connect ECONNREFUSED /run/user/1000/vscode-git-2098f677fa.sock<br>    at PipeConnectWrap.afterConnect [as oncomplete] (node:net:1161:16) &#123;<br>  errno: -111,<br>  code: <span class="hljs-string">&#x27;ECONNREFUSED&#x27;</span>,<br>  syscall: <span class="hljs-string">&#x27;connect&#x27;</span>,<br>  address: <span class="hljs-string">&#x27;/run/user/1000/vscode-git-2098f677fa.sock&#x27;</span><br>&#125;<br>Missing or invalid credentials.<br>Error: connect ECONNREFUSED /run/user/1000/vscode-git-2098f677fa.sock<br>    at PipeConnectWrap.afterConnect [as oncomplete] (node:net:1161:16) &#123;<br>  errno: -111,<br>  code: <span class="hljs-string">&#x27;ECONNREFUSED&#x27;</span>,<br>  syscall: <span class="hljs-string">&#x27;connect&#x27;</span>,<br>  address: <span class="hljs-string">&#x27;/run/user/1000/vscode-git-2098f677fa.sock&#x27;</span><br>&#125;<br>remote: No anonymous write access.<br>fatal: Authentication failed <span class="hljs-keyword">for</span> <span class="hljs-string">&#x27;https://github.com/Loora1N/Loora1N.github.io/&#x27;</span><br>FATAL &#123;<br>  err: Error: Spawn failed<br>      at ChildProcess.&lt;anonymous&gt; (/home/loorain/myBlog/node_modules/hexo-util/lib/spawn.js:51:21)<br>      at ChildProcess.emit (node:events:527:28)<br>      at ChildProcess._handle.onexit (node:internal/child_process:291:12) &#123;<br>    code: 128<br>  &#125;<br>&#125; Something<span class="hljs-string">&#x27;s wrong. Maybe you can find the solution here: %s https://hexo.io/docs/troubleshooting.html</span><br></code></pre></td></tr></table></figure>
 
 <h3 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h3><p>一、打开vscode设置界面，搜索git.terminal Authentication，将他前面的 √ 去掉</p>
-<p><img src="/img/article/error128/vscode1.png" srcset="/img/loading.gif" lazyload alt="image-20220607164521802"></p>
+<p><img src="/img/article/error128/vscode1.png" alt="image-20220607164521802"></p>
 <p>二、crtl + shift + p 打开搜索框，搜索reload window并运行</p>
-<p><img src="/img/article/error128/vscode2.png" srcset="/img/loading.gif" lazyload alt="image-20220607164739265"></p>
+<p><img src="/img/article/error128/vscode2.png" alt="image-20220607164739265"></p>
 <p>三、再次尝试hexo g，解决成功</p>
-<p><img src="/img/article/error128/vscode3.png" srcset="/img/loading.gif" lazyload alt="image-20220607164850847"></p>
+<p><img src="/img/article/error128/vscode3.png" alt="image-20220607164850847"></p>
 <h2 id="错误信息二"><a href="#错误信息二" class="headerlink" title="错误信息二"></a>错误信息二</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs bash">fatal: unable to access <span class="hljs-string">&#x27;https://github.com/Loora1N/Loora1N.github.io/&#x27;</span>: gnutls_handshake() failed: Error <span class="hljs-keyword">in</span> the pull <span class="hljs-keyword">function</span>.<br>FATAL &#123;<br>  err: Error: Spawn failed<br>      at ChildProcess.&lt;anonymous&gt; (/home/loorain/myBlog/node_modules/hexo-util/lib/spawn.js:51:21)<br>      at ChildProcess.emit (node:events:527:28)<br>      at ChildProcess._handle.onexit (node:internal/child_process:291:12) &#123;<br>    code: 128<br>  &#125;<br>&#125; Something<span class="hljs-string">&#x27;s wrong. Maybe you can find the solution here: %s https://hexo.io/docs/troubleshooting.html</span><br></code></pre></td></tr></table></figure>
 <h3 id="解决方法-1"><a href="#解决方法-1" class="headerlink" title="解决方法"></a>解决方法</h3><p>打开_config.yml文件，更改https仓库地址为ssh地址,配置ssh密钥即可</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-comment"># Deployment</span><br><span class="hljs-comment">## Docs: https://hexo.io/docs/one-command-deployment</span><br><span class="hljs-attr">deploy:</span><br>  <span class="hljs-attr">type:</span> <span class="hljs-string">git</span><br>  <span class="hljs-attr">repo:</span>	<span class="hljs-string">https://github.com/YourName/YourName.github.io.git(不要使用这个)</span><br>  		<span class="hljs-string">git@github.com:YourName/YourName.github.io.git(用这个)</span><br>  <span class="hljs-attr">branch:</span> <span class="hljs-string">master</span><br></code></pre></td></tr></table></figure>
@@ -365,7 +365,7 @@
             </div>
 
             
-  <article id="comments" lazyload>
+  <article id="comments">
     
   <script type="text/javascript">
     Fluid.utils.loadComments('#comments', function() {
@@ -576,10 +576,6 @@
 
 
 
-
-  
-    <script  src="/js/img-lazyload.js" ></script>
-  
 
 
 

@@ -76,7 +76,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"loora1n.github.io","root":"/","version":"1.9.1","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"7FyeJtpFNeVe68sybCfYzEW9-MdYXbMMI","app_key":"6eOvW7ArePsBmdpA5pwVSuzQ","server_url":null,"path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
+    var CONFIG = {"hostname":"loora1n.github.io","root":"/","version":"1.9.1","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"7FyeJtpFNeVe68sybCfYzEW9-MdYXbMMI","app_key":"6eOvW7ArePsBmdpA5pwVSuzQ","server_url":null,"path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -277,28 +277,28 @@
 <p>推荐版本7.6及以上，高版本增添了对于go语言程序的反汇编，寻找资源需要谨慎哦</p>
 <p>写文章的时候顺便看了眼价格，，，，，算了还是自己找资源吧</p>
 </blockquote>
-<p><img src="/img/article/pwn-envir/image-20220905153059189-1662367638683-2.png" srcset="/img/loading.gif" lazyload alt="image-20220905153059189"></p>
+<p><img src="/img/article/pwn-envir/image-20220905153059189-1662367638683-2.png" alt="image-20220905153059189"></p>
 <p>IDA可以对可执行程序反汇编操作，能够看到整个程序的框架、汇编代码、伪代码、函数调用、以及一些字符串的全局遍变量。无论对于Reverse还是PWN都是最核心的工具之一，这也是我放在最前面提及的原因，大概界面如下图。</p>
-<p><img src="/img/article/pwn-envir/image-20220905153323145.png" srcset="/img/loading.gif" lazyload alt="image-20220905153323145"></p>
+<p><img src="/img/article/pwn-envir/image-20220905153323145.png" alt="image-20220905153323145"></p>
 <h2 id="Linux发行版选择"><a href="#Linux发行版选择" class="headerlink" title="Linux发行版选择"></a>Linux发行版选择</h2><p>这里我主要推荐Ubuntu，相比于其他发行版，Ubuntu的图形化界面比较方便新人入手学习Linux. 另外一方面，CTF中大多数PWN题环境都是在ubuntu下的，一般为近几年的版本。</p>
 <blockquote>
 <p>以2022年PWN题目环境为例，Ubuntu版本基本集中在Ubuntu18，Ubuntu20，Ubuntu22. 同理在2024年，不出意外的话题目环境将会变化为Ubuntu20，Ubuntu22，Ubuntu24. 主要是因为Ubuntu发行为LTS制(Long Term Support)即版本支持年份为6年，且每两年发布一次新版本</p>
 </blockquote>
 <p>那么在选择时就推荐选择距离时间最近的偶数年份版本，比如Ubuntu20或22. Ubuntu系统的iso镜像文件可以自行在网上寻找，也可以在大工镜像网站下载：<a target="_blank" rel="noopener" href="http://mirror.dlut.edu.cn/ubuntu-releases/22.04/">大连理工大学开源软件镜像站 (dlut.edu.cn)</a></p>
-<p><img src="/img/article/pwn-envir/image-20220905164622966.png" srcset="/img/loading.gif" lazyload alt="image-20220905164622966"></p>
+<p><img src="/img/article/pwn-envir/image-20220905164622966.png" alt="image-20220905164622966"></p>
 <p>虚拟机安装Windows环境下建议使用VMware。同样建议版本尽量新一些，如VM16以上，这样可以避免一部分的蓝屏BUG发生。</p>
 <blockquote>
 <p>Linux安装教学不在这里赘述了，毕竟本文的核心是PWN环境的搭建，如需安装的相关资源，可自行网络搜索</p>
 </blockquote>
 <h2 id="Pwntools安装"><a href="#Pwntools安装" class="headerlink" title="Pwntools安装"></a>Pwntools安装</h2><p>Ubuntu安装完成后默认应该是有python3的，可以用python -V或python3 -V来查看版本</p>
-<p><img src="/img/article/pwn-envir/image-20220905161539363.png" srcset="/img/loading.gif" lazyload alt="image-20220905161539363"></p>
+<p><img src="/img/article/pwn-envir/image-20220905161539363.png" alt="image-20220905161539363"></p>
 <blockquote>
 <p>这里推荐使用python3, 虽然有人说Pwntools对于python2的适配性更好，但由于python2过于古老，新版本反倒在其他方面更加稳定一些。在拥有其他更多插件和包的情况下，个人感觉还是python3更优一些。</p>
 </blockquote>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ sudo apt-get update<br>$ sudo apt-get install python3 python3-pip python3-dev git libssl-dev libffi-dev build-essential<br>$ sudo python3 -m pip install --upgrade pip<br>$ sudo python3 -m pip install --upgrade pwntools<br></code></pre></td></tr></table></figure>
 
 <p>之后我们可以使用<code>import pwn</code>来测试一些是否成功安装,出现下方情况基本就可以了</p>
-<p><img src="/img/article/pwn-envir/image-20220905162034730.png" srcset="/img/loading.gif" lazyload alt="image-20220905162034730"></p>
+<p><img src="/img/article/pwn-envir/image-20220905162034730.png" alt="image-20220905162034730"></p>
 <h2 id="pwndbg-amp-pwngdb安装"><a href="#pwndbg-amp-pwngdb安装" class="headerlink" title="pwndbg &amp; pwngdb安装"></a>pwndbg &amp; pwngdb安装</h2><p>这两个均是GDB的插件之一，用于在Linux对程序进行动态调试，而动态调试也是PWN最核心的部分之一。拥有这些工具，我们能更加方便的查看程序运行过程中，内存变化。如栈、堆、寄存器等等地方的内容。</p>
 <blockquote>
 <p>pwndbg安装</p>
@@ -316,14 +316,14 @@
 </blockquote>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs js">source /home/pwnki/pwndbg/gdbinit.<span class="hljs-property">py</span> <br>#source ~<span class="hljs-regexp">/peda/</span>peda.<span class="hljs-property">py</span> <span class="hljs-comment">//使用 pwndbg 就要把 peda 注释掉，反过来也一样</span><br>source ~<span class="hljs-regexp">/Pwngdb/</span>pwngdb.<span class="hljs-property">py</span><br>source ~<span class="hljs-regexp">/Pwngdb/</span>angelheap/gdbinit.<span class="hljs-property">py</span><br><br>define hook-run<br>python<br><span class="hljs-keyword">import</span> angelheap<br>angelheap.<span class="hljs-title function_">init_angelheap</span>()<br>end<br>end<br></code></pre></td></tr></table></figure>
 
-<p><img src="/img/article/pwn-envir/image-20220905165859512.png" srcset="/img/loading.gif" lazyload alt="image-20220905165859512"></p>
+<p><img src="/img/article/pwn-envir/image-20220905165859512.png" alt="image-20220905165859512"></p>
 <h2 id="checksec安装"><a href="#checksec安装" class="headerlink" title="checksec安装"></a>checksec安装</h2><p>用于检测程序开启了哪些保护机制，往往是PWN解题的第一步，安装方式：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ sudo apt install checksec<br></code></pre></td></tr></table></figure>
 
 <p>使用方式:</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ checksec 程序文件<br></code></pre></td></tr></table></figure>
 
-<p><img src="/img/article/pwn-envir/image-20220905164504590.png" srcset="/img/loading.gif" lazyload alt="image-20220905164504590"></p>
+<p><img src="/img/article/pwn-envir/image-20220905164504590.png" alt="image-20220905164504590"></p>
 <h2 id="更多插件"><a href="#更多插件" class="headerlink" title="更多插件"></a>更多插件</h2><blockquote>
 <p>虽然还有很多插件并没有提及，但对于刚刚接触pwn的同学来说，以上插件已经够完成一部分简单的pwn题目，更多的插件需要在将来自己学习的过程中慢慢补充。下面只做一列举，有兴趣的同学可以自行搜索查看</p>
 </blockquote>
@@ -420,7 +420,7 @@
             </div>
 
             
-  <article id="comments" lazyload>
+  <article id="comments">
     
   <script type="text/javascript">
     Fluid.utils.loadComments('#comments', function() {
@@ -631,10 +631,6 @@
 
 
 
-
-  
-    <script  src="/js/img-lazyload.js" ></script>
-  
 
 
 

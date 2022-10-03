@@ -75,7 +75,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"loora1n.github.io","root":"/","version":"1.9.1","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"7FyeJtpFNeVe68sybCfYzEW9-MdYXbMMI","app_key":"6eOvW7ArePsBmdpA5pwVSuzQ","server_url":null,"path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
+    var CONFIG = {"hostname":"loora1n.github.io","root":"/","version":"1.9.1","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"7FyeJtpFNeVe68sybCfYzEW9-MdYXbMMI","app_key":"6eOvW7ArePsBmdpA5pwVSuzQ","server_url":null,"path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -287,12 +287,12 @@
 <h2 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h2><h3 id="Binwalk"><a href="#Binwalk" class="headerlink" title="Binwalk"></a>Binwalk</h3><p>binwalk是一个固件解包的工具，当我们用编程器dump出一个固件用，需要用binwalk来解压。一般做misc也会经常用到。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">sudo apt install binwalk<br></code></pre></td></tr></table></figure>
 
-<p><img src="/img/article/iot-envir/image-20220913113915723.png" srcset="/img/loading.gif" lazyload alt="image-20220913113915723"></p>
+<p><img src="/img/article/iot-envir/image-20220913113915723.png" alt="image-20220913113915723"></p>
 <p>固件解包命令</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">binwalk -Me file.bin<br></code></pre></td></tr></table></figure>
 
 <p>家里旧路由器解包出来的文件，太多了没截全</p>
-<p><img src="/img/article/iot-envir/image-20220913114057712.png" srcset="/img/loading.gif" lazyload alt="家里旧路由器的固件"></p>
+<p><img src="/img/article/iot-envir/image-20220913114057712.png" alt="家里旧路由器的固件"></p>
 <h3 id="Firmadyne（固件仿真）"><a href="#Firmadyne（固件仿真）" class="headerlink" title="Firmadyne（固件仿真）"></a>Firmadyne（固件仿真）</h3><p>这工具主要是用来仿真，将固件用qemu模拟启动起来，不过不是百分百模拟成功的，经常会仿失败，常见就是环境等问题。(建议还是买真机好)</p>
 <blockquote>
 <p>安装可参考github上的文章：<a target="_blank" rel="noopener" href="https://github.com/firmadyne/firmadyne#introduction">https://github.com/firmadyne/firmadyne#introduction</a></p>
@@ -304,7 +304,7 @@
 <h4 id="数据库安装"><a href="#数据库安装" class="headerlink" title="数据库安装"></a>数据库安装</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash">sudo apt-get install postgresql<br>sudo -u postgres createuser -P firmadyne，带密码firmadyne<br>sudo -u postgres createdb -O firmadyne firmware<br>sudo -u postgres psql -d firmware &lt; ./firmadyne/database/schema<br></code></pre></td></tr></table></figure>
 
 <h4 id="设置Firmadyne"><a href="#设置Firmadyne" class="headerlink" title="设置Firmadyne"></a>设置Firmadyne</h4><p>替换config文件中的绝对文件路径</p>
-<p><img src="/img/article/iot-envir/image-20220913122554653.png" srcset="/img/loading.gif" lazyload alt="image-20220913122554653"></p>
+<p><img src="/img/article/iot-envir/image-20220913122554653.png" alt="image-20220913122554653"></p>
 <p>构建二进制文件</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">cd</span> ./firmadyne; ./download.sh<br></code></pre></td></tr></table></figure>
 
@@ -315,19 +315,19 @@
 
 <h2 id="仿真Netgear-网络路由器-WNAP320测试"><a href="#仿真Netgear-网络路由器-WNAP320测试" class="headerlink" title="仿真Netgear(网络路由器) WNAP320测试"></a>仿真Netgear(网络路由器) WNAP320测试</h2><h4 id="固件包下载"><a href="#固件包下载" class="headerlink" title="固件包下载"></a>固件包下载</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">wget http://www.downloads.netgear.com/files/GDC/WNAP320/WNAP320%20Firmware%20Version%202.0.3.zip<br><br><span class="hljs-built_in">mv</span> WNAP320\ Firmware\ Version\ 2.0.3.zip WNAP320.zip  <br></code></pre></td></tr></table></figure>
 
-<p><img src="/img/article/iot-envir/image-20220913133114466.png" srcset="/img/loading.gif" lazyload alt="image-20220913133114466"></p>
+<p><img src="/img/article/iot-envir/image-20220913133114466.png" alt="image-20220913133114466"></p>
 <h4 id="解压固件包"><a href="#解压固件包" class="headerlink" title="解压固件包"></a>解压固件包</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs bash">sudo python3 ./sources/extractor/extractor.py -b Netgear -sql 127.0.0.1 -np -nk <span class="hljs-string">&quot;WNAP320.zip&quot;</span> images<br><br><span class="hljs-comment">#参数解释</span><br>-b   <span class="hljs-string">&quot;brand 品牌&quot;</span><br>-sql <span class="hljs-string">&quot;连接本地数据库&quot;</span><br>-np  <span class="hljs-string">&quot;代表没有并行操作&quot;</span><br>-nk  <span class="hljs-string">&quot;代表不提取内核&quot;</span><br></code></pre></td></tr></table></figure>
 
 <blockquote>
 <p>如出现No module named ‘magic’错误，可以尝试使用pip3 install python-magic解决</p>
 </blockquote>
-<p><img src="/img/article/iot-envir/image-20220913133817467.png" srcset="/img/loading.gif" lazyload alt="image-20220913133817467"></p>
+<p><img src="/img/article/iot-envir/image-20220913133817467.png" alt="image-20220913133817467"></p>
 <h4 id="识别CPU框架"><a href="#识别CPU框架" class="headerlink" title="识别CPU框架"></a>识别CPU框架</h4><p>接着是执行<code>./script/getArch.sh</code>脚本来获取路由器固件的CPU架构。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">sudo ./scripts/getArch.sh ./images/1.tar.gz<br></code></pre></td></tr></table></figure>
 
 <p>焯，这里卡住了. 但是找到了一个issue: <a target="_blank" rel="noopener" href="https://github.com/attify/firmware-analysis-toolkit/issues/27">.&#x2F;images&#x2F;1.tar.gz: Cannot open: No such file or directory · Issue #27 · attify&#x2F;firmware-analysis-toolkit (github.com)</a></p>
 <p>暂时不知道怎么解决</p>
-<p><img src="/img/article/iot-envir/image-20220913143102694.png" srcset="/img/loading.gif" lazyload alt="image-20220913143102694"></p>
+<p><img src="/img/article/iot-envir/image-20220913143102694.png" alt="image-20220913143102694"></p>
 
               
             </div>
@@ -409,7 +409,7 @@
             </div>
 
             
-  <article id="comments" lazyload>
+  <article id="comments">
     
   <script type="text/javascript">
     Fluid.utils.loadComments('#comments', function() {
@@ -620,10 +620,6 @@
 
 
 
-
-  
-    <script  src="/js/img-lazyload.js" ></script>
-  
 
 
 

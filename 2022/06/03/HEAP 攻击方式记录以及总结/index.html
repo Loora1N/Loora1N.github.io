@@ -75,7 +75,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"loora1n.github.io","root":"/","version":"1.9.1","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"7FyeJtpFNeVe68sybCfYzEW9-MdYXbMMI","app_key":"6eOvW7ArePsBmdpA5pwVSuzQ","server_url":null,"path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
+    var CONFIG = {"hostname":"loora1n.github.io","root":"/","version":"1.9.1","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"7FyeJtpFNeVe68sybCfYzEW9-MdYXbMMI","app_key":"6eOvW7ArePsBmdpA5pwVSuzQ","server_url":null,"path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -276,8 +276,8 @@
 <p>文章很多图源来自NTUSTISC例会视频，油管链接：<a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=ItpJY9Lpw-o&list=PLHP-B3mcSY_5r5AJsZyTZLwjX9z8v_b5x">NTUSTISC - Pwn 3 - YouTube</a><br>目前只支持到libc2.34版本</p>
 </blockquote>
 <h2 id="Heap-Based-Buffer-Overflow"><a href="#Heap-Based-Buffer-Overflow" class="headerlink" title="Heap-Based Buffer Overflow"></a>Heap-Based Buffer Overflow</h2><p>最最基本的攻击方式，由于未对输入长度限制，且堆块是一片连续存储的内存空间特性。导致可以对其后高地址的chunk的各种信息进行覆写。</p>
-<p><img src="/img/article/1.png" srcset="/img/loading.gif" lazyload></p>
-<p><img src="/img/article/2.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/img/article/1.png"></p>
+<p><img src="/img/article/2.png"></p>
 <h2 id="UAF-Use-after-free"><a href="#UAF-Use-after-free" class="headerlink" title="UAF(Use-after-free)"></a>UAF(Use-after-free)</h2><p>在free()掉chunk之后，原本指向chunk的指针由于程序猿自身的懒惰，没有将pointer &#x3D; NULL; 导致依然可以使用该指针进行额外的操作</p>
 <p>UAF漏洞一般常用于泄露，或者更改已经free掉的chunk中的信息，最常见便是libc的泄露,以及对Tcache&#x2F;Fastbin链表的控制</p>
 <blockquote>
@@ -289,9 +289,9 @@
 
 
 
-<p><img src="/img/article/3.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/img/article/3.png"></p>
 <p>在完成double free 之后我们只需要malloc 这里的chunk1 就能得到一块 既是allocated 又是 free 状态的chunk。接下来我们就能对其fd指针进行修改，从而控制fastbin链表的方向是我们想要的地方，便能实现对任意地址的控制(读写)</p>
-<p><img src="/img/article/4.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/img/article/4.png"></p>
 <blockquote>
 <p>额外需要注意的点：</p>
 <ul>
@@ -315,7 +315,7 @@
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">define</span> PROTECT_PTR(pos, ptr) \</span><br><span class="hljs-meta">((__typeof (ptr)) ((((size_t) pos) &gt;&gt; 12) ^ ((size_t) ptr)));</span><br></code></pre></td></tr></table></figure>
 
 <p>结合tcache_put()函数可以得出e-&gt;next最终指向了e-&gt;next地址右移12位后的值与当前tcache头指针值异或的结果，这里引用Safe-Linking设计师文章[1]中的一张图描述此过程：</p>
-<p><img src="/img/article/5.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p><img src="/img/article/5.png" alt="img"></p>
 <p>其实就是一个简单的异或操作，这里所有的指针都进行了处理，具体细节可以自行查询，不过多赘述</p>
 <h4 id="内存对齐检测"><a href="#内存对齐检测" class="headerlink" title="内存对齐检测"></a>内存对齐检测</h4><p>此外，在glibc-2.32版本中还引入了对tcache和fastbins中申请及释放内存地址的对齐检测，以tcache_get()为例：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">static</span> __always_inline <span class="hljs-type">void</span> *<br><br><span class="hljs-title function_">tcache_get</span> <span class="hljs-params">(<span class="hljs-type">size_t</span> tc_idx)</span><br><br>&#123;<br><br>tcache_entry *e = tcache-&gt;entries[tc_idx];<br><br><span class="hljs-keyword">if</span> (__glibc_unlikely (!aligned_OK (e)))<br><br>malloc_printerr (“<span class="hljs-built_in">malloc</span>(): unaligned tcache chunk detected”);<br><br>tcache-&gt;entries[tc_idx] = REVEAL_PTR (e-&gt;next);<br><br>–(tcache-&gt;counts[tc_idx]);<br><br>e-&gt;key = <span class="hljs-literal">NULL</span>;<br><br><span class="hljs-keyword">return</span> (<span class="hljs-type">void</span> *) e;<br><br>&#125;<br></code></pre></td></tr></table></figure>
@@ -346,7 +346,7 @@
 </blockquote>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">/*这是一段unsafe-unlink的示例代码，我们在最后成功利用这个漏洞，</span><br><span class="hljs-comment">实现了对非堆上地址victimstring的内容更改*/</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdlib.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdint.h&gt;</span></span><br><br><span class="hljs-type">uint64_t</span> * chunk0_ptr;<br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span><br>&#123;<br>    chunk0_ptr = (<span class="hljs-type">uint64_t</span>*)<span class="hljs-built_in">malloc</span>(<span class="hljs-number">0x80</span>);       <span class="hljs-comment">//chunk0</span><br>    <span class="hljs-type">uint64_t</span> *chunk1_ptr = (<span class="hljs-type">uint64_t</span>*) <span class="hljs-built_in">malloc</span>(<span class="hljs-number">0x80</span>);        <span class="hljs-comment">//chunk1</span><br>    <span class="hljs-built_in">fprintf</span>(<span class="hljs-built_in">stderr</span>, <span class="hljs-string">&quot;chunk0_ptr: %p -&gt; %p\n&quot;</span>,&amp;chunk0_ptr, chunk0_ptr);<br>    <span class="hljs-built_in">fprintf</span>(<span class="hljs-built_in">stderr</span>, <span class="hljs-string">&quot;victim chunk: %p\n\n&quot;</span>,chunk1_ptr);<br><br>    <span class="hljs-comment">/*pass the check:   (chunksize(p) != prev_size(next_chunk(P)) == False)</span><br><span class="hljs-comment">                        chunk0_ptr[1] = 0x0;// or 0x8, 0x80*/</span><br><br>    <span class="hljs-comment">//pass the check:   (p-&gt;fd-&gt;bk != p || p-&gt;bk-&gt;fd != p) == False</span><br><br>    chunk0_ptr [<span class="hljs-number">2</span>] = (<span class="hljs-type">uint64_t</span>) &amp;chunk0_ptr - <span class="hljs-number">0x18</span>;<br>    chunk0_ptr [<span class="hljs-number">3</span>] = (<span class="hljs-type">uint64_t</span>) &amp;chunk0_ptr - <span class="hljs-number">0x10</span>;<br>    <span class="hljs-built_in">fprintf</span>(<span class="hljs-built_in">stderr</span>, <span class="hljs-string">&quot;fake fd: %p = &amp;chunk0_ptr - 0x18&quot;</span>, (<span class="hljs-type">void</span>*)chunk0_ptr[<span class="hljs-number">2</span>]);<br>    <span class="hljs-built_in">fprintf</span>(<span class="hljs-built_in">stderr</span>, <span class="hljs-string">&quot;fake bk: %p = &amp;chunk0_ptr - 0x10&quot;</span>, (<span class="hljs-type">void</span>*)chunk0_ptr[<span class="hljs-number">3</span>]);<br>    <br>    <span class="hljs-type">uint64_t</span> *chunk1_hdr = (<span class="hljs-type">void</span>*) chunk1_ptr - <span class="hljs-number">0x10</span>;<br>    chunk1_hdr[<span class="hljs-number">0</span>] = <span class="hljs-number">0x80</span>;<br>    chunk1_hdr[<span class="hljs-number">1</span>] &amp;= ~<span class="hljs-number">1</span>;<br><br>    <span class="hljs-comment">/*  int *t[10], i;                  //tcache</span><br><span class="hljs-comment">        for(i=0; i&lt;7; i++)&#123;</span><br><span class="hljs-comment">            t[i] = malloc(0x80);</span><br><span class="hljs-comment">        &#125;</span><br><span class="hljs-comment">        for(i=0;i&lt;7;i++)&#123;</span><br><span class="hljs-comment">            free(t[i]);</span><br><span class="hljs-comment">        &#125;;  */</span><br><br>    <span class="hljs-built_in">free</span>(chunk1_ptr);               <span class="hljs-comment">//unlink</span><br><br>    <span class="hljs-type">char</span> victim_string[<span class="hljs-number">8</span>] = <span class="hljs-string">&quot;AAAAAAA&quot;</span>;<br>    chunk0_ptr[<span class="hljs-number">3</span>] = (<span class="hljs-type">uint64_t</span>) victim_string;   <span class="hljs-comment">//overwrite itself</span><br>    <span class="hljs-built_in">fprintf</span>(<span class="hljs-built_in">stderr</span>, <span class="hljs-string">&quot;old value: %s\n&quot;</span>, victim_string);<br><br>    chunk0_ptr[<span class="hljs-number">0</span>] = <span class="hljs-number">0x42424242424242</span>LL;     <span class="hljs-comment">//over wirting victim_string</span><br>    <span class="hljs-built_in">fprintf</span>(<span class="hljs-built_in">stderr</span>, <span class="hljs-string">&quot;new Value: %s\n&quot;</span>, victim_string);<br><br>&#125;<br></code></pre></td></tr></table></figure>
 
-<h4 id="示例图"><a href="#示例图" class="headerlink" title="示例图"></a>示例图</h4><p><img src="/img/article/6.png" srcset="/img/loading.gif" lazyload></p>
+<h4 id="示例图"><a href="#示例图" class="headerlink" title="示例图"></a>示例图</h4><p><img src="/img/article/6.png"></p>
 
               
             </div>
@@ -422,7 +422,7 @@
             </div>
 
             
-  <article id="comments" lazyload>
+  <article id="comments">
     
   <script type="text/javascript">
     Fluid.utils.loadComments('#comments', function() {
@@ -633,10 +633,6 @@
 
 
 
-
-  
-    <script  src="/js/img-lazyload.js" ></script>
-  
 
 
 

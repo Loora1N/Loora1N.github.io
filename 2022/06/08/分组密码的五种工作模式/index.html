@@ -74,7 +74,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"loora1n.github.io","root":"/","version":"1.9.1","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"7FyeJtpFNeVe68sybCfYzEW9-MdYXbMMI","app_key":"6eOvW7ArePsBmdpA5pwVSuzQ","server_url":null,"path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
+    var CONFIG = {"hostname":"loora1n.github.io","root":"/","version":"1.9.1","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"7FyeJtpFNeVe68sybCfYzEW9-MdYXbMMI","app_key":"6eOvW7ArePsBmdpA5pwVSuzQ","server_url":null,"path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -274,7 +274,7 @@
               <h2 id="电子密码本模式Electronic-Codebook-ECB"><a href="#电子密码本模式Electronic-Codebook-ECB" class="headerlink" title="电子密码本模式Electronic Codebook, ECB"></a>电子密码本模式Electronic Codebook, ECB</h2><blockquote>
 <p>明文分成64的分组进行加密，必要时填充，每个分组用同一密钥加密，同样明文分组加密得相同密文</p>
 </blockquote>
-<h3 id="示意图"><a href="#示意图" class="headerlink" title="示意图"></a>示意图</h3><p><img src="/img/article/cry-mode/cry1.png" srcset="/img/loading.gif" lazyload alt="ECB"></p>
+<h3 id="示意图"><a href="#示意图" class="headerlink" title="示意图"></a>示意图</h3><p><img src="/img/article/cry-mode/cry1.png" alt="ECB"></p>
 <h3 id="局限性"><a href="#局限性" class="headerlink" title="局限性"></a>局限性</h3><ul>
 <li>ECB模式特别适合数据较少的情况，如安全传输DES密钥</li>
 <li>一段明文消息中若有几个相同的明文组，则密文也将出现几个相同的片段</li>
@@ -284,7 +284,7 @@
 <h2 id="密文分组链接模式Cipher-Block-Chaining-CBC"><a href="#密文分组链接模式Cipher-Block-Chaining-CBC" class="headerlink" title="密文分组链接模式Cipher Block Chaining (CBC)"></a>密文分组链接模式Cipher Block Chaining (CBC)</h2><blockquote>
 <p>加密输入是当前明文分组和前一密文分组的异或，形成一条链，使用相同的密钥， 这样每个明文分组的加密函数输入与明文分组之间不再有固定的关系</p>
 </blockquote>
-<h3 id="示意图-1"><a href="#示意图-1" class="headerlink" title="示意图"></a>示意图</h3><p><img src="/img/article/cry-mode/cry2.png" srcset="/img/loading.gif" lazyload alt="CBC"></p>
+<h3 id="示意图-1"><a href="#示意图-1" class="headerlink" title="示意图"></a>示意图</h3><p><img src="/img/article/cry-mode/cry2.png" alt="CBC"></p>
 <h3 id="优点和局限"><a href="#优点和局限" class="headerlink" title="优点和局限"></a>优点和局限</h3><ul>
 <li>每个密文分组依赖于其他明文分组 </li>
 <li>明文消息中的任何一点变化都会影响密文分组 </li>
@@ -305,7 +305,7 @@
 <li>解密：采用相同方案，但是使用加密函数而非解密函数</li>
 </ul>
 </blockquote>
-<h3 id="示意图-2"><a href="#示意图-2" class="headerlink" title="示意图"></a>示意图</h3><p><img src="/img/article/cry-mode/cry3.png" srcset="/img/loading.gif" lazyload alt="CFB"></p>
+<h3 id="示意图-2"><a href="#示意图-2" class="headerlink" title="示意图"></a>示意图</h3><p><img src="/img/article/cry-mode/cry3.png" alt="CFB"></p>
 <h3 id="优缺点"><a href="#优缺点" class="headerlink" title="优缺点"></a>优缺点</h3><ul>
 <li>当数据以位或字节形式到达时使用都是适当的 </li>
 <li>最通用的是流密码形式</li>
@@ -313,7 +313,7 @@
 <h2 id="输出反馈模式Output-FeedBack-OFB"><a href="#输出反馈模式Output-FeedBack-OFB" class="headerlink" title="输出反馈模式Output FeedBack (OFB)"></a>输出反馈模式Output FeedBack (OFB)</h2><blockquote>
 <p>结构上类似CFB，但是OFB中加密函数输出被反馈回移位寄存器，CFB中是密文单元被反馈回移位寄存器。优点是传输中的比特差错不会传播，缺点是比CFB更容易受报文流篡改攻击。</p>
 </blockquote>
-<h3 id="示意图-3"><a href="#示意图-3" class="headerlink" title="示意图"></a>示意图</h3><p><img src="/img/article/cry-mode/cry4.png" srcset="/img/loading.gif" lazyload alt="OFB"></p>
+<h3 id="示意图-3"><a href="#示意图-3" class="headerlink" title="示意图"></a>示意图</h3><p><img src="/img/article/cry-mode/cry4.png" alt="OFB"></p>
 <h3 id="优缺点-1"><a href="#优缺点-1" class="headerlink" title="优缺点"></a>优缺点</h3><ul>
 <li>OFB的一个优点是传输过程中在某位上发生的错误不会影响到其他位。比如，C1中有1位发生了错误，只会影响到P1的恢复，后续的明文单元不受影响。</li>
 <li>OFB的缺点是，抗消息流篡改攻击的能力不如CFB。即密文中的某位取反，恢复出的明文相应位也取反</li>
@@ -326,7 +326,7 @@
 <li>可以用于高速网络加密中</li>
 </ul>
 </blockquote>
-<h3 id="示意图-4"><a href="#示意图-4" class="headerlink" title="示意图"></a>示意图</h3><p><img src="/img/article/cry-mode/cry5.png" srcset="/img/loading.gif" lazyload alt="CTR"></p>
+<h3 id="示意图-4"><a href="#示意图-4" class="headerlink" title="示意图"></a>示意图</h3><p><img src="/img/article/cry-mode/cry5.png" alt="CTR"></p>
 <h3 id="优缺点-2"><a href="#优缺点-2" class="headerlink" title="优缺点"></a>优缺点</h3><ul>
 <li>高效<ul>
 <li>可以做并行加密</li>
@@ -419,7 +419,7 @@
             </div>
 
             
-  <article id="comments" lazyload>
+  <article id="comments">
     
   <script type="text/javascript">
     Fluid.utils.loadComments('#comments', function() {
@@ -630,10 +630,6 @@
 
 
 
-
-  
-    <script  src="/js/img-lazyload.js" ></script>
-  
 
 
 

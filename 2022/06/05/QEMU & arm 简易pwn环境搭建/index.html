@@ -72,7 +72,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"loora1n.github.io","root":"/","version":"1.9.1","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"7FyeJtpFNeVe68sybCfYzEW9-MdYXbMMI","app_key":"6eOvW7ArePsBmdpA5pwVSuzQ","server_url":null,"path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
+    var CONFIG = {"hostname":"loora1n.github.io","root":"/","version":"1.9.1","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"7FyeJtpFNeVe68sybCfYzEW9-MdYXbMMI","app_key":"6eOvW7ArePsBmdpA5pwVSuzQ","server_url":null,"path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -277,11 +277,11 @@
 </blockquote>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">##首先安装qemu</span><br>sudo apt update<br>sudo apt install qemu<br></code></pre></td></tr></table></figure>
 <p>安装好后可以用tab补全看看是否正确安装。在安装qemu后，对于静态链接的arm程序就已经可以直接运行了，使用命令<code>qemu-arm prog</code>运行32位的arm程序，其中prog指代程序名,对于64位程序使用<code>qemu-aarch64</code>但对于动态链接的程序还是无法正常运行，此时需要安装对应架构的动态链接库才可以正常运行。</p>
-<p><img src="/img/article/qemu-arm/qemu.png" srcset="/img/loading.gif" lazyload alt="Untitled"></p>
+<p><img src="/img/article/qemu-arm/qemu.png" alt="Untitled"></p>
 <h3 id="安装动态链接库"><a href="#安装动态链接库" class="headerlink" title="安装动态链接库"></a>安装动态链接库</h3><p>我们可以使用如下命令来搜索可安装的动态链接库。这里我们以64位为例，安装debug版本的libc</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">##搜索libc</span><br>sudo apt search <span class="hljs-string">&quot;libc6&quot;</span> | grep arm<br><span class="hljs-comment">##安装libc</span><br>sudo apt install libc6-dbg-arm64-cross<br></code></pre></td></tr></table></figure>
 
-<p><img src="/img/article/qemu-arm/qemu2.png" srcset="/img/loading.gif" lazyload alt="Untitled"></p>
+<p><img src="/img/article/qemu-arm/qemu2.png" alt="Untitled"></p>
 <p>安装完后，在<code>/usr</code>目录下会出现<code>aarch64-linux-gnu</code>这个文件夹，该文件夹即对应刚安装好的arm64位libc库，之后我们使用下面的命令指定arm程序的动态链接器，即可运行程序。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">qemu-aarch64 -g 12345 -L /usr/aarch64-linux-gnu/ ./prog<br><span class="hljs-comment">## -g 代表为程序运行分配的进程端口号，一般用于gdb调试，不填时系统自动分配</span><br><span class="hljs-comment">## -L 代表动态链接库的文件夹地址，静态链接程序可以不需要</span><br></code></pre></td></tr></table></figure>
 <p><code>qemu-arm</code>指的是<strong>arm32架构</strong>，用这个命令来运行32位的arm程序，而<code>qemu-aarch64</code>对应的才是<strong>arm64位架构的程序</strong>，上面两者默认都是小端程序；<code>qemu-armeb</code>用来运行<strong>大端的arm程序</strong>。当然在<strong>上面安装包截图中显示的是arm64，其实和aarch64指的是同一种体系结构，只不过命名略有不同</strong>。</p>
@@ -294,7 +294,7 @@
 <p>使用另外一个终端，打开qemu-multiarch</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs bash">┌─[loorain@ubuntu] - [~/dest0g3-520/ez-aarch] - [1568]<br>└─[$] sudo gdb-multiarch                                                                             [22:22:12]<br>......<br>......<br>pwndbg&gt; <span class="hljs-built_in">set</span> architecture aarch64<br>The target architecture is assumed to be aarch64<br>pwndbg&gt; target remote localhost:12345<br>Remote debugging using localhost:12345<br>warning: No executable has been specified and target does not support<br>determining executable automatically.  Try using the <span class="hljs-string">&quot;file&quot;</span> <span class="hljs-built_in">command</span>.<br></code></pre></td></tr></table></figure>
 
-<p><img src="/img/article/qemu-arm/qemu3.png" srcset="/img/loading.gif" lazyload alt="Untitled"></p>
+<p><img src="/img/article/qemu-arm/qemu3.png" alt="Untitled"></p>
 <p>另外在pwntools中，我们可以使用如下代码来动态调试程序。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python">p = process([<span class="hljs-string">&quot;qemu-aarch64&quot;</span>, <span class="hljs-string">&quot;-g&quot;</span>, <span class="hljs-string">&quot;12345&quot;</span>,<span class="hljs-string">&quot;-L&quot;</span>,<span class="hljs-string">&quot;/usr/aarch64-linux-gnu/&quot;</span>, <span class="hljs-string">&quot;./stack&quot;</span>])<br><span class="hljs-comment">##32arm只需要替换指令为qemu-arm，并更换对应的动态链接库</span><br></code></pre></td></tr></table></figure>
 
@@ -380,7 +380,7 @@
             </div>
 
             
-  <article id="comments" lazyload>
+  <article id="comments">
     
   <script type="text/javascript">
     Fluid.utils.loadComments('#comments', function() {
@@ -591,10 +591,6 @@
 
 
 
-
-  
-    <script  src="/js/img-lazyload.js" ></script>
-  
 
 
 

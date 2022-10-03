@@ -91,7 +91,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"loora1n.github.io","root":"/","version":"1.9.1","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"7FyeJtpFNeVe68sybCfYzEW9-MdYXbMMI","app_key":"6eOvW7ArePsBmdpA5pwVSuzQ","server_url":null,"path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
+    var CONFIG = {"hostname":"loora1n.github.io","root":"/","version":"1.9.1","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"7FyeJtpFNeVe68sybCfYzEW9-MdYXbMMI","app_key":"6eOvW7ArePsBmdpA5pwVSuzQ","server_url":null,"path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -302,7 +302,7 @@
 <li><p>利用搜索引擎搜集固件，还可以利用 <a target="_blank" rel="noopener" href="https://www.exploit-db.com/google-hacking-database">Google Hacking数据库</a>搜索固件或设备</p>
 </li>
 </ul>
-<p><img src="/img/article/iot-1/image-20220914135931400.png" srcset="/img/loading.gif" lazyload alt="image-20220914135931400"></p>
+<p><img src="/img/article/iot-1/image-20220914135931400.png" alt="image-20220914135931400"></p>
 <h3 id="MITM转发代理流量流程"><a href="#MITM转发代理流量流程" class="headerlink" title="MITM转发代理流量流程"></a>MITM转发代理流量流程</h3><blockquote>
 <p>接下来，我们简要介绍了如何使用Kali Linux、SSLstrip、 Ettercap和Wireshark搭建MITM测试环境，以在设备更新期间捕获设备 流量</p>
 </blockquote>
@@ -316,12 +316,12 @@
 <li><p>启动Ettercap GUI：<code>ettercap -G</code></p>
 </li>
 </ol>
-<p><img src="/img/article/iot-1/image-20220914134344716.png" srcset="/img/loading.gif" lazyload alt="image-20220914134344716"></p>
+<p><img src="/img/article/iot-1/image-20220914134344716.png" alt="image-20220914134344716"></p>
 <ol start="5">
 <li>在<code>primary interface</code>选择要监听的设备，这里选择网卡<code>eth0</code></li>
 <li>启动Wireshark程序，对<code>eth0</code>进行抓包</li>
 </ol>
-<p><img src="/img/article/iot-1/image-20220914135308518.png" srcset="/img/loading.gif" lazyload alt="image-20220914135308518"></p>
+<p><img src="/img/article/iot-1/image-20220914135308518.png" alt="image-20220914135308518"></p>
 <ol start="7">
 <li>根据实际需求过滤关注的报文</li>
 </ol>
@@ -332,24 +332,24 @@
 <p>固件压缩包<a target="_blank" rel="noopener" href="https://media.dlink.eu/ftp/products/dwr/dwr-932/driver_software/DWR-932_fw_revB_2_02_eu_en_20150709.zip">下载链接</a>，版本号为DWR-932_fw_revB_2_02_eu_en_20150709。安全研究员Gianni Carabelli和Pierre Kim已经在这款固件中挖掘出了漏洞，这里我们只是用于练习</p>
 </blockquote>
 <p>首先是从固件中提取文件系统，内有加密过的zip压缩包，可以使用<code>fcrackzip</code>进行密码爆破，这里省略爆破过程，直接输入密码 <strong>beUT9Z</strong></p>
-<p><img src="/img/article/iot-1/image-20220914145816127.png" srcset="/img/loading.gif" lazyload alt="压缩包已加密"></p>
+<p><img src="/img/article/iot-1/image-20220914145816127.png" alt="压缩包已加密"></p>
 <p>接下来可以使用针对yaffs2格式 的工具解压文件系统来提取2K-mdm-image-mdm9625.yaffs2文件，也可以直接通过Binwalk来完成提取工作。</p>
 <blockquote>
 <p>这里我采用的是unyaffs，下载链接 <a target="_blank" rel="noopener" href="https://code.google.com/archive/p/unyaffs/downloads">Google Code Archive - Long-term storage for Google Code Project Hosting.</a></p>
 </blockquote>
 <p>下载可执行程序后，使用<code>./unyaffs file.yaffs2</code>指令即可</p>
-<p><img src="/img/article/iot-1/image-20220914192637485.png" srcset="/img/loading.gif" lazyload alt="image-20220914192637485"></p>
-<p><img src="/img/article/iot-1/image-20220914192719147.png" srcset="/img/loading.gif" lazyload alt="解压出的文件系统"></p>
+<p><img src="/img/article/iot-1/image-20220914192637485.png" alt="image-20220914192637485"></p>
+<p><img src="/img/article/iot-1/image-20220914192719147.png" alt="解压出的文件系统"></p>
 <h3 id="手动信息挖掘"><a href="#手动信息挖掘" class="headerlink" title="手动信息挖掘"></a>手动信息挖掘</h3><p>然后我们需要在这个文件目录中查找有用的信息，如下</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs bash">find . -name <span class="hljs-string">&quot;*.conf&quot;</span><br>find . -name <span class="hljs-string">&quot;shadow&quot;</span><br>find . -name <span class="hljs-string">&quot;passwd&quot;</span><br>find . -name <span class="hljs-string">&quot;*config*&quot;</span><br>find . -name <span class="hljs-string">&quot;*history*&quot;</span><br>find . -name <span class="hljs-string">&quot;*ssh*_config*&quot;</span><br>find . -name <span class="hljs-string">&quot;*ssh_host*&quot;</span><br></code></pre></td></tr></table></figure>
 
-<p><img src="/img/article/iot-1/image-20220914194404354.png" srcset="/img/loading.gif" lazyload alt="搜索示例"></p>
+<p><img src="/img/article/iot-1/image-20220914194404354.png" alt="搜索示例"></p>
 <p>在<code>inadyn-mt.conf </code>文件中存储了路由器的no-IP配置信息，包括用于访问网站 <a target="_blank" rel="noopener" href="https://www.no-ip.com/">no-ip</a>的用户名和口令</p>
-<p><img src="/img/article/iot-1/image-20220914195009565.png" srcset="/img/loading.gif" lazyload alt="image-20220914195009565"></p>
+<p><img src="/img/article/iot-1/image-20220914195009565.png" alt="image-20220914195009565"></p>
 <p>查看shadow文件</p>
-<p><img src="/img/article/iot-1/image-20220914195346782.png" srcset="/img/loading.gif" lazyload alt="image-20220914195346782"></p>
+<p><img src="/img/article/iot-1/image-20220914195346782.png" alt="image-20220914195346782"></p>
 <p>查看passwd文件</p>
-<p><img src="/img/article/iot-1/image-20220914195118433.png" srcset="/img/loading.gif" lazyload alt="image-20220914195118433"></p>
+<p><img src="/img/article/iot-1/image-20220914195118433.png" alt="image-20220914195118433"></p>
 <h3 id="利用Firmwalker搜索敏感信息"><a href="#利用Firmwalker搜索敏感信息" class="headerlink" title="利用Firmwalker搜索敏感信息"></a>利用Firmwalker搜索敏感信息</h3><p>安装firmwalker</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">npm i -g eslint                                                                       <br><br>git <span class="hljs-built_in">clone</span> https://github.com/craigz28/firmwalker.git <br></code></pre></td></tr></table></figure>
 
@@ -359,30 +359,30 @@
 <blockquote>
 <p>Firmwalker脚本能够识别出多种敏感信息，包括二进制文件、 证书、IP地址、私钥等，同时将输出结果都保存在<strong>firmwalker.txt</strong>文 件之中</p>
 </blockquote>
-<p><img src="/img/article/iot-1/image-20220914202334231.png" srcset="/img/loading.gif" lazyload alt="image-20220914202334231"></p>
-<p><img src="/img/article/iot-1/image-20220914204146429.png" srcset="/img/loading.gif" lazyload alt="firmwalker.txt"></p>
+<p><img src="/img/article/iot-1/image-20220914202334231.png" alt="image-20220914202334231"></p>
+<p><img src="/img/article/iot-1/image-20220914204146429.png" alt="firmwalker.txt"></p>
 <h3 id="查看启动项"><a href="#查看启动项" class="headerlink" title="查看启动项"></a>查看启动项</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">cd</span> /etc/init.d<br></code></pre></td></tr></table></figure>
 
-<p><img src="/img/article/iot-1/image-20220914214159035.png" srcset="/img/loading.gif" lazyload alt="image-20220914214159035"></p>
+<p><img src="/img/article/iot-1/image-20220914214159035.png" alt="image-20220914214159035"></p>
 <p>这里可以查看 <strong>start_appmgr</strong>脚本，一般来说mgr就是主控程序的意思  </p>
-<p><img src="/img/article/iot-1/image-20220914214951502.png" srcset="/img/loading.gif" lazyload alt="image-20220914214951502"></p>
+<p><img src="/img/article/iot-1/image-20220914214951502.png" alt="image-20220914214951502"></p>
 <p>可以看到该脚本在开机时会以服务的形式运行<code>/bin/appmgr</code>程序，同时该脚本还会开启<strong>telnet</strong>服务</p>
-<p><img src="/img/article/iot-1/image-20220914215128332.png" srcset="/img/loading.gif" lazyload alt="image-20220914215128332"></p>
+<p><img src="/img/article/iot-1/image-20220914215128332.png" alt="image-20220914215128332"></p>
 <h3 id="appmgr分析"><a href="#appmgr分析" class="headerlink" title="appmgr分析"></a>appmgr分析</h3><p>用IDA PRO打开<code>/bin/appmg</code>程序进行逆向分析，可以发现有一个线程会持续监听 0.0.0.0:39889（UDP）（这个IP和端口还是没有确定出来），并等待传入控制命令,如果某个用户向目标路由器发送了一个 <code>HELODBG</code> 字符串，那么路由器将会执行 <code>/sbin/telnetd -l /bin/sh</code> ，并允许这名用户在未经身份验证的情况下以 root 用户的身份登录路由器。</p>
 <blockquote>
 <p>这里的-11877转换二进制后，末尾两字节为port，前面都是0，末尾字节为<strong>\xD1\x9B</strong>注意小段存储方式，则port号为<strong>9BD1</strong>即<strong>39889</strong></p>
 </blockquote>
-<p><img src="/img/article/iot-1/image-20220914223737117.png" srcset="/img/loading.gif" lazyload alt="image-20220914223737117"></p>
-<p><img src="/img/article/iot-1/image-20220914223809561.png" srcset="/img/loading.gif" lazyload alt="image-20220914223809561"></p>
+<p><img src="/img/article/iot-1/image-20220914223737117.png" alt="image-20220914223737117"></p>
+<p><img src="/img/article/iot-1/image-20220914223809561.png" alt="image-20220914223809561"></p>
 <p>搜索 <strong>mod_sysadm_config_passwd</strong> 函数，可以得到admin默认密码</p>
-<p><img src="/img/article/iot-1/image-20220914231714471.png" srcset="/img/loading.gif" lazyload alt="image-20220914231714471"></p>
+<p><img src="/img/article/iot-1/image-20220914231714471.png" alt="image-20220914231714471"></p>
 <p>路由器的管理员账号。设备的管理员账号默认为“admin”，而密码同样也是“admin”。</p>
 <p>搜索 <strong>wifi_get_default_wps_pin</strong> 函数</p>
-<p><img src="/img/article/iot-1/image-20220914231829944.png" srcset="/img/loading.gif" lazyload alt="image-20220914231829944"></p>
+<p><img src="/img/article/iot-1/image-20220914231829944.png" alt="image-20220914231829944"></p>
 <p>默认配置下，该路由器 WPS 系统的 PIN 码永远都是 <code>28296607</code> 因为这个 PIN 码是硬编码在 <code>/bin/appmgr</code> 程序中</p>
 <h3 id="fotad-分析"><a href="#fotad-分析" class="headerlink" title="fotad 分析"></a>fotad 分析</h3><p>路由器与 FOTA 服务器进行通信时的凭证数据硬编码在 <code>/sbin/fotad</code> 代码中，我们用 IDA 进行分析</p>
 <p>搜索 <code>sub_CAAC </code>函数,可以发现被 base64 过的凭证</p>
-<p><img src="/img/article/iot-1/image-20220914232237866.png" srcset="/img/loading.gif" lazyload alt="image-20220914232237866"></p>
+<p><img src="/img/article/iot-1/image-20220914232237866.png" alt="image-20220914232237866"></p>
 <p>用户&#x2F;密码如下</p>
 <figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs routeros">cWRwYzpxZHBj        qdpc:qdpc<br>cWRwZTpxZHBl        qdpe:qdpe<br><span class="hljs-attribute">cWRwOnFkcA</span>==        qdp:qdp<br></code></pre></td></tr></table></figure>
 
@@ -392,7 +392,7 @@
 <p>UPnP 的不安全性早在2006年就已经是众所周知的事情了。而该路由器中 UPnP 程序的安全等级仍然非常的低，处于局域网内的攻击者可以随意修改路由器的端口转发规则。</p>
 <p>文件 <code>/var/miniupnpd.conf</code> 是由 <code>/bin/appmgr</code> 程序生成的：</p>
 <p>搜索 sub_2AE0C 函数</p>
-<p><img src="/img/article/iot-1/image-20220914232710172.png" srcset="/img/loading.gif" lazyload alt="image-20220914232710172"></p>
+<p><img src="/img/article/iot-1/image-20220914232710172.png" alt="image-20220914232710172"></p>
 <p>该程序会生成 <code>/var/miniupnpd.conf</code>：</p>
 <figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs ini"><span class="hljs-attr">ext_ifname</span>=rmnet0<br><span class="hljs-attr">listening_ip</span>=bridge0<br><span class="hljs-attr">port</span>=<span class="hljs-number">2869</span><br><span class="hljs-attr">enable_natpmp</span>=<span class="hljs-literal">yes</span><br><span class="hljs-attr">enable_upnp</span>=<span class="hljs-literal">yes</span><br><span class="hljs-attr">bitrate_up</span>=<span class="hljs-number">14000000</span><br><span class="hljs-attr">bitrate_down</span>=<span class="hljs-number">14000000</span><br><span class="hljs-attr">secure_mode</span>=<span class="hljs-literal">no</span>      <span class="hljs-comment"># &quot;secure&quot; mode : when enabled, UPnP client are allowed to add mappings only to their IP.</span><br><span class="hljs-attr">presentation_url</span>=http://<span class="hljs-number">192.168</span>.<span class="hljs-number">1.1</span><br><span class="hljs-attr">system_uptime</span>=<span class="hljs-literal">yes</span><br><span class="hljs-attr">notify_interval</span>=<span class="hljs-number">30</span><br><span class="hljs-attr">upnp_forward_chain</span>=MINIUPNPD<br><span class="hljs-attr">upnp_nat_chain</span>=MINIUPNPD<br></code></pre></td></tr></table></figure>
 
@@ -404,7 +404,7 @@
 <blockquote>
 <p>Kali和Ubuntu安装都出现了一些问题人麻了</p>
 </blockquote>
-<p><img src="/img/article/iot-1/image-20220914212925067.png" srcset="/img/loading.gif" lazyload alt="Ubuntu安装错误"></p>
+<p><img src="/img/article/iot-1/image-20220914212925067.png" alt="Ubuntu安装错误"></p>
 <p>Kali则是报找不到<strong>Package ‘lsb-core’ has no installation candidate</strong></p>
 
               
@@ -487,7 +487,7 @@
             </div>
 
             
-  <article id="comments" lazyload>
+  <article id="comments">
     
   <script type="text/javascript">
     Fluid.utils.loadComments('#comments', function() {
@@ -698,10 +698,6 @@
 
 
 
-
-  
-    <script  src="/js/img-lazyload.js" ></script>
-  
 
 
 
