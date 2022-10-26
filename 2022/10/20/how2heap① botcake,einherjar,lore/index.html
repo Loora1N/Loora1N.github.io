@@ -16,12 +16,12 @@
   <meta name="author" content="Loora1N">
   <meta name="keywords" content="">
   
-    <meta name="description" content="本系列将针对glibc2.31及glibc2.35两个版本进行讨论，其他版本可以根据特性进行类推，建议先对各种堆块的基本特性和数据结构做已了解之后进行学习。  house_of_botcakehouse_of_botcake利用的是块的分割，使得只存在uaf漏洞的前提下实现堆块的溢出,达到获取任意地址的目的，下面我们用how2heap中的例子进行理解。 123456789101112131415">
+    <meta name="description" content="针对glibc2.31及glibc2.35两个版本中的house of botcake, house of einherjar, house of lore三种方式进行讨论，其他版本可以根据特性进行类推，建议先对各种堆块的基本特性和数据结构做已了解之后进行学习。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="how2heap① botcake,einherjar,lore">
+<meta property="og:title" content="【how2heap】 botcake,einherjar,lore">
 <meta property="og:url" content="http://loora1n.github.io/2022/10/20/how2heap%E2%91%A0%20botcake,einherjar,lore/index.html">
 <meta property="og:site_name" content="鷺雨のBlog">
-<meta property="og:description" content="本系列将针对glibc2.31及glibc2.35两个版本进行讨论，其他版本可以根据特性进行类推，建议先对各种堆块的基本特性和数据结构做已了解之后进行学习。  house_of_botcakehouse_of_botcake利用的是块的分割，使得只存在uaf漏洞的前提下实现堆块的溢出,达到获取任意地址的目的，下面我们用how2heap中的例子进行理解。 123456789101112131415">
+<meta property="og:description" content="针对glibc2.31及glibc2.35两个版本中的house of botcake, house of einherjar, house of lore三种方式进行讨论，其他版本可以根据特性进行类推，建议先对各种堆块的基本特性和数据结构做已了解之后进行学习。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://loora1n.github.io/img/article/how2heap1/backward_consolidate-1666247169487-3.png">
 <meta property="article:published_time" content="2022-10-20T07:36:07.932Z">
@@ -32,7 +32,7 @@
   
   
   
-  <title>how2heap① botcake,einherjar,lore - 鷺雨のBlog</title>
+  <title>【how2heap】 botcake,einherjar,lore - 鷺雨のBlog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -200,7 +200,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="how2heap① botcake,einherjar,lore"></span>
+            <span id="subtitle" data-typed-text="【how2heap】 botcake,einherjar,lore"></span>
           
         </div>
 
@@ -280,7 +280,7 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">how2heap① botcake,einherjar,lore</h1>
+            <h1 style="display: none">【how2heap】 botcake,einherjar,lore</h1>
             
             
               <div class="markdown-body">
@@ -330,7 +330,7 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>how2heap① botcake,einherjar,lore</div>
+      <div>【how2heap】 botcake,einherjar,lore</div>
       <div>http://loora1n.github.io/2022/10/20/how2heap① botcake,einherjar,lore/</div>
     </div>
     <div class="license-meta">
