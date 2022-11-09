@@ -199,7 +199,7 @@ table { /*代码框折叠*/
     padding: 0;
     word-break: initial;
     overflow-x: auto;
-    max-height: 22em;
+    max-height: 35em;
     overflow-y: auto !important;
 }
 table tr {
