@@ -226,6 +226,45 @@
     
     
       <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2022/11/25/%E3%80%90IO_FILE%E3%80%91FSOP/" target="_self">
+          <img src="/img/article/fsop/abort_routine.001.jpeg" alt="【IO_FILE】FSOP">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/11/25/%E3%80%90IO_FILE%E3%80%91FSOP/" target="_self">
+          【IO_FILE】FSOP
+        </a>
+      </h1>
+
+      
+      <a class="index-excerpt " href="/2022/11/25/%E3%80%90IO_FILE%E3%80%91FSOP/" target="_self">
+        <div>
+          FSOP 的核心思想就是劫持_IO_list_all 的值来伪造链表和其中的_IO_FILE 项，但是单纯的伪造只是构造了数据还需要某种方法进行触发。FSOP 选择的触发方法是调用_IO_flush_all_lockp，这个函数会刷新_IO_list_all 链表中所有项的文件流，相当于对每个 FILE 调用 fflush，也对应着会调用_IO_FILE_plus.vtable 中的_IO_ove
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-11-25 19:52" pubdate>
+              2022-11-25
+            </time>
+          </div>
+        
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
         <a href="/2022/11/13/%E3%80%90IO_FILE%E3%80%91house%20of%20cat/" target="_self">
           <img src="/img/article/house_of_cat/image-20221113210513266.png" alt="【IO_FILE】house of cat">
         </a>
@@ -564,45 +603,6 @@
             <i class="iconfont icon-date"></i>
             <time datetime="2022-10-18 16:59" pubdate>
               2022-10-18
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2022/10/17/NewStarCTF%20Week4%20PWN%20WP/" target="_self">
-          <img src="/img/article/newstarctf/image-20221017112826465.png" alt="NewStarCTF Week4 PWN WP">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/10/17/NewStarCTF%20Week4%20PWN%20WP/" target="_self">
-          NewStarCTF Week4 PWN WP
-        </a>
-      </h1>
-
-      
-      <a class="index-excerpt " href="/2022/10/17/NewStarCTF%20Week4%20PWN%20WP/" target="_self">
-        <div>
-          由于知道这个比赛比较晚，正式参与比赛是第四周的周三晚上，还差一道堆🐎，没有完成AK(但是拿了四个一血也好爽)。最后一题未解主要原因确实是自己在_IO_File相关利用了解不足，赛后找夜悠师傅拿到了exp，真的好感谢🌹
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-10-17 12:27" pubdate>
-              2022-10-17
             </time>
           </div>
         
