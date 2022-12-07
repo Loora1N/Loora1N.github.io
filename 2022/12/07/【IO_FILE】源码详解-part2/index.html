@@ -1,0 +1,790 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" >
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/icon/duck.png">
+  <link rel="icon" href="/img/icon/duck.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#f58f98">
+  <meta name="author" content="Loora1N">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="在上一篇文章中，主要对IO_FILE结构体相关以及fopen函数进行了深入的介绍。本文将继续从glibc2.36源码出发，介绍fread函数相关内容">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【IO_FILE】源码详解-part2">
+<meta property="og:url" content="http://loora1n.github.io/2022/12/07/%E3%80%90IO_FILE%E3%80%91%E6%BA%90%E7%A0%81%E8%AF%A6%E8%A7%A3-part2/index.html">
+<meta property="og:site_name" content="鷺雨のBlog">
+<meta property="og:description" content="在上一篇文章中，主要对IO_FILE结构体相关以及fopen函数进行了深入的介绍。本文将继续从glibc2.36源码出发，介绍fread函数相关内容">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://loora1n.github.io/img/article/fopen/t017448d9547dc07159-1669695992482-3.png">
+<meta property="article:published_time" content="2022-12-07T12:53:37.193Z">
+<meta property="article:modified_time" content="2022-12-07T12:53:37.193Z">
+<meta property="article:author" content="Loora1N">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://loora1n.github.io/img/article/fopen/t017448d9547dc07159-1669695992482-3.png">
+  
+  
+  
+  <title>【IO_FILE】源码详解-part2 - 鷺雨のBlog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/fluid-extention.css">
+<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/bynotes/texiao/source/css/gundongtiao.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"loora1n.github.io","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"lftEbNU4XPuR5dgHNV3WdWxP-gzGzoHsz","app_key":"b3uLUVGLeOWDwREWHMBr0jo9","server_url":"https://lftebnu4.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>鷺雨のBlog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/bg/3.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="【IO_FILE】源码详解-part2"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-12-07 20:53" pubdate>
+          2022年12月7日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          16k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          132 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          阅读量 <span id="leancloud-page-views"></span>
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">【IO_FILE】源码详解-part2</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
+<p>在上一篇文章中，主要对IO_FILE结构体相关以及fopen函数进行了深入的介绍。本文将继续从glibc2.36源码出发，介绍fread函数相关内容</p>
+</blockquote>
+<h2 id="fread"><a href="#fread" class="headerlink" title="fread"></a>fread</h2><p>首先是一个宏定义，替换为<code>_IO_fread</code>函数</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">//	htps://elixir.bootlin.com/glibc/latest/source/stdio-common/getw.c#L21</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> fread(p, m, n, s) _IO_fread (p, m, n, s)</span><br><br><span class="hljs-comment">// https://elixir.bootlin.com/glibc/latest/source/libio/iofread.c#L30</span><br><span class="hljs-type">size_t</span><br>_IO_fread (<span class="hljs-type">void</span> *buf, <span class="hljs-type">size_t</span> size, <span class="hljs-type">size_t</span> count, FILE *fp)<br>&#123;<br>  <span class="hljs-type">size_t</span> bytes_requested = size * count;<br>  <span class="hljs-type">size_t</span> bytes_read;<br>  CHECK_FILE (fp, <span class="hljs-number">0</span>);<br>  <span class="hljs-keyword">if</span> (bytes_requested == <span class="hljs-number">0</span>)<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>  _IO_acquire_lock (fp);<br>  bytes_read = _IO_sgetn (fp, (<span class="hljs-type">char</span> *) buf, bytes_requested);<br>  _IO_release_lock (fp);<br>  <span class="hljs-keyword">return</span> bytes_requested == bytes_read ? count : bytes_read / size;<br>&#125;<br>libc_hidden_def (_IO_fread)<br></code></pre></td></tr></table></figure>
+
+<h2 id="CHECK-FILE"><a href="#CHECK-FILE" class="headerlink" title="CHECK_FILE"></a>CHECK_FILE</h2><p>首先进入<code>CHECK_FILE</code>对<strong>fp</strong>进行检查</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// https://elixir.bootlin.com/glibc/latest/source/libio/libioP.h#L866</span><br><span class="hljs-meta">#<span class="hljs-keyword">ifdef</span> IO_DEBUG</span><br><span class="hljs-meta"># <span class="hljs-keyword">define</span> CHECK_FILE(FILE, RET) do &#123;				\</span><br><span class="hljs-meta">    <span class="hljs-keyword">if</span> ((FILE) == NULL						\</span><br><span class="hljs-meta">	|| ((FILE)-&gt;_flags &amp; _IO_MAGIC_MASK) != _IO_MAGIC)	\</span><br><span class="hljs-meta">      &#123;								\</span><br><span class="hljs-meta">	__set_errno (EINVAL);					\</span><br><span class="hljs-meta">	return RET;						\</span><br><span class="hljs-meta">      &#125;								\</span><br><span class="hljs-meta">  &#125; while (0)</span><br><span class="hljs-meta">#<span class="hljs-keyword">else</span></span><br><span class="hljs-meta"># <span class="hljs-keyword">define</span> CHECK_FILE(FILE, RET) do &#123; &#125; while (0)</span><br><span class="hljs-meta">#<span class="hljs-keyword">endif</span></span><br></code></pre></td></tr></table></figure>
+
+<p>这里放置一下所有用于检测flag的宏定义的值,目前后16位只使用了15个，0x4000还未设定</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// https://elixir.bootlin.com/glibc/latest/source/libio/libio.h#L67</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> _IO_MAGIC         0xFBAD0000 <span class="hljs-comment">/* Magic number */</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> _IO_MAGIC_MASK    0xFFFF0000</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> _IO_USER_BUF          0x0001 <span class="hljs-comment">/* Don&#x27;t deallocate buffer on close. */</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> _IO_UNBUFFERED        0x0002</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> _IO_NO_READS          0x0004 <span class="hljs-comment">/* Reading not allowed.  */</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> _IO_NO_WRITES         0x0008 <span class="hljs-comment">/* Writing not allowed.  */</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> _IO_EOF_SEEN          0x0010</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> _IO_ERR_SEEN          0x0020</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> _IO_DELETE_DONT_CLOSE 0x0040 <span class="hljs-comment">/* Don&#x27;t call close(_fileno) on close.  */</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> _IO_LINKED            0x0080 <span class="hljs-comment">/* In the list of all open files.  */</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> _IO_IN_BACKUP         0x0100</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> _IO_LINE_BUF          0x0200</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> _IO_TIED_PUT_GET      0x0400 <span class="hljs-comment">/* Put and get pointer move in unison.  */</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> _IO_CURRENTLY_PUTTING 0x0800</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> _IO_IS_APPENDING      0x1000</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> _IO_IS_FILEBUF        0x2000</span><br>                           <span class="hljs-comment">/* 0x4000  No longer used, reserved for compat.  */</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> _IO_USER_LOCK         0x8000</span><br></code></pre></td></tr></table></figure>
+
+<p>所以这里的函数就是检测<code>(FILE)-&gt;_flags &amp; _IO_MAGIC_MASK) != _IO_MAGIC</code>即，高位是否为<strong>0xFBAD0000</strong>。然后会调用<code> _IO_acquire_lock</code>，这个宏同样是对结构体进行一些处理，基本可以无视</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// https://elixir.bootlin.com/glibc/latest/source/sysdeps/generic/stdio-lock.h#L51</span><br><span class="hljs-meta"># <span class="hljs-keyword">ifdef</span> __EXCEPTIONS</span><br><span class="hljs-meta"># <span class="hljs-keyword">define</span> _IO_acquire_lock(_fp) \</span><br><span class="hljs-meta">  do &#123;									      \</span><br><span class="hljs-meta">    FILE *_IO_acquire_lock_file						      \</span><br><span class="hljs-meta">	__attribute__((cleanup (_IO_acquire_lock_fct)))			      \</span><br><span class="hljs-meta">	= (_fp);							      \</span><br><span class="hljs-meta">    _IO_flockfile (_IO_acquire_lock_file);</span><br><span class="hljs-meta"># <span class="hljs-keyword">else</span></span><br><span class="hljs-meta">#  <span class="hljs-keyword">define</span> _IO_acquire_lock(_fp) _IO_acquire_lock_needs_exceptions_enabled</span><br><span class="hljs-meta"># <span class="hljs-keyword">endif</span></span><br><span class="hljs-meta"># <span class="hljs-keyword">define</span> _IO_release_lock(_fp) ; &#125; while (0)</span><br><br><span class="hljs-meta">#<span class="hljs-keyword">endif</span></span><br></code></pre></td></tr></table></figure>
+
+<h2 id="IO-sgetn"><a href="#IO-sgetn" class="headerlink" title="_IO_sgetn"></a>_IO_sgetn</h2><p>核心部分是这里的<code>_IO_sgetn</code>函数</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// https://elixir.bootlin.com/glibc/latest/source/libio/genops.c#L408</span><br><span class="hljs-type">size_t</span><br>_IO_sgetn (FILE *fp, <span class="hljs-type">void</span> *data, <span class="hljs-type">size_t</span> n)<br>&#123;<br>  <span class="hljs-comment">/* FIXME handle putback buffer here! */</span><br>  <span class="hljs-keyword">return</span> _IO_XSGETN (fp, data, n);<br>&#125;<br>libc_hidden_def (_IO_sgetn)<br><br><span class="hljs-comment">// https://elixir.bootlin.com/glibc/latest/source/libio/libioP.h#L182</span><br><span class="hljs-keyword">typedef</span> <span class="hljs-title function_">size_t</span> <span class="hljs-params">(*_IO_xsgetn_t)</span> <span class="hljs-params">(FILE *FP, <span class="hljs-type">void</span> *DATA, <span class="hljs-type">size_t</span> N)</span>;<br><span class="hljs-meta">#<span class="hljs-keyword">define</span> _IO_XSGETN(FP, DATA, N) JUMP2 (__xsgetn, FP, DATA, N)</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> _IO_WXSGETN(FP, DATA, N) WJUMP2 (__xsgetn, FP, DATA, N)</span><br></code></pre></td></tr></table></figure>
+
+<p>在源码中跟踪这个宏到这里就断了，为找实际函数调用，所以我写了一个实例代码用于gdb跟踪。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;string.h&gt;</span></span><br> <br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span><br>&#123;<br>   FILE *fp;<br>   <span class="hljs-type">char</span> c[] = <span class="hljs-string">&quot;This is runoob&quot;</span>;<br>   <span class="hljs-type">char</span> buffer[<span class="hljs-number">20</span>];<br>   fp = fopen(<span class="hljs-string">&quot;file.txt&quot;</span>, <span class="hljs-string">&quot;w+&quot;</span>);   <span class="hljs-comment">/* 打开文件用于读写 */</span><br>   fwrite(c, <span class="hljs-built_in">strlen</span>(c) + <span class="hljs-number">1</span>, <span class="hljs-number">1</span>, fp);   <span class="hljs-comment">/* 写入数据到文件 */</span><br>   fseek(fp, <span class="hljs-number">0</span>, SEEK_SET);   <span class="hljs-comment">/* 查找文件的开头 */</span><br>   fread(buffer, <span class="hljs-built_in">strlen</span>(c)+<span class="hljs-number">1</span>, <span class="hljs-number">1</span>, fp);   <span class="hljs-comment">/* 读取并显示数据 */</span><br>   <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%s\n&quot;</span>, buffer);<br>   fclose(fp);<br>   <span class="hljs-keyword">return</span>(<span class="hljs-number">0</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>我们看一下汇编的<code>_IO_sgetn</code>函数</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs assembly">0x7ffff7e0d050 &lt;__GI__IO_sgetn&gt;:     endbr64 <br>0x7ffff7e0d054 &lt;__GI__IO_sgetn+4&gt;:   push   rbx<br>0x7ffff7e0d055 &lt;__GI__IO_sgetn+5&gt;:   lea    rcx,[rip+0x1879a4]        # 0x7ffff7f94a00 &lt;_IO_helper_jumps&gt;<br>0x7ffff7e0d05c &lt;__GI__IO_sgetn+12&gt;:  lea    rax,[rip+0x188705]        # 0x7ffff7f95768<br>0x7ffff7e0d063 &lt;__GI__IO_sgetn+19&gt;:  sub    rax,rcx<br>0x7ffff7e0d066 &lt;__GI__IO_sgetn+22&gt;:  sub    rsp,0x20<br>0x7ffff7e0d06a &lt;__GI__IO_sgetn+26&gt;:  mov    rbx,QWORD PTR [rdi+0xd8]<br>0x7ffff7e0d071 &lt;__GI__IO_sgetn+33&gt;:  mov    r8,rbx<br>0x7ffff7e0d074 &lt;__GI__IO_sgetn+36&gt;:  sub    r8,rcx<br>0x7ffff7e0d077 &lt;__GI__IO_sgetn+39&gt;:  cmp    rax,r8<br>0x7ffff7e0d07a &lt;__GI__IO_sgetn+42&gt;:  jbe    0x7ffff7e0d090 &lt;__GI__IO_sgetn+64&gt;<br>0x7ffff7e0d07c &lt;__GI__IO_sgetn+44&gt;:  mov    rax,QWORD PTR [rbx+0x40]<br>0x7ffff7e0d080 &lt;__GI__IO_sgetn+48&gt;:  add    rsp,0x20<br>0x7ffff7e0d084 &lt;__GI__IO_sgetn+52&gt;:  pop    rbx<br>0x7ffff7e0d085 &lt;__GI__IO_sgetn+53&gt;:  jmp    rax<br>0x7ffff7e0d087 &lt;__GI__IO_sgetn+55&gt;:  nop    WORD PTR [rax+rax*1+0x0]<br>0x7ffff7e0d090 &lt;__GI__IO_sgetn+64&gt;:  mov    QWORD PTR [rsp+0x18],rdx<br>0x7ffff7e0d095 &lt;__GI__IO_sgetn+69&gt;:  mov    QWORD PTR [rsp+0x10],rsi<br>0x7ffff7e0d09a &lt;__GI__IO_sgetn+74&gt;:  mov    QWORD PTR [rsp+0x8],rdi<br>0x7ffff7e0d09f &lt;__GI__IO_sgetn+79&gt;:  call   0x7ffff7e08f70 &lt;_IO_vtable_check&gt;<br>0x7ffff7e0d0a4 &lt;__GI__IO_sgetn+84&gt;:  mov    rax,QWORD PTR [rbx+0x40]<br>0x7ffff7e0d0a8 &lt;__GI__IO_sgetn+88&gt;:  mov    rdx,QWORD PTR [rsp+0x18]<br>0x7ffff7e0d0ad &lt;__GI__IO_sgetn+93&gt;:  mov    rsi,QWORD PTR [rsp+0x10]<br>0x7ffff7e0d0b2 &lt;__GI__IO_sgetn+98&gt;:  mov    rdi,QWORD PTR [rsp+0x8]<br>0x7ffff7e0d0b7 &lt;__GI__IO_sgetn+103&gt;: add    rsp,0x20   <br>0x7ffff7e0d0bb &lt;__GI__IO_sgetn+107&gt;: pop    rbx<br>0x7ffff7e0d0bc &lt;__GI__IO_sgetn+108&gt;: jmp    rax<br></code></pre></td></tr></table></figure>
+
+<p>我们先分析前半部分，即<strong>jbe</strong>之前的部分</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs assembly">0x7ffff7e0d055 &lt;__GI__IO_sgetn+5&gt;:   lea    rcx,[rip+0x1879a4]        # 0x7ffff7f94a00 &lt;_IO_helper_jumps&gt;<br>0x7ffff7e0d05c &lt;__GI__IO_sgetn+12&gt;:  lea    rax,[rip+0x188705]        # 0x7ffff7f95768<br>0x7ffff7e0d063 &lt;__GI__IO_sgetn+19&gt;:  sub    rax,rcx<br>0x7ffff7e0d066 &lt;__GI__IO_sgetn+22&gt;:  sub    rsp,0x20<br>0x7ffff7e0d06a &lt;__GI__IO_sgetn+26&gt;:  mov    rbx,QWORD PTR [rdi+0xd8]<br>0x7ffff7e0d071 &lt;__GI__IO_sgetn+33&gt;:  mov    r8,rbx<br>0x7ffff7e0d074 &lt;__GI__IO_sgetn+36&gt;:  sub    r8,rcx<br>0x7ffff7e0d077 &lt;__GI__IO_sgetn+39&gt;:  cmp    rax,r8<br>0x7ffff7e0d07a &lt;__GI__IO_sgetn+42&gt;:  jbe    0x7ffff7e0d090 &lt;__GI__IO_sgetn+64&gt;<br></code></pre></td></tr></table></figure>
+
+<p><strong>rdi</strong>指向的就是<code>IO_FILE</code>结构体开头，所以<strong>rdi+0xd8</strong>就是<strong>vtable</strong>指向的值，其实就是判断<strong>rax</strong>是否小于等于<strong>vtable</strong>，然后决定跳转。</p>
+<ul>
+<li>如果此时不跳转，即<strong>vtable &gt; rax</strong>，会跳转到将<strong>rbx+0x40</strong>的地方，而由前半部分，我们知道<strong>rbx</strong>就是<strong>vtable</strong></li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs assembly">0x7ffff7e0d07c &lt;__GI__IO_sgetn+44&gt;:  mov    rax,QWORD PTR [rbx+0x40]<br>0x7ffff7e0d080 &lt;__GI__IO_sgetn+48&gt;:  add    rsp,0x20<br>0x7ffff7e0d084 &lt;__GI__IO_sgetn+52&gt;:  pop    rbx<br>0x7ffff7e0d085 &lt;__GI__IO_sgetn+53&gt;:  jmp    rax<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>如果此时跳转，即<strong>vtable &lt;&#x3D; rax</strong>，同样会跳转到<strong>rbx+0x40</strong>的地方，不过区别是先进行了一次vtable的check</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs assembly">0x7ffff7e0d090 &lt;__GI__IO_sgetn+64&gt;:  mov    QWORD PTR [rsp+0x18],rdx<br>0x7ffff7e0d095 &lt;__GI__IO_sgetn+69&gt;:  mov    QWORD PTR [rsp+0x10],rsi<br>0x7ffff7e0d09a &lt;__GI__IO_sgetn+74&gt;:  mov    QWORD PTR [rsp+0x8],rdi<br>0x7ffff7e0d09f &lt;__GI__IO_sgetn+79&gt;:  call   0x7ffff7e08f70 &lt;_IO_vtable_check&gt;<br>0x7ffff7e0d0a4 &lt;__GI__IO_sgetn+84&gt;:  mov    rax,QWORD PTR [rbx+0x40]<br>0x7ffff7e0d0a8 &lt;__GI__IO_sgetn+88&gt;:  mov    rdx,QWORD PTR [rsp+0x18]<br>0x7ffff7e0d0ad &lt;__GI__IO_sgetn+93&gt;:  mov    rsi,QWORD PTR [rsp+0x10]<br>0x7ffff7e0d0b2 &lt;__GI__IO_sgetn+98&gt;:  mov    rdi,QWORD PTR [rsp+0x8]<br>0x7ffff7e0d0b7 &lt;__GI__IO_sgetn+103&gt;: add    rsp,0x20<br>0x7ffff7e0d0bb &lt;__GI__IO_sgetn+107&gt;: pop    rbx<br>0x7ffff7e0d0bc &lt;__GI__IO_sgetn+108&gt;: jmp    rax<br></code></pre></td></tr></table></figure>
+
+<h3 id="IO-file-xsgetn"><a href="#IO-file-xsgetn" class="headerlink" title="_IO_file_xsgetn"></a>_IO_file_xsgetn</h3><p><img src="/img/article/fread/image-20221207172245186.png" alt="image-20221207172245186"></p>
+<p>根据gdb动调的结果，<strong>rbx+0x40</strong>即<strong>vtable</strong>偏移为0x40处的函数是<code>_IO_file_xsgetn</code>，在源码中可以查到其定义如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// https://elixir.bootlin.com/glibc/latest/source/libio/fileops.c#L1271</span><br><span class="hljs-type">size_t</span><br>_IO_file_xsgetn (FILE *fp, <span class="hljs-type">void</span> *data, <span class="hljs-type">size_t</span> n)<br>&#123;<br>  <span class="hljs-type">size_t</span> want, have;<br>  <span class="hljs-type">ssize_t</span> count;<br>  <span class="hljs-type">char</span> *s = data;<br><br>  want = n;<br><br>  <span class="hljs-keyword">if</span> (fp-&gt;_IO_buf_base == <span class="hljs-literal">NULL</span>)<br>    &#123;<br>      <span class="hljs-comment">/* Maybe we already have a push back pointer.  */</span><br>      <span class="hljs-keyword">if</span> (fp-&gt;_IO_save_base != <span class="hljs-literal">NULL</span>)<br>	&#123;<br>	  <span class="hljs-built_in">free</span> (fp-&gt;_IO_save_base);<br>	  fp-&gt;_flags &amp;= ~_IO_IN_BACKUP;<br>	&#125;<br>      _IO_doallocbuf (fp);<br>    &#125;<br><br>  <span class="hljs-keyword">while</span> (want &gt; <span class="hljs-number">0</span>)<br>    &#123;<br>      have = fp-&gt;_IO_read_end - fp-&gt;_IO_read_ptr;<br>      <span class="hljs-keyword">if</span> (want &lt;= have)<br>	&#123;<br>	  <span class="hljs-built_in">memcpy</span> (s, fp-&gt;_IO_read_ptr, want);<br>	  fp-&gt;_IO_read_ptr += want;<br>	  want = <span class="hljs-number">0</span>;<br>	&#125;<br>      <span class="hljs-keyword">else</span><br>	&#123;<br>	  <span class="hljs-keyword">if</span> (have &gt; <span class="hljs-number">0</span>)<br>	    &#123;<br>	      s = __mempcpy (s, fp-&gt;_IO_read_ptr, have);<br>	      want -= have;<br>	      fp-&gt;_IO_read_ptr += have;<br>	    &#125;<br><br>	  <span class="hljs-comment">/* Check for backup and repeat */</span><br>	  <span class="hljs-keyword">if</span> (_IO_in_backup (fp))<br>	    &#123;<br>	      _IO_switch_to_main_get_area (fp);<br>	      <span class="hljs-keyword">continue</span>;<br>	    &#125;<br><br>	  <span class="hljs-comment">/* If we now want less than a buffer, underflow and repeat</span><br><span class="hljs-comment">	     the copy.  Otherwise, _IO_SYSREAD directly to</span><br><span class="hljs-comment">	     the user buffer. */</span><br>	  <span class="hljs-keyword">if</span> (fp-&gt;_IO_buf_base<br>	      &amp;&amp; want &lt; (<span class="hljs-type">size_t</span>) (fp-&gt;_IO_buf_end - fp-&gt;_IO_buf_base))<br>	    &#123;<br>	      <span class="hljs-keyword">if</span> (__underflow (fp) == EOF)<br>		<span class="hljs-keyword">break</span>;<br><br>	      <span class="hljs-keyword">continue</span>;<br>	    &#125;<br><br>	  <span class="hljs-comment">/* These must be set before the sysread as we might longjmp out</span><br><span class="hljs-comment">	     waiting for input. */</span><br>	  _IO_setg (fp, fp-&gt;_IO_buf_base, fp-&gt;_IO_buf_base, fp-&gt;_IO_buf_base);<br>	  _IO_setp (fp, fp-&gt;_IO_buf_base, fp-&gt;_IO_buf_base);<br><br>	  <span class="hljs-comment">/* Try to maintain alignment: read a whole number of blocks.  */</span><br>	  count = want;<br>	  <span class="hljs-keyword">if</span> (fp-&gt;_IO_buf_base)<br>	    &#123;<br>	      <span class="hljs-type">size_t</span> block_size = fp-&gt;_IO_buf_end - fp-&gt;_IO_buf_base;<br>	      <span class="hljs-keyword">if</span> (block_size &gt;= <span class="hljs-number">128</span>)<br>		count -= want % block_size;<br>	    &#125;<br><br>	  count = _IO_SYSREAD (fp, s, count);<br>	  <span class="hljs-keyword">if</span> (count &lt;= <span class="hljs-number">0</span>)<br>	    &#123;<br>	      <span class="hljs-keyword">if</span> (count == <span class="hljs-number">0</span>)<br>		fp-&gt;_flags |= _IO_EOF_SEEN;<br>	      <span class="hljs-keyword">else</span><br>		fp-&gt;_flags |= _IO_ERR_SEEN;<br><br>	      <span class="hljs-keyword">break</span>;<br>	    &#125;<br><br>	  s += count;<br>	  want -= count;<br>	  <span class="hljs-keyword">if</span> (fp-&gt;_offset != _IO_pos_BAD)<br>	    _IO_pos_adjust (fp-&gt;_offset, count);<br>	&#125;<br>    &#125;<br><br>  <span class="hljs-keyword">return</span> n - want;<br>&#125;<br>libc_hidden_def (_IO_file_xsgetn)<br></code></pre></td></tr></table></figure>
+
+<p>我们把这段代码拆分成几个部分分别来进行分析</p>
+<h4 id="Part-1"><a href="#Part-1" class="headerlink" title="Part-1"></a>Part-1</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">if</span> (fp-&gt;_IO_buf_base == <span class="hljs-literal">NULL</span>)<br>    &#123;<br>      <span class="hljs-comment">/* Maybe we already have a push back pointer.  */</span><br>      <span class="hljs-keyword">if</span> (fp-&gt;_IO_save_base != <span class="hljs-literal">NULL</span>)<br>	&#123;<br>	  <span class="hljs-built_in">free</span> (fp-&gt;_IO_save_base);<br>	  fp-&gt;_flags &amp;= ~_IO_IN_BACKUP;<br>	&#125;<br>      _IO_doallocbuf (fp);<br>    &#125;<br></code></pre></td></tr></table></figure>
+
+<p>开头是一个判断，如果 <strong>_IO_buf_base</strong> 为空即代表也许已经存在一个 <strong>push back pointer</strong>，然后会检查 <strong>_IO_save_base</strong>是否为空。如果不空，就会free掉这个指针，并且将 <strong>_IO_IN_BACKUP</strong>这一位置零。然后调用<code>_IO_doallocbuf</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// https://elixir.bootlin.com/glibc/latest/source/libio/genops.c#L342</span><br><span class="hljs-type">void</span><br>_IO_doallocbuf (FILE *fp)<br>&#123;<br>  <span class="hljs-keyword">if</span> (fp-&gt;_IO_buf_base)<br>    <span class="hljs-keyword">return</span>;<br>  <span class="hljs-keyword">if</span> (!(fp-&gt;_flags &amp; _IO_UNBUFFERED) || fp-&gt;_mode &gt; <span class="hljs-number">0</span>)<br>    <span class="hljs-keyword">if</span> (_IO_DOALLOCATE (fp) != EOF)<br>      <span class="hljs-keyword">return</span>;<br>  _IO_setb (fp, fp-&gt;_shortbuf, fp-&gt;_shortbuf+<span class="hljs-number">1</span>, <span class="hljs-number">0</span>);<br>&#125;<br>libc_hidden_def (_IO_doallocbuf)<br></code></pre></td></tr></table></figure>
+
+<p>这里如果<strong>fp-&gt;_IO_buf_base</strong> 非空，代表已经初始化完成，直接返回。反之在检测<strong>flag</strong>之后调用<code>_IO_DOALLOCATE</code>，其实就是<code>_IO_file_doallocate </code>函数：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// https://elixir.bootlin.com/glibc/latest/source/libio/filedoalloc.c#L77</span><br><span class="hljs-type">int</span><br>_IO_file_doallocate (FILE *fp)<br>&#123;<br>  <span class="hljs-type">size_t</span> size;<br>  <span class="hljs-type">char</span> *p;<br>  <span class="hljs-class"><span class="hljs-keyword">struct</span> __<span class="hljs-title">stat64_t64</span> <span class="hljs-title">st</span>;</span><br><br>  size = BUFSIZ;<br>  <span class="hljs-keyword">if</span> (fp-&gt;_fileno &gt;= <span class="hljs-number">0</span> &amp;&amp; __builtin_expect (_IO_SYSSTAT (fp, &amp;st), <span class="hljs-number">0</span>) &gt;= <span class="hljs-number">0</span>)<br>    &#123;<br>      <span class="hljs-keyword">if</span> (S_ISCHR (st.st_mode))<br>	&#123;<br>	  <span class="hljs-comment">/* Possibly a tty.  */</span><br>	  <span class="hljs-keyword">if</span> (<br><span class="hljs-meta">#<span class="hljs-keyword">ifdef</span> DEV_TTY_P</span><br>	      DEV_TTY_P (&amp;st) ||<br><span class="hljs-meta">#<span class="hljs-keyword">endif</span></span><br>	      local_isatty (fp-&gt;_fileno))<br>	    fp-&gt;_flags |= _IO_LINE_BUF;<br>	&#125;<br><span class="hljs-meta">#<span class="hljs-keyword">if</span> defined _STATBUF_ST_BLKSIZE</span><br>      <span class="hljs-keyword">if</span> (st.st_blksize &gt; <span class="hljs-number">0</span> &amp;&amp; st.st_blksize &lt; BUFSIZ)<br>	size = st.st_blksize;<br><span class="hljs-meta">#<span class="hljs-keyword">endif</span></span><br>    &#125;<br>  p = <span class="hljs-built_in">malloc</span> (size);<br>  <span class="hljs-keyword">if</span> (__glibc_unlikely (p == <span class="hljs-literal">NULL</span>))<br>    <span class="hljs-keyword">return</span> EOF;<br>  _IO_setb (fp, p, p + size, <span class="hljs-number">1</span>);<br>  <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br>&#125;<br>libc_hidden_def (_IO_file_doallocate)<br></code></pre></td></tr></table></figure>
+
+<p>这个函数主要对<code>_IO_FILE</code>进行初始化，</p>
+<ul>
+<li>首先，对<strong>fileno</strong>做最基本的检测，然后调用<code>__stat</code>，用于获取文件信息</li>
+<li>然后调用malloc申请一个空间</li>
+<li>调用<code>_IO_setb</code>,对 <strong>_IO_buf_base</strong>和 <strong>_IO_buf_end</strong>进行了赋值为刚刚申请 <strong>chunk</strong>的 <strong>p</strong>和 <strong>p+1</strong></li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// https://elixir.bootlin.com/glibc/latest/source/libio/genops.c#L328</span><br><span class="hljs-type">void</span><br>_IO_setb (FILE *f, <span class="hljs-type">char</span> *b, <span class="hljs-type">char</span> *eb, <span class="hljs-type">int</span> a)<br>&#123;<br>  <span class="hljs-keyword">if</span> (f-&gt;_IO_buf_base &amp;&amp; !(f-&gt;_flags &amp; _IO_USER_BUF))<br>    <span class="hljs-built_in">free</span> (f-&gt;_IO_buf_base);<br>  f-&gt;_IO_buf_base = b;<br>  f-&gt;_IO_buf_end = eb;<br>  <span class="hljs-keyword">if</span> (a)<br>    f-&gt;_flags &amp;= ~_IO_USER_BUF;<br>  <span class="hljs-keyword">else</span><br>    f-&gt;_flags |= _IO_USER_BUF;<br>&#125;<br>libc_hidden_def (_IO_setb)<br></code></pre></td></tr></table></figure>
+
+<h4 id="Part-2"><a href="#Part-2" class="headerlink" title="Part-2"></a>Part-2</h4><p>这里开始便是读入的主体部分</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">while</span> (want &gt; <span class="hljs-number">0</span>)<br>    &#123;<br>      have = fp-&gt;_IO_read_end - fp-&gt;_IO_read_ptr;<br>      <span class="hljs-keyword">if</span> (want &lt;= have)<br>	&#123;<br>	  <span class="hljs-built_in">memcpy</span> (s, fp-&gt;_IO_read_ptr, want);<br>	  fp-&gt;_IO_read_ptr += want;<br>	  want = <span class="hljs-number">0</span>;<br>	&#125;<br>      <span class="hljs-keyword">else</span><br>	&#123;<br>	  <span class="hljs-keyword">if</span> (have &gt; <span class="hljs-number">0</span>)<br>	    &#123;<br>	      s = __mempcpy (s, fp-&gt;_IO_read_ptr, have);<br>	      want -= have;<br>	      fp-&gt;_IO_read_ptr += have;<br>	    &#125;<br><br>	  <span class="hljs-comment">/* Check for backup and repeat */</span><br>	  <span class="hljs-keyword">if</span> (_IO_in_backup (fp))<br>	    &#123;<br>	      _IO_switch_to_main_get_area (fp);<br>	      <span class="hljs-keyword">continue</span>;<br>	    &#125;<br><br>	  <span class="hljs-comment">/* If we now want less than a buffer, underflow and repeat</span><br><span class="hljs-comment">	     the copy.  Otherwise, _IO_SYSREAD directly to</span><br><span class="hljs-comment">	     the user buffer. */</span><br>	  <span class="hljs-keyword">if</span> (fp-&gt;_IO_buf_base<br>	      &amp;&amp; want &lt; (<span class="hljs-type">size_t</span>) (fp-&gt;_IO_buf_end - fp-&gt;_IO_buf_base))<br>	    &#123;<br>	      <span class="hljs-keyword">if</span> (__underflow (fp) == EOF)<br>		<span class="hljs-keyword">break</span>;<br><br>	      <span class="hljs-keyword">continue</span>;<br>	    &#125;<br><br>	  <span class="hljs-comment">/* These must be set before the sysread as we might longjmp out</span><br><span class="hljs-comment">	     waiting for input. */</span><br>	  _IO_setg (fp, fp-&gt;_IO_buf_base, fp-&gt;_IO_buf_base, fp-&gt;_IO_buf_base);<br>	  _IO_setp (fp, fp-&gt;_IO_buf_base, fp-&gt;_IO_buf_base);<br><br>	  <span class="hljs-comment">/* Try to maintain alignment: read a whole number of blocks.  */</span><br>	  count = want;<br>	  <span class="hljs-keyword">if</span> (fp-&gt;_IO_buf_base)<br>	    &#123;<br>	      <span class="hljs-type">size_t</span> block_size = fp-&gt;_IO_buf_end - fp-&gt;_IO_buf_base;<br>	      <span class="hljs-keyword">if</span> (block_size &gt;= <span class="hljs-number">128</span>)<br>		count -= want % block_size;<br>	    &#125;<br><br>	  count = _IO_SYSREAD (fp, s, count);<br>	  <span class="hljs-keyword">if</span> (count &lt;= <span class="hljs-number">0</span>)<br>	    &#123;<br>	      <span class="hljs-keyword">if</span> (count == <span class="hljs-number">0</span>)<br>		fp-&gt;_flags |= _IO_EOF_SEEN;<br>	      <span class="hljs-keyword">else</span><br>		fp-&gt;_flags |= _IO_ERR_SEEN;<br><br>	      <span class="hljs-keyword">break</span>;<br>	    &#125;<br><br>	  s += count;<br>	  want -= count;<br>	  <span class="hljs-keyword">if</span> (fp-&gt;_offset != _IO_pos_BAD)<br>	    _IO_pos_adjust (fp-&gt;_offset, count);<br>	&#125;<br>    &#125;<br></code></pre></td></tr></table></figure>
+
+<p>可以看到如果，需要读入的长度小于当前<code>_IO_read_end</code>到<code>_IO_read_ptr</code>的区间，就会直接用<code>memcpy</code>进行拷贝赋值。如果不足的话，就会不断调整指针同样用<code>memcpy</code> 进行拷贝。直到读完成，然后返回<strong>n-want</strong> 即总读入字符数。</p>
+<h4 id="part-3"><a href="#part-3" class="headerlink" title="part-3"></a>part-3</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs c">......<br><span class="hljs-comment">/* If we now want less than a buffer, underflow and repeat</span><br><span class="hljs-comment">	     the copy.  Otherwise, _IO_SYSREAD directly to</span><br><span class="hljs-comment">	     the user buffer. */</span><br>	  <span class="hljs-keyword">if</span> (fp-&gt;_IO_buf_base<br>	      &amp;&amp; want &lt; (<span class="hljs-type">size_t</span>) (fp-&gt;_IO_buf_end - fp-&gt;_IO_buf_base))<br>	    &#123;<br>	      <span class="hljs-keyword">if</span> (__underflow (fp) == EOF)<br>		<span class="hljs-keyword">break</span>;<br><br>	      <span class="hljs-keyword">continue</span>;<br>	    &#125;<br>......	  <br></code></pre></td></tr></table></figure>
+
+<p>在读入的过程中，如果遇到空间不足的情况，会调用<code>__underflow</code>去执行系统调用<code>read</code>读取数据，并放入到输入缓冲区里。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// https://elixir.bootlin.com/glibc/latest/source/libio/genops.c#L268</span><br><span class="hljs-type">int</span><br>__underflow (FILE *fp)<br>&#123;<br>  <span class="hljs-keyword">if</span> (_IO_vtable_offset (fp) == <span class="hljs-number">0</span> &amp;&amp; _IO_fwide (fp, <span class="hljs-number">-1</span>) != <span class="hljs-number">-1</span>)<br>    <span class="hljs-keyword">return</span> EOF;<br><br>  <span class="hljs-keyword">if</span> (fp-&gt;_mode == <span class="hljs-number">0</span>)<br>    _IO_fwide (fp, <span class="hljs-number">-1</span>);<br>  <span class="hljs-keyword">if</span> (_IO_in_put_mode (fp))<br>    <span class="hljs-keyword">if</span> (_IO_switch_to_get_mode (fp) == EOF)<br>      <span class="hljs-keyword">return</span> EOF;<br>  <span class="hljs-keyword">if</span> (fp-&gt;_IO_read_ptr &lt; fp-&gt;_IO_read_end)<br>    <span class="hljs-keyword">return</span> *(<span class="hljs-type">unsigned</span> <span class="hljs-type">char</span> *) fp-&gt;_IO_read_ptr;<br>  <span class="hljs-keyword">if</span> (_IO_in_backup (fp))<br>    &#123;<br>      _IO_switch_to_main_get_area (fp);<br>      <span class="hljs-keyword">if</span> (fp-&gt;_IO_read_ptr &lt; fp-&gt;_IO_read_end)<br>	<span class="hljs-keyword">return</span> *(<span class="hljs-type">unsigned</span> <span class="hljs-type">char</span> *) fp-&gt;_IO_read_ptr;<br>    &#125;<br>  <span class="hljs-keyword">if</span> (_IO_have_markers (fp))<br>    &#123;<br>      <span class="hljs-keyword">if</span> (save_for_backup (fp, fp-&gt;_IO_read_end))<br>	<span class="hljs-keyword">return</span> EOF;<br>    &#125;<br>  <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (_IO_have_backup (fp))<br>    _IO_free_backup_area (fp);<br>  <span class="hljs-keyword">return</span> _IO_UNDERFLOW (fp);<br>&#125;<br>libc_hidden_def (__underflow)<br></code></pre></td></tr></table></figure>
+
+<p>在对<strong>flag</strong>进行一系列检测后，会调用<code>_IO_UNDERFLOW</code>函数，同样利用动调，我们找到这个函数就是<code>_IO_file_underflow</code>，实际在源码中为<code>_IO_new_file_underflow</code></p>
+<p><img src="/img/article/fread/image-20221207200035078.png" alt="image-20221207200035078"></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// https://elixir.bootlin.com/glibc/latest/source/libio/fileops.c#L460</span><br><span class="hljs-type">int</span><br>_IO_new_file_underflow (FILE *fp)<br>&#123;<br>  <span class="hljs-type">ssize_t</span> count;<br><br>  <span class="hljs-comment">/* C99 requires EOF to be &quot;sticky&quot;.  */</span><br>  <span class="hljs-keyword">if</span> (fp-&gt;_flags &amp; _IO_EOF_SEEN)<br>    <span class="hljs-keyword">return</span> EOF;<br><br>  <span class="hljs-keyword">if</span> (fp-&gt;_flags &amp; _IO_NO_READS)<br>    &#123;<br>      fp-&gt;_flags |= _IO_ERR_SEEN;<br>      __set_errno (EBADF);<br>      <span class="hljs-keyword">return</span> EOF;<br>    &#125;<br>  <span class="hljs-keyword">if</span> (fp-&gt;_IO_read_ptr &lt; fp-&gt;_IO_read_end)<br>    <span class="hljs-keyword">return</span> *(<span class="hljs-type">unsigned</span> <span class="hljs-type">char</span> *) fp-&gt;_IO_read_ptr;<br><br>  <span class="hljs-keyword">if</span> (fp-&gt;_IO_buf_base == <span class="hljs-literal">NULL</span>)<br>    &#123;<br>      <span class="hljs-comment">/* Maybe we already have a push back pointer.  */</span><br>      <span class="hljs-keyword">if</span> (fp-&gt;_IO_save_base != <span class="hljs-literal">NULL</span>)<br>	&#123;<br>	  <span class="hljs-built_in">free</span> (fp-&gt;_IO_save_base);<br>	  fp-&gt;_flags &amp;= ~_IO_IN_BACKUP;<br>	&#125;<br>      _IO_doallocbuf (fp);<br>    &#125;<br><br>  <span class="hljs-comment">/* FIXME This can/should be moved to genops ?? */</span><br>  <span class="hljs-keyword">if</span> (fp-&gt;_flags &amp; (_IO_LINE_BUF|_IO_UNBUFFERED))<br>    &#123;<br>      <span class="hljs-comment">/* We used to flush all line-buffered stream.  This really isn&#x27;t</span><br><span class="hljs-comment">	 required by any standard.  My recollection is that</span><br><span class="hljs-comment">	 traditional Unix systems did this for stdout.  stderr better</span><br><span class="hljs-comment">	 not be line buffered.  So we do just that here</span><br><span class="hljs-comment">	 explicitly.  --drepper */</span><br>      _IO_acquire_lock (<span class="hljs-built_in">stdout</span>);<br><br>      <span class="hljs-keyword">if</span> ((<span class="hljs-built_in">stdout</span>-&gt;_flags &amp; (_IO_LINKED | _IO_NO_WRITES | _IO_LINE_BUF))<br>	  == (_IO_LINKED | _IO_LINE_BUF))<br>	_IO_OVERFLOW (<span class="hljs-built_in">stdout</span>, EOF);<br><br>      _IO_release_lock (<span class="hljs-built_in">stdout</span>);<br>    &#125;<br><br>  _IO_switch_to_get_mode (fp);<br><br>  <span class="hljs-comment">/* This is very tricky. We have to adjust those</span><br><span class="hljs-comment">     pointers before we call _IO_SYSREAD () since</span><br><span class="hljs-comment">     we may longjump () out while waiting for</span><br><span class="hljs-comment">     input. Those pointers may be screwed up. H.J. */</span><br>  fp-&gt;_IO_read_base = fp-&gt;_IO_read_ptr = fp-&gt;_IO_buf_base;<br>  fp-&gt;_IO_read_end = fp-&gt;_IO_buf_base;<br>  fp-&gt;_IO_write_base = fp-&gt;_IO_write_ptr = fp-&gt;_IO_write_end<br>    = fp-&gt;_IO_buf_base;<br><br>  count = _IO_SYSREAD (fp, fp-&gt;_IO_buf_base,<br>		       fp-&gt;_IO_buf_end - fp-&gt;_IO_buf_base);<br>  <span class="hljs-keyword">if</span> (count &lt;= <span class="hljs-number">0</span>)<br>    &#123;<br>      <span class="hljs-keyword">if</span> (count == <span class="hljs-number">0</span>)<br>	fp-&gt;_flags |= _IO_EOF_SEEN;<br>      <span class="hljs-keyword">else</span><br>	fp-&gt;_flags |= _IO_ERR_SEEN, count = <span class="hljs-number">0</span>;<br>  &#125;<br>  fp-&gt;_IO_read_end += count;<br>  <span class="hljs-keyword">if</span> (count == <span class="hljs-number">0</span>)<br>    &#123;<br>      <span class="hljs-comment">/* If a stream is read to EOF, the calling application may switch active</span><br><span class="hljs-comment">	 handles.  As a result, our offset cache would no longer be valid, so</span><br><span class="hljs-comment">	 unset it.  */</span><br>      fp-&gt;_offset = _IO_pos_BAD;<br>      <span class="hljs-keyword">return</span> EOF;<br>    &#125;<br>  <span class="hljs-keyword">if</span> (fp-&gt;_offset != _IO_pos_BAD)<br>    _IO_pos_adjust (fp-&gt;_offset, count);<br>  <span class="hljs-keyword">return</span> *(<span class="hljs-type">unsigned</span> <span class="hljs-type">char</span> *) fp-&gt;_IO_read_ptr;<br>&#125;<br>libc_hidden_ver (_IO_new_file_underflow, _IO_file_underflow)<br></code></pre></td></tr></table></figure>
+
+<p>这个函数主要做了这几件事：</p>
+<ul>
+<li>首先进行一些检查，包括<strong>flag</strong>以及一些指针的合法性</li>
+<li>然后对 <strong>_IO_read_base， _IO_read_ptr， _IO_read_end， _IO_write_base</strong>指针均设置为 <strong>fp-&gt;_IO_buf_base</strong></li>
+<li>调用<code>_IO_SYSREAD </code> ,该函数最终执行系统调用read，读取文件数据，数据读入到<code>fp-&gt;_IO_buf_base</code>中，读入大小为输入缓冲区的大小<code>fp-&gt;_IO_buf_end - fp-&gt;_IO_buf_base</code>。</li>
+<li>设置输入缓冲区已有数据的size，即设置<code>fp-&gt;_IO_read_end</code>为<code>fp-&gt;_IO_read_end += count</code>。</li>
+</ul>
+<p>随后不断退出函数，直至结束</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>【IO_FILE】源码详解-part2</div>
+      <div>http://loora1n.github.io/2022/12/07/【IO_FILE】源码详解-part2/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Loora1N</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年12月7日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/11/29/%E3%80%90IO_FILE%E3%80%91%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86%E6%A6%82%E8%A7%88/" title="【IO_FILE】源码详解">
+                        <span class="hidden-mobile">【IO_FILE】源码详解</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments">
+    
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#comments', function() {
+      var light = 'github-light';
+      var dark = 'github-dark';
+      var schema = document.documentElement.getAttribute('data-user-color-scheme');
+      if (schema === 'dark') {
+        schema = dark;
+      } else {
+        schema = light;
+      }
+      window.UtterancesThemeLight = light;
+      window.UtterancesThemeDark = dark;
+      var s = document.createElement('script');
+      s.setAttribute('src', 'https://utteranc.es/client.js');
+      s.setAttribute('repo', 'loora1n/comment');
+      s.setAttribute('issue-term', 'pathname');
+      
+      s.setAttribute('label', 'utterances');
+      
+      s.setAttribute('theme', schema);
+      s.setAttribute('crossorigin', 'anonymous');
+      document.getElementById('comments').appendChild(s);
+    })
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://github.com/Loora1N" target="_blank" rel="nofollow noopener"><span>Loora1N</span></a> <i class="iconfont icon-love"></i> <a href="https://space.bilibili.com/33242548?spm_id_from=333.1007.0.0" target="_blank" rel="nofollow noopener"><span>鷺雨君</span></a>
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+  <span id="timeDate">载入天数...</span>
+  <span id="times">载入时分秒...</span>
+  <script>
+  var now = new Date();
+  function createtime(){
+      var grt= new Date("06/03/2022 00:00:00");//此处修改你的建站时间或者网站上线时间
+      now.setTime(now.getTime()+250);
+      days = (now - grt ) / 1000 / 60 / 60 / 24;
+      dnum = Math.floor(days);
+      hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum);
+      hnum = Math.floor(hours);
+      if(String(hnum).length ==1 ){
+          hnum = "0" + hnum;
+      }
+      minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+      mnum = Math.floor(minutes);
+      if(String(mnum).length ==1 ){
+                mnum = "0" + mnum;
+      }
+      seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+      snum = Math.round(seconds);
+      if(String(snum).length ==1 ){
+                snum = "0" + snum;
+      }
+      document.getElementById("timeDate").innerHTML = "🚀running🚀 for&nbsp"+dnum+"&nbspdays";  //此次自定义显示内容
+      document.getElementById("times").innerHTML = hnum + "&nbsphr&nbsp" + mnum + "&nbspmin&nbsp" + snum + "&nbspsec";
+  }  //此次自定义显示内容
+  setInterval("createtime()",250);
+  </script>   
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+  
+<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/xiantiao.js"></script>
+<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/love.js"></script>
+<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/caidai.js"></script>
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"right","width":250,"height":500},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>

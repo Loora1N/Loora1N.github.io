@@ -1,3 +1,4 @@
+http://loora1n.github.io/2022/12/07/%E3%80%90IO_FILE%E3%80%91%E6%BA%90%E7%A0%81%E8%AF%A6%E8%A7%A3-part2/
 http://loora1n.github.io/2022/11/29/%E3%80%90IO_FILE%E3%80%91%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86%E6%A6%82%E8%A7%88/
 http://loora1n.github.io/2022/11/25/%E3%80%90IO_FILE%E3%80%91FSOP/
 http://loora1n.github.io/2022/11/13/%E3%80%90IO_FILE%E3%80%91house%20of%20cat/
