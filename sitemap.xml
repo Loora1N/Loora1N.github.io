@@ -2,6 +2,15 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://loora1n.github.io/2023/03/20/#%20%E8%B7%B3%E8%BD%AC%E6%8C%87%E4%BB%A4%E6%B1%87%E6%80%BB/</loc>
+    
+    <lastmod>2023-03-20</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>http://loora1n.github.io/2022/12/07/%E3%80%90IO_FILE%E3%80%91%E6%BA%90%E7%A0%81%E8%AF%A6%E8%A7%A3-part2/</loc>
     
     <lastmod>2022-12-07</lastmod>
@@ -328,7 +337,7 @@
 
   <url>
     <loc>http://loora1n.github.io/</loc>
-    <lastmod>2022-12-07</lastmod>
+    <lastmod>2023-03-20</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
