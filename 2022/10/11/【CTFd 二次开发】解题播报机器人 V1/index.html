@@ -1,0 +1,738 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" >
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/icon/duck.png">
+  <link rel="icon" href="/img/icon/duck.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#f58f98">
+  <meta name="author" content="Loora1N">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文基于 CTFd Version 3.4.3 开发，可能存在源码不相同的情况，阅读时请注意文章时效性。机器人会一直更新，后续应该会有一二三血播报等更详尽的功能">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【CTFd 二次开发】解题播报机器人 V1">
+<meta property="og:url" content="http://loora1n.github.io/2022/10/11/%E3%80%90CTFd%20%E4%BA%8C%E6%AC%A1%E5%BC%80%E5%8F%91%E3%80%91%E8%A7%A3%E9%A2%98%E6%92%AD%E6%8A%A5%E6%9C%BA%E5%99%A8%E4%BA%BA%20V1/index.html">
+<meta property="og:site_name" content="鷺雨のBlog">
+<meta property="og:description" content="本文基于 CTFd Version 3.4.3 开发，可能存在源码不相同的情况，阅读时请注意文章时效性。机器人会一直更新，后续应该会有一二三血播报等更详尽的功能">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://loora1n.github.io/img/article/botv1/image-20221011093547622.png">
+<meta property="article:published_time" content="2022-10-11T04:45:58.420Z">
+<meta property="article:modified_time" content="2022-10-11T04:45:58.420Z">
+<meta property="article:author" content="Loora1N">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://loora1n.github.io/img/article/botv1/image-20221011093547622.png">
+  
+  
+  
+  <title>【CTFd 二次开发】解题播报机器人 V1 - 鷺雨のBlog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/fluid-extention.css">
+<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/bynotes/texiao/source/css/gundongtiao.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"loora1n.github.io","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"lftEbNU4XPuR5dgHNV3WdWxP-gzGzoHsz","app_key":"b3uLUVGLeOWDwREWHMBr0jo9","server_url":"https://lftebnu4.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>鷺雨のBlog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/bg/3.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="【CTFd 二次开发】解题播报机器人 V1"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-10-11 12:45" pubdate>
+          2022年10月11日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3.6k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          31 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          阅读量 <span id="leancloud-page-views"></span>
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">【CTFd 二次开发】解题播报机器人 V1</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
+<p>本文基于 CTFd Version 3.4.3 开发，可能存在源码不相同的情况，阅读时请注意文章时效性。机器人会一直更新，后续应该会有一二三血播报等更详尽的功能</p>
+<p>注：本文不做机器人相关代码更改，直接利用nonebot自带接口实现</p>
+</blockquote>
+<h2 id="前端页面修改"><a href="#前端页面修改" class="headerlink" title="前端页面修改"></a>前端页面修改</h2><h3 id="config-html"><a href="#config-html" class="headerlink" title="config.html"></a>config.html</h3><p>打开<code>CTFd/CTFd/themes/admin/templates/config.html</code>，更改左侧栏目标题</p>
+<p><img src="/img/article/botv1/image-20221011092121090.png" alt="config.html"></p>
+<h3 id="apperance-html"><a href="#apperance-html" class="headerlink" title="apperance.html"></a>apperance.html</h3><p>打开<code>CTFd/CTFd/themes/admin/templates/configs/appearance.html</code>，在其中插入代码，完整html如下</p>
+<blockquote>
+<p>因可能存在CTFd不同版本页面不同的问题，请视具体情况更改html页面</p>
+</blockquote>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">role</span>=<span class="hljs-string">&quot;tabpanel&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;tab-pane config-section active&quot;</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;appearance&quot;</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">form</span> <span class="hljs-attr">method</span>=<span class="hljs-string">&quot;POST&quot;</span> <span class="hljs-attr">autocomplete</span>=<span class="hljs-string">&quot;off&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;w-100&quot;</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;form-group&quot;</span>&gt;</span><br>			<span class="hljs-tag">&lt;<span class="hljs-name">label</span> <span class="hljs-attr">for</span>=<span class="hljs-string">&quot;ctf_name&quot;</span>&gt;</span><br>				Competition Name<br>				<span class="hljs-tag">&lt;<span class="hljs-name">small</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;form-text text-muted&quot;</span>&gt;</span>Competition name displayed instead of a logo<span class="hljs-tag">&lt;/<span class="hljs-name">small</span>&gt;</span><br>			<span class="hljs-tag">&lt;/<span class="hljs-name">label</span>&gt;</span><br>			<span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;form-control&quot;</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&#x27;ctf_name&#x27;</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&#x27;ctf_name&#x27;</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&#x27;text&#x27;</span> <span class="hljs-attr">placeholder</span>=<span class="hljs-string">&quot;CTF Name&quot;</span></span><br><span class="hljs-tag">				   &#123;% <span class="hljs-attr">if</span> <span class="hljs-attr">ctf_name</span> <span class="hljs-attr">is</span> <span class="hljs-attr">defined</span> <span class="hljs-attr">and</span> <span class="hljs-attr">ctf_name</span> != <span class="hljs-string">None</span> %&#125;<span class="hljs-attr">value</span>=<span class="hljs-string">&quot;&#123;&#123; ctf_name &#125;&#125;&quot;</span>&#123;% <span class="hljs-attr">endif</span> %&#125;&gt;</span><br>		<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><br>		<span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;form-group&quot;</span>&gt;</span><br>			<span class="hljs-tag">&lt;<span class="hljs-name">label</span>&gt;</span><br>				CTF Description<span class="hljs-tag">&lt;<span class="hljs-name">br</span>&gt;</span><br>				<span class="hljs-tag">&lt;<span class="hljs-name">small</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;form-text text-muted&quot;</span>&gt;</span><br>					Description for the CTF<br>				<span class="hljs-tag">&lt;/<span class="hljs-name">small</span>&gt;</span><br>			<span class="hljs-tag">&lt;/<span class="hljs-name">label</span>&gt;</span><br>			<span class="hljs-tag">&lt;<span class="hljs-name">textarea</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;form-control&quot;</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;text&quot;</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;ctf_description&quot;</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;ctf_description&quot;</span> <span class="hljs-attr">rows</span>=<span class="hljs-string">&quot;5&quot;</span>&gt;</span>&#123;&#123; ctf_description &#125;&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">textarea</span>&gt;</span><br>		<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;form-group&quot;</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">label</span> <span class="hljs-attr">for</span>=<span class="hljs-string">&quot;bot-ip&quot;</span>&gt;</span><br>                Bot Address<span class="hljs-tag">&lt;<span class="hljs-name">br</span>&gt;</span><br>                <span class="hljs-tag">&lt;<span class="hljs-name">small</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;form-text text-muted&quot;</span>&gt;</span><br>                    the address of QQ-bot<br>                <span class="hljs-tag">&lt;/<span class="hljs-name">small</span>&gt;</span><br>                <span class="hljs-tag">&lt;<span class="hljs-name">small</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;form-text text-muted&quot;</span>&gt;</span><br>                    eg. 127.0.0.1:1234<br>                <span class="hljs-tag">&lt;/<span class="hljs-name">small</span>&gt;</span><br>            <span class="hljs-tag">&lt;/<span class="hljs-name">label</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;form-control&quot;</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&#x27;bot-ip&#x27;</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&#x27;bot_ip&#x27;</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&#x27;text&#x27;</span></span><br><span class="hljs-tag">					&#123;% <span class="hljs-attr">if</span> <span class="hljs-attr">bot_ip</span> <span class="hljs-attr">is</span> <span class="hljs-attr">defined</span> <span class="hljs-attr">and</span> <span class="hljs-attr">bot_ip</span> != <span class="hljs-string">None</span> %&#125;<span class="hljs-attr">value</span>=<span class="hljs-string">&quot;&#123;&#123; bot_ip &#125;&#125;&quot;</span>&#123;% <span class="hljs-attr">endif</span> %&#125;&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><br>        <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;form-group&quot;</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">label</span> <span class="hljs-attr">for</span>=<span class="hljs-string">&quot;group-id&quot;</span>&gt;</span><br>                QQ Group Number<span class="hljs-tag">&lt;<span class="hljs-name">br</span>&gt;</span><br>            <span class="hljs-tag">&lt;/<span class="hljs-name">label</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;form-control&quot;</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&#x27;group-id&#x27;</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&#x27;group_id&#x27;</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&#x27;text&#x27;</span></span><br><span class="hljs-tag">					&#123;% <span class="hljs-attr">if</span> <span class="hljs-attr">group_id</span> <span class="hljs-attr">is</span> <span class="hljs-attr">defined</span> <span class="hljs-attr">and</span> <span class="hljs-attr">group_id</span> != <span class="hljs-string">None</span> %&#125;<span class="hljs-attr">value</span>=<span class="hljs-string">&quot;&#123;&#123; group_id &#125;&#125;&quot;</span>&#123;% <span class="hljs-attr">endif</span> %&#125;&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><br><br>        <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;form-group&quot;</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">label</span> <span class="hljs-attr">for</span>=<span class="hljs-string">&quot;bot-text&quot;</span>&gt;</span><br>                Message<span class="hljs-tag">&lt;<span class="hljs-name">br</span>&gt;</span><br>                <span class="hljs-tag">&lt;<span class="hljs-name">small</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;form-text text-muted&quot;</span>&gt;</span><br>                    ep. 恭喜%s做出题目%s，默认第一个参数为用户名，第二个参数为题目名称<br>                <span class="hljs-tag">&lt;/<span class="hljs-name">small</span>&gt;</span><br>            <span class="hljs-tag">&lt;/<span class="hljs-name">label</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;form-control&quot;</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&#x27;bot-text&#x27;</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&#x27;bottext&#x27;</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&#x27;text&#x27;</span></span><br><span class="hljs-tag">				   &#123;% <span class="hljs-attr">if</span> <span class="hljs-attr">bottext</span> <span class="hljs-attr">is</span> <span class="hljs-attr">defined</span> <span class="hljs-attr">and</span> <span class="hljs-attr">bottext</span> != <span class="hljs-string">None</span> %&#125;<span class="hljs-attr">value</span>=<span class="hljs-string">&quot;&#123;&#123; bottext &#125;&#125;&quot;</span>&#123;% <span class="hljs-attr">endif</span> %&#125;&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><br>        <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;form-group&quot;</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">label</span> <span class="hljs-attr">for</span>=<span class="hljs-string">&quot;botof&quot;</span>&gt;</span><br>                Turn on the Bot<br>            <span class="hljs-tag">&lt;/<span class="hljs-name">label</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span><br>                <span class="hljs-tag">&lt;<span class="hljs-name">select</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;form-control custom-select&quot;</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;botof&quot;</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;bot&quot;</span>&gt;</span><br>                    <span class="hljs-tag">&lt;<span class="hljs-name">option</span> <span class="hljs-attr">value</span>=<span class="hljs-string">0</span> &#123;% <span class="hljs-attr">if</span> <span class="hljs-attr">bot</span> == <span class="hljs-string">0</span> %&#125;<span class="hljs-attr">selected</span>&#123;% <span class="hljs-attr">endif</span> %&#125;&gt;</span><br>                        OFF<br>                    <span class="hljs-tag">&lt;/<span class="hljs-name">option</span>&gt;</span><br>                    <span class="hljs-tag">&lt;<span class="hljs-name">option</span> <span class="hljs-attr">value</span>=<span class="hljs-string">1</span> &#123;% <span class="hljs-attr">if</span> <span class="hljs-attr">bot</span> == <span class="hljs-string">1</span> %&#125;<span class="hljs-attr">selected</span>&#123;% <span class="hljs-attr">endif</span> %&#125;&gt;</span><br>                        ON<br>                    <span class="hljs-tag">&lt;/<span class="hljs-name">option</span>&gt;</span><br>                <span class="hljs-tag">&lt;/<span class="hljs-name">select</span>&gt;</span><br>            <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><br>		<span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;submit&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;btn btn-md btn-primary float-right&quot;</span>&gt;</span>Update<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span><br>	<span class="hljs-tag">&lt;/<span class="hljs-name">form</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="效果展示"><a href="#效果展示" class="headerlink" title="效果展示"></a>效果展示</h3><p><img src="/img/article/botv1/image-20221011093547622.png" alt="前端效果"></p>
+<p>这样就可以在设置页面随时更改了， <code>Bot Address</code>是Bot接收http请求的地址，<code>QQ Group Number</code>是机器人所在的qq群号。如果机器人运行的地址发生变化，或想更改发消息的群号，只需在这里更改即可，目前还不支持同时多个群发送消息，准备等到添加一二三血功能时一起添加。</p>
+<h2 id="后端更改"><a href="#后端更改" class="headerlink" title="后端更改"></a>后端更改</h2><h3 id="view-py"><a href="#view-py" class="headerlink" title="view.py"></a>view.py</h3><p>打开<code>CTFd/CTFd/views.py</code>，添加几个变量，用于接收html页面数据</p>
+<p><img src="/img/article/botv1/image-20221011092849492.png" alt="view.py"></p>
+<h3 id="challenges-py"><a href="#challenges-py" class="headerlink" title="challenges.py"></a>challenges.py</h3><p>打开<code>CTFd/CTFD/api/v1/challenges.py</code>，在解题成功后，调用机器人API即可</p>
+<p><img src="/img/article/botv1/image-20221011093425463.png" alt="challenges.py"></p>
+<h3 id="运行演示"><a href="#运行演示" class="headerlink" title="运行演示"></a>运行演示</h3><p><img src="/img/article/botv1/image-20221011094014448.png" alt="提交flag"></p>
+<p><img src="/img/article/botv1/image-20221011094033270.png" alt="群消息成功发送"></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>【CTFd 二次开发】解题播报机器人 V1</div>
+      <div>http://loora1n.github.io/2022/10/11/【CTFd 二次开发】解题播报机器人 V1/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Loora1N</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年10月11日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/10/17/NewStarCTF%20Week4%20PWN%20WP/" title="NewStarCTF Week4 PWN WP">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">NewStarCTF Week4 PWN WP</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/10/03/gdb%E8%B0%83%E8%AF%95%E5%B8%B8%E7%94%A8%E6%8C%87%E4%BB%A4/" title="gdb调试常用指令">
+                        <span class="hidden-mobile">gdb调试常用指令</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments">
+    
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#comments', function() {
+      var light = 'github-light';
+      var dark = 'github-dark';
+      var schema = document.documentElement.getAttribute('data-user-color-scheme');
+      if (schema === 'dark') {
+        schema = dark;
+      } else {
+        schema = light;
+      }
+      window.UtterancesThemeLight = light;
+      window.UtterancesThemeDark = dark;
+      var s = document.createElement('script');
+      s.setAttribute('src', 'https://utteranc.es/client.js');
+      s.setAttribute('repo', 'loora1n/comment');
+      s.setAttribute('issue-term', 'pathname');
+      
+      s.setAttribute('label', 'utterances');
+      
+      s.setAttribute('theme', schema);
+      s.setAttribute('crossorigin', 'anonymous');
+      document.getElementById('comments').appendChild(s);
+    })
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://github.com/Loora1N" target="_blank" rel="nofollow noopener"><span>Loora1N</span></a> <i class="iconfont icon-love"></i> <a href="https://space.bilibili.com/33242548?spm_id_from=333.1007.0.0" target="_blank" rel="nofollow noopener"><span>鷺雨君</span></a>
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+  <span id="timeDate">载入天数...</span>
+  <span id="times">载入时分秒...</span>
+  <script>
+  var now = new Date();
+  function createtime(){
+      var grt= new Date("06/03/2022 00:00:00");//此处修改你的建站时间或者网站上线时间
+      now.setTime(now.getTime()+250);
+      days = (now - grt ) / 1000 / 60 / 60 / 24;
+      dnum = Math.floor(days);
+      hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum);
+      hnum = Math.floor(hours);
+      if(String(hnum).length ==1 ){
+          hnum = "0" + hnum;
+      }
+      minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+      mnum = Math.floor(minutes);
+      if(String(mnum).length ==1 ){
+                mnum = "0" + mnum;
+      }
+      seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+      snum = Math.round(seconds);
+      if(String(snum).length ==1 ){
+                snum = "0" + snum;
+      }
+      document.getElementById("timeDate").innerHTML = "🚀running🚀 for&nbsp"+dnum+"&nbspdays";  //此次自定义显示内容
+      document.getElementById("times").innerHTML = hnum + "&nbsphr&nbsp" + mnum + "&nbspmin&nbsp" + snum + "&nbspsec";
+  }  //此次自定义显示内容
+  setInterval("createtime()",250);
+  </script>   
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+  
+<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/xiantiao.js"></script>
+<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/love.js"></script>
+<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/caidai.js"></script>
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"right","width":250,"height":500},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>

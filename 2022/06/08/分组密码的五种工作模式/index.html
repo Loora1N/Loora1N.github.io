@@ -1,0 +1,783 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" >
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/icon/duck.png">
+  <link rel="icon" href="/img/icon/duck.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#f58f98">
+  <meta name="author" content="Loora1N">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="密码学课程笔记">
+<meta property="og:type" content="article">
+<meta property="og:title" content="分组密码的五种工作模式">
+<meta property="og:url" content="http://loora1n.github.io/2022/06/08/%E5%88%86%E7%BB%84%E5%AF%86%E7%A0%81%E7%9A%84%E4%BA%94%E7%A7%8D%E5%B7%A5%E4%BD%9C%E6%A8%A1%E5%BC%8F/index.html">
+<meta property="og:site_name" content="鷺雨のBlog">
+<meta property="og:description" content="密码学课程笔记">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://loora1n.github.io/img/article/cry-mode/cry1.png">
+<meta property="article:published_time" content="2022-06-08T05:58:38.580Z">
+<meta property="article:modified_time" content="2022-06-08T05:58:38.580Z">
+<meta property="article:author" content="Loora1N">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://loora1n.github.io/img/article/cry-mode/cry1.png">
+  
+  
+  
+  <title>分组密码的五种工作模式 - 鷺雨のBlog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/fluid-extention.css">
+<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/bynotes/texiao/source/css/gundongtiao.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"loora1n.github.io","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"lftEbNU4XPuR5dgHNV3WdWxP-gzGzoHsz","app_key":"b3uLUVGLeOWDwREWHMBr0jo9","server_url":"https://lftebnu4.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>鷺雨のBlog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/bg/3.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="分组密码的五种工作模式"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-06-08 13:58" pubdate>
+          2022年6月8日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          11 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          阅读量 <span id="leancloud-page-views"></span>
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">分组密码的五种工作模式</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="电子密码本模式Electronic-Codebook-ECB"><a href="#电子密码本模式Electronic-Codebook-ECB" class="headerlink" title="电子密码本模式Electronic Codebook, ECB"></a>电子密码本模式Electronic Codebook, ECB</h2><blockquote>
+<p>明文分成64的分组进行加密，必要时填充，每个分组用同一密钥加密，同样明文分组加密得相同密文</p>
+</blockquote>
+<h3 id="示意图"><a href="#示意图" class="headerlink" title="示意图"></a>示意图</h3><p><img src="/img/article/cry-mode/cry1.png" alt="ECB"></p>
+<h3 id="局限性"><a href="#局限性" class="headerlink" title="局限性"></a>局限性</h3><ul>
+<li>ECB模式特别适合数据较少的情况，如安全传输DES密钥</li>
+<li>一段明文消息中若有几个相同的明文组，则密文也将出现几个相同的片段</li>
+<li>对于很长的消息，ECB是不安全的，如果消息是非常结构化的，密码分析可能利用其结构特征来破解</li>
+<li>ECB的弱点来源于其加密过的密文分组是互相独立的</li>
+</ul>
+<h2 id="密文分组链接模式Cipher-Block-Chaining-CBC"><a href="#密文分组链接模式Cipher-Block-Chaining-CBC" class="headerlink" title="密文分组链接模式Cipher Block Chaining (CBC)"></a>密文分组链接模式Cipher Block Chaining (CBC)</h2><blockquote>
+<p>加密输入是当前明文分组和前一密文分组的异或，形成一条链，使用相同的密钥， 这样每个明文分组的加密函数输入与明文分组之间不再有固定的关系</p>
+</blockquote>
+<h3 id="示意图-1"><a href="#示意图-1" class="headerlink" title="示意图"></a>示意图</h3><p><img src="/img/article/cry-mode/cry2.png" alt="CBC"></p>
+<h3 id="优点和局限"><a href="#优点和局限" class="headerlink" title="优点和局限"></a>优点和局限</h3><ul>
+<li>每个密文分组依赖于其他明文分组 </li>
+<li>明文消息中的任何一点变化都会影响密文分组 </li>
+<li>发送方和接收方需要共享初始向量Initial Value(IV)<ul>
+<li>如果IV被明文传送，则攻击者可以改变第一个分组的某些位，然后预先改变IV中的某些位，则接收者收到的P1也就相应改变了</li>
+<li>因此，IV必须是一个固定的值或者必须用ECB方式在消息之前加密传送</li>
+</ul>
+</li>
+<li>在消息的最后，还要处理不够长度的分组 <ul>
+<li>可以填充已知非数据值，或者在最后一块补上填充位长度</li>
+</ul>
+</li>
+</ul>
+<h2 id="密码反馈模式Cipher-FeedBack-CFB"><a href="#密码反馈模式Cipher-FeedBack-CFB" class="headerlink" title="密码反馈模式Cipher FeedBack (CFB)"></a>密码反馈模式Cipher FeedBack (CFB)</h2><blockquote>
+<ul>
+<li>是一种将DES转化成流密码的技术，不再要求报文被填充成整个分组，可以实时运行，如果要传输一个字符流，每个字符都可以使用面向字符的流密码加密后立即传输。</li>
+<li>加密：加密函数的输入是一个64位的移位寄存器，产生初始向量IV。加密函数高端j位与明文P1的第一单元异或，产生j位密文C1进入移位寄存器低端，继续加密，与P2输入异或，如此重复直到所有明文单元都完成加密。</li>
+<li>解密：采用相同方案，但是使用加密函数而非解密函数</li>
+</ul>
+</blockquote>
+<h3 id="示意图-2"><a href="#示意图-2" class="headerlink" title="示意图"></a>示意图</h3><p><img src="/img/article/cry-mode/cry3.png" alt="CFB"></p>
+<h3 id="优缺点"><a href="#优缺点" class="headerlink" title="优缺点"></a>优缺点</h3><ul>
+<li>当数据以位或字节形式到达时使用都是适当的 </li>
+<li>最通用的是流密码形式</li>
+</ul>
+<h2 id="输出反馈模式Output-FeedBack-OFB"><a href="#输出反馈模式Output-FeedBack-OFB" class="headerlink" title="输出反馈模式Output FeedBack (OFB)"></a>输出反馈模式Output FeedBack (OFB)</h2><blockquote>
+<p>结构上类似CFB，但是OFB中加密函数输出被反馈回移位寄存器，CFB中是密文单元被反馈回移位寄存器。优点是传输中的比特差错不会传播，缺点是比CFB更容易受报文流篡改攻击。</p>
+</blockquote>
+<h3 id="示意图-3"><a href="#示意图-3" class="headerlink" title="示意图"></a>示意图</h3><p><img src="/img/article/cry-mode/cry4.png" alt="OFB"></p>
+<h3 id="优缺点-1"><a href="#优缺点-1" class="headerlink" title="优缺点"></a>优缺点</h3><ul>
+<li>OFB的一个优点是传输过程中在某位上发生的错误不会影响到其他位。比如，C1中有1位发生了错误，只会影响到P1的恢复，后续的明文单元不受影响。</li>
+<li>OFB的缺点是，抗消息流篡改攻击的能力不如CFB。即密文中的某位取反，恢复出的明文相应位也取反</li>
+</ul>
+<h2 id="计数器模式Counter-CTR"><a href="#计数器模式Counter-CTR" class="headerlink" title="计数器模式Counter (CTR)"></a>计数器模式Counter (CTR)</h2><blockquote>
+<ul>
+<li>是一种新模式，虽然早就提出来了</li>
+<li>与OFB很像，但是加密的是计数器的值而不是任何反馈回来的值</li>
+<li>每一个明文分组都必须使用一个不同的密钥和计数器值，决不要重复使用Ci &#x3D; Pi XOR Oi Oi &#x3D; DESK1(i)</li>
+<li>可以用于高速网络加密中</li>
+</ul>
+</blockquote>
+<h3 id="示意图-4"><a href="#示意图-4" class="headerlink" title="示意图"></a>示意图</h3><p><img src="/img/article/cry-mode/cry5.png" alt="CTR"></p>
+<h3 id="优缺点-2"><a href="#优缺点-2" class="headerlink" title="优缺点"></a>优缺点</h3><ul>
+<li>高效<ul>
+<li>可以做并行加密</li>
+<li>对高速链路的突发数据加密尤其有效</li>
+</ul>
+</li>
+<li>可以对被加密的分组进行随机存取</li>
+<li>相当安全</li>
+<li>简洁</li>
+<li>必须决不重复使用密钥和计数器值</li>
+</ul>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>分组密码的五种工作模式</div>
+      <div>http://loora1n.github.io/2022/06/08/分组密码的五种工作模式/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Loora1N</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年6月8日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/06/21/CISCN%202022/" title="【CISCN2022】 东北赛区分区赛PWN WriteUP">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">【CISCN2022】 东北赛区分区赛PWN WriteUP</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/06/07/Hexo%E9%83%A8%E7%BD%B2%E5%87%BA%E7%8E%B0%E9%94%99%E8%AF%AF%20Error%20Spawn%20failed%20%E8%A7%A3%E5%86%B3%E6%96%B9%E5%BC%8F/" title="Hexo部署出现错误 Error Spawn failed 解决方式(code 128)">
+                        <span class="hidden-mobile">Hexo部署出现错误 Error Spawn failed 解决方式(code 128)</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments">
+    
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#comments', function() {
+      var light = 'github-light';
+      var dark = 'github-dark';
+      var schema = document.documentElement.getAttribute('data-user-color-scheme');
+      if (schema === 'dark') {
+        schema = dark;
+      } else {
+        schema = light;
+      }
+      window.UtterancesThemeLight = light;
+      window.UtterancesThemeDark = dark;
+      var s = document.createElement('script');
+      s.setAttribute('src', 'https://utteranc.es/client.js');
+      s.setAttribute('repo', 'loora1n/comment');
+      s.setAttribute('issue-term', 'pathname');
+      
+      s.setAttribute('label', 'utterances');
+      
+      s.setAttribute('theme', schema);
+      s.setAttribute('crossorigin', 'anonymous');
+      document.getElementById('comments').appendChild(s);
+    })
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://github.com/Loora1N" target="_blank" rel="nofollow noopener"><span>Loora1N</span></a> <i class="iconfont icon-love"></i> <a href="https://space.bilibili.com/33242548?spm_id_from=333.1007.0.0" target="_blank" rel="nofollow noopener"><span>鷺雨君</span></a>
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+  <span id="timeDate">载入天数...</span>
+  <span id="times">载入时分秒...</span>
+  <script>
+  var now = new Date();
+  function createtime(){
+      var grt= new Date("06/03/2022 00:00:00");//此处修改你的建站时间或者网站上线时间
+      now.setTime(now.getTime()+250);
+      days = (now - grt ) / 1000 / 60 / 60 / 24;
+      dnum = Math.floor(days);
+      hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum);
+      hnum = Math.floor(hours);
+      if(String(hnum).length ==1 ){
+          hnum = "0" + hnum;
+      }
+      minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+      mnum = Math.floor(minutes);
+      if(String(mnum).length ==1 ){
+                mnum = "0" + mnum;
+      }
+      seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+      snum = Math.round(seconds);
+      if(String(snum).length ==1 ){
+                snum = "0" + snum;
+      }
+      document.getElementById("timeDate").innerHTML = "🚀running🚀 for&nbsp"+dnum+"&nbspdays";  //此次自定义显示内容
+      document.getElementById("times").innerHTML = hnum + "&nbsphr&nbsp" + mnum + "&nbspmin&nbsp" + snum + "&nbspsec";
+  }  //此次自定义显示内容
+  setInterval("createtime()",250);
+  </script>   
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+  
+<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/xiantiao.js"></script>
+<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/love.js"></script>
+<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/caidai.js"></script>
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"right","width":250,"height":500},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>
