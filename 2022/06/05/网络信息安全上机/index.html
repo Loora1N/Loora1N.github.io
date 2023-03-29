@@ -1,0 +1,745 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" >
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/icon/duck.png">
+  <link rel="icon" href="/img/icon/duck.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#f58f98">
+  <meta name="author" content="Loora1N">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="网络信息安全上机作业罢了，人已经麻了">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python实现shamir加密和图像加密隐写">
+<meta property="og:url" content="http://loora1n.github.io/2022/06/05/%E7%BD%91%E7%BB%9C%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E4%B8%8A%E6%9C%BA/index.html">
+<meta property="og:site_name" content="鷺雨のBlog">
+<meta property="og:description" content="网络信息安全上机作业罢了，人已经麻了">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://loora1n.github.io/img/article/shamir/cry.png">
+<meta property="article:published_time" content="2022-06-05T07:50:44.623Z">
+<meta property="article:modified_time" content="2022-06-05T07:50:44.623Z">
+<meta property="article:author" content="Loora1N">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://loora1n.github.io/img/article/shamir/cry.png">
+  
+  
+  
+  <title>Python实现shamir加密和图像加密隐写 - 鷺雨のBlog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/fluid-extention.css">
+<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/bynotes/texiao/source/css/gundongtiao.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"loora1n.github.io","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"lftEbNU4XPuR5dgHNV3WdWxP-gzGzoHsz","app_key":"b3uLUVGLeOWDwREWHMBr0jo9","server_url":"https://lftebnu4.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>鷺雨のBlog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/bg/3.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Python实现shamir加密和图像加密隐写"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-06-05 15:50" pubdate>
+          2022年6月5日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.7k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          23 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          阅读量 <span id="leancloud-page-views"></span>
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Python实现shamir加密和图像加密隐写</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
+<p>网络信息安全上机作业罢了，人已经麻了</p>
+</blockquote>
+<h2 id="shamir秘密共享协议"><a href="#shamir秘密共享协议" class="headerlink" title="shamir秘密共享协议"></a>shamir秘密共享协议</h2><h3 id="加密过程"><a href="#加密过程" class="headerlink" title="加密过程"></a>加密过程</h3><p>假设有秘密S要保护，任意取t-1个随机数，构造如下多项式： <img src="https://www.zhihu.com/equation?tex=f(x)=a_0+a_1x+a_2x%5E2+%5Ccdots+a_%7Bt-1%7Dx%5E%7Bt-1%7D" alt="[公式]"> ，其中， <img src="https://www.zhihu.com/equation?tex=a_0=S" alt="[公式]"> ，所有运算均在有有限域中进行。</p>
+<ul>
+<li>取任意n个数， <img src="https://www.zhihu.com/equation?tex=x_1,x_2,%5Ccdots,x_n" alt="[公式]"> 分别带入多项式，得到 <img src="https://www.zhihu.com/equation?tex=f(x_1),f(x_2),%5Ccdots+f(x_n)" alt="[公式]"> 。</li>
+<li>将 <img src="https://www.zhihu.com/equation?tex=(x_1,f(x_1)),%5Ccdots+,(x_n,f(x_n))" alt="[公式]"> 分发给n个服务器上。</li>
+</ul>
+<h3 id="解密过程"><a href="#解密过程" class="headerlink" title="解密过程"></a>解密过程</h3><p>从任意t个服务器上取得数据，假设取得 <img src="https://www.zhihu.com/equation?tex=(x_1,y_1),%5Ccdots+,(x_t,y_t)" alt="[公式]"> ，带入并求解多项式系数；<br><img src="https://www.zhihu.com/equation?tex=%5Cbegin%7Baligned%7D+a_0+a_1x_1+%5Ccdots+,a_%7Bt-1%7Dx_1%5E%7Bt-1%7D=y_1+%5C%5C+a_0+a_1x_2+%5Ccdots+,a_%7Bt-1%7Dx_2%5E%7Bt-1%7D=y_2+%5C%5C+%5Ccdots+%5C%5C+a_0+a_1x_t+%5Ccdots+,a_%7Bt-1%7Dx_%7Bt%7D%5E%7Bt-1%7D=y_%7Bt%7D+%5C%5C+%5Cend%7Baligned%7D" alt="[公式]"><br>用矩阵乘法表示为：<br><img src="/img/article/shamir/matrix.png" alt="img"><br>在求得 <img src="https://www.zhihu.com/equation?tex=a_0,a_1,%5Ccdots,a_%7Bt-1%7D" alt="[公式]"> 之后便可以构造出多项式 <img src="https://www.zhihu.com/equation?tex=f(x)=a_0+a_1x+a_2x%5E2+%5Ccdots+a_%7Bt-1%7Dx%5E%7Bt-1%7D" alt="[公式]"></p>
+<p>将 <img src="https://www.zhihu.com/equation?tex=x=0" alt="[公式]"> 带入到多项式中，可以求的原秘密 <img src="https://www.zhihu.com/equation?tex=S=a_0" alt="[公式]"></p>
+<h3 id="算法实现"><a href="#算法实现" class="headerlink" title="算法实现"></a>算法实现</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> math <span class="hljs-keyword">import</span> ceil<br><span class="hljs-keyword">from</span> decimal <span class="hljs-keyword">import</span> Decimal<br><span class="hljs-keyword">import</span> random<br><br><span class="hljs-comment">##测试数据</span><br><span class="hljs-built_in">max</span> = <span class="hljs-number">1000000</span><br>t = <span class="hljs-number">5</span><br>n = <span class="hljs-number">8</span><br>secret = <span class="hljs-number">31298123678</span><br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;before:&#x27;</span>,secret)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;ENCRYPTING.......&#x27;</span>)<br><span class="hljs-comment">##构造多项式f(x)</span><br>fx = [random.randrange(<span class="hljs-number">0</span>,<span class="hljs-built_in">max</span>) <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(t-<span class="hljs-number">1</span>)]<br>fx.append(secret)<br><br><span class="hljs-comment">##任取n个x，分别带入多项式，产生对应的(x,y)</span><br>share = []<br><br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(n):<br>    x = random.randrange(<span class="hljs-number">1</span>,<span class="hljs-built_in">max</span>)<br>    y = <span class="hljs-number">0</span> <br>    <span class="hljs-keyword">for</span> idx, value <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(fx[::-<span class="hljs-number">1</span>]):<br>        y += value * x**idx<br>    share.append((x,y))         <span class="hljs-comment">##每人分到的(x,y)序列</span><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;share:(&#x27;</span>,x,<span class="hljs-string">&#x27;,&#x27;</span>,y,<span class="hljs-string">&#x27;)&#x27;</span>)<br><br><br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;DECRYPTING......&#x27;</span>)<br><span class="hljs-comment">##任取t个(x,y)序列,并解密</span><br>key = random.sample(share,t)<br><span class="hljs-built_in">sum</span> =<span class="hljs-number">0</span><br><span class="hljs-keyword">for</span> i, key_i <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(key):<br>    x_i,y_i = key_i<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;key:(&#x27;</span>,x_i,<span class="hljs-string">&#x27;,&#x27;</span>,y_i,<span class="hljs-string">&#x27;)&#x27;</span>)<br>    temp = Decimal(<span class="hljs-number">1</span>)<br>    <br>    <span class="hljs-keyword">for</span> j, key_j <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(key):<br>        x_j,y_j = key_j<br>        <span class="hljs-keyword">if</span> i != j:<br>            temp *= Decimal(Decimal(x_j)/Decimal(x_j-x_i))<br>    temp *= y_i<br>    <span class="hljs-built_in">sum</span> += Decimal(temp)<br><br><span class="hljs-built_in">sum</span> = <span class="hljs-built_in">int</span>(<span class="hljs-built_in">round</span>(Decimal(<span class="hljs-built_in">sum</span>),<span class="hljs-number">0</span>))<br><br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;after:&#x27;</span>,<span class="hljs-built_in">sum</span>)<br></code></pre></td></tr></table></figure>
+
+<h4 id="运行示范"><a href="#运行示范" class="headerlink" title="运行示范"></a>运行示范</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs bash">┌─[loorain@ubuntu] - [~/crypto/shamir] - [2304]shamir<br>└─[$] python3 shamir.py                                                                                                                                                                                             [20:33:27]<br>before: 31298123678<br>ENCRYPTING.......<br>share:( 385490 , 19613871609040056923504678528 )<br>share:( 208439 , 1676593182288704748621405212 )<br>share:( 111980 , 139661059121519203627546778 )<br>share:( 287787 , 6092505271995476798344376612 )<br>share:( 57978 , 10036212148635231635583656 )<br>share:( 8027 , 3687858811716396682052 )<br>share:( 640969 , 149919642500298401999699916572 )<br>share:( 444105 , 34550423234050839227167648028 )<br>DECRYPTING......<br>key:( 444105 , 34550423234050839227167648028 )<br>key:( 111980 , 139661059121519203627546778 )<br>key:( 208439 , 1676593182288704748621405212 )<br>key:( 287787 , 6092505271995476798344376612 )<br>key:( 385490 , 19613871609040056923504678528 )<br>after: 31298123800<br></code></pre></td></tr></table></figure>
+
+<h2 id="图像加密隐写"><a href="#图像加密隐写" class="headerlink" title="图像加密隐写"></a>图像加密隐写</h2><blockquote>
+<p>这里用0-255的矩阵模拟灰度图像</p>
+</blockquote>
+<h3 id="加密过程-1"><a href="#加密过程-1" class="headerlink" title="加密过程"></a>加密过程</h3><p><img src="/img/article/shamir/cry.png" alt="加密示意图"></p>
+<p>随机生成 O 和 S，并计算 d 和 si</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs python">S_img = rd.randint(<span class="hljs-number">0</span>,<span class="hljs-number">256</span>,(<span class="hljs-number">10</span>,<span class="hljs-number">10</span>))<br>O_img = rd.randint(<span class="hljs-number">0</span>,<span class="hljs-number">256</span>,(<span class="hljs-number">20</span>,<span class="hljs-number">20</span>))<br>Q_img = rd.randint(<span class="hljs-number">0</span>,<span class="hljs-number">1</span>,(<span class="hljs-number">20</span>,<span class="hljs-number">20</span>))<br>m = number.getPrime(<span class="hljs-number">4</span>) <span class="hljs-comment">#随机生成一个素数m</span><br><br>d = O_img % m<br>S_i = S_img % m<br></code></pre></td></tr></table></figure>
+
+<p>生成Q</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">20</span>):<br>    <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span> (<span class="hljs-number">20</span>):<br>        Q_img[i,j] = math.floor(O_img[i,j] / m) * m<br></code></pre></td></tr></table></figure>
+
+<p>生成y &#x3D; f(x),求得y与Q相加的到n个Oi</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python">O_i = []<br><span class="hljs-comment">##生成y = f(x),求得y与Q相加的到n个Oi</span><br><span class="hljs-keyword">for</span> n <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">400</span>):<br>    key = random.randrange(<span class="hljs-number">1</span>,<span class="hljs-built_in">max</span>)<br>    y = <span class="hljs-number">0</span><br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">10</span>):<br>        <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">10</span>):<br>            y += S_i[i,j]* (key ** (i*<span class="hljs-number">10</span>+j))<br>    y += d[n] * (key ** (i*<span class="hljs-number">10</span>+j))<br>    O_i.append((Q_img + y)) <br></code></pre></td></tr></table></figure>
+
+<h3 id="解密过程-1"><a href="#解密过程-1" class="headerlink" title="解密过程"></a>解密过程</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">101</span>):<br>    Q_img.append((O_i[i, <span class="hljs-number">0</span>] // m) * m)<br>    so1.append(d[i] - (O_i[i, <span class="hljs-number">0</span>] // m) * m)<br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">101</span>):<br>    d.append(Q_img[i])<br>sol = []<br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">101</span>):<br>    d1 = np(<span class="hljs-number">0</span>,m,(<span class="hljs-number">10</span>, <span class="hljs-number">10</span>)) <br>    <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">10</span>):<br>        <span class="hljs-keyword">for</span> k <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">10</span>):<br>            d1[j, k] = S_img[i, j]**k<br>    sol.append(d1.solve_right(O_img[i])[<span class="hljs-number">0</span>])<br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">101</span>):<br>    <span class="hljs-keyword">assert</span> sol[i]&gt;m<br>solve = []<br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">101</span>):<br>    solve.append(so1[i]+Q_img[i])<br><span class="hljs-built_in">print</span>(solve == d)<br></code></pre></td></tr></table></figure>
+
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Python实现shamir加密和图像加密隐写</div>
+      <div>http://loora1n.github.io/2022/06/05/网络信息安全上机/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Loora1N</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年6月5日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/06/07/Hexo%E9%83%A8%E7%BD%B2%E5%87%BA%E7%8E%B0%E9%94%99%E8%AF%AF%20Error%20Spawn%20failed%20%E8%A7%A3%E5%86%B3%E6%96%B9%E5%BC%8F/" title="Hexo部署出现错误 Error Spawn failed 解决方式(code 128)">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Hexo部署出现错误 Error Spawn failed 解决方式(code 128)</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/06/05/srop/" title="setcontext &amp; SROP">
+                        <span class="hidden-mobile">setcontext &amp; SROP</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments">
+    
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#comments', function() {
+      var light = 'github-light';
+      var dark = 'github-dark';
+      var schema = document.documentElement.getAttribute('data-user-color-scheme');
+      if (schema === 'dark') {
+        schema = dark;
+      } else {
+        schema = light;
+      }
+      window.UtterancesThemeLight = light;
+      window.UtterancesThemeDark = dark;
+      var s = document.createElement('script');
+      s.setAttribute('src', 'https://utteranc.es/client.js');
+      s.setAttribute('repo', 'loora1n/comment');
+      s.setAttribute('issue-term', 'pathname');
+      
+      s.setAttribute('label', 'utterances');
+      
+      s.setAttribute('theme', schema);
+      s.setAttribute('crossorigin', 'anonymous');
+      document.getElementById('comments').appendChild(s);
+    })
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://github.com/Loora1N" target="_blank" rel="nofollow noopener"><span>Loora1N</span></a> <i class="iconfont icon-love"></i> <a href="https://space.bilibili.com/33242548?spm_id_from=333.1007.0.0" target="_blank" rel="nofollow noopener"><span>鷺雨君</span></a>
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+  <span id="timeDate">载入天数...</span>
+  <span id="times">载入时分秒...</span>
+  <script>
+  var now = new Date();
+  function createtime(){
+      var grt= new Date("06/03/2022 00:00:00");//此处修改你的建站时间或者网站上线时间
+      now.setTime(now.getTime()+250);
+      days = (now - grt ) / 1000 / 60 / 60 / 24;
+      dnum = Math.floor(days);
+      hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum);
+      hnum = Math.floor(hours);
+      if(String(hnum).length ==1 ){
+          hnum = "0" + hnum;
+      }
+      minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+      mnum = Math.floor(minutes);
+      if(String(mnum).length ==1 ){
+                mnum = "0" + mnum;
+      }
+      seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+      snum = Math.round(seconds);
+      if(String(snum).length ==1 ){
+                snum = "0" + snum;
+      }
+      document.getElementById("timeDate").innerHTML = "🚀running🚀 for&nbsp"+dnum+"&nbspdays";  //此次自定义显示内容
+      document.getElementById("times").innerHTML = hnum + "&nbsphr&nbsp" + mnum + "&nbspmin&nbsp" + snum + "&nbspsec";
+  }  //此次自定义显示内容
+  setInterval("createtime()",250);
+  </script>   
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+  
+<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/xiantiao.js"></script>
+<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/love.js"></script>
+<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/caidai.js"></script>
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"right","width":250,"height":500},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>
