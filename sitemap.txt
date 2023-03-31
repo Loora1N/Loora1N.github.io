@@ -1,3 +1,4 @@
+http://loora1n.github.io/2023/03/31/%E3%80%90Linux%20kernel%E5%85%A5%E9%97%A8%E3%80%91%E5%86%85%E6%A0%B8%E6%9C%AC%E5%9C%B0%E8%B0%83%E8%AF%95/
 http://loora1n.github.io/2023/03/29/%E3%80%90kernel%E3%80%91%E6%8F%90%E6%9D%83%E5%85%A5%E9%97%A8-part2/
 http://loora1n.github.io/2023/03/29/%E3%80%90kernel%E3%80%91%E6%8F%90%E6%9D%83%E5%85%A5%E9%97%A8-part1/
 http://loora1n.github.io/2023/03/29/Linux%20Syscall%20Reference(64%20bit)/
