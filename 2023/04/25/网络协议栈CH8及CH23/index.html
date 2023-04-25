@@ -16,23 +16,23 @@
   <meta name="author" content="Loora1N">
   <meta name="keywords" content="">
   
-    <meta name="description" content="这两章复习的真没什么道理，全是函数源码分析，实在没什么看头。课件上还有几个练习题可以看看，希望考试别恶心人。">
+    <meta name="description" content="昨晚搞到快两点，今天9.30才起床，希望11点半之前能搞完去吃饭😭">
 <meta property="og:type" content="article">
-<meta property="og:title" content="网络协议栈CH4及CH6">
-<meta property="og:url" content="http://loora1n.github.io/2023/04/25/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH4%E5%8F%8ACH6/index.html">
+<meta property="og:title" content="网络协议栈CH8及CH23">
+<meta property="og:url" content="http://loora1n.github.io/2023/04/25/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH8%E5%8F%8ACH23/index.html">
 <meta property="og:site_name" content="鷺雨のBlog">
-<meta property="og:description" content="这两章复习的真没什么道理，全是函数源码分析，实在没什么看头。课件上还有几个练习题可以看看，希望考试别恶心人。">
+<meta property="og:description" content="昨晚搞到快两点，今天9.30才起床，希望11点半之前能搞完去吃饭😭">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://loora1n.github.io/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH4%E5%8F%8ACH6.assets/image-20230424225903986.png">
-<meta property="article:published_time" content="2023-04-24T17:42:20.756Z">
-<meta property="article:modified_time" content="2023-04-24T17:42:20.756Z">
+<meta property="og:image" content="http://loora1n.github.io/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH8%E5%8F%8ACH23.assets/image-20230425092925635.png">
+<meta property="article:published_time" content="2023-04-25T03:42:26.650Z">
+<meta property="article:modified_time" content="2023-04-25T03:42:26.650Z">
 <meta property="article:author" content="Loora1N">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://loora1n.github.io/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH4%E5%8F%8ACH6.assets/image-20230424225903986.png">
+<meta name="twitter:image" content="http://loora1n.github.io/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH8%E5%8F%8ACH23.assets/image-20230425092925635.png">
   
   
   
-  <title>网络协议栈CH4及CH6 - 鷺雨のBlog</title>
+  <title>网络协议栈CH8及CH23 - 鷺雨のBlog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -200,7 +200,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="网络协议栈CH4及CH6"></span>
+            <span id="subtitle" data-typed-text="网络协议栈CH8及CH23"></span>
           
         </div>
 
@@ -211,8 +211,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-04-25 01:42" pubdate>
-          2023年4月25日 凌晨
+        <time datetime="2023-04-25 11:42" pubdate>
+          2023年4月25日 中午
         </time>
       </span>
     
@@ -223,7 +223,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          2.8k 字
+          2.9k 字
         
       </span>
     
@@ -234,7 +234,7 @@
         
         
         
-          23 分钟
+          25 分钟
         
       </span>
     
@@ -280,82 +280,110 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">网络协议栈CH4及CH6</h1>
+            <h1 style="display: none">网络协议栈CH8及CH23</h1>
             
             
               <div class="markdown-body">
                 
-                <h2 id="题外话"><a href="#题外话" class="headerlink" title="题外话"></a>题外话</h2><p><img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH4%E5%8F%8ACH6.assets/image-20230424232559912.png" alt="image-20230424232559912"></p>
-<p>去年11月份做IO相关源码的时候就已经觉得有些宏定义纯纯恶心，没想到今日的网络协议栈再一次体会了这种感觉😅，感谢网络协议栈让我重温旧日的美好时光。</p>
-<h2 id="第四章-接口：以太网"><a href="#第四章-接口：以太网" class="headerlink" title="第四章 接口：以太网"></a>第四章 接口：以太网</h2><h3 id="以太网接口"><a href="#以太网接口" class="headerlink" title="以太网接口"></a>以太网接口</h3><p><img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH4%E5%8F%8ACH6.assets/image-20230424225903986.png" alt="image-20230424225903986"></p>
-<p>IP分组的以太网帧如上图所示，包含6字节的目的和源地址，2字节的类型，末尾4字节的CRC。前14个字节我们在上一篇文章讨论输入输出时已经见过。对于IP分组，其类型是固定的<strong>0x0800</strong>（十进制2048）</p>
-<h3 id="leintr函数"><a href="#leintr函数" class="headerlink" title="leintr函数"></a>leintr函数</h3><blockquote>
-<p> 感觉记住这几个函数干什么就行，也没啥特别说的。一个个源码都挺长的，放上来估计也没人想看。</p>
+                <blockquote>
+<p>昨晚搞到快两点，今天9.30才起床，希望11点半之前能搞完去吃饭😭</p>
 </blockquote>
-<p><code>leintr</code>检测硬件，并且如果有一个帧到达，就调用<code>leread</code>把这个帧从接口转移到一个mbuf链中。如果硬件报告一个帧已传输完或发现一个差错(如一个有错误的检验和)，则<code>leintr</code>更新相应的接口统计，复位这个硬件,并调用<code>lestart</code>来传输另一个帧。所有以太网设备驱动程序将它们接收到的帧传给<code>ether_input</code>做进一步的处理。设备驱动程序构造的mbuf链不包括以太网首部，以太网首部作为一个独立的参数传递给<code>ether_input</code>。结构<code>ether_header</code>如下所示：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">ether_</span> <span class="hljs-title">header</span> &#123;</span><br>	u_char ether_dhost[<span class="hljs-number">6</span>] ;		<span class="hljs-comment">/* Ethernet destination address */</span><br>	u_char ether_shost[<span class="hljs-number">6</span>] ;		<span class="hljs-comment">/* Ethernet source address*/</span><br>	u_short ether_type;			<span class="hljs-comment">/* Ethernet frame type */</span><br>&#125;;<br></code></pre></td></tr></table></figure>
-
-<h3 id="leread函数"><a href="#leread函数" class="headerlink" title="leread函数"></a>leread函数</h3><p>函数<code>leread</code>的开始是由<code>leintr</code>传给它的一个连续的内存缓冲区,并且构造了一个<code>ether_header</code>结构和 一个mbuf链。这个链表存储来自以太网帧的数据。<code>leread</code>还将输入帧传给BPF。</p>
-<h3 id="ether-input函数"><a href="#ether-input函数" class="headerlink" title="ether_input函数"></a>ether_input函数</h3><p>函数<code>ether_input</code>，它检查结构<code>ether_header</code>来判断接收到的数据的类型，并将接收到的分组加入到队列中等待处理。</p>
-<h3 id="ether-output函数"><a href="#ether-output函数" class="headerlink" title="ether_output函数"></a>ether_output函数</h3><p>当一个网络层协议，如IP,调用此接口ifnet结构中指定的函数<code>if_ output</code>时，开始处理输出。所有以太网设备的<code>if_ output</code>是<code>ether_ output</code>。<code>ether_output</code>用14字节以太网首部封装一个以太网帧的数据部分，并将它放置到接口的发送队列中。</p>
-<h3 id="lestart函数"><a href="#lestart函数" class="headerlink" title="lestart函数"></a>lestart函数</h3><p>函数<code>lestart</code>从接口输出队列中取出排队的帧，并交给LANCE以太网卡发送。如果设备空闲，调用此函数开始发送帧。</p>
-<blockquote>
-<p>如果设备忙，当它完成了当前帧的传输时产生一个中断。设备调用<strong>lestart</strong>来退队并传输下一帧。一旦开始，协议层不再用调用<strong>lestart</strong>来排队帧，因为驱动程序不断退队并传输帧，直到队列为空为止。</p>
-</blockquote>
-<h3 id="ioctl系统调用"><a href="#ioctl系统调用" class="headerlink" title="ioctl系统调用"></a>ioctl系统调用</h3><blockquote>
-<p>个人认为<strong>ioctl</strong>是一个非常重要的部分，因为他不仅仅涉及网络设备。在我们常用的Linux系统中，ioctl是作为进程和设备交互的最重要的系统调用或者说接口，包括字符型设备（例：终端、文件）、存储设备（例：磁盘）以及网络设备（例：网卡）。可以说绝大多数设备的驱动程序（至少在我的认知里）都要依靠此函数来实现，是研究Linux系统内核、内核态开发和安全非常重要的一部分。</p>
-<p><strong>但在这门课里我不确定它是不是那么重要？</strong>😝</p>
-</blockquote>
-<p>原型如下：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">ioctl</span><span class="hljs-params">(<span class="hljs-type">int</span> fd, <span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> com, ...)</span>;<br></code></pre></td></tr></table></figure>
-
-<p>这个函数的三个参数分别为如下含义：</p>
+<h2 id="第八章-IP：网际协议"><a href="#第八章-IP：网际协议" class="headerlink" title="第八章 IP：网际协议"></a>第八章 IP：网际协议</h2><h3 id="IP分组"><a href="#IP分组" class="headerlink" title="IP分组"></a>IP分组</h3><p><img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH8%E5%8F%8ACH23.assets/image-20230425092925635.png" alt="image-20230425092925635"></p>
+<p>参照上图，有几个基本概念（本例中的传输层协议为UDP）：</p>
 <ul>
-<li>fd，文件描述符，即ioctl要交互的设备是谁</li>
-<li>com，command命令，即ioctl要调用哪个命令（在驱动程序中会根据不同的值执行不同的函数或者命令）</li>
-<li>第三个参数为执行command命令时传入的参数</li>
+<li><strong>报文</strong>：由传输层送至IP的数据报，本身包含传输层首部和数据</li>
+<li><strong>数据报</strong>：IP在报文的前面加上自己的IP首部，且根据长度考虑是否分片（上图1-2行）</li>
+<li><strong>帧</strong>：IP将分好片的数据报交给数据链路层，数据链路填上自己的首部后变为帧（上图3行）</li>
+<li><strong>分组</strong>：一个分片的数据报或者一个不需分片的数据报为分组</li>
 </ul>
-<p>本书中涉及到的与网络接口相关的com命令如下：</p>
-<p><img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH4%E5%8F%8ACH6.assets/image-20230425001108434.png" alt="image-20230425001108434"></p>
 <blockquote>
-<p>其中命令列即为ioctl的第二个参数com</p>
+<p> 需注意的是IP数据报结构存储不受机器大小端的影响，均按照下面地址结构存储</p>
 </blockquote>
-<h4 id="ifioctl函数"><a href="#ifioctl函数" class="headerlink" title="ifioctl函数"></a>ifioctl函数</h4><blockquote>
-<p>ifioctl起始就是ioctl调用后，网络接口驱动程序所对应的处理函数。</p>
-<p>大概流程就是用户进程调用ioctl系统调用，发生中断陷入内核态，然后操作系统根据fd找到对应设备驱动程序，这里就是网络接口的驱动程序。随后网络接口的ifioctl根据ioctl的后两个参数进行处理，参照上图的表,已经有了一些命令的描述。</p>
+<p><img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH8%E5%8F%8ACH23.assets/image-20230425093907332.png" alt="image-20230425093907332"></p>
+<p>IP数据报结构如上图所示，上面的个部分含义已在图中标出</p>
+<blockquote>
+<p>可能需注意的地方：<code>ip_hl</code>常用4字节度量，即当<code>ip_hl == 5</code>时，实际首部长度为5<em>4&#x3D;20。其中选项的部分为0~40不等，所以<code>ip_hl</code>的最大值为：</em>*(20+40)&#x2F;4 &#x3D; 15<strong>，最小值为：</strong>20&#x2F;4&#x3D;5**。另外，由于ip_hl为4的倍数，所以选项的长度一般也为4的倍数。</p>
 </blockquote>
-<ul>
-<li>对于命令<strong>SIOCGIFCONF</strong>，<code>ifioctl</code>调用<code>ifconf</code>来构造一个可变长ifreq结构的表。</li>
-<li>对于其他<code>ioctl</code>命令，数据参数是指向一个<code>ifreq</code>结构的指针。<code>ifunit</code>在ifnet列表中查找名称为进程在ifr-&gt;ifr_name中提供的文本名称(例如:“s10”，“le1”或“lo0”)的接口。如果没有匹配的接口，ifioctl返回 ENXIO。</li>
-<li>对于命令<strong>SIOSIFFLAGS</strong>，<code>ifioctl</code> 可以利用ifconfig来设置或清除标志<strong>IFF_UP</strong>，实现对一个接口的禁用和启用。这将会调用<code>if_up</code>和<code>if_down</code>函数</li>
-</ul>
-<h2 id="第6章-IP编址"><a href="#第6章-IP编址" class="headerlink" title="第6章 IP编址"></a>第6章 IP编址</h2><h3 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h3><p>几类IP地址划分，主机和路由器简单看看就好，也没什么说的</p>
-<p><img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH4%E5%8F%8ACH6.assets/image-20230425004924718.png" alt="image-20230425004924718"></p>
-<h3 id="sockaddr-in结构"><a href="#sockaddr-in结构" class="headerlink" title="sockaddr_in结构"></a>sockaddr_in结构</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">in_addr</span> &#123;</span><br>	u_1ong s_addr;			<span class="hljs-comment">/* 32-bit IP address, net byte order */</span><br>&#125;;<br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sockaddr_</span> <span class="hljs-title">in</span> &#123;</span><br>	u_char sin_len;				<span class="hljs-comment">/* sizeof (struct sockaddr_ in) = 16 */</span><br>	u_char sin_family;			<span class="hljs-comment">/* AF_INET */</span><br>	u_short sin_port;			<span class="hljs-comment">/* 16-bit port number, net byte order */</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">in_addr</span> <span class="hljs-title">sin_</span> <span class="hljs-title">addr</span> ;</span><br>	<span class="hljs-type">char</span> sin_zero[<span class="hljs-number">8</span>] ;			<span class="hljs-comment">/* unused */</span><br>&#125;;<br></code></pre></td></tr></table></figure>
+<h3 id="ipintr函数"><a href="#ipintr函数" class="headerlink" title="ipintr函数"></a>ipintr函数</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">void</span> <span class="hljs-title function_">ipintr</span> <span class="hljs-params">()</span><br>&#123;<br>        <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">ip</span> *<span class="hljs-title">ip</span>;</span><br>        <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">mbuf</span> *<span class="hljs-title">m</span>;</span><br>        <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">ipq</span> *<span class="hljs-title">fp</span>;</span><br>        <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">in_ifaddr</span> *<span class="hljs-title">ia</span>;</span><br>        <span class="hljs-type">int</span> hlen, s;<br>    next:<br>        <span class="hljs-comment">/*</span><br><span class="hljs-comment">            Get next datagram off input queue and get IP header</span><br><span class="hljs-comment">            in first mbuf.</span><br><span class="hljs-comment">        */</span><br>        s = splimp() ;<br>        IF_DEQUEUE (&amp;ipintrq, m) ;<br>        sp1x(s);<br>        <span class="hljs-keyword">if</span>(m==<span class="hljs-number">0</span>) <span class="hljs-keyword">return</span>;<br>        <span class="hljs-comment">/*</span><br><span class="hljs-comment">            很多很多代码😭</span><br><span class="hljs-comment">        */</span><br>        <span class="hljs-keyword">goto</span> next；<br>    bad:<br>        m_freem(m);<br>        <span class="hljs-keyword">goto</span> next;<br>&#125;    <br></code></pre></td></tr></table></figure>
 
-<blockquote>
-<p>这个结构体比较简单，但还是挺常用的，需要额外注意的是s_addr的存储并不根据系统的大小端，而是根据网络流的顺序</p>
-</blockquote>
-<p>sockaddr和sockaddr_in对比如下：</p>
-<p><img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH4%E5%8F%8ACH6.assets/image-20230425010936449.png" alt="image-20230425010936449"></p>
-<h3 id="in-ifaddr结构"><a href="#in-ifaddr结构" class="headerlink" title="in_ifaddr结构"></a>in_ifaddr结构</h3><p><code>in_ifaddr</code>为Internet协议的接口地址结构。对于每个指派给一个接口的IP地址，分配了一个<code>in_ifaddr</code>结构，并且添加到接口地址列表和IP地址全局列表中。</p>
-<h3 id="in-ifinit函数"><a href="#in-ifinit函数" class="headerlink" title="in_ifinit函数"></a>in_ifinit函数</h3><blockquote>
-<p>按课件和课本的话中间还有ifioctl和io_control函数的部分没搞，但说实话真不知道分析这几个函数有什么用😅，总不能让我考试也隔着审源码吧，我个人觉得知道这些函数干什么就行了。希望老师不要打我的脸，求求了😇</p>
-</blockquote>
-<p>主要步骤：</p>
+<p>该函数的基本框架如上，大致就是依靠两个goto实现对分组处理的循环，直到队列为空结束。中间省略的代码主要做下面几件事（实在太长了）：</p>
+<ol>
+<li>验证：把分组从<code>ipintrq</code>中取出，验证它们的内容，损坏和有差错的分组自动被丢弃。</li>
+<li>转发或不转发：调用<code>ip_dooptions</code>来处理IP选项，如果没到达最终目的地就尝试转发，反之交给对应传输层协议</li>
+<li>重装（重装在第10章讲，那我就不管了，开摆！）</li>
+<li>分用：重装完全的数据报，ip指针设置为到达目的地的完整数据报，反之为空</li>
+</ol>
+<h3 id="ip-forward函数"><a href="#ip-forward函数" class="headerlink" title="ip_forward函数"></a>ip_forward函数</h3><p>到达非目的地的分组需要被转发。只有当<strong>ipforwarding非零</strong>或当分组中包含<strong>源路由</strong>时，ipintr才调用该函数<code>ip_forward</code>实现转发。ip_forward依靠route结构体与路由表接口</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">route</span>&#123;</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">rtentry</span> *<span class="hljs-title">ro_rt</span>;</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sockaddr</span> <span class="hljs-title">ro_dst</span>;</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
 <ul>
-<li>将地址复制到此结构并将此变化通知硬件;</li>
-<li>忽略原地址配置的任何路由;</li>
-<li>为这个地址建立-一个子网掩码;</li>
-<li>建立一个默认路由到连接的网络(或主机);</li>
-<li>将此接口加入到所有主机组。</li>
+<li><code>ro_rt</code> 指向与路由表相关的rtentry结构体</li>
+<li><code>ro_dst </code>指向存放目的地址信息的sockaddr结构体</li>
 </ul>
-<h3 id="练习题"><a href="#练习题" class="headerlink" title="练习题"></a>练习题</h3><blockquote>
-<p>这两章复习的真没什么道理，全是函数源码分析，实在没什么看头。课件上还有几个练习题可以看看，希望考试别恶心人</p>
+<p><code>ip_forward()</code>的基本流程分为两部分：</p>
+<ul>
+<li>确定系统是否需要转发此分组，修改IP首部，位分组选择路由</li>
+<li>处理ICMP重定向报文，并把分组交给<code>ip_output</code>进行转发</li>
+</ul>
+<blockquote>
+<p>流程中可能需注意的点：</p>
+<ul>
+<li>IP转发算法把最近的路由缓存在全局route结构的ipforward_rt中</li>
+<li>当转发错误时，由且仅由路由器向源主机返回ICMP重定向报文，以此更新主机路由表</li>
+</ul>
 </blockquote>
-<p><img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH4%E5%8F%8ACH6.assets/image-20230425013954629.png" alt="image-20230425013954629"></p>
-<p><img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH4%E5%8F%8ACH6.assets/image-20230425014013419.png" alt="image-20230425014013419"></p>
-<p><img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH4%E5%8F%8ACH6.assets/image-20230425013925701.png" alt="image-20230425013925701"></p>
+<h3 id="ip-output"><a href="#ip-output" class="headerlink" title="ip_output"></a>ip_output</h3><p><code>ip_output</code>为IP输出代码，主要为三部分：</p>
+<ul>
+<li>首部初始化</li>
+<li>路由选择</li>
+<li>源地址选择和分片</li>
+</ul>
+<h2 id="第23章-UDP"><a href="#第23章-UDP" class="headerlink" title="第23章 UDP"></a>第23章 UDP</h2><h3 id="整体数据传输框架"><a href="#整体数据传输框架" class="headerlink" title="整体数据传输框架"></a>整体数据传输框架</h3><p><img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH8%E5%8F%8ACH23.assets/image-20230425104820413.png" alt="image-20230425104820413"></p>
+<blockquote>
+<p>整体框架如上图所示，从上到下分别是：</p>
+<p>用户进程(应用层)–&gt;UDP(传输层)–&gt;IP(网络层)–&gt;数据链路层–&gt;硬件网卡(物理层)</p>
+</blockquote>
+<h3 id="UDP-首部"><a href="#UDP-首部" class="headerlink" title="UDP 首部"></a>UDP 首部</h3><p><img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH8%E5%8F%8ACH23.assets/image-20230425105506669.png" alt="image-20230425105506669"></p>
+<p>UDP首部如上图所示，对应域的含义也有标记。需要注意的是IP首部和UDP首部一般是紧挨在一起，我们在CH1-CH3中分析mbuf时已经可以注意到这种现象。而实际上在udp内相关函数（如<code>udp_input</code>,<code>udp_output</code>）处理时也会将两者放在一起使用，他们共同构成了结构体<code>udpiphdr</code>，如下所示：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">udpiphdr</span>&#123;</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">ippvly</span> <span class="hljs-title">ui_i</span>;</span> 	<span class="hljs-comment">/* overlaid	ip structure*/</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">udphdr</span> <span class="hljs-title">ui_u</span>;</span>		<span class="hljs-comment">/* udp header*/</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>20字节的IP首部被定义为 ippvly结构体，如下所示，可自行对照IP首部结构图：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">ipov1y</span> &#123;</span><br><span class="hljs-type">caddr_t</span> ih_next, ih_prev;	<span class="hljs-comment">/* for protocol sequence q&#x27;s */</span><br>u_char ih_x1; 				<span class="hljs-comment">/* (unused) */</span><br>u_char ih_pr;				<span class="hljs-comment">/* protocol */</span><br><span class="hljs-type">short</span> ih_len;				<span class="hljs-comment">/* protocol length */</span><br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">in_addr</span> <span class="hljs-title">ih_src</span>;</span> 		<span class="hljs-comment">/* source internet address */</span><br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">in_addr</span> <span class="hljs-title">ih_dst</span>;</span> 		<span class="hljs-comment">/* destination internet address */</span><br>&#125;;<br></code></pre></td></tr></table></figure>
+
+<h3 id="udp-init函数"><a href="#udp-init函数" class="headerlink" title="udp_init函数"></a>udp_init函数</h3><p>初始化函数，用来构建PCB双向链表的起始，让头部PCB的next指针和prev指针都指向自己。需注意UDP临时端口号由1024开始分配</p>
+<blockquote>
+<p>前0~1023端口为常用端口，一般都有固定对应服务，想要监听这些端口时也需要sudo权限</p>
+<p>PCB是22章的概念：PCB协议控制块存放各UDP和TCP插口所要求的多个信息片，UDP所需要的所有信息都可以在Internet PCB中找到，不存在UDP控制块</p>
+</blockquote>
+<h3 id="udp-out函数"><a href="#udp-out函数" class="headerlink" title="udp_out函数"></a>udp_out函数</h3><p>当程序调用send，sendto，sendmsg，write或writev时会发生UDP输出。基本流程如下图：<img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH8%E5%8F%8ACH23.assets/image-20230425111210300.png" alt="image-20230425111210300"></p>
+<p><code>udp_output</code>主要干这几件事：</p>
+<ul>
+<li>添加IP&#x2F;UDP首部，具体过程可以看前三章分析mbuf的部分</li>
+<li>检验和计算和伪首部</li>
+</ul>
+<p>我们在前三章分析mbuf时说到过，udp会填写一部分首部，ip会填写一部分首部，这里就是分别调用<code>udp_output</code>,<code>ip_output</code>实现的<img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH8%E5%8F%8ACH23.assets/image-20230425111755234.png" alt="image-20230425111755234"></p>
+<p>下图中阴影部分本应属于IP首部，但也交由<code>udp_output()</code>填写</p>
+<p><img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH8%E5%8F%8ACH23.assets/image-20230425111716276.png" alt="image-20230425111716276"></p>
+<p>UDP在检验和时会包含三部分内容：12字节的伪首部，8字节的UDP首部，UDP数据</p>
+<p><img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH8%E5%8F%8ACH23.assets/image-20230425112329338.png" alt="image-20230425112329338"></p>
+<p>伪首部和UDP首部如上图所示，下图是填充首部和检验和的整个示意图</p>
+<p><img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH8%E5%8F%8ACH23.assets/image-20230425112939950.png" alt="image-20230425112939950"></p>
+<h3 id="CRC校验码"><a href="#CRC校验码" class="headerlink" title="CRC校验码"></a>CRC校验码</h3><p>这部分机组的时候学过，自行适当复习一下，课件例题如下</p>
+<p><img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH8%E5%8F%8ACH23.assets/image-20230425113213347.png" alt="image-20230425113213347"></p>
+<p><img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH8%E5%8F%8ACH23.assets/image-20230425113221906.png" alt="image-20230425113221906"></p>
+<h3 id="udp-input函数"><a href="#udp-input函数" class="headerlink" title="udp_input函数"></a>udp_input函数</h3><p>当IP在它的协议字段指定为UDP的输入队列上收到一个IP数据报时，才发生UDP的输入。IP通过协议交换表中的<code>pr_input</code>函数调用函数<code>udp_input</code>。因为IP的输入是在软件中断级，所以<code>udp_input</code>也在这一级上执行。<code>udp_input</code>的目标是把UDP数据报放置到合适的插口的缓存内，唤醒该插口上因输入阻塞的所有进程。<code>udp_input</code> 函数的主要分三个部分:</p>
+<ul>
+<li><p>UDP对收到的数据报完成<strong>一般性</strong>的确认;</p>
+</li>
+<li><p>处理目的地是<strong>单播地址的UDP数据报</strong>：找到合适的PCB,把数据报放到插口的缓存内，</p>
+</li>
+<li><p>处理目的地是<strong>广播或多播地址的UDP数据报</strong>：必须把数据报提交给多个插口。</p>
+</li>
+</ul>
+<blockquote>
+<p>确认部分可以继续复习前三章mbuf分析部分，个人感觉这本章和前三章关系还是比较紧密的，可以多对照看看</p>
+</blockquote>
+<h3 id="课后练习题"><a href="#课后练习题" class="headerlink" title="课后练习题"></a>课后练习题</h3><p><img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH8%E5%8F%8ACH23.assets/image-20230425114209049.png" alt="image-20230425114209049"></p>
 
                 
               </div>
@@ -373,8 +401,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>网络协议栈CH4及CH6</div>
-      <div>http://loora1n.github.io/2023/04/25/网络协议栈CH4及CH6/</div>
+      <div>网络协议栈CH8及CH23</div>
+      <div>http://loora1n.github.io/2023/04/25/网络协议栈CH8及CH23/</div>
     </div>
     <div class="license-meta">
       
@@ -418,18 +446,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2023/04/25/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH8%E5%8F%8ACH23/" title="网络协议栈CH8及CH23">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">网络协议栈CH8及CH23</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2023/04/24/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88%E5%A4%8D%E4%B9%A0/" title="网络协议栈CH1-CH3">
-                        <span class="hidden-mobile">网络协议栈CH1-CH3</span>
+                      <a href="/2023/04/25/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH4%E5%8F%8ACH6/" title="网络协议栈CH4及CH6">
+                        <span class="hidden-mobile">网络协议栈CH4及CH6</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
