@@ -16,23 +16,23 @@
   <meta name="author" content="Loora1N">
   <meta name="keywords" content="">
   
-    <meta name="description" content="从STM32固件分析入门嵌入式设备逆向">
+    <meta name="description" content="好久没更新博客了，这两个月学习kernel加帮忙护网好忙。本文样例为LibTIFF version 4.0.4，来使用lcov辅助查看代码覆盖率">
 <meta property="og:type" content="article">
-<meta property="og:title" content="【IOT】嵌入式设备固件分析">
-<meta property="og:url" content="http://loora1n.github.io/2023/07/12/%E3%80%90IOT%E3%80%91%E5%B5%8C%E5%85%A5%E5%BC%8F%E8%AE%BE%E5%A4%87%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90/index.html">
+<meta property="og:title" content="【fuzz trick】利用LCOV测量代码覆盖率">
+<meta property="og:url" content="http://loora1n.github.io/2023/08/22/%E3%80%90fuzz%20trick%E3%80%91%E5%88%A9%E7%94%A8LCOV%E6%B5%8B%E9%87%8F%E4%BB%A3%E7%A0%81%E8%A6%86%E7%9B%96%E7%8E%87/index.html">
 <meta property="og:site_name" content="鷺雨のBlog">
-<meta property="og:description" content="从STM32固件分析入门嵌入式设备逆向">
+<meta property="og:description" content="好久没更新博客了，这两个月学习kernel加帮忙护网好忙。本文样例为LibTIFF version 4.0.4，来使用lcov辅助查看代码覆盖率">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://loora1n.github.io/img/article/stm32/image-20230711195206201.png">
-<meta property="article:published_time" content="2023-07-12T02:29:51.728Z">
-<meta property="article:modified_time" content="2023-07-12T02:29:51.728Z">
+<meta property="og:image" content="http://loora1n.github.io/img/article/lcov/Image2_2.png">
+<meta property="article:published_time" content="2023-08-22T05:50:16.249Z">
+<meta property="article:modified_time" content="2023-08-22T05:50:16.249Z">
 <meta property="article:author" content="Loora1N">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://loora1n.github.io/img/article/stm32/image-20230711195206201.png">
+<meta name="twitter:image" content="http://loora1n.github.io/img/article/lcov/Image2_2.png">
   
   
   
-  <title>【IOT】嵌入式设备固件分析 - 鷺雨のBlog</title>
+  <title>【fuzz trick】利用LCOV测量代码覆盖率 - 鷺雨のBlog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -200,7 +200,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="【IOT】嵌入式设备固件分析"></span>
+            <span id="subtitle" data-typed-text="【fuzz trick】利用LCOV测量代码覆盖率"></span>
           
         </div>
 
@@ -211,8 +211,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-07-12 10:29" pubdate>
-          2023年7月12日 上午
+        <time datetime="2023-08-22 13:50" pubdate>
+          2023年8月22日 下午
         </time>
       </span>
     
@@ -223,7 +223,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          2.8k 字
+          929 字
         
       </span>
     
@@ -234,7 +234,7 @@
         
         
         
-          24 分钟
+          8 分钟
         
       </span>
     
@@ -280,107 +280,32 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">【IOT】嵌入式设备固件分析</h1>
+            <h1 style="display: none">【fuzz trick】利用LCOV测量代码覆盖率</h1>
             
             
               <div class="markdown-body">
                 
-                <p>嵌入式设备固件一般可以分为两类：</p>
-<ul>
-<li>有文件系统（如路由器固件这种）</li>
-<li>无文件系统（如STM32这种嵌入式设备固件，程序直接存放在flash中）</li>
-</ul>
-<p>针对第一类固件，分析起来比较简单，直接binwalk分离。然后去逆向对应的服务对应的二进制程序即可，也不需要考虑程序的加载地址。</p>
-<p>而对于第二类固件，往往就会比较复杂，需要分析程序的加载地址，也需要考虑外设的地址映射。</p>
-<blockquote>
-<p>本文将从SCTF2020的题目Password Lock入手，分析STM32固件作为入门</p>
+                <blockquote>
+<p>本文样例为LibTIFF version 4.0.4，以CVE-2016-9297漏洞举例 </p>
 </blockquote>
-<h2 id="题目信息"><a href="#题目信息" class="headerlink" title="题目信息"></a>题目信息</h2><p>这是一个STM32F103C8T6 MCU密码锁, 它具有4个按键，分别为1, 2, 3, 4. 分别对应GPIO_PA1, GPIO_PA2, GPIO_PA3, GPIO_PA4.</p>
-<ol>
-<li>flag1格式为SCTF{正确的按键密码}</li>
-<li>输入正确的密码, 它将通过串口(PA9–TX)发送flag2</li>
-</ol>
-<h2 id="确定固件加载地址"><a href="#确定固件加载地址" class="headerlink" title="确定固件加载地址"></a>确定固件加载地址</h2><p>这里有两个方法可以确定，一个是直接分析Intel Hex文件，另一个是去看芯片对应的内存映射图（可以通过<a target="_blank" rel="noopener" href="https://www.alldatasheet.com/">ALLDATASHEET.COM</a>去搜索芯片信息）</p>
-<h3 id="分析Intel-Hex文件"><a href="#分析Intel-Hex文件" class="headerlink" title="分析Intel Hex文件"></a>分析Intel Hex文件</h3><blockquote>
-<p>本模块可以参考<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Intel_HEX">Intel HEX - Wikipedia — 英特尔十六进制 - 维基百科</a></p>
-</blockquote>
-<p>Intel Hex可以直接用记事本打开，我们以本题的第一行为例分析其数据格式</p>
-<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs tex">:020000040800F2<br></code></pre></td></tr></table></figure>
+<h2 id="Install"><a href="#Install" class="headerlink" title="Install"></a>Install</h2><p>直接使用<code>apt</code>安装包即可</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">sudo apt install lcov<br></code></pre></td></tr></table></figure>
 
+<h2 id="Usage"><a href="#Usage" class="headerlink" title="Usage"></a>Usage</h2><p>整体流程大致如下</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">cd</span> ./tiff-4.0.4/<br>lcov --zerocounters --directory ./<br>lcov --capture --initial --directory ./ --output-file app.info<br>../install/bin/tiffinfo -D -j -c -r -s -w ../out/default/crashes/id:000000,sig:06,src:000000,time:11605,execs:6660,op:havoc,rep:4<br>lcov --no-checksum --directory ./ --capture --output-file app2.info<br></code></pre></td></tr></table></figure>
+
+<p>每个部分含义如下：</p>
 <ul>
-<li>第一个符合<code>:</code>代表没一行数据的起始，为start code</li>
-<li>之后的第一个byte<code>02</code>为Byte Count，代表data的长度</li>
-<li>紧接着的两个字节<code>0000</code>为Address</li>
-<li>接下来的一个字节<code>04</code>为record type，总共有6个类型（00数据，01文件结尾，02拓展分段地址，03开始段地址，04拓展线性地址，05起始线性地址）</li>
-<li>接下来直到最后一个字节之前为数据data，</li>
-<li>最后一个字节F2为校验和，校验和为所有字节之和的补码</li>
+<li><code>lcov --zerocounters --directory ./</code>，用于重置计数器</li>
+<li><code>lcov --capture --initial --directory ./ --output-file app.info</code>，创建一个”baseline”覆盖率数据文件，其中包含每个检测线的零覆盖率</li>
+<li><code>../install/bin/tiffinfo -D -j -c -r -s -w ../out/default/crashes/id:000000,sig:06,src:000000,time:11605,execs:6660,op:havoc,rep:4</code>，运行要分析的程序和输入，或是fuzz出的crash样本，这一步可以多次运行不同的输入用于测量覆盖率</li>
+<li><code>lcov --no-checksum --directory ./ --capture --output-file app2.info</code>，将上一步出现的覆盖状态保存在<strong>app2.info</strong></li>
 </ul>
-<p>这里主要record type这个字段需要注意</p>
-<table>
-<thead>
-<tr>
-<th align="center">hex</th>
-<th align="center">type</th>
-<th align="center">Description</th>
-<th align="center">Example</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">00</td>
-<td align="center">数据</td>
-<td align="center">由byte count字段决定data字段的数据长度</td>
-<td align="center">:0B0010006164647265737320676170A7</td>
-</tr>
-<tr>
-<td align="center">01</td>
-<td align="center">文件结尾</td>
-<td align="center">一般为hex文件最后一行，代表文件结束</td>
-<td align="center">:00000001FF</td>
-</tr>
-<tr>
-<td align="center">02</td>
-<td align="center">扩展分段地址</td>
-<td align="center">byte count固定为02，起始地址为data段值乘以16</td>
-<td align="center">:020000021200EA</td>
-</tr>
-<tr>
-<td align="center">03</td>
-<td align="center">开始段地址</td>
-<td align="center">对于8086处理器指定起始执行地址</td>
-<td align="center">:0400000300003800C1</td>
-</tr>
-<tr>
-<td align="center">04</td>
-<td align="center">扩展线性地址</td>
-<td align="center">data段代表起始地址的高16位</td>
-<td align="center">:020000040800F2</td>
-</tr>
-<tr>
-<td align="center">05</td>
-<td align="center">起始线性地址</td>
-<td align="center">data表示大端的32位地址</td>
-<td align="center">:04000005000000CD2A</td>
-</tr>
-</tbody></table>
-<p>针对本题的起始数据为<code>:020000040800F2</code>，可以很明显的看到类型为04，则可以计算出对应地址为<strong>0x08000000</strong></p>
-<h3 id="查看内存映射"><a href="#查看内存映射" class="headerlink" title="查看内存映射"></a>查看内存映射</h3><p>在上面的datasheet网站中可以搜索到：<a target="_blank" rel="noopener" href="https://pdf1.alldatasheet.com/datasheet-pdf/view/201596/STMICROELECTRONICS/STM32F103C8T6.html">STM32F103C8T6 Datasheet</a>本题对应的datasheet，查看memory mapping章节可以得到下图。</p>
-<p><img src="/img/article/stm32/image-20230711195206201.png" alt="memory maping"></p>
-<p>从图中也可以比较直观的找到flash段的地址在0x08000000，此外还可以看到一些外设的地址段PERIPHERALS，这也是后面分析时要考虑的。</p>
-<h2 id="IDA分析"><a href="#IDA分析" class="headerlink" title="IDA分析"></a>IDA分析</h2><p>将hex文件拖入IDA后，首先设置<strong>process type</strong>为小端，然后设置架构为<strong>arm-v7</strong>（这个可以在手册中查到），如图：</p>
-<p><img src="/img/article/stm32/image-20230712092047827.png" alt="set type"></p>
-<p>跟踪流程可以跟到<code>sub_8000428</code>，基本可以确定其就是主函数<code>main</code>，红色区域地址是因为IDA没有加载这个地址的段。</p>
-<p><img src="/img/article/stm32/image-20230712095333876.png" alt="preview"></p>
-<p>对照内存映射图，我们可以知道这些0x40000000的地址属于外设的地址映射，也就是对应了不同的针脚。可以在Edit -&gt; Segment -&gt; create segment，手动添加sram和peripherals段即可，再次F5即可看到区域变为正常黄色。</p>
-<p>接下来就需要手动查阅手册，为每个地址改变量名为设备名称，方便后续分析，在我看来这也是最耗时最麻烦的一步。但其如果使用Ghidra和SVD-loader插件会快很多，可以直接自动识别更改，但我在尝试的时候没有成功，不知什么原因，悲 :(</p>
-<p>改完差不多就是这个样子</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> __cdecl <span class="hljs-title function_">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">const</span> <span class="hljs-type">char</span> **argv, <span class="hljs-type">const</span> <span class="hljs-type">char</span> **envp)</span><br>&#123;<br>  init((<span class="hljs-type">int</span>)&amp;loc_8000428 + <span class="hljs-number">1</span>, (<span class="hljs-type">int</span>)argv);<br>  RCC_APB2ENR = <span class="hljs-number">0x4005</span>;<br>  RCC_AHBENR = <span class="hljs-number">1</span>;<br>  PA_CRL = <span class="hljs-number">0x44488884</span>;<br>  PA_CRH = <span class="hljs-number">0x444444B4</span>;<br>  PA_ODR = <span class="hljs-number">0x1E</span>;<br>  EXTI_IMR = <span class="hljs-number">0x1E</span>;<br>  EXTI_FTSR = <span class="hljs-number">0x1E</span>;<br>  AFIO_EXTICR2 = <span class="hljs-number">0</span>;<br>  AFIO_EXTICR3 = <span class="hljs-number">0</span>;<br>  unkown(<span class="hljs-number">7</span>);<br>  unkown(<span class="hljs-number">8</span>);<br>  unkown(<span class="hljs-number">9</span>);<br>  unkown(<span class="hljs-number">10</span>);<br>  RCC_APB2RSTR |= <span class="hljs-number">0x4000</span>u;<br>  RCC_APB2RSTR &amp;= <span class="hljs-number">0xFFFFBFFF</span>;<br>  USART1_BRR = <span class="hljs-number">0x271</span>;<br>  USART1_CR1 = <span class="hljs-number">0x2008</span>;<br>  USART1_SEND(<span class="hljs-string">&#x27;S&#x27;</span>);<br>  USART1_SEND(<span class="hljs-string">&#x27;C&#x27;</span>);<br>  USART1_SEND(<span class="hljs-string">&#x27;T&#x27;</span>);<br>  USART1_SEND(<span class="hljs-string">&#x27;F&#x27;</span>);<br>  USART1_SEND(<span class="hljs-string">&#x27;&#123;&#x27;</span>);<br>  USART1_CR3 = <span class="hljs-number">0x80</span>;<br>  DMA_CMAR4 = <span class="hljs-number">0x20000000</span>;<br>  DMA_CPAR4 = &amp;USART_DR;<br>  DMA_CNDTR4 = <span class="hljs-number">0x1E</span>;<br>  DMA_CCR4 = <span class="hljs-number">0x492</span>;<br>  unkown(<span class="hljs-number">14</span>);<br>  EXTI_SWIER |= <span class="hljs-number">2u</span>;<br>  delay(<span class="hljs-number">1</span>);<br>  EXTI_SWIER |= <span class="hljs-number">0x10</span>u;<br>  delay(<span class="hljs-number">1</span>);<br>  EXTI_SWIER |= <span class="hljs-number">0x10</span>u;<br>  delay(<span class="hljs-number">1</span>);<br>  EXTI_SWIER |= <span class="hljs-number">4u</span>;<br>  delay(<span class="hljs-number">1</span>);<br>  EXTI_SWIER |= <span class="hljs-number">0x10</span>u;<br>  delay(<span class="hljs-number">1</span>);<br>  EXTI_SWIER |= <span class="hljs-number">2u</span>;<br>  delay(<span class="hljs-number">1</span>);<br>  EXTI_SWIER |= <span class="hljs-number">8u</span>;<br>  delay(<span class="hljs-number">1</span>);<br>  <span class="hljs-keyword">while</span> ( <span class="hljs-number">1</span> )<br>    ;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>最后，我们需要生成一个html文件方便我们查看覆盖率情况</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">genhtml --highlight --legend -output-directory ./html-coverage/ ./app2.info<br></code></pre></td></tr></table></figure>
 
-<p>另外还要对中断向量表做处理，可以用如下IDA python脚本更改段为dword</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0x8000000</span>,<span class="hljs-number">0x80000eb</span>,<span class="hljs-number">1</span>):del_items(i)<br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0x8000000</span>,<span class="hljs-number">0x80000eb</span>,<span class="hljs-number">4</span>):create_dword(i)<br></code></pre></td></tr></table></figure>
-
-<p><img src="/img/article/stm32/image-20230712101949569.png" alt="vector"></p>
-<p>图里可以很明显的看出存在一些函数，查阅手册可以找到其为中断处理的EXTI函数</p>
-<h2 id="函数逻辑分析"><a href="#函数逻辑分析" class="headerlink" title="函数逻辑分析"></a>函数逻辑分析</h2><p>这条也没什么捷径可走，需要一边查手册一边看mian函数内的每一步赋值和函数的意义，基本经过这个流程可以搞清楚GPIO、EXTI、USART这些作用之类的</p>
+<p>如果正常的话，我们就可以打开<code>./html-coverage/index.html</code>，查看覆盖率状况</p>
+<p><img src="/img/article/lcov/Image2_2.png" alt="coverage"></p>
 
                 
               </div>
@@ -398,8 +323,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>【IOT】嵌入式设备固件分析</div>
-      <div>http://loora1n.github.io/2023/07/12/【IOT】嵌入式设备固件分析/</div>
+      <div>【fuzz trick】利用LCOV测量代码覆盖率</div>
+      <div>http://loora1n.github.io/2023/08/22/【fuzz trick】利用LCOV测量代码覆盖率/</div>
     </div>
     <div class="license-meta">
       
@@ -411,7 +336,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2023年7月12日</div>
+          <div>2023年8月22日</div>
         </div>
       
       
@@ -443,18 +368,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2023/08/22/%E3%80%90fuzz%20trick%E3%80%91%E5%88%A9%E7%94%A8LCOV%E6%B5%8B%E9%87%8F%E4%BB%A3%E7%A0%81%E8%A6%86%E7%9B%96%E7%8E%87/" title="【fuzz trick】利用LCOV测量代码覆盖率">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">【fuzz trick】利用LCOV测量代码覆盖率</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2023/07/10/%E6%9F%90%E5%B8%82%E7%94%B5%E7%BD%91%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98%E5%B0%8F%E8%AE%B0/" title="某市电网漏洞挖掘小记">
-                        <span class="hidden-mobile">某市电网漏洞挖掘小记</span>
+                      <a href="/2023/07/12/%E3%80%90IOT%E3%80%91%E5%B5%8C%E5%85%A5%E5%BC%8F%E8%AE%BE%E5%A4%87%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90/" title="【IOT】嵌入式设备固件分析">
+                        <span class="hidden-mobile">【IOT】嵌入式设备固件分析</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
