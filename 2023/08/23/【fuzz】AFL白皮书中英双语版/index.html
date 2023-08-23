@@ -1,0 +1,890 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" >
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/icon/duck.png">
+  <link rel="icon" href="/img/icon/duck.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#f58f98">
+  <meta name="author" content="Loora1N">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="最近想研究研究AFL整体内部逻辑源码，面试时也遇到了同样的问题，决定从AFL白皮书开始看看。网上有很多翻译版，但是要不就是没写完，要不就是机翻痕迹太重。本人英语水平有限，如有问题可以文末评论区直接指出。我想做中英双语版也是尽量在一定程度上防止大家被我的蹩脚翻译带偏。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【fuzz】AFL白皮书中英双语版">
+<meta property="og:url" content="http://loora1n.github.io/2023/08/23/%E3%80%90fuzz%E3%80%91AFL%E7%99%BD%E7%9A%AE%E4%B9%A6%E4%B8%AD%E8%8B%B1%E5%8F%8C%E8%AF%AD%E7%89%88/index.html">
+<meta property="og:site_name" content="鷺雨のBlog">
+<meta property="og:description" content="最近想研究研究AFL整体内部逻辑源码，面试时也遇到了同样的问题，决定从AFL白皮书开始看看。网上有很多翻译版，但是要不就是没写完，要不就是机翻痕迹太重。本人英语水平有限，如有问题可以文末评论区直接指出。我想做中英双语版也是尽量在一定程度上防止大家被我的蹩脚翻译带偏。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://loora1n.github.io/img/article/fuzzdoc/afl_gzip.png">
+<meta property="article:published_time" content="2023-08-23T09:25:36.388Z">
+<meta property="article:modified_time" content="2023-08-23T09:25:36.388Z">
+<meta property="article:author" content="Loora1N">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://loora1n.github.io/img/article/fuzzdoc/afl_gzip.png">
+  
+  
+  
+  <title>【fuzz】AFL白皮书中英双语版 - 鷺雨のBlog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/fluid-extention.css">
+<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/bynotes/texiao/source/css/gundongtiao.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"loora1n.github.io","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"lftEbNU4XPuR5dgHNV3WdWxP-gzGzoHsz","app_key":"b3uLUVGLeOWDwREWHMBr0jo9","server_url":"https://lftebnu4.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>鷺雨のBlog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/bg/3.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="【fuzz】AFL白皮书中英双语版"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-08-23 17:25" pubdate>
+          2023年8月23日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          8.6k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          72 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          阅读量 <span id="leancloud-page-views"></span>
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">【fuzz】AFL白皮书中英双语版</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><blockquote>
+<p>最近想研究研究AFL整体内部逻辑源码，面试时也遇到了同样的问题，决定从AFL白皮书开始看看。网上有很多翻译版，但是要不就是没写完，要不就是机翻痕迹太重。决定自己完成这个任务，争取在一周内完成大部分核心源码的分析。又想到之前看<a href="https://loora1n.github.io/2023/04/24/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88%E5%A4%8D%E4%B9%A0/">网络协议栈</a>和<a href="https://loora1n.github.io/2022/11/29/%E3%80%90IO_FILE%E3%80%91%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86%E6%A6%82%E8%A7%88/">IO_FILE</a>时的噩梦了😭😭😭</p>
+</blockquote>
+<p>本人英语水平有限，如有问题可以文末评论区直接指出。我想做中英双语版也是尽量在一定程度上防止大家被我的蹩脚翻译带偏。</p>
+<p>白皮书的原文部分我都会使用markdown的引用语法，另外，全文使用AFL简写替代American fuzzy lop.</p>
+<blockquote>
+<p>AFL白皮书原文：<a target="_blank" rel="noopener" href="https://lcamtuf.coredump.cx/afl/technical_details.txt">lcamtuf.coredump.cx&#x2F;afl&#x2F;technical_details.txt</a></p>
+<p>AFL项目地址：<a target="_blank" rel="noopener" href="https://github.com/google/AFL">google&#x2F;AFL: american fuzzy lop - a security-oriented fuzzer (github.com)</a></p>
+<p>本文也部分参考：<a target="_blank" rel="noopener" href="https://www.jianshu.com/p/cc7a486e5adb">翻译afl-fuzz白皮书 - 简书 (jianshu.com)</a></p>
+</blockquote>
+<h2 id="文档介绍"><a href="#文档介绍" class="headerlink" title="文档介绍"></a>文档介绍</h2><blockquote>
+<p>This document provides a quick overview of the guts of American Fuzzy Lop. See README for the general instruction manual; and for a discussion of motivations and design goals behind AFL, see historical_notes.txt.</p>
+</blockquote>
+<p>本文档为AFL的内部结构提供了一个简要的概述。通用说明手册可以直接查阅README]部分，另外，有关AFL背后的设计目标和动机可以参阅hisrotical_notes.txt。</p>
+<h2 id="0）Design-statement-设计说明"><a href="#0）Design-statement-设计说明" class="headerlink" title="0）Design statement 设计说明"></a>0）Design statement 设计说明</h2><blockquote>
+<p>American Fuzzy Lop does its best not to focus on any singular principle of<br>operation and not be a proof-of-concept for any specific theory. The tool can<br>be thought of as a collection of hacks that have been tested in practice,<br>found to be surprisingly effective, and have been implemented in the simplest,<br>most robust way I could think of at the time</p>
+</blockquote>
+<p>AFL尽力不关注任何单一操作的原理，同时也不是任何特定理论的POC。这个工具可以看作是一个hack工具的集合，这些工具在实际的验证测试场景中非常有效，因此我用了那时我能想到的最简洁最具鲁棒性的方式实现设计了它。</p>
+<blockquote>
+<p>Many of the resulting features are made possible thanks to the availability of<br>lightweight instrumentation that served as a foundation for the tool, but this<br>mechanism should be thought of merely as a means to an end. The only true<br>governing principles are speed, reliability, and ease of use</p>
+</blockquote>
+<p>许多功能能够实现，都是多亏了将轻量化工具的可用性作为该项目的基础，但是这种机制应该仅仅被视作为了实现设计目的的一种手段。本项目真正的唯一的管理原则应是高效性、稳定性和易用性。</p>
+<h2 id="1）Coverage-measurements-覆盖率测量"><a href="#1）Coverage-measurements-覆盖率测量" class="headerlink" title="1）Coverage measurements 覆盖率测量"></a>1）Coverage measurements 覆盖率测量</h2><blockquote>
+<p>The instrumentation injected into compiled programs captures branch (edge)<br>coverage, along with coarse branch-taken hit counts. The code injected at<br>branch points is essentially equivalent to:</p>
+</blockquote>
+<p>通过向已编译程序注入检测代码来捕获代码分支（或边缘）的覆盖范围，同时粗略得记录分支命中计数。在分支点注入得代码本质上相当于如下伪代码：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs c">cur_location = &lt;COMPILE_TIME_RANDOM&gt;;<br>shared_mem[cur_location ^ prev_location]++; <br>prev_location = cur_location &gt;&gt; <span class="hljs-number">1</span>;<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>The cur_location value is generated randomly to simplify the process of<br>linking complex projects and keep the XOR output distributed uniformly.</p>
+</blockquote>
+<ul>
+<li>cur_location 的值是随机生成的，以简化链接复杂项目的过程并保持 XOR 输出均匀分布。</li>
+</ul>
+<blockquote>
+<p>The shared_mem[] array is a 64 kB SHM region passed to the instrumented binary<br>by the caller. Every byte set in the output map can be thought of as a hit for<br>a particular (branch_src, branch_dst) tuple in the instrumented code.</p>
+</blockquote>
+<ul>
+<li>Shared_mem[] 数组是一个 64 kB SHM 区域，由调用者传递给已检测的二进制文件。输出映射中的每个字节集都可以被认为是检测代码中特定（branch_src，branch_dst）元组的命中。</li>
+</ul>
+<blockquote>
+<p>The size of the map is chosen so that collisions are sporadic with almost all<br>of the intended targets, which usually sport between 2k and 10k discoverable<br>branch points:</p>
+</blockquote>
+<p>选择这个大小的映射，是为了统计几乎所有预测的目标的少量碰撞，而这些目标通常有2K到10K个可见的分支点：</p>
+<table>
+<thead>
+<tr>
+<th align="center">Branch cnt</th>
+<th align="center">Colliding tuples</th>
+<th align="center">Example targets</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">1,000</td>
+<td align="center">0.75%</td>
+<td align="center">giflib, lzo</td>
+</tr>
+<tr>
+<td align="center">2,000</td>
+<td align="center">1.5%</td>
+<td align="center">zlib, tar, xz</td>
+</tr>
+<tr>
+<td align="center">5,000</td>
+<td align="center">3.5%</td>
+<td align="center">libpng, libwebp</td>
+</tr>
+<tr>
+<td align="center">10,000</td>
+<td align="center">7%</td>
+<td align="center">libxml</td>
+</tr>
+<tr>
+<td align="center">20,000</td>
+<td align="center">14%</td>
+<td align="center">sqlite</td>
+</tr>
+<tr>
+<td align="center">50,000</td>
+<td align="center">30%</td>
+<td align="center">-</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>At the same time, its size is small enough to allow the map to be analyzed<br>in a matter of microseconds on the receiving end, and to effortlessly fit<br>within L2 cache.</p>
+</blockquote>
+<p>同时，由于他的size足够的小，得以允许接收端可以在几微秒的时间内分析映射，并将其放入二级缓存中。</p>
+<blockquote>
+<p>This form of coverage provides considerably more insight into the execution<br>path of the program than simple block coverage. In particular, it trivially<br>distinguishes between the following execution traces:</p>
+</blockquote>
+<p>与简单的块覆盖相比，这种形式的覆盖可以更深入地了解程序的执行路径。特别是它可以轻易地区分以下执行流程:</p>
+<ul>
+<li>A -&gt; B -&gt; C -&gt; D -&gt; E (tuples: AB, BC, CD, DE)</li>
+<li>A -&gt; B -&gt; D -&gt; C -&gt; E (tuples: AB, BD, DC, CE)</li>
+</ul>
+<blockquote>
+<p>This aids the discovery of subtle fault conditions in the underlying code,<br>because security vulnerabilities are more often associated with unexpected<br>or incorrect state transitions than with merely reaching a new basic block.</p>
+</blockquote>
+<p>这有助于发现底层代码中的微妙故障情况，因为安全漏洞通常与意外或不正确的状态转换相关，而不是仅仅与到达新的基本块相关。</p>
+<blockquote>
+<p>The reason for the shift operation in the last line of the pseudocode shown<br>earlier in this section is to preserve the directionality of tuples (without<br>this, A ^ B would be indistinguishable from B ^ A) and to retain the identity<br>of tight loops (otherwise, A ^ A would be obviously equal to B ^ B).</p>
+</blockquote>
+<p>本节前面所示的伪代码最后一行中进行移位操作的原因是为了保留元组的方向性（没有这个，A ^ B 将与 B ^ A 无法区分）并保留紧密循环的标识（否则, A ^ A 显然等于 B ^ B)。</p>
+<p><em><del>题外话，我不知道为什么大家都喜欢把这个地方的移位翻译成左移，不论是翻译还是代码层面都不应该出现这种错误吧</del></em></p>
+<blockquote>
+<p>The absence of simple saturating arithmetic opcodes on Intel CPUs means that<br>the hit counters can sometimes wrap around to zero. Since this is a fairly<br>unlikely and localized event, it’s seen as an acceptable performance trade-off.</p>
+</blockquote>
+<p>英特尔 CPU 上缺乏简单的饱和算术操作码，这意味着命中计数器有时会回滚到零。由于这是一个相当不可能发生的局部事件，因此它被视为可接受的性能权衡。</p>
+<h2 id="2）Detecting-new-behaviors-检测新行为"><a href="#2）Detecting-new-behaviors-检测新行为" class="headerlink" title="2）Detecting new behaviors 检测新行为"></a>2）Detecting new behaviors 检测新行为</h2><blockquote>
+<p>The fuzzer maintains a global map of tuples seen in previous executions; this<br>data can be rapidly compared with individual traces and updated in just a couple<br>of dword- or qword-wide instructions and a simple loop.</p>
+</blockquote>
+<p>模糊器维护先前执行中看到的元组的全局映射；该数据可以快速与单独的迹线进行比较，并只需几个dword或qword的指令和一个简单的循环即可更新。</p>
+<blockquote>
+<p>When a mutated input produces an execution trace containing new tuples, the<br>corresponding input file is preserved and routed for additional processing<br>later on (see section #3). Inputs that do not trigger new local-scale state<br>transitions in the execution trace (i.e., produce no new tuples) are discarded,<br>even if their overall control flow sequence is unique.</p>
+</blockquote>
+<p>当变异的输入产生包含新元组的程序执行流时，相应的输入文件将被保留并以供稍后进行其他处理（请参阅第 #3 节）。在执行跟踪中，不触发新的局部规模状态转换（即不产生新元组）的输入将被丢弃，即使它们的总体控制流序列是唯一的</p>
+<blockquote>
+<p>This approach allows for a very fine-grained and long-term exploration of<br>program state while not having to perform any computationally intensive and<br>fragile global comparisons of complex execution traces, and while avoiding the<br>scourge of path explosion.</p>
+</blockquote>
+<p>这种方法允许对程序状态进行非常细粒度和长期的探索，而不必对复杂的执行跟踪执行任何计算密集型和脆弱的全局比较，同时避免路径爆炸的危害。</p>
+<blockquote>
+<p>To illustrate the properties of the algorithm, consider that the second trace<br>shown below would be considered substantially new because of the presence of<br>new tuples (CA, AE):</p>
+</blockquote>
+<p>为了说明该算法的属性，请考虑由于新元组（CA、AE）的存在，下面显示的第二条轨迹将被视为实质上是新的：</p>
+<ul>
+<li>#1:	A -&gt; B -&gt; C -&gt; D -&gt; E </li>
+<li>#2:    A -&gt; B -&gt; C -&gt; A -&gt; E</li>
+</ul>
+<blockquote>
+<p>At the same time, with #2 processed, the following pattern will not be seen<br>as unique, despite having a markedly different overall execution path:</p>
+</blockquote>
+<p>同时，若保存#2路径后，尽管下面的例子整体执行路径明显不同，但将不会被视为一个新的路径：</p>
+<ul>
+<li>#3:	A -&gt; B -&gt; C -&gt; A -&gt; B -&gt; C -&gt; A -&gt; B -&gt; C -&gt; D -&gt; E</li>
+</ul>
+<blockquote>
+<p>In addition to detecting new tuples, the fuzzer also considers coarse tuple<br>hit counts. These are divided into several buckets:</p>
+</blockquote>
+<p>除了检测新元组之外，模糊器还考虑粗元组命中计数。这些被分为几个buckets:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span><span class="hljs-number">-7</span>, <span class="hljs-number">8</span><span class="hljs-number">-15</span>, <span class="hljs-number">16</span><span class="hljs-number">-31</span>, <span class="hljs-number">32</span><span class="hljs-number">-27</span>, <span class="hljs-number">128</span>+<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>To some extent, the number of buckets is an implementation artifact: it allows<br>an in-place mapping of an 8-bit counter generated by the instrumentation to<br>an 8-position bitmap relied on by the fuzzer executable to keep track of the<br>already-seen execution counts for each tuple.</p>
+</blockquote>
+<p>从某种意义上讲，这些buckets的数量是一种执行工具：它允许将生成的 8 位计数器就地映射到fuzzer执行器所依赖的 8 位位图，以跟踪已经看到的数据每个元组的执行计数</p>
+<blockquote>
+<p>Changes within the range of a single bucket are ignored; transition from one<br>bucket to another is flagged as an interesting change in program control flow,<br>and is routed to the evolutionary process outlined in the section below.</p>
+</blockquote>
+<p>单个bucket范围内的变化会被忽略掉；然而元组从一个bucket到另一个bucket的转换会被标记为程序控制流中的一个有趣的变化，然后会被保存下来传递至下一轮的演化过程中去。</p>
+<blockquote>
+<p>The hit count behavior provides a way to distinguish between potentially<br>interesting control flow changes, such as a block of code being executed<br>twice when it was normally hit only once. At the same time, it is fairly<br>insensitive to empirically less notable changes, such as a loop going from<br>47 cycles to 48. The counters also provide some degree of “accidental”<br>immunity against tuple collisions in dense trace maps.</p>
+</blockquote>
+<p>命中计数行为提供了一种区分潜在的有趣的控制流变换的方法，例如，通常只命中一次的代码块被执行了两次。同时，它对通常经验上不太显着的变化相当不敏感，例如从 47 个周期变为 48 个周期的循环。计数器还提供一定程度的“意外”免疫力，防止密集流映射中的元组碰撞</p>
+<blockquote>
+<p>The execution is policed fairly heavily through memory and execution time<br>limits; by default, the timeout is set at 5x the initially-calibrated<br>execution speed, rounded up to 20 ms. The aggressive timeouts are meant to<br>prevent dramatic fuzzer performance degradation by descending into tarpits<br>that, say, improve coverage by 1% while being 100x slower; we pragmatically<br>reject them and hope that the fuzzer will find a less expensive way to reach<br>the same code. Empirical testing strongly suggests that more generous time<br>limits are not worth the cost.</p>
+</blockquote>
+<p>通过内存和执行时间对执行过程进行相当严格的限制；默认情况下，超时设置为初始校准执行速度的 5 倍，大约为 20 毫秒。激进的超时限制是为了，防止模糊器性能因陷入某种”陷阱“而急剧下降，例如，将覆盖率提高 1%，同时速度慢 100 倍；我们一定会拒绝这种方法，并希望fuzzer能够找到一种代价更低的方式的方法来达到相同的代码块。同时，实证检验也非常强烈地表明，更宽松的时间限制是不值得的。</p>
+<h2 id="3）Evolving-the-input-queue-改进输入队列"><a href="#3）Evolving-the-input-queue-改进输入队列" class="headerlink" title="3）Evolving the input queue 改进输入队列"></a>3）Evolving the input queue 改进输入队列</h2><blockquote>
+<p>Mutated test cases that produced new state transitions within the program are<br>added to the input queue and used as a starting point for future rounds of<br>fuzzing. They supplement, but do not automatically replace, existing finds.</p>
+</blockquote>
+<p>在程序中产生新状态转换的变异测试用例被添加到输入队列中，并用作未来几轮模糊测试的起点。它们补充但不会自动取代现有发现地路径。</p>
+<blockquote>
+<p>In contrast to more greedy genetic algorithms, this approach allows the tool<br>to progressively explore various disjoint and possibly mutually incompatible<br>features of the underlying data format, as shown in this image:</p>
+</blockquote>
+<p>与更贪婪的遗传算法相比，这种方法允许工具逐步探索各种不相交且可能相互不兼容地特征的底层数据格式，如下图所示:</p>
+<p><img src="/img/article/fuzzdoc/afl_gzip.png" alt="afl"></p>
+<p>这里讨论该算法结果的几个实际示例：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="http://lcamtuf.blogspot.com/2014/11/pulling-jpegs-out-of-thin-air.html">http://lcamtuf.blogspot.com/2014/11/pulling-jpegs-out-of-thin-air.html</a></li>
+<li><a target="_blank" rel="noopener" href="http://lcamtuf.blogspot.com/2014/11/pulling-jpegs-out-of-thin-air.html">http://lcamtuf.blogspot.com/2014/11/pulling-jpegs-out-of-thin-air.html</a></li>
+</ul>
+<blockquote>
+<p>The synthetic corpus produced by this process is essentially a compact<br>collection of “hmm, this does something new!” input files, and can be used to<br>seed any other testing processes down the line (for example, to manually<br>stress-test resource-intensive desktop apps).</p>
+</blockquote>
+<p>此过程生成的合成语料库本质上是，“嗯，多了一些新的东西！”这样的输入文件的紧凑集合，并且可用于为任何其他测试流程提供种子（例如，手动对资源密集型桌面应用程序进行压力测试）</p>
+<blockquote>
+<p>With this approach, the queue for most targets grows to somewhere between 1k<br>and 10k entries; approximately 10-30% of this is attributable to the discovery<br>of new tuples, and the remainder is associated with changes in hit counts</p>
+</blockquote>
+<p>通过这种方法，大多数目标的队列会增长到 1k 到 10k 条目之间；其中大约 10-30% 归因于新元组的发现，其余部分与命中计数的变化有关。</p>
+<p><strong>仍在更新，未完待续…</strong></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>【fuzz】AFL白皮书中英双语版</div>
+      <div>http://loora1n.github.io/2023/08/23/【fuzz】AFL白皮书中英双语版/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Loora1N</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年8月23日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/08/22/%E3%80%90fuzz%20trick%E3%80%91%E5%88%A9%E7%94%A8LCOV%E6%B5%8B%E9%87%8F%E4%BB%A3%E7%A0%81%E8%A6%86%E7%9B%96%E7%8E%87/" title="【fuzz trick】利用LCOV测量代码覆盖率">
+                        <span class="hidden-mobile">【fuzz trick】利用LCOV测量代码覆盖率</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments">
+    
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#comments', function() {
+      var light = 'github-light';
+      var dark = 'github-dark';
+      var schema = document.documentElement.getAttribute('data-user-color-scheme');
+      if (schema === 'dark') {
+        schema = dark;
+      } else {
+        schema = light;
+      }
+      window.UtterancesThemeLight = light;
+      window.UtterancesThemeDark = dark;
+      var s = document.createElement('script');
+      s.setAttribute('src', 'https://utteranc.es/client.js');
+      s.setAttribute('repo', 'loora1n/comment');
+      s.setAttribute('issue-term', 'pathname');
+      
+      s.setAttribute('label', 'utterances');
+      
+      s.setAttribute('theme', schema);
+      s.setAttribute('crossorigin', 'anonymous');
+      document.getElementById('comments').appendChild(s);
+    })
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://github.com/Loora1N" target="_blank" rel="nofollow noopener"><span>Loora1N</span></a> <i class="iconfont icon-love"></i> <a href="https://space.bilibili.com/33242548?spm_id_from=333.1007.0.0" target="_blank" rel="nofollow noopener"><span>鷺雨君</span></a>
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+  <span id="timeDate">载入天数...</span>
+  <span id="times">载入时分秒...</span>
+  <script>
+  var now = new Date();
+  function createtime(){
+      var grt= new Date("06/03/2022 00:00:00");//此处修改你的建站时间或者网站上线时间
+      now.setTime(now.getTime()+250);
+      days = (now - grt ) / 1000 / 60 / 60 / 24;
+      dnum = Math.floor(days);
+      hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum);
+      hnum = Math.floor(hours);
+      if(String(hnum).length ==1 ){
+          hnum = "0" + hnum;
+      }
+      minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+      mnum = Math.floor(minutes);
+      if(String(mnum).length ==1 ){
+                mnum = "0" + mnum;
+      }
+      seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+      snum = Math.round(seconds);
+      if(String(snum).length ==1 ){
+                snum = "0" + snum;
+      }
+      document.getElementById("timeDate").innerHTML = "🚀running🚀 for&nbsp"+dnum+"&nbspdays";  //此次自定义显示内容
+      document.getElementById("times").innerHTML = hnum + "&nbsphr&nbsp" + mnum + "&nbspmin&nbsp" + snum + "&nbspsec";
+  }  //此次自定义显示内容
+  setInterval("createtime()",250);
+  </script>   
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+  
+<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/xiantiao.js"></script>
+<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/love.js"></script>
+<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/caidai.js"></script>
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
