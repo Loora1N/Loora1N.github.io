@@ -223,7 +223,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          8.6k 字
+          24k 字
         
       </span>
     
@@ -234,7 +234,7 @@
         
         
         
-          72 分钟
+          203 分钟
         
       </span>
     
@@ -464,7 +464,346 @@
 <p>With this approach, the queue for most targets grows to somewhere between 1k<br>and 10k entries; approximately 10-30% of this is attributable to the discovery<br>of new tuples, and the remainder is associated with changes in hit counts</p>
 </blockquote>
 <p>通过这种方法，大多数目标的队列会增长到 1k 到 10k 条目之间；其中大约 10-30% 归因于新元组的发现，其余部分与命中计数的变化有关。</p>
-<p><strong>仍在更新，未完待续…</strong></p>
+<blockquote>
+<p>The following table compares the relative ability to discover file syntax and<br>explore program states when using several different approaches to guided<br>fuzzing. The instrumented target was GNU patch 2.7.3 compiled with -O3 and<br>seeded with a dummy text file; the session consisted of a single pass over the<br>input queue with afl-fuzz:</p>
+</blockquote>
+<p>下表比较了使用几种不同方法进行引导模糊测试时发现文件语法和探索程序状态的相对能力。检测的目标是使用 -O3 编译的 GNU 补丁 2.7.3，并使用虚拟文本文件作为种子；该会话由 afl-fuzz 单次传递的输入队列组成：</p>
+<table>
+<thead>
+<tr>
+<th align="center">Fuzzer guidance strategy used</th>
+<th align="center">Blocks reached</th>
+<th align="center">Edges reached</th>
+<th align="center">Edge hit cnt var</th>
+<th align="center">Highest-coverage test case generated</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">(Initial file)</td>
+<td align="center">156</td>
+<td align="center">163</td>
+<td align="center">1.00</td>
+<td align="center">(none)</td>
+</tr>
+<tr>
+<td align="center">Blind fuzzing S</td>
+<td align="center">182</td>
+<td align="center">205</td>
+<td align="center">2.23</td>
+<td align="center">First 2 B of RCS diff</td>
+</tr>
+<tr>
+<td align="center">Blind fuzzing L</td>
+<td align="center">228</td>
+<td align="center">265</td>
+<td align="center">2.23</td>
+<td align="center">First 4 B of -c mode diff</td>
+</tr>
+<tr>
+<td align="center">Block coverage</td>
+<td align="center">855</td>
+<td align="center">1,130</td>
+<td align="center">1.57</td>
+<td align="center">Almost-valid RCS diff</td>
+</tr>
+<tr>
+<td align="center">Edge coverage</td>
+<td align="center">1,452</td>
+<td align="center">2,070</td>
+<td align="center">2.18</td>
+<td align="center">One-chunk -c mode diff</td>
+</tr>
+<tr>
+<td align="center">AFL model</td>
+<td align="center">1,765</td>
+<td align="center">2,597</td>
+<td align="center">4.99</td>
+<td align="center">Four-chunk -c mode diff</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>The first entry for blind fuzzing (“S”) corresponds to executing just a single<br>round of testing; the second set of figures (“L”) shows the fuzzer running in a<br>loop for a number of execution cycles comparable with that of the instrumented<br>runs, which required more time to fully process the growing queue.</p>
+</blockquote>
+<p>blind fuzzing（“S”）的第一个条目对应于仅执行一轮测试；第二组图（“L”）显示模糊器在循环中运行的执行周期数与检测运行的运行周期相当，这需要更多时间来完全处理不断增长的队列。</p>
+<blockquote>
+<p>Roughly similar results have been obtained in a separate experiment where the<br>fuzzer was modified to compile out all the random fuzzing stages and leave just<br>a series of rudimentary, sequential operations such as walking bit flips.<br>Because this mode would be incapable of altering the size of the input file,<br>the sessions were seeded with a valid unified diff:</p>
+</blockquote>
+<p>在另一个实验中获得了大致相似的结果，其中模糊器被修改为编译出所有随机模糊阶段，只留下一系列基本的顺序操作，例如步行位翻转。由于此模式无法更改输入文件的大小，会话使用有效的统一差异设定种子：</p>
+<table>
+<thead>
+<tr>
+<th align="center">Queue extension strategy used</th>
+<th align="center">Blocks reached</th>
+<th align="center">Edages reached</th>
+<th align="center">Edge hit cnt var</th>
+<th align="center">Number of unique crashes found</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">(Initial file)</td>
+<td align="center">624</td>
+<td align="center">717</td>
+<td align="center">1.00</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="center">Blind fuzzing</td>
+<td align="center">1,101</td>
+<td align="center">1,409</td>
+<td align="center">1.60</td>
+<td align="center">0</td>
+</tr>
+<tr>
+<td align="center">Block coverage</td>
+<td align="center">1,255</td>
+<td align="center">1,649</td>
+<td align="center">1.48</td>
+<td align="center">0</td>
+</tr>
+<tr>
+<td align="center">Edge coverage</td>
+<td align="center">1,259</td>
+<td align="center">1,734</td>
+<td align="center">1.72</td>
+<td align="center">0</td>
+</tr>
+<tr>
+<td align="center">AFL model</td>
+<td align="center">1,452</td>
+<td align="center">2,040</td>
+<td align="center">3.16</td>
+<td align="center">1</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>At noted earlier on, some of the prior work on genetic fuzzing relied on<br>maintaining a single test case and evolving it to maximize coverage. At least<br>in the tests described above, this “greedy” approach appears to confer no<br>substantial benefits over blind fuzzing strategies.</p>
+</blockquote>
+<p>如前所述，之前的一些遗传模糊测试工作依赖于维护单个测试用例并对其进行改进以最大化覆盖范围。至少在上述测试中，这种“贪婪”方法似乎并没有比盲目模糊测试策略带来实质性的好处。</p>
+<h2 id="4）Culling-the-corpus-语料库剔除"><a href="#4）Culling-the-corpus-语料库剔除" class="headerlink" title="4）Culling the corpus 语料库剔除"></a>4）Culling the corpus 语料库剔除</h2><blockquote>
+<p>The progressive state exploration approach outlined above means that some of<br>the test cases synthesized later on in the game may have edge coverage that<br>is a strict superset of the coverage provided by their ancestors.</p>
+</blockquote>
+<p>上面概述的渐进状态探索方法意味着，在流程中稍后合成的一些测试用例可能具有边缘覆盖，这是其祖先提供的覆盖的严格超集。</p>
+<blockquote>
+<p>To optimize the fuzzing effort, AFL periodically re-evaluates the queue using a<br>fast algorithm that selects a smaller subset of test cases that still cover<br>every tuple seen so far, and whose characteristics make them particularly<br>favorable to the tool.</p>
+</blockquote>
+<p>为了优化模糊测试工作，AFL 使用快速算法定期重新评估队列，该算法选择较小的测试用例子集，这些测试用例仍然覆盖迄今为止看到的每个元组，并且其特征使它们特别适合该工具。</p>
+<blockquote>
+<p>The algorithm works by assigning every queue entry a score proportional to its<br>execution latency and file size; and then selecting lowest-scoring candidates<br>for each tuple.</p>
+</blockquote>
+<p>该算法的工作原理是为每个队列条目分配与其执行延迟和文件大小成比例的分数;然后为每个元组选择得分最低的候选项。</p>
+<blockquote>
+<p>The tuples are then processed sequentially using a simple workflow:</p>
+<ol>
+<li>Find next tuple not yet in the temporary working set,</li>
+<li>Locate the winning queue entry for this tuple,</li>
+<li>Register <strong>all</strong> tuples present in that entry’s trace in the working set,</li>
+<li>Go to #1 if there are any missing tuples in the set.</li>
+</ol>
+</blockquote>
+<p>然后使用一种简易的流程处理这些元组：</p>
+<ol>
+<li>找到一个未在临时工作集中的元组</li>
+<li>找到这个元组的winning队列条目</li>
+<li>在工作集中注册该条目的<strong>所有</strong>存在的元组</li>
+<li>如果在集合里有任何缺少的元组，返回流程1</li>
+</ol>
+<blockquote>
+<p>The generated corpus of “favored” entries is usually 5-10x smaller than the<br>starting data set. Non-favored entries are not discarded, but they are skipped<br>with varying probabilities when encountered in the queue:</p>
+<ul>
+<li><p>If there are new, yet-to-be-fuzzed favorites present in the queue, 99% of non-favored entries will be skipped to get to the favored ones.</p>
+</li>
+<li><p>If there are no new favorites:</p>
+<ul>
+<li><p>If the current non-favored entry was fuzzed before, it will be skipped 95% of the time.</p>
+</li>
+<li><p>If it hasn’t gone through any fuzzing rounds yet, the odds of skipping drop down to 75%.</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>Based on empirical testing, this provides a reasonable balance between queue </p>
+<p>cycling speed and test case diversity.</p>
+</blockquote>
+<p>生成的”首选”的语料库通常比其实数据集要小 5-10 倍。不受欢迎的条目不会被丢弃，但它们在队列中会以不同概率被跳过：</p>
+<ul>
+<li>如果队列中存在新的、尚未被fuzz的<strong>favorites</strong>，则99%的<strong>non-favored</strong>条目将被跳过，而去访问<strong>favored</strong>条目</li>
+<li>如果不存在新的<strong>favorites</strong>：<ul>
+<li>如果当前<strong>non-favored</strong>条目之前被fuzz过，则有95%的几率跳过</li>
+<li>如果当前<strong>non-favored</strong>条目未被fuzz过，则跳过的几率下降到75%</li>
+</ul>
+</li>
+</ul>
+<p>基于实际测试，这种方式在循环速度和测试用例多样性之间提供了合理的平衡</p>
+<blockquote>
+<p>Slightly more sophisticated but much slower culling can be performed on input<br>or output corpora with afl-cmin. This tool permanently discards the redundant<br>entries and produces a smaller corpus suitable for use with afl-fuzz or<br>external tools.</p>
+</blockquote>
+<p>可以使用 afl-cmin 对输入或输出语料库执行稍微复杂但速度慢得多的剔除。此工具会永久丢弃冗余条目，并生成适合与 afl-fuzz 或外部工具一起使用的较小语料库。</p>
+<h2 id="5）Trimming-input-files-修剪输入文件"><a href="#5）Trimming-input-files-修剪输入文件" class="headerlink" title="5）Trimming input files 修剪输入文件"></a>5）Trimming input files 修剪输入文件</h2><blockquote>
+<p>File size has a dramatic impact on fuzzing performance, both because large<br>files make the target binary slower, and because they reduce the likelihood<br>that a mutation would touch important format control structures, rather than<br>redundant data blocks. This is discussed in more detail in perf_tips.txt.</p>
+</blockquote>
+<p>文件大小对模糊测试性能有显著影响，这既是因为大文件会使目标二进制文件变慢，也是因为它们降低了突变接触重要格式控制结构的可能性，增大了接触冗余数据块的可能性。在perf_tips.txt中将对此问题做更详细地讨论。</p>
+<blockquote>
+<p>The possibility that the user will provide a low-quality starting corpus aside,<br>some types of mutations can have the effect of iteratively increasing the size<br>of the generated files, so it is important to counter this trend.</p>
+</blockquote>
+<p>就算不考虑用户自身提供低质量起始语料库的可能性，某些类型的突变也可能会导致迭代地增加生成文件的大小，因此扭转这种变化趋势非常重要。</p>
+<blockquote>
+<p>Luckily, the instrumentation feedback provides a simple way to automatically<br>trim down input files while ensuring that the changes made to the files have no<br>impact on the execution path.</p>
+</blockquote>
+<p>幸运的是，检测反馈提供了一种简单的方法来自动修剪输入文件，同时确保对文件所做的更改不会影响执行路径。</p>
+<blockquote>
+<p>The built-in trimmer in afl-fuzz attempts to sequentially remove blocks of data<br>with variable length and stepover; any deletion that doesn’t affect the checksum<br>of the trace map is committed to disk. The trimmer is not designed to be<br>particularly thorough; instead, it tries to strike a balance between precision<br>and the number of execve() calls spent on the process, selecting the block size<br>and stepover to match. The average per-file gains are around 5-20%.</p>
+</blockquote>
+<p>afl-fuzz 中的内置修剪器尝试按顺序删除具有可变长度和跨距的数据块;任何不影响跟踪映射校验和的删除都将提交到磁盘。修剪器的设计不是特别彻底；相反，通过选择匹配数据块大小和跨步大小，它试图在精度和进程<code>execve()</code>调用的数量上取得平衡。每个文件的平均收益为5-20%。</p>
+<blockquote>
+<p>The standalone afl-tmin tool uses a more exhaustive, iterative algorithm, and<br>also attempts to perform alphabet normalization on the trimmed files. The<br>operation of afl-tmin is as follows.</p>
+</blockquote>
+<p>独立的 afl-tmin 工具使用更详尽的迭代算法，并且还尝试对修剪后的文件执行字母规范化。afl-tmin的操作如下。</p>
+<blockquote>
+<p>First, the tool automatically selects the operating mode. If the initial input<br>crashes the target binary, afl-tmin will run in non-instrumented mode, simply<br>keeping any tweaks that produce a simpler file but still crash the target. If<br>the target is non-crashing, the tool uses an instrumented mode and keeps only<br>the tweaks that produce exactly the same execution path.</p>
+</blockquote>
+<p>首先，该工具会自动选择操作模式。如果初始输入使目标二进制文件崩溃，afl-tmin 将以非检测模式运行，只需保留生成更简单文件但仍会使目标崩溃的任何调整。如果目标未崩溃，则该工具使用检测模式，并仅保留生成完全相同执行路径的调整。</p>
+<blockquote>
+<p>The actual minimization algorithm is:</p>
+<ol>
+<li>Attempt to zero large blocks of data with large stepovers. Empirically, this is shown to reduce the number of execs by preempting finer-grained efforts later on.</li>
+<li>Perform a block deletion pass with decreasing block sizes and stepovers, binary-search-style.</li>
+<li>Perform a block deletion pass with decreasing block sizes and stepovers, binary-search-style.</li>
+<li>Perform a block deletion pass with decreasing block sizes and stepovers, binary-search-style.</li>
+</ol>
+</blockquote>
+<p>实际的最小化算法是：</p>
+<ol>
+<li>尝试将具有大跨距的大数据块归零。从经验上讲，这可以通过抢占以后更细粒度的工作来减少<code>exec</code>的数量。</li>
+<li>以递减的块大小和步距执行块删除过程，采用二分搜索方式。</li>
+<li>通过计算唯一字符并尝试将每个字符批量替换为零值来执行字母规范化。</li>
+<li>最后，对非零字节执行逐字节归一化。</li>
+</ol>
+<blockquote>
+<p>Instead of zeroing with a 0x00 byte, afl-tmin uses the ASCII digit ‘0’. This<br>is done because such a modification is much less likely to interfere with<br>text parsing, so it is more likely to result in successful minimization of<br>text files.</p>
+</blockquote>
+<p>afl-tmin 使用 ASCII 数字“0”，而不是使用 0x00 字节进行清零。这样做是因为这样的修改不太可能干扰文本解析，因此更有可能成功最小化文本文件。</p>
+<blockquote>
+<p>The algorithm used here is less involved than some other test case<br>minimization approaches proposed in academic work, but requires far fewer<br>executions and tends to produce comparable results in most real-world<br>applications.</p>
+</blockquote>
+<p>这里使用的算法比学术工作中提出的其他一些测试用例最小化方法涉及的程度要少，但需要的执行次数要少得多，并且往往会在大多数实际应用中产生可比较的结果。</p>
+<h2 id="6）-Fuzzing-strategies-模糊测试策略"><a href="#6）-Fuzzing-strategies-模糊测试策略" class="headerlink" title="6） Fuzzing strategies 模糊测试策略"></a>6） Fuzzing strategies 模糊测试策略</h2><blockquote>
+<p>The feedback provided by the instrumentation makes it easy to understand the<br>value of various fuzzing strategies and optimize their parameters so that they<br>work equally well across a wide range of file types. The strategies used by<br>afl-fuzz are generally format-agnostic and are discussed in more detail here:<br><a target="_blank" rel="noopener" href="http://lcamtuf.blogspot.com/2014/08/binary-fuzzing-strategies-what-works.html">http://lcamtuf.blogspot.com/2014/08/binary-fuzzing-strategies-what-works.html</a></p>
+</blockquote>
+<p>仪器提供的反馈使您可以轻松了解各种模糊测试策略的价值并优化其参数，以便它们在各种文件类型上同样有效。 afl-fuzz 使用的策略通常与格式无关，这里更详细地讨论:<br><a target="_blank" rel="noopener" href="http://lcamtuf.blogspot.com/2014/08/binary-fuzzing-strategies-what-works.html">http://lcamtuf.blogspot.com/2014/08/binary-fuzzing-strategies-what-works.html</a></p>
+<blockquote>
+<p>It is somewhat notable that especially early on, most of the work done by<br>afl-fuzz is actually highly deterministic, and progresses to random stacked<br>modifications and test case splicing only at a later stage. The deterministic<br>strategies include:</p>
+</blockquote>
+<ul>
+<li>Sequential bit flips with varying lengths and stepovers,</li>
+<li>Sequential addition and subtraction of small integers,</li>
+<li>Sequential addition and subtraction of small integers,</li>
+</ul>
+<p>值得注意的是，特别是在早期，afl-fuzz 所做的大部分工作实际上是高度确定性的，并且仅在后期阶段才会进展到随机堆叠修改和测试用例拼接。确定性策略包括：</p>
+<ul>
+<li>顺序对不同长度和步距的位进行反转</li>
+<li>顺序对小整数的加减法</li>
+<li>顺序插入已知的interesting整数（0、1、INT_MAX等）</li>
+</ul>
+<blockquote>
+<p>The purpose of opening with deterministic steps is related to their tendency to<br>produce compact test cases and small diffs between the non-crashing and crashing<br>inputs.</p>
+</blockquote>
+<p>以确定性步骤打开的目的与它们生成紧凑测试用例以及非崩溃和崩溃输入之间的小差异的倾向有关。</p>
+<blockquote>
+<p>With deterministic fuzzing out of the way, the non-deterministic steps include<br>stacked bit flips, insertions, deletions, arithmetics, and splicing of different<br>test cases.</p>
+</blockquote>
+<p>介绍完确定性模糊测试步骤，非确定性步骤包括堆叠位翻转、插入、删除、算术和不同测试用例的拼接。</p>
+<blockquote>
+<p>The relative yields and execve() costs of all these strategies have been<br>investigated and are discussed in the aforementioned blog post.</p>
+</blockquote>
+<p>所有这些策略的相对收益率和 <code>execve()</code>的成本都已在上述博客文章中进行了研究和讨论。</p>
+<blockquote>
+<p>For the reasons discussed in historical_notes.txt (chiefly, performance,<br>simplicity, and reliability), AFL generally does not try to reason about the<br>relationship between specific mutations and program states; the fuzzing steps<br>are nominally blind, and are guided only by the evolutionary design of the<br>input queue.</p>
+</blockquote>
+<p>正如 Historical_notes.txt 中讨论的原因（主要是性能、简单性和可靠性），AFL 通常不会尝试推理特定突变和程序状态之间的关系；模糊测试步骤名义上是盲目的，并且仅受输入队列的进化设计的指导。</p>
+<blockquote>
+<p>That said, there is one (trivial) exception to this rule: when a new queue<br>entry goes through the initial set of deterministic fuzzing steps, and tweaks to<br>some regions in the file are observed to have no effect on the checksum of the<br>execution path, they may be excluded from the remaining phases of<br>deterministic fuzzing - and the fuzzer may proceed straight to random tweaks.<br>Especially for verbose, human-readable data formats, this can reduce the number<br>of execs by 10-40% or so without an appreciable drop in coverage. In extreme<br>cases, such as normally block-aligned tar archives, the gains can be as high as<br>90%.</p>
+</blockquote>
+<p>也就是说，此规则有一个（微不足道的）例外：当新队列条目经历初始的一组确定性模糊步骤时，观察到对文件中某些区域的调整对执行路径的校验和没有影响，它们可能会被排除在确定性模糊测试的剩余阶段之外 - 并且模糊器可能会直接进行随机调整。特别是对于冗长的、人类可读的数据格式，这可以将执行数量减少 10-40% 左右，而覆盖率不会明显下降。在极端情况下，例如通常块对齐的 tar 存档，增益可高达 90%。</p>
+<blockquote>
+<p>Because the underlying “effector maps” are local every queue entry and remain<br>in force only during deterministic stages that do not alter the size or the<br>general layout of the underlying file, this mechanism appears to work very<br>reliably and proved to be simple to implement.</p>
+</blockquote>
+<p>由于底层“效应器映射”是每个队列条目的本地信息，并且仅在不改变底层文件的大小或总体布局的确定性阶段保持有效，因此该机制似乎工作非常可靠，并且被证明易于实现。</p>
+<h2 id="7）Dictionaries-字典"><a href="#7）Dictionaries-字典" class="headerlink" title="7）Dictionaries 字典"></a>7）Dictionaries 字典</h2><blockquote>
+<p>The feedback provided by the instrumentation makes it easy to automatically<br>identify syntax tokens in some types of input files, and to detect that certain<br>combinations of predefined or auto-detected dictionary terms constitute a<br>valid grammar for the tested parser.</p>
+</blockquote>
+<p>仪器提供的反馈使得自动识别某些类型的输入文件中的语法标记变得容易，并检测预定义或自动检测的字典术语的某些组合是否构成了测试解析器的有效语法。</p>
+<p>有关如何在 afl-fuzz 中实现这些功能的讨论可以在此处找到:<br><a target="_blank" rel="noopener" href="http://lcamtuf.blogspot.com/2015/01/afl-fuzz-making-up-grammar-with.html">http://lcamtuf.blogspot.com/2015/01/afl-fuzz-making-up-grammar-with.html</a></p>
+<blockquote>
+<p>In essence, when basic, typically easily-obtained syntax tokens are combined<br>together in a purely random manner, the instrumentation and the evolutionary<br>design of the queue together provide a feedback mechanism to differentiate<br>between meaningless mutations and ones that trigger new behaviors in the<br>instrumented code - and to incrementally build more complex syntax on top of<br>this discovery.</p>
+</blockquote>
+<p>本质上，当基本的、通常容易获得的语法标记以纯粹随机的方式组合在一起时，队列的检测和进化设计一起提供了一种反馈机制，以区分无意义的突变和在检测代码中触发新行为的突变- 并在此发现的基础上逐步构建更复杂的语法。</p>
+<blockquote>
+<p>The dictionaries have been shown to enable the fuzzer to rapidly reconstruct<br>the grammar of highly verbose and complex languages such as JavaScript, SQL,<br>or XML; several examples of generated SQL statements are given in the blog<br>post mentioned above.</p>
+</blockquote>
+<p>事实证明，字典可以使模糊器快速重建高度冗长和复杂的语言（例如 JavaScript、SQL 或 XML）的语法；上面提到的博客文章中给出了生成 SQL 语句的几个示例。</p>
+<blockquote>
+<p>Interestingly, the AFL instrumentation also allows the fuzzer to automatically<br>isolate syntax tokens already present in an input file. It can do so by looking<br>for run of bytes that, when flipped, produce a consistent change to the<br>program’s execution path; this is suggestive of an underlying atomic comparison<br>to a predefined value baked into the code. The fuzzer relies on this signal<br>to build compact “auto dictionaries” that are then used in conjunction with<br>other fuzzing strategies.</p>
+</blockquote>
+<p>有趣的是，AFL 检测还允许模糊器自动隔离输入文件中已存在的语法标记。它可以通过查找字节运行来实现这一点，这些字节在翻转时会对程序的执行路径产生一致的更改；这表明代码中预定义值存在底层原子化的比较。模糊器依靠这个信号来构建紧凑的“自动字典”，然后与其他模糊策略结合使用。</p>
+<h2 id="8）De-duping-crashes-重复数据删除崩溃"><a href="#8）De-duping-crashes-重复数据删除崩溃" class="headerlink" title="8）De-duping crashes 重复数据删除崩溃"></a>8）De-duping crashes 重复数据删除崩溃</h2><blockquote>
+<p>De-duplication of crashes is one of the more important problems for any<br>competent fuzzing tool. Many of the naive approaches run into problems; in<br>particular, looking just at the faulting address may lead to completely<br>unrelated issues being clustered together if the fault happens in a common<br>library function (say, strcmp, strcpy); while checksumming call stack<br>backtraces can lead to extreme crash count inflation if the fault can be<br>reached through a number of different, possibly recursive code paths.</p>
+</blockquote>
+<p>对于任何有能力的模糊测试工具来说，如何删除重复数据是最重要的问题之一。许多简单的方法都会遇到问题。尤其是，如果故障发生在公共库函数（例如 strcmp、strcpy）中，则仅查看故障地址可能会导致完全不相关的问题聚集在一起；如果可以通过许多不同的、可能是递归的代码路径到达故障，则对调用堆栈回溯进行校验和可能会导致大量异常的崩溃计数。</p>
+<blockquote>
+<p>The solution implemented in afl-fuzz considers a crash unique if any of two<br>conditions are met:</p>
+<ul>
+<li>The crash trace includes a tuple not seen in any of the previous crashes,</li>
+<li>The crash trace is missing a tuple that was always present in earlier faults.<br>如果满足下列两个条件的任意一种，afl-fuzz中实现的解决方案就会将其认定为一种crash</li>
+</ul>
+</blockquote>
+<ul>
+<li>若这个crash包含一个从未在其他crash中出现过的元组</li>
+<li>若这个crash不包含一个总是在其他crash中出现的元组</li>
+</ul>
+<blockquote>
+<p>The approach is vulnerable to some path count inflation early on, but exhibits<br>a very strong self-limiting effect, similar to the execution path analysis<br>logic that is the cornerstone of afl-fuzz.</p>
+</blockquote>
+<p>该方法早期容易受到路径计数膨胀的影响，但其表现出非常强的自我限制效应，同样体现在 afl-fuzz 基石的执行路径分析逻辑。</p>
+<h2 id="9）Investigating-crashes-调查崩溃"><a href="#9）Investigating-crashes-调查崩溃" class="headerlink" title="9）Investigating crashes 调查崩溃"></a>9）Investigating crashes 调查崩溃</h2><blockquote>
+<p>The exploitability of many types of crashes can be ambiguous; afl-fuzz tries<br>to address this by providing a crash exploration mode where a known-faulting<br>test case is fuzzed in a manner very similar to the normal operation of the<br>fuzzer, but with a constraint that causes any non-crashing mutations to be<br>thrown away.</p>
+</blockquote>
+<p>许多类型的崩溃的可利用性可能是不明确的； afl-fuzz 试图通过提供崩溃探索模式来解决这个问题，其中已知故障的测试用例以与模糊器正常操作非常相似的方式进行模糊测试，但有一个约束，导致任何非崩溃的突变都被丢弃。</p>
+<p>有关此方法价值的详细讨论可以在此处找到</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="http://lcamtuf.blogspot.com/2014/11/afl-fuzz-crash-exploration-mode.html">http://lcamtuf.blogspot.com/2014/11/afl-fuzz-crash-exploration-mode.html</a></li>
+</ul>
+<blockquote>
+<p>The method uses instrumentation feedback to explore the state of the crashing<br>program to get past the ambiguous faulting condition and then isolate the<br>newly-found inputs for human review.</p>
+</blockquote>
+<p>该方法使用仪器反馈来探索崩溃程序的状态，以克服模糊的故障条件，然后隔离新发现的输入以供人工审查。</p>
+<blockquote>
+<p>On the subject of crashes, it is worth noting that in contrast to normal<br>queue entries, crashing inputs are <em>not</em> trimmed; they are kept exactly as<br>discovered to make it easier to compare them to the parent, non-crashing entry<br>in the queue. That said, afl-tmin can be used to shrink them at will.</p>
+</blockquote>
+<p>关于崩溃问题，值得注意的是，与正常队列条目相比，崩溃输入<strong>不会</strong>被修剪；它们完全按照发现的方式保存，以便更容易将它们与队列中的父非崩溃条目进行比较。也就是说，afl-tmin 可以用来随意缩小它们。</p>
+<h2 id="10）The-fork-server"><a href="#10）The-fork-server" class="headerlink" title="10）The fork server"></a>10）The fork server</h2><blockquote>
+<p>To improve performance, afl-fuzz uses a “fork server”, where the fuzzed process<br>goes through execve(), linking, and libc initialization only once, and is then<br>cloned from a stopped process image by leveraging copy-on-write. The<br>implementation is described in more detail here:</p>
+</blockquote>
+<p>为了提高性能，afl-fuzz 使用<strong>“fork server”</strong>，其中模糊化进程仅执行一次 execve()、链接和 libc 初始化，然后通过利用<strong>copy-on-write</strong>从停止的进程映像进行克隆。这里更详细地描述了该实现：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="http://lcamtuf.blogspot.com/2014/10/fuzzing-binaries-without-execve.html">http://lcamtuf.blogspot.com/2014/10/fuzzing-binaries-without-execve.html</a></li>
+</ul>
+<blockquote>
+<p>The fork server is an integral aspect of the injected instrumentation and<br>simply stops at the first instrumented function to await commands from<br>afl-fuzz.</p>
+</blockquote>
+<p>fork server是注入检测的一个组成部分，它只是在第一个检测函数处停止以等待来自 afl-fuzz 的命令。</p>
+<blockquote>
+<p>With fast targets, the fork server can offer considerable performance gains,<br>usually between 1.5x and 2x. It is also possible to:</p>
+<ul>
+<li>Use the fork server in manual (“deferred”) mode, skipping over larger, user-selected chunks of initialization code. It requires very modest code changes to the targeted program, and With some targets, can produce 10x+ performance gains.</li>
+<li>Enable “persistent” mode, where a single process is used to try out multiple inputs, greatly limiting the overhead of repetitive fork() calls. This generally requires some code changes to the targeted program, but can improve the performance of fast targets by a factor of 5 or more - approximating the benefits of in-process fuzzing jobs while still maintaining very robust isolation between the fuzzer process and the targeted binary.</li>
+</ul>
+</blockquote>
+<p>对于fast目标，fork server可以提供相当大的性能提升，通常在1.5倍到2倍之间。还可以：</p>
+<ul>
+<li>在手动的（“deferred”）模式下使用fork server，跳过较大的、用户选择的初始化代码块。它需要对目标程序进行恰到好处的代码更改，并且对于某些目标，可以产生10倍以上的性能提升</li>
+<li>启用“persistent”模式，其中单个进程用于尝试多个输入，极大的限制了重复<code>fork()</code>调用的开销。这通常需要对目标程序进行一些代码更改，大可以将fast目标的性能提高5倍或者更多 - 近似于进程内模糊测试作业的好处，同时仍然保持fuzzer进程和目标二进制文件之间巨大的隔离。</li>
+</ul>
+<h2 id="其他部分"><a href="#其他部分" class="headerlink" title="其他部分"></a>其他部分</h2><p>剩下3章感觉不是很重要，可以自己去看看。之后有空再补上这部分吧</p>
 
                 
               </div>
