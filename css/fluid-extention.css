@@ -142,7 +142,7 @@ table{
 }
 
 p {
-    text-indent: 2em; /*首行缩进*/
+    text-indent: 0em; /*首行缩进*/
 }
 li > p {
     text-indent: 0;
