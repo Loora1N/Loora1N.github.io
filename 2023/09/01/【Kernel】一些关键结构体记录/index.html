@@ -16,23 +16,23 @@
   <meta name="author" content="Loora1N">
   <meta name="keywords" content="">
   
-    <meta name="description" content="从cred角度考虑提权思路">
+    <meta name="description" content="持续更新Kernel利用相关的一些结构体和trick">
 <meta property="og:type" content="article">
-<meta property="og:title" content="【kernel】提权入门-part1">
-<meta property="og:url" content="http://loora1n.github.io/2023/03/29/%E3%80%90kernel%E3%80%91%E6%8F%90%E6%9D%83%E5%85%A5%E9%97%A8-part1/index.html">
+<meta property="og:title" content="【Kernel】一些trick记录（持续更新）">
+<meta property="og:url" content="http://loora1n.github.io/2023/09/01/%E3%80%90Kernel%E3%80%91%E4%B8%80%E4%BA%9B%E5%85%B3%E9%94%AE%E7%BB%93%E6%9E%84%E4%BD%93%E8%AE%B0%E5%BD%95/index.html">
 <meta property="og:site_name" content="鷺雨のBlog">
-<meta property="og:description" content="从cred角度考虑提权思路">
+<meta property="og:description" content="持续更新Kernel利用相关的一些结构体和trick">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://loora1n.github.io/img/article/%E6%8F%90%E6%9D%83%E5%85%A5%E9%97%A8/QQ%E5%9B%BE%E7%89%8720230329223721.png">
-<meta property="article:published_time" content="2023-03-29T15:01:32.928Z">
-<meta property="article:modified_time" content="2023-03-29T15:01:32.928Z">
+<meta property="og:image" content="http://loora1n.github.io/img/article/ktrick/5IcVxRaFQtg3HCW.png">
+<meta property="article:published_time" content="2023-09-01T08:22:35.679Z">
+<meta property="article:modified_time" content="2023-09-01T08:22:35.679Z">
 <meta property="article:author" content="Loora1N">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://loora1n.github.io/img/article/%E6%8F%90%E6%9D%83%E5%85%A5%E9%97%A8/QQ%E5%9B%BE%E7%89%8720230329223721.png">
+<meta name="twitter:image" content="http://loora1n.github.io/img/article/ktrick/5IcVxRaFQtg3HCW.png">
   
   
   
-  <title>【kernel】提权入门-part1 - 鷺雨のBlog</title>
+  <title>【Kernel】一些trick记录（持续更新） - 鷺雨のBlog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -200,7 +200,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="【kernel】提权入门-part1"></span>
+            <span id="subtitle" data-typed-text="【Kernel】一些trick记录（持续更新）"></span>
           
         </div>
 
@@ -211,8 +211,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-03-29 23:01" pubdate>
-          2023年3月29日 晚上
+        <time datetime="2023-09-01 16:22" pubdate>
+          2023年9月1日 下午
         </time>
       </span>
     
@@ -223,7 +223,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          2.8k 字
+          2.1k 字
         
       </span>
     
@@ -234,7 +234,7 @@
         
         
         
-          24 分钟
+          18 分钟
         
       </span>
     
@@ -280,52 +280,53 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">【kernel】提权入门-part1</h1>
+            <h1 style="display: none">【Kernel】一些trick记录（持续更新）</h1>
             
             
               <div class="markdown-body">
                 
-                <blockquote>
-<p>纠结了很久，决定还是开启这个模块的学习，在这个路口迷茫了很久了，一直没有决定好走向何处。虽然有可能会走错路，可能会学习很多看起来没用的东西，但希望Kernel的学习能够带我刚开始接触PWN时的乐趣。将会主要借助CTF wiki和《从0到1》</p>
+                <h2 id="pt-regs"><a href="#pt-regs" class="headerlink" title="pt_regs"></a>pt_regs</h2><p>用于保存<strong>用户态–&gt;内核态</strong>切换时的用户态信息，在内核态返回时会从<code>pt_regs</code>恢复数据。因而若我们能控制rsp到达此位置，即可以使用用户态寄存器值辅助实现ROP</p>
+<p><img src="/img/article/ktrick/t01bacb0bd7eee5eeaa.png" alt="img"></p>
+<h2 id="list-head结构体"><a href="#list-head结构体" class="headerlink" title="list_head结构体"></a>list_head结构体</h2><p>简单的内核双链表结构，在内核中经常作为实现双链表结构的基础，定义如下</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">//	https://elixir.bootlin.com/linux/latest/source/include/linux/types.h#L184</span><br><br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">list_head</span> &#123;</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">list_head</span> *<span class="hljs-title">next</span>, *<span class="hljs-title">prev</span>;</span><br>&#125;;<br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="setxattr系统调用"><a href="#setxattr系统调用" class="headerlink" title="setxattr系统调用"></a>setxattr系统调用</h2><blockquote>
+<p>从a3✌的d3kheap中学到的东西，a3✌也太超人了吧！！！原文链接如下：</p>
+<p><a target="_blank" rel="noopener" href="https://arttnba3.cn/2022/03/08/CTF-0X06-D3CTF2022_D3KHEAP/">【CTF.0x06】D^ 3CTF2022 d3kheap 出题手记 - arttnba3’s blog</a></p>
 </blockquote>
-<h2 id="前置"><a href="#前置" class="headerlink" title="前置"></a>前置</h2><p>内核会通过进程的 <code>task_struct</code> 结构体中的 <code>cred</code> 指针来索引 <code>cred</code> 结构体，然后根据 <code>cred</code> 的内容来判断一个进程拥有的权限，如果 <code>cred</code> 结构体成员中的 <strong>uid-fsgid</strong> 都为 0，那一般就会认为进程具有 <strong>root</strong> 权限。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">cred</span> &#123;</span><br>    <span class="hljs-type">atomic_t</span>    usage;<br><span class="hljs-meta">#<span class="hljs-keyword">ifdef</span> CONFIG_DEBUG_CREDENTIALS</span><br>    <span class="hljs-type">atomic_t</span>    subscribers;    <span class="hljs-comment">/* number of processes subscribed */</span><br>    <span class="hljs-type">void</span>        *put_addr;<br>    <span class="hljs-type">unsigned</span>    magic;<br><span class="hljs-meta">#<span class="hljs-keyword">define</span> CRED_MAGIC  0x43736564</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> CRED_MAGIC_DEAD 0x44656144</span><br><span class="hljs-meta">#<span class="hljs-keyword">endif</span></span><br>    <span class="hljs-type">kuid_t</span>      uid;        <span class="hljs-comment">/* real UID of the task */</span><br>    <span class="hljs-type">kgid_t</span>      gid;        <span class="hljs-comment">/* real GID of the task */</span><br>    <span class="hljs-type">kuid_t</span>      suid;       <span class="hljs-comment">/* saved UID of the task */</span><br>    <span class="hljs-type">kgid_t</span>      sgid;       <span class="hljs-comment">/* saved GID of the task */</span><br>    <span class="hljs-type">kuid_t</span>      euid;       <span class="hljs-comment">/* effective UID of the task */</span><br>    <span class="hljs-type">kgid_t</span>      egid;       <span class="hljs-comment">/* effective GID of the task */</span><br>    <span class="hljs-type">kuid_t</span>      fsuid;      <span class="hljs-comment">/* UID for VFS ops */</span><br>    <span class="hljs-type">kgid_t</span>      fsgid;      <span class="hljs-comment">/* GID for VFS ops */</span><br>  ...<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>setxattr 是一个十分独特的系统调用族，抛开其本身的功能，在 kernel 的利用当中他可以为我们提供<strong>近乎任意大小的内核空间 object 分配</strong></p>
+<p>观察setxattr源码，发现如下调用链：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs c">SYS_setxattr()<br>    path_setxattr()<br>        setxattr()<br></code></pre></td></tr></table></figure>
 
-<p>因此，很自然就能想到两种思路来进行提权：</p>
+<p>在<code>setxattr()</code>函数中有如下逻辑：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">static</span> <span class="hljs-type">long</span><br><span class="hljs-title function_">setxattr</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> dentry *d, <span class="hljs-type">const</span> <span class="hljs-type">char</span> __user *name, <span class="hljs-type">const</span> <span class="hljs-type">void</span> __user *value,</span><br><span class="hljs-params">     <span class="hljs-type">size_t</span> size, <span class="hljs-type">int</span> flags)</span><br>&#123;<br>    <span class="hljs-comment">//...</span><br>        kvalue = kvmalloc(size, GFP_KERNEL);<br>        <span class="hljs-keyword">if</span> (!kvalue)<br>            <span class="hljs-keyword">return</span> -ENOMEM;<br>        <span class="hljs-keyword">if</span> (copy_from_user(kvalue, value, size)) &#123;<br><br>    <span class="hljs-comment">//,..</span><br><br>    kvfree(kvalue);<br><br>    <span class="hljs-keyword">return</span> error;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这里的 value 和 size 都是由我们来指定的，即<strong>我们可以分配任意大小的 object 并向其中写入内容</strong>，完成写入之后该 object 又会通过 kvfree 被释放掉，因此我们便可以通过 setxattr <strong>多次修改 victim 的内容</strong></p>
+<h2 id="msg-queue消息队列"><a href="#msg-queue消息队列" class="headerlink" title="msg_queue消息队列"></a>msg_queue消息队列</h2><blockquote>
+<p>同样来自a3✌的blog， a3✌简直是我Kernel的启蒙老师😭😭😭</p>
+<p><a target="_blank" rel="noopener" href="https://arttnba3.cn/2022/03/08/CTF-0X06-D3CTF2022_D3KHEAP/">【CTF.0x06】D^ 3CTF2022 d3kheap 出题手记 - arttnba3’s blog</a></p>
+</blockquote>
+<p>The syscall about system V message queue</p>
 <ul>
-<li>直接修改 <code>cred</code> 结构体的内容</li>
-<li>修改 <code>task_struct</code> 结构体中的 cred 指针指向一个满足要求的 cred</li>
+<li>msgget：create a msg queue</li>
+<li>msgsnd：send msg to a msg queue</li>
+<li>msgrcv：recive msg from a msg queue</li>
 </ul>
-<h2 id="直接定位"><a href="#直接定位" class="headerlink" title="直接定位"></a>直接定位</h2><p>cred 结构体的最前面记录了各种 id 信息，对于一个普通的进程而言，<code>uid-fsgid</code> 都是执行进程的用户的身份。因此我们可以通过扫描内存来定位 cred。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">cred</span> &#123;</span><br>    <span class="hljs-type">atomic_t</span>    usage;<br><span class="hljs-meta">#<span class="hljs-keyword">ifdef</span> CONFIG_DEBUG_CREDENTIALS</span><br>    <span class="hljs-type">atomic_t</span>    subscribers;    <span class="hljs-comment">/* number of processes subscribed */</span><br>    <span class="hljs-type">void</span>        *put_addr;<br>    <span class="hljs-type">unsigned</span>    magic;<br><span class="hljs-meta">#<span class="hljs-keyword">define</span> CRED_MAGIC  0x43736564</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> CRED_MAGIC_DEAD 0x44656144</span><br><span class="hljs-meta">#<span class="hljs-keyword">endif</span></span><br>    <span class="hljs-type">kuid_t</span>      uid;        <span class="hljs-comment">/* real UID of the task */</span><br>    <span class="hljs-type">kgid_t</span>      gid;        <span class="hljs-comment">/* real GID of the task */</span><br>    <span class="hljs-type">kuid_t</span>      suid;       <span class="hljs-comment">/* saved UID of the task */</span><br>    <span class="hljs-type">kgid_t</span>      sgid;       <span class="hljs-comment">/* saved GID of the task */</span><br>    <span class="hljs-type">kuid_t</span>      euid;       <span class="hljs-comment">/* effective UID of the task */</span><br>    <span class="hljs-type">kgid_t</span>      egid;       <span class="hljs-comment">/* effective GID of the task */</span><br>    <span class="hljs-type">kuid_t</span>      fsuid;      <span class="hljs-comment">/* UID for VFS ops */</span><br>    <span class="hljs-type">kgid_t</span>      fsgid;      <span class="hljs-comment">/* GID for VFS ops */</span><br>  ...<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>System will create a structure named <strong>msg_queue</strong> when we create a message queue. Here is the definition of this structure.</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">/* one msq_queue structure for each present queue on the system */</span><br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">msg_queue</span> &#123;</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">kern_ipc_perm</span> <span class="hljs-title">q_perm</span>;</span><br>	<span class="hljs-type">time64_t</span> q_stime;		<span class="hljs-comment">/* last msgsnd time */</span><br>	<span class="hljs-type">time64_t</span> q_rtime;		<span class="hljs-comment">/* last msgrcv time */</span><br>	<span class="hljs-type">time64_t</span> q_ctime;		<span class="hljs-comment">/* last change time */</span><br>	<span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> q_cbytes;		<span class="hljs-comment">/* current number of bytes on queue */</span><br>	<span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> q_qnum;		<span class="hljs-comment">/* number of messages in queue */</span><br>	<span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> q_qbytes;		<span class="hljs-comment">/* max number of bytes on queue */</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">pid</span> *<span class="hljs-title">q_lspid</span>;</span>		<span class="hljs-comment">/* pid of last msgsnd */</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">pid</span> *<span class="hljs-title">q_lrpid</span>;</span>		<span class="hljs-comment">/* last receive pid */</span><br><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">list_head</span> <span class="hljs-title">q_messages</span>;</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">list_head</span> <span class="hljs-title">q_receivers</span>;</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">list_head</span> <span class="hljs-title">q_senders</span>;</span><br>&#125; __randomize_layout;<br></code></pre></td></tr></table></figure>
 
-<p><strong>在实际定位的过程中，我们可能会发现很多满足要求的 cred，这主要是因为 cred 结构体可能会被拷贝、释放。</strong>一个很直观的想法是在定位的过程中，利用 usage 不为 0 来筛除掉一些 cred，但仍然会发现一些 usage 为 0 的 cred。这是因为 cred 从 usage 为 0， 到释放有一定的时间。此外，cred 是使用 rcu 延迟释放的。</p>
-<h2 id="间接定位"><a href="#间接定位" class="headerlink" title="间接定位"></a>间接定位</h2><h3 id="task-struct"><a href="#task-struct" class="headerlink" title="task_struct"></a>task_struct</h3><p>进程的 <code>task_struct</code> 结构体中会存放指向 cred 的指针，因此我们可以</p>
-<ol>
-<li>定位当前进程 <code>task_struct</code> 结构体的地址</li>
-<li>根据 cred 指针相对于 task_struct 结构体的偏移计算得出 <code>cred</code> 指针存储的地址</li>
-<li>获取 <code>cred</code> 具体的地址</li>
-</ol>
-<h3 id="comm"><a href="#comm" class="headerlink" title="comm"></a>comm</h3><p>comm 用来标记可执行文件的名字，位于进程的 <code>task_struct</code> 结构体中。我们可以发现 comm 其实在 cred 的正下方，所以我们也可以先定位 comm ，然后定位 cred 的地址。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs c">    <span class="hljs-comment">/* Process credentials: */</span><br><br>    <span class="hljs-comment">/* Tracer&#x27;s credentials at attach: */</span><br>    <span class="hljs-type">const</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">cred</span> __<span class="hljs-title">rcu</span>     *<span class="hljs-title">ptracer_cred</span>;</span><br><br>    <span class="hljs-comment">/* Objective and real subjective task credentials (COW): */</span><br>    <span class="hljs-type">const</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">cred</span> __<span class="hljs-title">rcu</span>     *<span class="hljs-title">real_cred</span>;</span><br><br>    <span class="hljs-comment">/* Effective (overridable) subjective task credentials (COW): */</span><br>    <span class="hljs-type">const</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">cred</span> __<span class="hljs-title">rcu</span>     *<span class="hljs-title">cred</span>;</span><br><br><span class="hljs-meta">#<span class="hljs-keyword">ifdef</span> CONFIG_KEYS</span><br>    <span class="hljs-comment">/* Cached requested key. */</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">key</span>          *<span class="hljs-title">cached_requested_key</span>;</span><br><span class="hljs-meta">#<span class="hljs-keyword">endif</span></span><br><br>    <span class="hljs-comment">/*</span><br><span class="hljs-comment">     * executable name, excluding path.</span><br><span class="hljs-comment">     *</span><br><span class="hljs-comment">     * - normally initialized setup_new_exec()</span><br><span class="hljs-comment">     * - access it with [gs]et_task_comm()</span><br><span class="hljs-comment">     * - lock it with task_lock()</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-type">char</span>                comm[TASK_COMM_LEN];<br></code></pre></td></tr></table></figure>
+<p>When we try to call <code>msgsnd</code> to send a message to a specified message queue, such a srturcture is created in kernel space:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">/* one msg_msg structure for each message */</span><br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">msg_msg</span> &#123;</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">list_head</span> <span class="hljs-title">m_list</span>;</span><br>	<span class="hljs-type">long</span> m_type;<br>	<span class="hljs-type">size_t</span> m_ts;		<span class="hljs-comment">/* message text size */</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">msg_msgseg</span> *<span class="hljs-title">next</span>;</span><br>	<span class="hljs-type">void</span> *security;<br>	<span class="hljs-comment">/* the actual message follows immediately */</span><br>&#125;;<br></code></pre></td></tr></table></figure>
 
-<p>然而，在进程名字并不特殊的情况下，内核中可能会有多个同样的字符串，这会影响搜索的正确性与效率。因此，我们可以使用 prctl 设置进程的 comm 为一个特殊的字符串，然后再开始定位 comm。</p>
-<h2 id="修改"><a href="#修改" class="headerlink" title="修改"></a>修改</h2><p>在这种方法下，我们可以直接将 cred 中的 <code>uid-fsgid</code> 都修改为 0。当然修改的方式有很多种，比如说</p>
-<ul>
-<li>在我们具有任意地址读写后，可以直接修改 cred。</li>
-<li>在我们可以 ROP 执行代码后，可以利用 ROP gadget 修改 cred。</li>
-</ul>
-<h3 id="利用UAF修改"><a href="#利用UAF修改" class="headerlink" title="利用UAF修改"></a>利用UAF修改</h3><p>如果我们在进程初始化时能控制 cred 结构体的位置，并且我们可以在初始化后修改该部分的内容，那么我们就可以很容易地达到提权的目的。这里给出一个典型的例子</p>
-<ol>
-<li>申请一块与 cred 结构体大小一样的堆块</li>
-<li>释放该堆块</li>
-<li>fork 出新进程，恰好使用刚刚释放的堆块</li>
-<li>此时，修改 cred 结构体特定内存，从而提权</li>
-</ol>
-<p>非常有意思的是，在这个过程中，我们不需要任何的信息泄露。</p>
-<h3 id="利用commit-creds修改"><a href="#利用commit-creds修改" class="headerlink" title="利用commit_creds修改"></a>利用commit_creds修改</h3><p>我们还可以使用 <code>commit_creds(prepare_kernel_cred(0))</code> 来进行提权，该方式会自动生成一个合法的 cred，并定位当前线程的 <code>task_struct</code> 的位置，然后修改它的 cred 为新的 cred。该方式比较适用于控制程序执行流后使用。</p>
-<p><img src="/img/article/%E6%8F%90%E6%9D%83%E5%85%A5%E9%97%A8/elevation-of-privilege.png" alt="72b919b7-87bb-4312-97ea-b59fe4690b2e"></p>
-
+<p>实际结构如下：</p>
+<p><img src="/img/article/ktrick/5IcVxRaFQtg3HCW.png" alt="image.png"></p>
+<hr>
+<blockquote>
+<p>下面这些留个坑，有空补上</p>
+</blockquote>
+<h2 id="pipe-buffer"><a href="#pipe-buffer" class="headerlink" title="pipe_buffer"></a>pipe_buffer</h2><h2 id="tty-struct"><a href="#tty-struct" class="headerlink" title="tty struct"></a>tty struct</h2><h2 id="seq-operation"><a href="#seq-operation" class="headerlink" title="seq operation"></a>seq operation</h2>
                 
               </div>
             
@@ -342,8 +343,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>【kernel】提权入门-part1</div>
-      <div>http://loora1n.github.io/2023/03/29/【kernel】提权入门-part1/</div>
+      <div>【Kernel】一些trick记录（持续更新）</div>
+      <div>http://loora1n.github.io/2023/09/01/【Kernel】一些关键结构体记录/</div>
     </div>
     <div class="license-meta">
       
@@ -355,7 +356,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2023年3月29日</div>
+          <div>2023年9月1日</div>
         </div>
       
       
@@ -387,18 +388,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2023/03/29/%E3%80%90kernel%E3%80%91%E6%8F%90%E6%9D%83%E5%85%A5%E9%97%A8-part2/" title="【kernel】提权入门-part2">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">【kernel】提权入门-part2</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2023/03/29/Linux%20Syscall%20Reference(64%20bit)/" title="Linux Syscall Reference(64 bit)">
-                        <span class="hidden-mobile">Linux Syscall Reference(64 bit)</span>
+                      <a href="/2023/08/30/%E3%80%90fuzz%E3%80%91AFL%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%20part%201/" title="【fuzz】AFL源码分析 part 1">
+                        <span class="hidden-mobile">【fuzz】AFL源码分析 part 1</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
