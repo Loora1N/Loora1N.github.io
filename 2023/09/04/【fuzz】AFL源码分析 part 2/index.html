@@ -1,0 +1,871 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" >
+
+<!--浏览器搞笑标题-->
+<script type="text/javascript" src="/js/FunnyTitle.js"></script>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/icon/duck.png">
+  <link rel="icon" href="/img/icon/duck.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#f58f98">
+  <meta name="author" content="Loora1N">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="上一个part主要关注的是插桩相关部分的源码，本篇主要来查看afl-fuzz.c这个核心模块的源码部分">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【fuzz】AFL源码分析 part 2">
+<meta property="og:url" content="http://loora1n.github.io/2023/09/04/%E3%80%90fuzz%E3%80%91AFL%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%20part%202/index.html">
+<meta property="og:site_name" content="鷺雨のBlog">
+<meta property="og:description" content="上一个part主要关注的是插桩相关部分的源码，本篇主要来查看afl-fuzz.c这个核心模块的源码部分">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://loora1n.github.io/img/article/fuzzAFL2/1632794034_615275b20ecc5e3dc8f7d.png">
+<meta property="article:published_time" content="2023-09-04T11:19:38.481Z">
+<meta property="article:modified_time" content="2023-09-04T11:19:38.481Z">
+<meta property="article:author" content="Loora1N">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://loora1n.github.io/img/article/fuzzAFL2/1632794034_615275b20ecc5e3dc8f7d.png">
+  
+  
+  
+  <title>【fuzz】AFL源码分析 part 2 - 鷺雨のBlog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/fluid-extention.css">
+<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/bynotes/texiao/source/css/gundongtiao.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"loora1n.github.io","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"lftEbNU4XPuR5dgHNV3WdWxP-gzGzoHsz","app_key":"b3uLUVGLeOWDwREWHMBr0jo9","server_url":"https://lftebnu4.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>鷺雨のBlog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/bg/3.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="【fuzz】AFL源码分析 part 2"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-09-04 19:19" pubdate>
+          2023年9月4日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          7.9k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          67 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          阅读量 <span id="leancloud-page-views"></span>
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">【fuzz】AFL源码分析 part 2</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
+<p>上个一个part主要关注的是插桩相关部分的源码，这一节主要来查看afl-fuzz.c这个核心模块的源码部分</p>
+</blockquote>
+<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>由于该部分代码体量过大，我们只对核心部分进行源码解析。这部分总体可以分为三块：</p>
+<ol>
+<li>初始配置：进行fuzz环境配置相关工作</li>
+<li>fuzz执行：fuzz的主循环过程</li>
+<li>变异策略：测试用例的变异过程和方式</li>
+</ol>
+<h2 id="预处理"><a href="#预处理" class="headerlink" title="预处理"></a>预处理</h2><p>首先从<code>main()</code>函数着手进行分析。在完成初始配置后，<code>main()</code>同样利用time生成随机种子</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs c">gettimeofday(&amp;tv, &amp;tz);<br>srandom(tv.tv_sec ^ tv.tv_usec ^ getpid());<br></code></pre></td></tr></table></figure>
+
+<p>紧接着便是第一个循环</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">while</span> ((opt = getopt(argc, argv, <span class="hljs-string">&quot;+i:o:f:m:b:t:T:dnCB:S:M:x:QV&quot;</span>)) &gt; <span class="hljs-number">0</span>)<br>    <span class="hljs-keyword">switch</span>(opt)&#123;<br>            ...<br>    &#125;<br></code></pre></td></tr></table></figure>
+
+<p>这个循环的功能还是比较明显的。从下图的部分源代码和注释中，我们可以看出，其主要是获取命令行传入的参数，以及一些对应flag的设置。</p>
+<p><img src="/img/article/fuzzAFL2/image-20230904135719892.png" alt="image-20230904135719892"></p>
+<p>紧接着便是<code>setup_signal_handlers()</code>函数，主要是调用<code>sigaction()</code>，注册一些信号处理函数，具体内容如下：</p>
+<table>
+<thead>
+<tr>
+<th>信号</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>SIGHUP&#x2F;SIGINT&#x2F;SIGTERM</td>
+<td>处理各种“stop”情况</td>
+</tr>
+<tr>
+<td>SIGALRM</td>
+<td>处理超时的情况</td>
+</tr>
+<tr>
+<td>SIGWINCH</td>
+<td>处理窗口大小</td>
+</tr>
+<tr>
+<td>SIGUSER1</td>
+<td>用户自定义信号，这里定义为skip request</td>
+</tr>
+<tr>
+<td>SIGSTP&#x2F;SIGPIPE</td>
+<td>其他一些不重要信号</td>
+</tr>
+</tbody></table>
+<p>然后接着仍是一些参数处理的函数<code>check_asan_opts()</code>，用来读取环境变量<strong>ASAN_OPTIONS</strong>和<strong>MSAN_OPTIONS</strong>；<code>fix_up_sync()</code>用来处理-M，-S相关参数；<code>check_if_tty</code>用于检查程序是否使用tty终端运行；最后还有<code>get_core_count</code>, <code>check_crash_handing</code>, <code>check_cpu_governor</code>这些函数用来做CPU检查相关。</p>
+<h2 id="setup-shm"><a href="#setup-shm" class="headerlink" title="setup_shm"></a>setup_shm</h2><p>紧接着便是初始化shm和virgin_bits相关内容的重要函数<code>setup_shm()</code>，这些变量用于记录tuple相关状态，源码如下：</p>
+<blockquote>
+<p>关于tuple的定义可以查看我在AFL白皮书中有关Detecting new behaviors的内容:<a href="https://loora1n.github.io/2023/08/23/%E3%80%90fuzz%E3%80%91AFL%E7%99%BD%E7%9A%AE%E4%B9%A6%E4%B8%AD%E8%8B%B1%E5%8F%8C%E8%AF%AD%E7%89%88/">【fuzz】AFL白皮书中英双语版 - 鷺雨のBlog (loora1n.github.io)</a></p>
+</blockquote>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">static</span> <span class="hljs-type">void</span> <span class="hljs-title function_">setup_shm</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span> &#123;<br><br>  <span class="hljs-comment">/*</span><br><span class="hljs-comment">  *		初始化</span><br><span class="hljs-comment">  */</span><br>  u8* shm_str;<br><br>  <span class="hljs-keyword">if</span> (!in_bitmap) <span class="hljs-built_in">memset</span>(virgin_bits, <span class="hljs-number">255</span>, MAP_SIZE);<br><br>  <span class="hljs-built_in">memset</span>(virgin_tmout, <span class="hljs-number">255</span>, MAP_SIZE);<br>  <span class="hljs-built_in">memset</span>(virgin_crash, <span class="hljs-number">255</span>, MAP_SIZE);<br>  <span class="hljs-comment">/*</span><br><span class="hljs-comment">  *		分配共享内存，关于shmget的内容可以看看这篇有关进程通信的博客</span><br><span class="hljs-comment">  *		https://www.cnblogs.com/52php/p/5861372.html</span><br><span class="hljs-comment">  */</span><br>  shm_id = shmget(IPC_PRIVATE, MAP_SIZE, IPC_CREAT | IPC_EXCL | <span class="hljs-number">0600</span>);<br><br>  <span class="hljs-keyword">if</span> (shm_id &lt; <span class="hljs-number">0</span>) PFATAL(<span class="hljs-string">&quot;shmget() failed&quot;</span>);<br><br>  atexit(remove_shm);<span class="hljs-comment">//注册atexit handler 为 remove_shm</span><br><br>  shm_str = alloc_printf(<span class="hljs-string">&quot;%d&quot;</span>, shm_id);<br><br>  <span class="hljs-keyword">if</span> (!dumb_mode) setenv(SHM_ENV_VAR, shm_str, <span class="hljs-number">1</span>);<br><br>  ck_free(shm_str);<br>  <span class="hljs-comment">/*</span><br><span class="hljs-comment">  *		启动进程对共享内存访问权限，返回共享内存首地址指针</span><br><span class="hljs-comment">  */</span><br>  trace_bits = shmat(shm_id, <span class="hljs-literal">NULL</span>, <span class="hljs-number">0</span>);<br>  <br>  <span class="hljs-keyword">if</span> (trace_bits == (<span class="hljs-type">void</span> *)<span class="hljs-number">-1</span>) PFATAL(<span class="hljs-string">&quot;shmat() failed&quot;</span>);<br><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这里主要有四个核心变量，定义如下:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs c">EXP_ST u8* trace_bits;                <span class="hljs-comment">/* SHM with instrumentation bitmap  */</span><br><br>EXP_ST u8  virgin_bits[MAP_SIZE],     <span class="hljs-comment">/* Regions yet untouched by fuzzing */</span><br>           virgin_tmout[MAP_SIZE],    <span class="hljs-comment">/* Bits we haven&#x27;t seen in tmouts   */</span><br>           virgin_crash[MAP_SIZE];    <span class="hljs-comment">/* Bits we haven&#x27;t seen in crashes  */</span><br></code></pre></td></tr></table></figure>
+
+<p>从注释我们可以看到，<code>trace_bits</code>指向存放插桩情况位图的共享内存，<code>virgin_bits[MAP_SIZE]</code>主要是用于记录未到达区域，而<code>virgin_tmout</code>和<code>virgin_crash</code>则是记录timeout和crash的情况。</p>
+<h2 id="文件及模式选择"><a href="#文件及模式选择" class="headerlink" title="文件及模式选择"></a>文件及模式选择</h2><p>然后仍是一些处理函数，我用注释标识函数用途</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><code class="hljs c">...<br>setup_dirs_fds();		<span class="hljs-comment">/*	Prepare output directories and fds.	*/</span><br>read_testcases();		<span class="hljs-comment">/*	Read all testcases from the input directory, then queue them for testing.</span><br><span class="hljs-comment"> 							Called at startup.	*/</span><br><br>load_auto();			<span class="hljs-comment">/* Load automatically generated extras. */</span><br><br>pivot_inputs();		<span class="hljs-comment">/* Create hard links for input test cases in the output directory, choosing</span><br><span class="hljs-comment">						   good names and pivoting accordingly. */</span><br><br><span class="hljs-keyword">if</span> (extras_dir) load_extras(extras_dir);	<span class="hljs-comment">/* Read extras from the extras directory and sort them by size. */</span><br><br><span class="hljs-keyword">if</span> (!timeout_given) find_timeout();		<span class="hljs-comment">/* The same, but for timeouts. The idea is that when resuming sessions without</span><br><span class="hljs-comment">									   -t given, we don&#x27;t want to keep auto-scaling the timeout over and over</span><br><span class="hljs-comment">									   again to prevent it from growing due to random flukes. */</span><br><br>detect_file_args(argv + optind + <span class="hljs-number">1</span>);		<span class="hljs-comment">/* Detect @@ in args. */</span><br><br><span class="hljs-keyword">if</span> (!out_file) setup_stdio_file();		<span class="hljs-comment">/* Setup the output file for fuzzed data, if not using -f. */</span><br><br>check_binary(argv[optind]);				<span class="hljs-comment">/* Do a PATH search and find target binary to see that it exists and</span><br><span class="hljs-comment">									   isn&#x27;t a shell script - a common and painful mistake. We also check for</span><br><span class="hljs-comment">									   a valid ELF header and for evidence of AFL instrumentation. */</span><br><br>start_time = get_cur_time();<br><br><span class="hljs-comment">/*</span><br><span class="hljs-comment">*		处理qemu模式下的参数</span><br><span class="hljs-comment">*/</span><br><span class="hljs-keyword">if</span> (qemu_mode)<br>  use_argv = get_qemu_argv(argv[<span class="hljs-number">0</span>], argv + optind, argc - optind);<br><span class="hljs-keyword">else</span><br>  use_argv = argv + optind;<br>...<br></code></pre></td></tr></table></figure>
+
+<h2 id="perform-dry-run"><a href="#perform-dry-run" class="headerlink" title="perform_dry_run"></a>perform_dry_run</h2><p>接下来调用<code>perform_dry_run(use_argv)</code>，这是一个十分核心的函数，函数注释: <strong>Perform dry run of all test cases to confirm that the app is working as expected. This is done only for the initial inputs, and only once.</strong> 大致含义为：试运行所有初始的测试用例以确保应用可以正确运行，且仅执行一次。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">queue_entry</span>* <span class="hljs-title">q</span> =</span> <span class="hljs-built_in">queue</span>;<br>u32 cal_failures = <span class="hljs-number">0</span>;<br>u8* skip_crashes = getenv(<span class="hljs-string">&quot;AFL_SKIP_CRASHES&quot;</span>);<br><br><span class="hljs-keyword">while</span> (q) &#123;<br>  ...<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>函数开头首先对输入队列进行遍历，queue相关变量含义如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">static</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">queue_entry</span> *<span class="hljs-title">queue</span>,     /* <span class="hljs-title">Fuzzing</span> <span class="hljs-title">queue</span> (<span class="hljs-title">linked</span> <span class="hljs-title">list</span>)      */</span><br><span class="hljs-class">                          *<span class="hljs-title">queue_cur</span>, /* <span class="hljs-title">Current</span> <span class="hljs-title">offset</span> <span class="hljs-title">within</span> <span class="hljs-title">the</span> <span class="hljs-title">queue</span>  */</span><br><span class="hljs-class">                          *<span class="hljs-title">queue_top</span>, /* <span class="hljs-title">Top</span> <span class="hljs-title">of</span> <span class="hljs-title">the</span> <span class="hljs-title">list</span>                  */</span><br><span class="hljs-class">                          *<span class="hljs-title">q_prev100</span>;</span> <span class="hljs-comment">/* Previous 100 marker              */</span><br></code></pre></td></tr></table></figure>
+
+<p>在<code>while(q)</code>部分中，首先根据路径，打开输入文件并传入变量<code>use_mem</code>，接着调用函数进行检测</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">while</span>(q)&#123;<br>    ...<br>    <span class="hljs-comment">/*</span><br><span class="hljs-comment">    *		读取样本数据，传入use_mem</span><br><span class="hljs-comment">    */</span><br>    u8* fn = <span class="hljs-built_in">strrchr</span>(q-&gt;fname, <span class="hljs-string">&#x27;/&#x27;</span>) + <span class="hljs-number">1</span>;<br><br>    ACTF(<span class="hljs-string">&quot;Attempting dry run with &#x27;%s&#x27;...&quot;</span>, fn);<br><br>    fd = open(q-&gt;fname, O_RDONLY);<br>    <span class="hljs-keyword">if</span> (fd &lt; <span class="hljs-number">0</span>) PFATAL(<span class="hljs-string">&quot;Unable to open &#x27;%s&#x27;&quot;</span>, q-&gt;fname);<br><br>    use_mem = ck_alloc_nozero(q-&gt;len);<br><br>    <span class="hljs-keyword">if</span> (read(fd, use_mem, q-&gt;len) != q-&gt;len)<br>      FATAL(<span class="hljs-string">&quot;Short read from &#x27;%s&#x27;&quot;</span>, q-&gt;fname);<br><br>    close(fd);<br>    <span class="hljs-comment">/*</span><br><span class="hljs-comment">    *		调用calibrate_case校准测试用例</span><br><span class="hljs-comment">    */</span><br>    res = calibrate_case(argv, q, use_mem, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>);	<span class="hljs-comment">/* Calibrate a new test case. This is done when processing the input directory</span><br><span class="hljs-comment">													   to warn about flaky or otherwise problematic test cases early on; and when</span><br><span class="hljs-comment">													   new paths are discovered to detect variable behavior and so on. */</span><br>    ck_free(use_mem);<br>    <br>    ...<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>接下来我们关注一下<code>calibrate_case</code>函数的流程：</p>
+<ol>
+<li>初始化设置，user_tmout、stage_name、stage_max</li>
+<li>判断 forkserver 状态，若未启动，则调用 <code>init_forkserver()</code>初始化</li>
+<li>进入循环，对用例进行测试，循环为一下步骤<ul>
+<li>调用<code>write_to_testcase()</code>，将输入写入测试文件</li>
+<li>调用<code>runtarget()</code>，fuzz目标程序并监控</li>
+<li>检测是否出现crash或新路径，并更新位图，记录测试相关状态</li>
+<li>当存在新tuple，调用<code>update_bitmap_score()</code>，来确定”more favorable path”</li>
+<li>若不存在，则反馈给父进程</li>
+</ul>
+</li>
+</ol>
+<p>简化后的函数源码如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">static</span> u8 <span class="hljs-title function_">calibrate_case</span><span class="hljs-params">(<span class="hljs-type">char</span>** argv, <span class="hljs-keyword">struct</span> queue_entry* q, u8* use_mem,</span><br><span class="hljs-params">                         u32 handicap, u8 from_queue)</span> &#123;<br>  ...<br>  <span class="hljs-comment">/*</span><br><span class="hljs-comment">  *		初始化</span><br><span class="hljs-comment">  */</span><br>  <span class="hljs-keyword">if</span> (!from_queue || resuming_fuzz)<br>    use_tmout = MAX(exec_tmout + CAL_TMOUT_ADD,<br>                    exec_tmout * CAL_TMOUT_PERC / <span class="hljs-number">100</span>);<br>  ...<br>  stage_name = <span class="hljs-string">&quot;calibration&quot;</span>;<br>  stage_max  = fast_cal ? <span class="hljs-number">3</span> : CAL_CYCLES;<br>  <span class="hljs-comment">/*</span><br><span class="hljs-comment">  *		forkserver</span><br><span class="hljs-comment">  */</span><br>  <span class="hljs-keyword">if</span> (dumb_mode != <span class="hljs-number">1</span> &amp;&amp; !no_forkserver &amp;&amp; !forksrv_pid)<br>    init_forkserver(argv);<br>  ...<br>  <span class="hljs-comment">/*</span><br><span class="hljs-comment">  *		loop</span><br><span class="hljs-comment">  */</span><br>  <span class="hljs-keyword">for</span> (stage_cur = <span class="hljs-number">0</span>; stage_cur &lt; stage_max; stage_cur++) &#123;<br>    ...<br>    write_to_testcase(use_mem, q-&gt;len);<br>    fault = run_target(argv, use_tmout);<br>	<span class="hljs-comment">/*</span><br><span class="hljs-comment">	*		判断是否存在新路径</span><br><span class="hljs-comment">	*/</span><br>    <span class="hljs-keyword">if</span> (stop_soon || fault != crash_mode) <span class="hljs-keyword">goto</span> abort_calibration;<br>    <span class="hljs-keyword">if</span> (!dumb_mode &amp;&amp; !stage_cur &amp;&amp; !count_bytes(trace_bits)) &#123;<br>      fault = FAULT_NOINST;<br>      <span class="hljs-keyword">goto</span> abort_calibration;<br>    &#125;<br>    cksum = hash32(trace_bits, MAP_SIZE, HASH_CONST);<br>	<span class="hljs-comment">/*</span><br><span class="hljs-comment">	*	存在新路径</span><br><span class="hljs-comment">	*/</span><br>    <span class="hljs-keyword">if</span> (q-&gt;exec_cksum != cksum) &#123;<br>	  <span class="hljs-comment">/*</span><br><span class="hljs-comment">	  *		更新位图</span><br><span class="hljs-comment">	  */</span><br>      hnb = has_new_bits(virgin_bits);<br>      <span class="hljs-keyword">if</span> (hnb &gt; new_bits) new_bits = hnb;<br>	  ...<br>  &#125;<br>  ...<br>  <span class="hljs-comment">/*</span><br><span class="hljs-comment">  *		确定more favorable path</span><br><span class="hljs-comment">  */</span><br>  update_bitmap_score(q);<br>  ...<br> <span class="hljs-comment">/*</span><br><span class="hljs-comment"> *		不存在新路径</span><br><span class="hljs-comment"> */</span><br>abort_calibration:<br>  ...<br><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>基本到这里该函数就结束了，剩下的部分都是一些错误信息处理相关内容</p>
+<p><img src="/img/article/fuzzAFL2/image-20230904183850138.png" alt="image-20230904183850138"></p>
+<h2 id="fuzzer与forkserver通信"><a href="#fuzzer与forkserver通信" class="headerlink" title="fuzzer与forkserver通信"></a>fuzzer与forkserver通信</h2><p>在这里我们停顿一下，梳理下fuzzer与forkserver通信的大致流程。首先我们要知道，实际用于fuzz的子进程并不有fuzzer fork得到，而是由fuzzer 启动的forkserver进行fork得到，如图所示</p>
+<p><img src="/img/article/fuzzAFL2/1632794033_615275b15953b258b38cd.png" alt="1632794033_615275b15953b258b38cd"></p>
+<p>两者之间通信我们可以由下图观之</p>
+<p><img src="/img/article/fuzzAFL2/1632794034_615275b20ecc5e3dc8f7d.png" alt="1632794034_615275b20ecc5e3dc8f7d"></p>
+<blockquote>
+<p> 其中<code>__afl_maybe_log()</code>在源码分析part1中可以看到，其实就是插桩代码的核心函数</p>
+</blockquote>
+<p>首先，<code>afl-fuzz</code>会创建两个管道：状态管道和控制管道，然后执行目标程序。此时的目标程序的<code>main()</code>函数已经被插桩，程序控制流进入<code>__afl_maybe_log</code>中。如果fuzz是第一次执行，则此时的程序就成了fork server们之后的目标程序都由该fork server通过fork生成子进程来运行。fuzz进行过程中，fork server会一直执行fork操作，并将子进程的结束状态通过状态管道传递给<code>afl-fuzz</code>。</p>
+<h2 id="cull-queue"><a href="#cull-queue" class="headerlink" title="cull_queue"></a>cull_queue</h2><p>回到主函数，接下来即将进入主循环。再次之前会调用<code>cull_queue()</code>函数，对队列进行精简。主要是通过遍历<code>top_rated[]</code>条目，然后标记<strong>favored</strong>条目</p>
+<p>这里的处理流程可以举个例子理解，现假设有如下tuple和seed信息：</p>
+<ul>
+<li><strong>tuple</strong>: t0, t1, t2, t3, t4</li>
+<li><strong>seed</strong>: s0, s1, s2</li>
+<li>初始化<code>temp_v = [1,1,1,1,1]</code></li>
+<li>s1可覆盖t2, t3，s2覆盖t0, t1, t4，并且top_rated[0] &#x3D; s2，top_rated[2]&#x3D;s1</li>
+</ul>
+<p>将按照如下过程进行筛选和判断：</p>
+<ol>
+<li>首先判断 temp_v[0]&#x3D;1，说明t0没有被覆盖；</li>
+<li>top_rated[0] 存在 (s2) -&gt; 判断s2可以覆盖的范围 -&gt;<code>trace_mini = [1,1,0,0,1]</code>；</li>
+<li>更新<code>temp_v=[0,0,1,1,0]</code>， 标记s2为 “favored”；</li>
+<li>继续判断 temp_v[1]&#x3D;0，说明t1此时已经被覆盖，跳过；</li>
+<li>继续判断 temp_v[2]&#x3D;1，说明t2没有被覆盖；</li>
+<li>top_rated[2] 存在 (s1) -&gt; 判断s1可以覆盖的范围 -&gt;<code>trace_mini=[0,0,1,1,0]</code>；</li>
+<li>更新<code>temp_v=[0,0,0,0,0]</code>，标记s1为 “favored”；</li>
+<li>此时所有tuple都被覆盖，具备”favored’标记的为s1, s2，过程结束。</li>
+</ol>
+<h2 id="主循环"><a href="#主循环" class="headerlink" title="主循环"></a>主循环</h2><p>接下来便要进入主循环，简化版代码如下</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">while</span> (<span class="hljs-number">1</span>) &#123;<br><br>    u8 skipped_fuzz;<br><br>    cull_queue();<span class="hljs-comment">//favored</span><br><br>    <span class="hljs-keyword">if</span> (!queue_cur) &#123;<br>      <span class="hljs-comment">/*</span><br><span class="hljs-comment">      *		队列为空，代表已经完成一轮，此处剩余部分为一些参数处理</span><br><span class="hljs-comment">      */</span><br>      ...<br><br>    &#125;<br><br>    skipped_fuzz = fuzz_one(use_argv);<span class="hljs-comment">//核心fuzz case代码</span><br>   ...<br><br>  &#125;<br></code></pre></td></tr></table></figure>
+
+<p>可以看到主要流程便是<code>cull_queue()</code>–&gt;<code>fuzz_one()</code>，不断循环往复。由于<code>fuzz_one</code>的代码量过长，这里只做功能和流程分析：</p>
+<ol>
+<li>根据是否有<code>pending_favored</code>和<code>queue_cur</code>的情况，按照概率进行跳过；有<code>pending_favored</code>, 对于已经fuzz过的或者non-favored的有99%的概率跳过；无pending_favored，95%跳过fuzzed&amp;non-favored，75%跳过not fuzzed&amp;non-favored，不跳过favored；</li>
+<li>假如当前项有校准错误，并且校准错误次数小于3次，那么就用calibrate_case进行测试；</li>
+<li>如果测试用例没有修剪过，那么调用函数trim_case对测试用例进行修剪；</li>
+<li>修剪完毕之后，使用calculate_score对每个测试用例进行打分；</li>
+<li>如果该queue已经完成deterministic阶段，则直接跳到havoc阶段；</li>
+<li>deterministic阶段变异4个stage，变异过程中会多次调用函数common_fuzz_stuff函数，保存interesting 的种子：<ul>
+<li>bitflip，按位翻转，1变为0，0变为1</li>
+<li>arithmetic，整数加&#x2F;减算术运算</li>
+<li>interest，把一些特殊内容替换到原文件中</li>
+<li>dictionary，把自动生成或用户提供的token替换&#x2F;插入到原文件中</li>
+<li>havoc，中文意思是“大破坏”，此阶段会对原文件进行大量变异。</li>
+<li>splice，中文意思是“绞接”，此阶段会将两个文件拼接起来得到一个新的文件。</li>
+</ul>
+</li>
+<li>该轮完成。</li>
+</ol>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>基本AFL流程由两篇文章叙述，由于时间问题，不能将每个文件与函数分析透彻。比如像样本变异策略这样的核心内容并无介绍，但也希望对大家的AFL学习理解有所帮助。</p>
+<p>文章如有纰漏，请在评论区指出，我会及时修改。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>【fuzz】AFL源码分析 part 2</div>
+      <div>http://loora1n.github.io/2023/09/04/【fuzz】AFL源码分析 part 2/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Loora1N</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年9月4日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/09/01/%E3%80%90Kernel%E3%80%91%E4%B8%80%E4%BA%9B%E5%85%B3%E9%94%AE%E7%BB%93%E6%9E%84%E4%BD%93%E8%AE%B0%E5%BD%95/" title="【Kernel】一些trick记录（持续更新）">
+                        <span class="hidden-mobile">【Kernel】一些trick记录（持续更新）</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments">
+    
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#comments', function() {
+      var light = 'github-light';
+      var dark = 'github-dark';
+      var schema = document.documentElement.getAttribute('data-user-color-scheme');
+      if (schema === 'dark') {
+        schema = dark;
+      } else {
+        schema = light;
+      }
+      window.UtterancesThemeLight = light;
+      window.UtterancesThemeDark = dark;
+      var s = document.createElement('script');
+      s.setAttribute('src', 'https://utteranc.es/client.js');
+      s.setAttribute('repo', 'loora1n/comment');
+      s.setAttribute('issue-term', 'pathname');
+      
+      s.setAttribute('label', 'utterances');
+      
+      s.setAttribute('theme', schema);
+      s.setAttribute('crossorigin', 'anonymous');
+      document.getElementById('comments').appendChild(s);
+    })
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://github.com/Loora1N" target="_blank" rel="nofollow noopener"><span>Loora1N</span></a> <i class="iconfont icon-love"></i> <a href="https://space.bilibili.com/33242548?spm_id_from=333.1007.0.0" target="_blank" rel="nofollow noopener"><span>鷺雨君</span></a>
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+  <span id="timeDate">载入天数...</span>
+  <span id="times">载入时分秒...</span>
+  <script>
+  var now = new Date();
+  function createtime(){
+      var grt= new Date("06/03/2022 00:00:00");//此处修改你的建站时间或者网站上线时间
+      now.setTime(now.getTime()+250);
+      days = (now - grt ) / 1000 / 60 / 60 / 24;
+      dnum = Math.floor(days);
+      hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum);
+      hnum = Math.floor(hours);
+      if(String(hnum).length ==1 ){
+          hnum = "0" + hnum;
+      }
+      minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+      mnum = Math.floor(minutes);
+      if(String(mnum).length ==1 ){
+                mnum = "0" + mnum;
+      }
+      seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+      snum = Math.round(seconds);
+      if(String(snum).length ==1 ){
+                snum = "0" + snum;
+      }
+      document.getElementById("timeDate").innerHTML = "🚀running🚀 for&nbsp"+dnum+"&nbspdays";  //此次自定义显示内容
+      document.getElementById("times").innerHTML = hnum + "&nbsphr&nbsp" + mnum + "&nbspmin&nbsp" + snum + "&nbspsec";
+  }  //此次自定义显示内容
+  setInterval("createtime()",250);
+  </script>   
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+  
+<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/xiantiao.js"></script>
+<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/love.js"></script>
+<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/caidai.js"></script>
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<!-- hexo injector body_end start -->
+  <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
+  <script data-pjax>
+        function GithubCalendarConfig(){
+            var git_githubapiurl ="https://python-github-calendar-api.vercel.app/api?Loora1N";
+            var git_color =['#ebedf0', '#fdcdec', '#fc9bd9', '#fa6ac5', '#f838b2', '#f5089f', '#c4067e', '#92055e', '#540336', '#48022f', '#30021f'];
+            var git_user ="Loora1N";
+            var parent_div_git = document.getElementById('recent-posts');
+            var git_div_html = '<div class="recent-post-item" style="width:100%;height:auto;padding:10px;"><div id="github_loading" style="width:10%;height:100%;margin:0 auto;display: block"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"  viewBox="0 0 50 50" style="enable-background:new 0 0 50 50" xml:space="preserve"><path fill="#d0d0d0" d="M25.251,6.461c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615V6.461z" transform="rotate(275.098 25 25)"><animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="0.6s" repeatCount="indefinite"></animateTransform></path></svg></div><div id="github_container"></div></div>';
+            if(parent_div_git && location.pathname =='/about/'){
+                console.log('已挂载github calendar')
+                // parent_div_git.innerHTML=git_div_html+parent_div_git.innerHTML // 无报错，但不影响使用(支持pjax跳转)
+                parent_div_git.insertAdjacentHTML("afterbegin",git_div_html) // 有报错，但不影响使用(支持pjax跳转)
+            };
+            GithubCalendar(git_githubapiurl,git_color,git_user)
+        }
+        if(document.getElementById('recent-posts')){
+            GithubCalendarConfig()
+        }
+    </script>
+    <style>#github_container{min-height:280px}@media screen and (max-width:650px) {#github_container{background-image:;min-height:0px}}</style>
+    <style></style><!-- hexo injector body_end end --></body>
+</html>
