@@ -1,85 +1,294 @@
-<!DOCTYPE HTML>
-<html>
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" >
+
+<!--浏览器搞笑标题-->
+<script type="text/javascript" src="/js/FunnyTitle.js"></script>
+
+
+
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/icon/duck.png">
+  <link rel="icon" href="/img/icon/duck.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
   
-  <title>网络协议栈CH1-CH3 | 鷺雨のBlog</title>
-
-  
+  <meta name="theme-color" content="#f58f98">
   <meta name="author" content="Loora1N">
-  
-
-  
-  <meta name="description" content="Blog of Loora1N">
-  
-
-  
-  
   <meta name="keywords" content="">
   
+    <meta name="description" content="参考教材《TCP&#x2F;IP详解 卷2：实现》，文内示意图大多取自该教材。本文为复习时自行总结，难免存在不全或者错误，求求大伙轻喷。如有问题可以留言在文末评论区，或者直接私聊，我会及时更改文章内容。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="网络协议栈CH1-CH3">
+<meta property="og:url" content="http://loora1n.github.io/2023/04/24/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88%E5%A4%8D%E4%B9%A0/index.html">
+<meta property="og:site_name" content="鷺雨のBlog">
+<meta property="og:description" content="参考教材《TCP&#x2F;IP详解 卷2：实现》，文内示意图大多取自该教材。本文为复习时自行总结，难免存在不全或者错误，求求大伙轻喷。如有问题可以留言在文末评论区，或者直接私聊，我会及时更改文章内容。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://loora1n.github.io/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88%E5%A4%8D%E4%B9%A0.assets/image-20230424174856553.png">
+<meta property="article:published_time" content="2023-04-24T14:34:57.572Z">
+<meta property="article:modified_time" content="2023-04-24T14:34:57.572Z">
+<meta property="article:author" content="Loora1N">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://loora1n.github.io/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88%E5%A4%8D%E4%B9%A0.assets/image-20230424174856553.png">
+  
+  
+  
+  <title>网络协议栈CH1-CH3 - 鷺雨のBlog</title>
 
-  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
-  <meta property="og:title" content="网络协议栈CH1-CH3"/>
 
-  <meta property="og:site_name" content="鷺雨のBlog"/>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+
+
 
   
-  <meta property="og:image" content="/favicon.ico"/>
+<link rel="stylesheet" href="/css/fluid-extention.css">
+<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/bynotes/texiao/source/css/gundongtiao.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"loora1n.github.io","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"lftEbNU4XPuR5dgHNV3WdWxP-gzGzoHsz","app_key":"b3uLUVGLeOWDwREWHMBr0jo9","server_url":"https://lftebnu4.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
   
 
-  <link href="/favicon.ico" rel="icon">
-  <link rel="alternate" href="/atom.xml" title="鷺雨のBlog" type="application/atom+xml">
-  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
 <meta name="generator" content="Hexo 6.2.0"></head>
 
 
 <body>
-<div class="blog">
-  <div class="content">
+  
 
-    <header>
-  <div class="site-branding">
-    <h1 class="site-title">
-      <a href="/">鷺雨のBlog</a>
-    </h1>
-    <p class="site-description"></p>
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>鷺雨のBlog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+      </ul>
+    </div>
   </div>
-  <nav class="site-navigation">
-    <ul>
-      
-    </ul>
-  </nav>
-</header>
-
-    <main class="site-main posts-loop">
-    <article>
+</nav>
 
   
-    
-    <h3 class="article-title"><span>网络协议栈CH1-CH3</span></h3>
-    
-  
 
-  <div class="article-top-meta">
-    <span class="posted-on">
-      <a target="_blank" href="//2023/04/24/网络协议栈复习/" rel="bookmark noopener">
-        <time class="entry-date published" datetime="2023-04-24T14:34:57.572Z">
-          2023-04-24
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/bg/3.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="网络协议栈CH1-CH3"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-04-24 22:34" pubdate>
+          2023年4月24日 晚上
         </time>
-      </a>
-    </span>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          8.4k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          71 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          阅读量 <span id="leancloud-page-views"></span>
+        </span>
+        
+      
+    
   </div>
 
 
-  
+        
+      </div>
 
-  <div class="article-content">
-    <div class="entry">
       
-        <blockquote>
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">网络协议栈CH1-CH3</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
 <p>参考教材《TCP&#x2F;IP详解 卷2：实现》，文内示意图大多取自该教材。本文为复习时自行总结，难免存在不全或者错误，求求大伙轻喷。如有问题可以留言在文末评论区，或者直接私聊，我会及时更改文章内容。</p>
 </blockquote>
 <h2 id="第一章-概述"><a href="#第一章-概述" class="headerlink" title="第一章 概述"></a>第一章 概述</h2><h3 id="基本框架"><a href="#基本框架" class="headerlink" title="基本框架"></a>基本框架</h3><h4 id="网络输入输出层间框架"><a href="#网络输入输出层间框架" class="headerlink" title="网络输入输出层间框架"></a>网络输入输出层间框架</h4><p>基本框架如下图所示，我们会在后面详细讨论输入输出</p>
@@ -87,7 +296,7 @@
 <h4 id="UDP示例socket程序框架"><a href="#UDP示例socket程序框架" class="headerlink" title="UDP示例socket程序框架"></a>UDP示例socket程序框架</h4><blockquote>
 <p>这段C代码也充当后续我们分析输入输出时的例子</p>
 </blockquote>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">* Send a UDP datagram to the daytime server on some other host,</span></span><br><span class="line"><span class="comment">* read the reply. and print the time and date on the server .</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span>    <span class="string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span>    <span class="string">&lt;sys/socket.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span>    <span class="string">&lt;netinet/in.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span>    <span class="string">&lt;arpa/inet.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span>    <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span>    <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span>    <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> BUFFSIZE    150     <span class="comment">/* arbitrary size */</span></span></span><br><span class="line"><span class="type">int</span></span><br><span class="line"><span class="title function_">main</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_in</span> <span class="title">serv</span>;</span></span><br><span class="line">    <span class="type">char</span> buff [BUFFSIZE] ;</span><br><span class="line">    <span class="type">int</span> sockfd, n;</span><br><span class="line">    <span class="keyword">if</span> ((sockfd = socket(PF_INET, SOCK_DGRAM,<span class="number">0</span>)) &lt; <span class="number">0</span>)</span><br><span class="line">        err_sys (<span class="string">&quot; socket error&quot;</span>) ;</span><br><span class="line">    </span><br><span class="line">    bzero((<span class="type">char</span> *) &amp;serv, <span class="keyword">sizeof</span> (serv));</span><br><span class="line">    </span><br><span class="line">    serv.sin_family = AF_INET;</span><br><span class="line">    serv.sin_addr.s_addr = inet_addr(<span class="string">&quot;140.252.1.32&quot;</span>);</span><br><span class="line">    serv.sin_port = htons(<span class="number">13</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (sendto (sockfd, buff, BUFFSIZE,<span class="number">0</span>,</span><br><span class="line">        (<span class="keyword">struct</span> sockaddr *) &amp;serv, <span class="keyword">sizeof</span>(serv)) != BUFFSIZE)</span><br><span class="line">    err_sys (<span class="string">&quot;sendto error&quot;</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> ((n = recvfrom(sockfd, buff, BUFFSIZE, <span class="number">0</span>,</span><br><span class="line">        (<span class="keyword">struct</span> sockaddr *) <span class="literal">NULL</span>, (<span class="type">int</span> *) <span class="literal">NULL</span>))&lt; <span class="number">2</span>)</span><br><span class="line">    err_sys(<span class="string">&quot;recvfrom error&quot;</span>);</span><br><span class="line">    buff[n - <span class="number">2</span>] = <span class="number">0</span>;        <span class="comment">/* null terminate */</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;&amp;s\n&quot;</span>, buff);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">/*</span><br><span class="hljs-comment">* Send a UDP datagram to the daytime server on some other host,</span><br><span class="hljs-comment">* read the reply. and print the time and date on the server .</span><br><span class="hljs-comment">*/</span><br><br><span class="hljs-meta">#<span class="hljs-keyword">include</span>    <span class="hljs-string">&lt;sys/types.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span>    <span class="hljs-string">&lt;sys/socket.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span>    <span class="hljs-string">&lt;netinet/in.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span>    <span class="hljs-string">&lt;arpa/inet.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span>    <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span>    <span class="hljs-string">&lt;stdlib.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span>    <span class="hljs-string">&lt;string.h&gt;</span></span><br><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> BUFFSIZE    150     <span class="hljs-comment">/* arbitrary size */</span></span><br><span class="hljs-type">int</span><br><span class="hljs-title function_">main</span><span class="hljs-params">()</span><br>&#123;<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sockaddr_in</span> <span class="hljs-title">serv</span>;</span><br>    <span class="hljs-type">char</span> buff [BUFFSIZE] ;<br>    <span class="hljs-type">int</span> sockfd, n;<br>    <span class="hljs-keyword">if</span> ((sockfd = socket(PF_INET, SOCK_DGRAM,<span class="hljs-number">0</span>)) &lt; <span class="hljs-number">0</span>)<br>        err_sys (<span class="hljs-string">&quot; socket error&quot;</span>) ;<br>    <br>    bzero((<span class="hljs-type">char</span> *) &amp;serv, <span class="hljs-keyword">sizeof</span> (serv));<br>    <br>    serv.sin_family = AF_INET;<br>    serv.sin_addr.s_addr = inet_addr(<span class="hljs-string">&quot;140.252.1.32&quot;</span>);<br>    serv.sin_port = htons(<span class="hljs-number">13</span>);<br><br>    <span class="hljs-keyword">if</span> (sendto (sockfd, buff, BUFFSIZE,<span class="hljs-number">0</span>,<br>        (<span class="hljs-keyword">struct</span> sockaddr *) &amp;serv, <span class="hljs-keyword">sizeof</span>(serv)) != BUFFSIZE)<br>    err_sys (<span class="hljs-string">&quot;sendto error&quot;</span>);<br>    <br>    <span class="hljs-keyword">if</span> ((n = recvfrom(sockfd, buff, BUFFSIZE, <span class="hljs-number">0</span>,<br>        (<span class="hljs-keyword">struct</span> sockaddr *) <span class="hljs-literal">NULL</span>, (<span class="hljs-type">int</span> *) <span class="hljs-literal">NULL</span>))&lt; <span class="hljs-number">2</span>)<br>    err_sys(<span class="hljs-string">&quot;recvfrom error&quot;</span>);<br>    buff[n - <span class="hljs-number">2</span>] = <span class="hljs-number">0</span>;        <span class="hljs-comment">/* null terminate */</span><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;&amp;s\n&quot;</span>, buff);<br><br>    <span class="hljs-built_in">exit</span>(<span class="hljs-number">0</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
 
 <h3 id="输出流程"><a href="#输出流程" class="headerlink" title="输出流程"></a>输出流程</h3><p>下面考虑插口层调用<code>sendto()</code>函数时发生的流程</p>
 <h4 id="mbuf结构"><a href="#mbuf结构" class="headerlink" title="mbuf结构"></a>mbuf结构</h4><p><img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88%E5%A4%8D%E4%B9%A0.assets/image-20230424135820569.png" alt="用两个mbuf来存储150字节的数据"></p>
@@ -188,7 +397,7 @@
 <li><code>m_ext.ext_free</code>，在Net&#x2F;3中不使用</li>
 <li><code>m_ext.ext_size</code>，额外空间的大小，一般为1024或2048，本书以2048为主mub</li>
 </ul>
-<h3 id="简单的mbuf宏和函数"><a href="#简单的mbuf宏和函数" class="headerlink" title="简单的mbuf宏和函数"></a>简单的mbuf宏和函数</h3><h4 id="MGET宏"><a href="#MGET宏" class="headerlink" title="MGET宏"></a>MGET宏</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> MGET(m, how, type) &#123; \</span></span><br><span class="line"><span class="meta">	MALLOC((m), struct mbuf *, MSIZE, mbtypes [type], (how)); \</span></span><br><span class="line"><span class="meta">	<span class="keyword">if</span>(m)&#123;\</span></span><br><span class="line"><span class="meta">		(m)-&gt;m_type = (type); \</span></span><br><span class="line"><span class="meta">		MBUFLOCK (mbstat.m_mtypes [type]++;) \</span></span><br><span class="line"><span class="meta">		(n)-&gt;m_next = (struct mbuf * )NULL; \</span></span><br><span class="line"><span class="meta">		(m)-&gt;m_nextpkt = (struct mbuf *)NULL; \</span></span><br><span class="line"><span class="meta">		(m) -&gt;m_data = (m)-&gt;m_dat; \</span></span><br><span class="line"><span class="meta">		(m)-&gt;m_flags = 0; \</span></span><br><span class="line"><span class="meta">	&#125; <span class="keyword">else</span> \</span></span><br><span class="line"><span class="meta">		(m) = m_retry((how)，(type)); \</span></span><br></pre></td></tr></table></figure>
+<h3 id="简单的mbuf宏和函数"><a href="#简单的mbuf宏和函数" class="headerlink" title="简单的mbuf宏和函数"></a>简单的mbuf宏和函数</h3><h4 id="MGET宏"><a href="#MGET宏" class="headerlink" title="MGET宏"></a>MGET宏</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">define</span> MGET(m, how, type) &#123; \</span><br><span class="hljs-meta">	MALLOC((m), struct mbuf *, MSIZE, mbtypes [type], (how)); \</span><br><span class="hljs-meta">	<span class="hljs-keyword">if</span>(m)&#123;\</span><br><span class="hljs-meta">		(m)-&gt;m_type = (type); \</span><br><span class="hljs-meta">		MBUFLOCK (mbstat.m_mtypes [type]++;) \</span><br><span class="hljs-meta">		(n)-&gt;m_next = (struct mbuf * )NULL; \</span><br><span class="hljs-meta">		(m)-&gt;m_nextpkt = (struct mbuf *)NULL; \</span><br><span class="hljs-meta">		(m) -&gt;m_data = (m)-&gt;m_dat; \</span><br><span class="hljs-meta">		(m)-&gt;m_flags = 0; \</span><br><span class="hljs-meta">	&#125; <span class="hljs-keyword">else</span> \</span><br><span class="hljs-meta">		(m) = m_retry((how)，(type)); \</span><br></code></pre></td></tr></table></figure>
 
 <p> 这里就不做源码上详细解释，自己看应该能懂。只稍微说几个点：</p>
 <ul>
@@ -199,17 +408,17 @@
 <blockquote>
 <p>mbstat 是一个用来管理mbuf的全局变量，前面我并没有提到。是因为我觉得这个东西可能不是那么重要，没详细去看😀</p>
 </blockquote>
-<h4 id="m-get函数"><a href="#m-get函数" class="headerlink" title="m_get函数"></a>m_get函数</h4> <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> mbuf* <span class="title function_">m_get</span><span class="params">(nowait, type)</span></span><br><span class="line"><span class="type">int</span> 	nowait, type;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">mbuf</span> *<span class="title">m</span>;</span></span><br><span class="line">    </span><br><span class="line">    MGET(m, nowait, type);</span><br><span class="line">    retrun (m);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="m-get函数"><a href="#m-get函数" class="headerlink" title="m_get函数"></a>m_get函数</h4> <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">struct</span> mbuf* <span class="hljs-title function_">m_get</span><span class="hljs-params">(nowait, type)</span><br><span class="hljs-type">int</span> 	nowait, type;<br>&#123;<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">mbuf</span> *<span class="hljs-title">m</span>;</span><br>    <br>    MGET(m, nowait, type);<br>    retrun (m);<br>&#125;<br></code></pre></td></tr></table></figure>
 
 <p>没什么东西，就是MGET宏套了个函数外套。nowait的值为M_WAIT或M_DONTWAIT，取决于在存储器不可用时是否等待。</p>
-<h4 id="m-retry函数"><a href="#m-retry函数" class="headerlink" title="m_retry函数"></a>m_retry函数</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> mbuf* <span class="title function_">m_retry</span><span class="params">(i, t)</span></span><br><span class="line"><span class="type">int</span> 	i, t;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">mbuf</span> *<span class="title">m</span>;</span></span><br><span class="line">    </span><br><span class="line">    m_relaim();</span><br><span class="line"><span class="meta">#<span class="keyword">define</span> m_retry(i,t)	(struct mbuf *)0</span></span><br><span class="line">    MGET(m, nowait, type);</span><br><span class="line"><span class="meta">#<span class="keyword">undef</span> m_retry</span></span><br><span class="line">    retrun (m);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="m-retry函数"><a href="#m-retry函数" class="headerlink" title="m_retry函数"></a>m_retry函数</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">struct</span> mbuf* <span class="hljs-title function_">m_retry</span><span class="hljs-params">(i, t)</span><br><span class="hljs-type">int</span> 	i, t;<br>&#123;<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">mbuf</span> *<span class="hljs-title">m</span>;</span><br>    <br>    m_relaim();<br><span class="hljs-meta">#<span class="hljs-keyword">define</span> m_retry(i,t)	(struct mbuf *)0</span><br>    MGET(m, nowait, type);<br><span class="hljs-meta">#<span class="hljs-keyword">undef</span> m_retry</span><br>    retrun (m);<br>&#125;<br></code></pre></td></tr></table></figure>
 
 <p>这是MGET宏的else分支执行的函数，通过<code>m_relaim()</code>试图腾出一部分空间，然后再次尝试MGET</p>
 <h4 id="m-devget函数"><a href="#m-devget函数" class="headerlink" title="m_devget函数"></a>m_devget函数</h4><p>当接收到以太网帧时，设备驱动程序调用函数<code>m_devget()</code>创建mbuf来接受数据，根据数据长度不同，会形成四种类型的mbuf链表,如下面所示：</p>
 <p><img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88%E5%A4%8D%E4%B9%A0.assets/image-20230424194426443.png" alt="image-20230424194426443"></p>
 <p><img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88%E5%A4%8D%E4%B9%A0.assets/image-20230424194444638.png" alt="image-20230424194444638"></p>
 <p><img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88%E5%A4%8D%E4%B9%A0.assets/image-20230424194434240.png" alt="image-20230424194434240"></p>
-<h4 id="mtod和dtom宏"><a href="#mtod和dtom宏" class="headerlink" title="mtod和dtom宏"></a>mtod和dtom宏</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span>	mtod(m, t)	((t) ((m)-&gt;m_data) )</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>	dtom(x)	((struct mbuf *) ((int) (x) &amp; ~ (MSIZE-1)))</span></span><br></pre></td></tr></table></figure>
+<h4 id="mtod和dtom宏"><a href="#mtod和dtom宏" class="headerlink" title="mtod和dtom宏"></a>mtod和dtom宏</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">define</span>	mtod(m, t)	((t) ((m)-&gt;m_data) )</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span>	dtom(x)	((struct mbuf *) ((int) (x) &amp; ~ (MSIZE-1)))</span><br></code></pre></td></tr></table></figure>
 
 <p><code>mtod()</code>宏可以直接理解成<strong>mbuf to data</strong>，即返回mbuf中的m_data指针，不过额外做了类型转换</p>
 <p> <code>dtom()</code>可以理解为<strong>data to mbuf</strong>，即通过data指针返回指向mbuf的指针</p>
@@ -246,7 +455,7 @@
 <p>簇引用计数用来表示一个簇同时被几个mbuf指向。每当释放一个mbuf，该mbuf所指向的簇的引用计数-1，当且仅当簇的引用计数为0时，簇可以被释放。这是为了防止在共享簇时，上述操作中的释放mbuf可能会导致释放掉共享的簇而导致数据丢失。</p>
 </blockquote>
 <h2 id="第三章-接口层"><a href="#第三章-接口层" class="headerlink" title="第三章 接口层"></a>第三章 接口层</h2><h3 id="ifnet结构"><a href="#ifnet结构" class="headerlink" title="ifnet结构"></a>ifnet结构</h3><p>结构ifnet中包含所有接口的通用信息，每个网络设备拥有独立的ifnet结构。ifnet结构有一个列表，包含这个设备的一个或多个协议地址。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">ifnet</span> &#123;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">ifnet</span> *<span class="title">if_next</span>;</span>		<span class="comment">/* a11 struct ifnets are chained */</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">ifaddr</span> *<span class="title">if_addrlist</span>;</span> <span class="comment">/* linked list of addresses per if */</span></span><br><span class="line">    <span class="type">char</span> *if_name;				<span class="comment">/* name, e.g. &#x27;le&#x27; or &#x27;lo&#x27; */</span></span><br><span class="line">    <span class="type">short</span> if_unit;				<span class="comment">/* sub-unit for lower level driver */</span></span><br><span class="line">    u_short if_index;			<span class="comment">/* numeric abbreviation for this if */</span></span><br><span class="line">    <span class="type">short</span> if_flags ;			<span class="comment">/* Figure 3.7 */</span></span><br><span class="line">    <span class="type">short</span> if_timer ;			<span class="comment">/* time &#x27;ti1 if_watchdog called */</span></span><br><span class="line">    <span class="type">int</span> if_pcount;				<span class="comment">/* number of promiscuous listeners */</span></span><br><span class="line">    <span class="type">caddr_t</span> if_bpf;				<span class="comment">/* packet filter structure */</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">if_</span> _<span class="title">data</span> &#123;</span></span><br><span class="line">        <span class="comment">/* generic interface information */</span></span><br><span class="line">        u_char ifi_type;		<span class="comment">/* Figure 3.9 */</span></span><br><span class="line">        u_char ifi_addr1en;		<span class="comment">/* media address 1ength */</span></span><br><span class="line">        u_char ifi_harlen;		<span class="comment">/* media header length */</span></span><br><span class="line">        u_1ong ifi_mtu;			<span class="comment">/* maximum transmission unit */</span></span><br><span class="line">        u_long ifi_metric ;		<span class="comment">/* lrouting metric (external on1y) */</span></span><br><span class="line">        u_1ong ifi_baudrate;	<span class="comment">/* linespeed */</span></span><br><span class="line">        </span><br><span class="line">        			<span class="comment">/* other ifner members */</span></span><br><span class="line">    <span class="meta">#<span class="keyword">define</span> if_mtu if_data.ifi_mtu</span></span><br><span class="line">    <span class="meta">#<span class="keyword">define</span> if_type if_data.ifi_type</span></span><br><span class="line">    <span class="meta">#<span class="keyword">define</span> if_addrlen if_data.ifi_addrlen</span></span><br><span class="line">    <span class="meta">#<span class="keyword">define</span> if_hdrlen if_data.ifi_hdrlen</span></span><br><span class="line">    <span class="meta">#<span class="keyword">define</span> if_metric if_data.ifi_metric</span></span><br><span class="line">    <span class="meta">#<span class="keyword">define</span> if_baudrate if_data.ifi_baudrate</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">ifnet</span> &#123;</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">ifnet</span> *<span class="hljs-title">if_next</span>;</span>		<span class="hljs-comment">/* a11 struct ifnets are chained */</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">ifaddr</span> *<span class="hljs-title">if_addrlist</span>;</span> <span class="hljs-comment">/* linked list of addresses per if */</span><br>    <span class="hljs-type">char</span> *if_name;				<span class="hljs-comment">/* name, e.g. &#x27;le&#x27; or &#x27;lo&#x27; */</span><br>    <span class="hljs-type">short</span> if_unit;				<span class="hljs-comment">/* sub-unit for lower level driver */</span><br>    u_short if_index;			<span class="hljs-comment">/* numeric abbreviation for this if */</span><br>    <span class="hljs-type">short</span> if_flags ;			<span class="hljs-comment">/* Figure 3.7 */</span><br>    <span class="hljs-type">short</span> if_timer ;			<span class="hljs-comment">/* time &#x27;ti1 if_watchdog called */</span><br>    <span class="hljs-type">int</span> if_pcount;				<span class="hljs-comment">/* number of promiscuous listeners */</span><br>    <span class="hljs-type">caddr_t</span> if_bpf;				<span class="hljs-comment">/* packet filter structure */</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">if_</span> _<span class="hljs-title">data</span> &#123;</span><br>        <span class="hljs-comment">/* generic interface information */</span><br>        u_char ifi_type;		<span class="hljs-comment">/* Figure 3.9 */</span><br>        u_char ifi_addr1en;		<span class="hljs-comment">/* media address 1ength */</span><br>        u_char ifi_harlen;		<span class="hljs-comment">/* media header length */</span><br>        u_1ong ifi_mtu;			<span class="hljs-comment">/* maximum transmission unit */</span><br>        u_long ifi_metric ;		<span class="hljs-comment">/* lrouting metric (external on1y) */</span><br>        u_1ong ifi_baudrate;	<span class="hljs-comment">/* linespeed */</span><br>        <br>        			<span class="hljs-comment">/* other ifner members */</span><br>    <span class="hljs-meta">#<span class="hljs-keyword">define</span> if_mtu if_data.ifi_mtu</span><br>    <span class="hljs-meta">#<span class="hljs-keyword">define</span> if_type if_data.ifi_type</span><br>    <span class="hljs-meta">#<span class="hljs-keyword">define</span> if_addrlen if_data.ifi_addrlen</span><br>    <span class="hljs-meta">#<span class="hljs-keyword">define</span> if_hdrlen if_data.ifi_hdrlen</span><br>    <span class="hljs-meta">#<span class="hljs-keyword">define</span> if_metric if_data.ifi_metric</span><br>    <span class="hljs-meta">#<span class="hljs-keyword">define</span> if_baudrate if_data.ifi_baudrate</span><br></code></pre></td></tr></table></figure>
 
 <blockquote>
 <p>这里每个部分都有注释，就不用我解释了吧😭，困死了要，这些b东西能考什么，哥们也背不下来啊</p>
@@ -262,7 +471,7 @@
 <li>if_pcount和if_bpf，支持BSD分组过滤器</li>
 </ul>
 <h3 id="ifaddr结构"><a href="#ifaddr结构" class="headerlink" title="ifaddr结构"></a>ifaddr结构</h3><p><img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88%E5%A4%8D%E4%B9%A0.assets/image-20230424220517917.png" alt="image-20230424220517917"></p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">ifaddr</span> &#123;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">ifaddr</span> *<span class="title">ifa_next</span>;</span>			<span class="comment">/* next address for interface */</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">ifnet</span> *<span class="title">ifa_ifp</span>;</span>				<span class="comment">/* back-pointer to interface */</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr</span> *<span class="title">ifa_addr</span> ;</span> 		<span class="comment">/* address of interface */</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr</span> *<span class="title">ifa_dstaddr</span> ;</span>		<span class="comment">/* other end of p-to-p link */</span></span><br><span class="line">    <span class="meta">#<span class="keyword">define</span> ifa_broadaddr ifa_dstaddr	<span class="comment">/* broadcast address interface */</span></span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr</span>* <span class="title">ifa_netmask</span>;</span>		<span class="comment">/* used to determine subnet */</span></span><br><span class="line">    <span class="type">void</span> (*ifa_rtrequest) ();			<span class="comment">/* check or clean routes */</span></span><br><span class="line">    u_short ifa_f1ags;					<span class="comment">/*mostly rt_ flags for cloning */</span></span><br><span class="line">    <span class="type">short</span> ifa_refcnt;					<span class="comment">/* references to this structure */</span></span><br><span class="line">    <span class="type">int</span> ifa_metric;						<span class="comment">/* cost for this interface */</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">ifaddr</span> &#123;</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">ifaddr</span> *<span class="hljs-title">ifa_next</span>;</span>			<span class="hljs-comment">/* next address for interface */</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">ifnet</span> *<span class="hljs-title">ifa_ifp</span>;</span>				<span class="hljs-comment">/* back-pointer to interface */</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sockaddr</span> *<span class="hljs-title">ifa_addr</span> ;</span> 		<span class="hljs-comment">/* address of interface */</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sockaddr</span> *<span class="hljs-title">ifa_dstaddr</span> ;</span>		<span class="hljs-comment">/* other end of p-to-p link */</span><br>    <span class="hljs-meta">#<span class="hljs-keyword">define</span> ifa_broadaddr ifa_dstaddr	<span class="hljs-comment">/* broadcast address interface */</span></span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sockaddr</span>* <span class="hljs-title">ifa_netmask</span>;</span>		<span class="hljs-comment">/* used to determine subnet */</span><br>    <span class="hljs-type">void</span> (*ifa_rtrequest) ();			<span class="hljs-comment">/* check or clean routes */</span><br>    u_short ifa_f1ags;					<span class="hljs-comment">/*mostly rt_ flags for cloning */</span><br>    <span class="hljs-type">short</span> ifa_refcnt;					<span class="hljs-comment">/* references to this structure */</span><br>    <span class="hljs-type">int</span> ifa_metric;						<span class="hljs-comment">/* cost for this interface */</span><br>&#125;;<br></code></pre></td></tr></table></figure>
 
 <blockquote>
 <p>感觉这两个结构只要搞懂图就差不多了吧😭</p>
@@ -277,23 +486,162 @@
 <p><img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88%E5%A4%8D%E4%B9%A0.assets/image-20230424222838348.png" alt="image-20230424222838348"></p>
 <p><code>if_attach</code>被调用了三次: 以一个<code>le_softc</code>结构为参数从<code>leattach</code>调用，以一个<code>sl_softc</code>结构为数从<code>slattach</code>调用，以一个通用<code>ifnet</code>结构为参数从<code>loopattach</code>调用。每次调用时，它向ifnet列表中添加一个的<code>ifnet</code>结构，为这个接口创建一个链路层<code>ifaddr</code>结构(包含两个<code>sockaddr_dl</code>结构)，并且初始化<code>ifnet_addrs</code>数组中的一项。</p>
 
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>网络协议栈CH1-CH3</div>
+      <div>http://loora1n.github.io/2023/04/24/网络协议栈复习/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Loora1N</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年4月24日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
       
     </div>
-
+    <div class="license-icon iconfont"></div>
   </div>
 
-  <div class="article-footer">
-    <div class="article-meta pull-left">
 
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/04/25/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH4%E5%8F%8ACH6/" title="网络协议栈CH4及CH6">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">网络协议栈CH4及CH6</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/03/31/%E3%80%90Linux%20kernel%E5%85%A5%E9%97%A8%E3%80%91%E5%86%85%E6%A0%B8%E6%9C%AC%E5%9C%B0%E8%B0%83%E8%AF%95/" title="【kernel】内核本地调试入门">
+                        <span class="hidden-mobile">【kernel】内核本地调试入门</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments">
     
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#comments', function() {
+      var light = 'github-light';
+      var dark = 'github-dark';
+      var schema = document.documentElement.getAttribute('data-user-color-scheme');
+      if (schema === 'dark') {
+        schema = dark;
+      } else {
+        schema = light;
+      }
+      window.UtterancesThemeLight = light;
+      window.UtterancesThemeDark = dark;
+      var s = document.createElement('script');
+      s.setAttribute('src', 'https://utteranc.es/client.js');
+      s.setAttribute('repo', 'loora1n/comment');
+      s.setAttribute('issue-term', 'pathname');
+      
+      s.setAttribute('label', 'utterances');
+      
+      s.setAttribute('theme', schema);
+      s.setAttribute('crossorigin', 'anonymous');
+      document.getElementById('comments').appendChild(s);
+    })
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
 
-    
 
+  </article>
+
+
+          </article>
+        </div>
+      </div>
     </div>
 
-    
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
   </div>
-</article>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
 
   
 
@@ -303,24 +651,267 @@
 
 
 
+    
 
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
 
-    </main>
-
-    <footer class="site-footer">
-  <p class="site-info">
-    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
-    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
-    </br>
     
-    &copy; 2023 Loora1N
-    
-  </p>
-</footer>
-    
-    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
   </div>
 </div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://github.com/Loora1N" target="_blank" rel="nofollow noopener"><span>Loora1N</span></a> <i class="iconfont icon-love"></i> <a href="https://space.bilibili.com/33242548?spm_id_from=333.1007.0.0" target="_blank" rel="nofollow noopener"><span>鷺雨君</span></a>
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+  <span id="timeDate">载入天数...</span>
+  <span id="times">载入时分秒...</span>
+  <script>
+  var now = new Date();
+  function createtime(){
+      var grt= new Date("06/03/2022 00:00:00");//此处修改你的建站时间或者网站上线时间
+      now.setTime(now.getTime()+250);
+      days = (now - grt ) / 1000 / 60 / 60 / 24;
+      dnum = Math.floor(days);
+      hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum);
+      hnum = Math.floor(hours);
+      if(String(hnum).length ==1 ){
+          hnum = "0" + hnum;
+      }
+      minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+      mnum = Math.floor(minutes);
+      if(String(mnum).length ==1 ){
+                mnum = "0" + mnum;
+      }
+      seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+      snum = Math.round(seconds);
+      if(String(snum).length ==1 ){
+                snum = "0" + snum;
+      }
+      document.getElementById("timeDate").innerHTML = "🚀running🚀 for&nbsp"+dnum+"&nbspdays";  //此次自定义显示内容
+      document.getElementById("times").innerHTML = hnum + "&nbsphr&nbsp" + mnum + "&nbspmin&nbsp" + snum + "&nbspsec";
+  }  //此次自定义显示内容
+  setInterval("createtime()",250);
+  </script>   
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+  
+<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/xiantiao.js"></script>
+<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/love.js"></script>
+<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/caidai.js"></script>
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
 <!-- hexo injector body_end start -->
   <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
   <script data-pjax>

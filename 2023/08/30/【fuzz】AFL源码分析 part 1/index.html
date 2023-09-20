@@ -1,85 +1,294 @@
-<!DOCTYPE HTML>
-<html>
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" >
+
+<!--浏览器搞笑标题-->
+<script type="text/javascript" src="/js/FunnyTitle.js"></script>
+
+
+
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/icon/duck.png">
+  <link rel="icon" href="/img/icon/duck.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
   
-  <title>【fuzz】AFL源码分析 part 1 | 鷺雨のBlog</title>
-
-  
+  <meta name="theme-color" content="#f58f98">
   <meta name="author" content="Loora1N">
-  
-
-  
-  <meta name="description" content="Blog of Loora1N">
-  
-
-  
-  
   <meta name="keywords" content="">
   
+    <meta name="description" content="AFL，全称“American Fuzzy Lop”，是由安全研究员Michal Zalewski开发的一款基于覆盖引导（Coverage-guided）的模糊测试工具。本文主要包含插桩部分源码解析，afl-gcc.c，afl-as.c">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【fuzz】AFL源码分析 part 1">
+<meta property="og:url" content="http://loora1n.github.io/2023/08/30/%E3%80%90fuzz%E3%80%91AFL%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%20part%201/index.html">
+<meta property="og:site_name" content="鷺雨のBlog">
+<meta property="og:description" content="AFL，全称“American Fuzzy Lop”，是由安全研究员Michal Zalewski开发的一款基于覆盖引导（Coverage-guided）的模糊测试工具。本文主要包含插桩部分源码解析，afl-gcc.c，afl-as.c">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://loora1n.github.io/img/article/fuzzAFL1/1632794006_615275964fc6378475599.png">
+<meta property="article:published_time" content="2023-08-30T08:17:00.097Z">
+<meta property="article:modified_time" content="2023-08-30T08:17:00.097Z">
+<meta property="article:author" content="Loora1N">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://loora1n.github.io/img/article/fuzzAFL1/1632794006_615275964fc6378475599.png">
+  
+  
+  
+  <title>【fuzz】AFL源码分析 part 1 - 鷺雨のBlog</title>
 
-  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
-  <meta property="og:title" content="【fuzz】AFL源码分析 part 1"/>
 
-  <meta property="og:site_name" content="鷺雨のBlog"/>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+
+
 
   
-  <meta property="og:image" content="/favicon.ico"/>
+<link rel="stylesheet" href="/css/fluid-extention.css">
+<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/bynotes/texiao/source/css/gundongtiao.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"loora1n.github.io","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"lftEbNU4XPuR5dgHNV3WdWxP-gzGzoHsz","app_key":"b3uLUVGLeOWDwREWHMBr0jo9","server_url":"https://lftebnu4.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
   
 
-  <link href="/favicon.ico" rel="icon">
-  <link rel="alternate" href="/atom.xml" title="鷺雨のBlog" type="application/atom+xml">
-  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
 <meta name="generator" content="Hexo 6.2.0"></head>
 
 
 <body>
-<div class="blog">
-  <div class="content">
+  
 
-    <header>
-  <div class="site-branding">
-    <h1 class="site-title">
-      <a href="/">鷺雨のBlog</a>
-    </h1>
-    <p class="site-description"></p>
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>鷺雨のBlog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+      </ul>
+    </div>
   </div>
-  <nav class="site-navigation">
-    <ul>
-      
-    </ul>
-  </nav>
-</header>
-
-    <main class="site-main posts-loop">
-    <article>
+</nav>
 
   
-    
-    <h3 class="article-title"><span>【fuzz】AFL源码分析 part 1</span></h3>
-    
-  
 
-  <div class="article-top-meta">
-    <span class="posted-on">
-      <a target="_blank" href="//2023/08/30/【fuzz】AFL源码分析 part 1/" rel="bookmark noopener">
-        <time class="entry-date published" datetime="2023-08-30T08:17:00.097Z">
-          2023-08-30
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/bg/3.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="【fuzz】AFL源码分析 part 1"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-08-30 16:17" pubdate>
+          2023年8月30日 下午
         </time>
-      </a>
-    </span>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          5.3k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          44 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          阅读量 <span id="leancloud-page-views"></span>
+        </span>
+        
+      
+    
   </div>
 
 
-  
+        
+      </div>
 
-  <div class="article-content">
-    <div class="entry">
       
-        <blockquote>
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">【fuzz】AFL源码分析 part 1</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
 <p>本来想一周内完成，看来要延期了，尽量希望能在这几天内完成吧，31号晚上还有qax的一面😭😭，水平果然还是太次了。</p>
 <p>项目地址：<a target="_blank" rel="noopener" href="https://github.com/google/AFL">google&#x2F;AFL(github.com)</a></p>
 </blockquote>
@@ -114,10 +323,10 @@
 </ul>
 <h2 id="普通插桩"><a href="#普通插桩" class="headerlink" title="普通插桩"></a>普通插桩</h2><h3 id="afl-gcc-c"><a href="#afl-gcc-c" class="headerlink" title="afl-gcc.c"></a>afl-gcc.c</h3><p><strong>afl-gcc.c</strong>本质上是对GCC 和 clang的封装，正如其在注释中写到的<em>wrapper for GCC and clang</em>。最常见的使用方式，便是在使用**.&#x2F;configure**时，直接将afl-gcc或着afl-clang的路径传给CC；同理对于C++代码，只需用afl-g++或者afl-clang++路径传给CXX即可。</p>
 <p>几个静态全局变量:</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> u8*  as_path;                <span class="comment">/* Path to the AFL &#x27;as&#x27; wrapper      */</span></span><br><span class="line"><span class="type">static</span> u8** cc_params;              <span class="comment">/* Parameters passed to the real CC  */</span></span><br><span class="line"><span class="type">static</span> u32  cc_par_cnt = <span class="number">1</span>;         <span class="comment">/* Param count, including argv0      */</span></span><br><span class="line"><span class="type">static</span> u8   be_quiet,               <span class="comment">/* Quiet mode                        */</span></span><br><span class="line">            clang_mode;             <span class="comment">/* Invoked as afl-clang*?            */</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">static</span> u8*  as_path;                <span class="hljs-comment">/* Path to the AFL &#x27;as&#x27; wrapper      */</span><br><span class="hljs-type">static</span> u8** cc_params;              <span class="hljs-comment">/* Parameters passed to the real CC  */</span><br><span class="hljs-type">static</span> u32  cc_par_cnt = <span class="hljs-number">1</span>;         <span class="hljs-comment">/* Param count, including argv0      */</span><br><span class="hljs-type">static</span> u8   be_quiet,               <span class="hljs-comment">/* Quiet mode                        */</span><br>            clang_mode;             <span class="hljs-comment">/* Invoked as afl-clang*?            */</span><br></code></pre></td></tr></table></figure>
 
 <h4 id="main"><a href="#main" class="headerlink" title="main"></a>main</h4><p>main函数的核心主体如下</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span>** argv)</span> &#123;</span><br><span class="line">  ......</span><br><span class="line">      </span><br><span class="line">  find_as(argv[<span class="number">0</span>]);</span><br><span class="line">    </span><br><span class="line">  edit_params(argc, argv);</span><br><span class="line"></span><br><span class="line">  execvp(cc_params[<span class="number">0</span>], (<span class="type">char</span>**)cc_params);</span><br><span class="line"></span><br><span class="line">  ......</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span>** argv)</span> &#123;<br>  ......<br>      <br>  find_as(argv[<span class="hljs-number">0</span>]);<br>    <br>  edit_params(argc, argv);<br><br>  execvp(cc_params[<span class="hljs-number">0</span>], (<span class="hljs-type">char</span>**)cc_params);<br><br>  ......<br>  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
 
 <ul>
 <li><code>find_as</code>: try to find our “fake” GNU assembler in AFL_PATH or at the location derived from argv[0]. If that fails, abort.</li>
@@ -125,15 +334,15 @@
 <li><code>execvp</code>: 执行命令</li>
 </ul>
 <h3 id="edit-params"><a href="#edit-params" class="headerlink" title="edit_params"></a>edit_params</h3><p>在<code>edit_params</code>中，关键逻辑如下</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">    </span><br><span class="line"> <span class="keyword">if</span> (!<span class="built_in">strcmp</span>(name, <span class="string">&quot;afl-g++&quot;</span>)) &#123;</span><br><span class="line">  u8* alt_cxx = getenv(<span class="string">&quot;AFL_CXX&quot;</span>);</span><br><span class="line">  cc_params[<span class="number">0</span>] = alt_cxx ? alt_cxx : (u8*)<span class="string">&quot;g++&quot;</span>;</span><br><span class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span> (!<span class="built_in">strcmp</span>(name, <span class="string">&quot;afl-gcj&quot;</span>)) &#123;</span><br><span class="line">  u8* alt_cc = getenv(<span class="string">&quot;AFL_GCJ&quot;</span>);</span><br><span class="line">  cc_params[<span class="number">0</span>] = alt_cc ? alt_cc : (u8*)<span class="string">&quot;gcj&quot;</span>;</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">  u8* alt_cc = getenv(<span class="string">&quot;AFL_CC&quot;</span>);</span><br><span class="line">  cc_params[<span class="number">0</span>] = alt_cc ? alt_cc : (u8*)<span class="string">&quot;gcc&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line">    </span><br><span class="line">cc_params[cc_par_cnt++] = <span class="string">&quot;-B&quot;</span>;</span><br><span class="line">cc_params[cc_par_cnt++] = as_path;</span><br><span class="line"></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs c">...<br>    <br> <span class="hljs-keyword">if</span> (!<span class="hljs-built_in">strcmp</span>(name, <span class="hljs-string">&quot;afl-g++&quot;</span>)) &#123;<br>  u8* alt_cxx = getenv(<span class="hljs-string">&quot;AFL_CXX&quot;</span>);<br>  cc_params[<span class="hljs-number">0</span>] = alt_cxx ? alt_cxx : (u8*)<span class="hljs-string">&quot;g++&quot;</span>;<br>&#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (!<span class="hljs-built_in">strcmp</span>(name, <span class="hljs-string">&quot;afl-gcj&quot;</span>)) &#123;<br>  u8* alt_cc = getenv(<span class="hljs-string">&quot;AFL_GCJ&quot;</span>);<br>  cc_params[<span class="hljs-number">0</span>] = alt_cc ? alt_cc : (u8*)<span class="hljs-string">&quot;gcj&quot;</span>;<br>&#125; <span class="hljs-keyword">else</span> &#123;<br>  u8* alt_cc = getenv(<span class="hljs-string">&quot;AFL_CC&quot;</span>);<br>  cc_params[<span class="hljs-number">0</span>] = alt_cc ? alt_cc : (u8*)<span class="hljs-string">&quot;gcc&quot;</span>;<br>&#125;<br><br>...<br>    <br>cc_params[cc_par_cnt++] = <span class="hljs-string">&quot;-B&quot;</span>;<br>cc_params[cc_par_cnt++] = as_path;<br><br>...<br></code></pre></td></tr></table></figure>
 
 <p>总体逻辑比较简单，实际就是对参数做一些预处理，会用<code>gcc</code>替换<code>cc_params[0]</code>，利用<code>-B as_path</code>替换汇编器。因而在调用<code>execvp</code>执行命令时，本质上就是执行类似<code>gcc ... -B as_path ...</code>这样的效果。</p>
 <h2 id="afl-as-c"><a href="#afl-as-c" class="headerlink" title="afl-as.c"></a>afl-as.c</h2><p>在理解<code>afl-gcc.c</code>之后，我们就自然而然会想到，核心点在于关注<code>afl-as</code>和默认as的区别。类似于afl-gcc，afl-as也是一个对as的封装</p>
 <p>一些全局静态变量：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> u8** as_params;          <span class="comment">/* Parameters passed to the real &#x27;as&#x27;   */</span></span><br><span class="line"></span><br><span class="line"><span class="type">static</span> u8*  input_file;         <span class="comment">/* Originally specified input file      */</span></span><br><span class="line"><span class="type">static</span> u8*  modified_file;      <span class="comment">/* Instrumented file for the real &#x27;as&#x27;  */</span></span><br><span class="line"></span><br><span class="line"><span class="type">static</span> u8   be_quiet,           <span class="comment">/* Quiet mode (no stderr output)        */</span></span><br><span class="line">            clang_mode,         <span class="comment">/* Running in clang mode?               */</span></span><br><span class="line">            pass_thru,          <span class="comment">/* Just pass data through?              */</span></span><br><span class="line">            just_version,       <span class="comment">/* Just show version?                   */</span></span><br><span class="line">            sanitizer;          <span class="comment">/* Using ASAN / MSAN                    */</span></span><br><span class="line"></span><br><span class="line"><span class="type">static</span> u32  inst_ratio = <span class="number">100</span>,   <span class="comment">/* Instrumentation probability (%)      */</span></span><br><span class="line">            as_par_cnt = <span class="number">1</span>;     <span class="comment">/* Number of params to &#x27;as&#x27;             */</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">static</span> u8** as_params;          <span class="hljs-comment">/* Parameters passed to the real &#x27;as&#x27;   */</span><br><br><span class="hljs-type">static</span> u8*  input_file;         <span class="hljs-comment">/* Originally specified input file      */</span><br><span class="hljs-type">static</span> u8*  modified_file;      <span class="hljs-comment">/* Instrumented file for the real &#x27;as&#x27;  */</span><br><br><span class="hljs-type">static</span> u8   be_quiet,           <span class="hljs-comment">/* Quiet mode (no stderr output)        */</span><br>            clang_mode,         <span class="hljs-comment">/* Running in clang mode?               */</span><br>            pass_thru,          <span class="hljs-comment">/* Just pass data through?              */</span><br>            just_version,       <span class="hljs-comment">/* Just show version?                   */</span><br>            sanitizer;          <span class="hljs-comment">/* Using ASAN / MSAN                    */</span><br><br><span class="hljs-type">static</span> u32  inst_ratio = <span class="hljs-number">100</span>,   <span class="hljs-comment">/* Instrumentation probability (%)      */</span><br>            as_par_cnt = <span class="hljs-number">1</span>;     <span class="hljs-comment">/* Number of params to &#x27;as&#x27;             */</span><br></code></pre></td></tr></table></figure>
 
 <h3 id="main-1"><a href="#main-1" class="headerlink" title="main"></a>main</h3><p><code>main()</code>函数的核心主体如下，与afl-gcc.c中的<code>main</code>十分类似。比较明显，都是通过先对参数进行处理，然后调用<code>execvp()</code>去执行命令。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span>** argv)</span> &#123;</span><br><span class="line">  ...</span><br><span class="line">  gettimeofday(&amp;tv, &amp;tz);</span><br><span class="line"></span><br><span class="line">  rand_seed = tv.tv_sec ^ tv.tv_usec ^ getpid();</span><br><span class="line"></span><br><span class="line">  srandom(rand_seed);</span><br><span class="line"></span><br><span class="line">  edit_params(argc, argv);</span><br><span class="line">  ...  </span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (!just_version) add_instrumentation();</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (!(pid = fork())) &#123;</span><br><span class="line"></span><br><span class="line">    execvp(as_params[<span class="number">0</span>], (<span class="type">char</span>**)as_params);</span><br><span class="line">    FATAL(<span class="string">&quot;Oops, failed to execute &#x27;%s&#x27; - check your PATH&quot;</span>, as_params[<span class="number">0</span>]);</span><br><span class="line"></span><br><span class="line">  &#125;</span><br><span class="line">  ...</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span>** argv)</span> &#123;<br>  ...<br>  gettimeofday(&amp;tv, &amp;tz);<br><br>  rand_seed = tv.tv_sec ^ tv.tv_usec ^ getpid();<br><br>  srandom(rand_seed);<br><br>  edit_params(argc, argv);<br>  ...  <br><br>  <span class="hljs-keyword">if</span> (!just_version) add_instrumentation();<br><br>  <span class="hljs-keyword">if</span> (!(pid = fork())) &#123;<br><br>    execvp(as_params[<span class="hljs-number">0</span>], (<span class="hljs-type">char</span>**)as_params);<br>    FATAL(<span class="hljs-string">&quot;Oops, failed to execute &#x27;%s&#x27; - check your PATH&quot;</span>, as_params[<span class="hljs-number">0</span>]);<br><br>  &#125;<br>  ...<br><br>&#125;<br></code></pre></td></tr></table></figure>
 
 <ul>
 <li>第一部分，比较明显，利用时间和pid即生成随机数</li>
@@ -142,16 +351,16 @@
 <li>最后利用execvp调用指令</li>
 </ul>
 <h3 id="edit-params-1"><a href="#edit-params-1" class="headerlink" title="edit_params"></a>edit_params</h3><p>与afl-gcc的逻辑基本一致，替换参数，不过多赘述，核心部分如下：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"> <span class="type">static</span> <span class="type">void</span> <span class="title function_">edit_params</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span>** argv)</span> &#123;</span><br><span class="line">    ...</span><br><span class="line">    </span><br><span class="line">    as_params[<span class="number">0</span>] = afl_as ? afl_as : (u8*)<span class="string">&quot;as&quot;</span>;</span><br><span class="line">    ...</span><br><span class="line">    </span><br><span class="line">    as_params[as_par_cnt++] = modified_file;</span><br><span class="line">    </span><br><span class="line">    as_params[as_par_cnt]   = <span class="literal">NULL</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs c"> <span class="hljs-type">static</span> <span class="hljs-type">void</span> <span class="hljs-title function_">edit_params</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span>** argv)</span> &#123;<br>    ...<br>    <br>    as_params[<span class="hljs-number">0</span>] = afl_as ? afl_as : (u8*)<span class="hljs-string">&quot;as&quot;</span>;<br>    ...<br>    <br>    as_params[as_par_cnt++] = modified_file;<br>    <br>    as_params[as_par_cnt]   = <span class="hljs-literal">NULL</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
 
 <h3 id="add-instrumentation"><a href="#add-instrumentation" class="headerlink" title="add_instrumentation"></a>add_instrumentation</h3><p>比较明显的看到其他部分与afl-gcc基本相同，因而我们关键来看看<code>add_instrumentation()</code>函数这部分内容。这个函数主要用于处理输入的文件，然后生成<strong>modified_file</strong>.并在恰当的地方插桩。此函数的核心部分如下：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">add_instrumentation</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line">    ...</span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">        匹配合适的插桩位置</span></span><br><span class="line"><span class="comment">        */</span></span><br><span class="line">    ...</span><br><span class="line">     <span class="keyword">while</span> (fgets(line, MAX_LINE, inf)) &#123;</span><br><span class="line">     	...</span><br><span class="line">            </span><br><span class="line">        <span class="built_in">fprintf</span>(outf, use_64bit ? trampoline_fmt_64 : trampoline_fmt_32,</span><br><span class="line">                R(MAP_SIZE));</span><br><span class="line"></span><br><span class="line">    	ins_lines++;</span><br><span class="line">         </span><br><span class="line">         ...</span><br><span class="line">         </span><br><span class="line">         <span class="keyword">continue</span>;</span><br><span class="line">     &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">static</span> <span class="hljs-type">void</span> <span class="hljs-title function_">add_instrumentation</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span> &#123;<br>    ...<br>        <span class="hljs-comment">/*</span><br><span class="hljs-comment">        匹配合适的插桩位置</span><br><span class="hljs-comment">        */</span><br>    ...<br>     <span class="hljs-keyword">while</span> (fgets(line, MAX_LINE, inf)) &#123;<br>     	...<br>            <br>        <span class="hljs-built_in">fprintf</span>(outf, use_64bit ? trampoline_fmt_64 : trampoline_fmt_32,<br>                R(MAP_SIZE));<br><br>    	ins_lines++;<br>         <br>         ...<br>         <br>         <span class="hljs-keyword">continue</span>;<br>     &#125;<br>    ...<br>&#125;<br></code></pre></td></tr></table></figure>
 
 <p>从源代码的注释中我们也能看到，AFL插桩的位置偏好，主要为<strong>函数入口，分支标签，条件分支标签…….</strong></p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* If we&#x27;re in the right mood for instrumenting, check for function</span></span><br><span class="line"><span class="comment">   names or conditional labels. This is a bit messy, but in essence,</span></span><br><span class="line"><span class="comment">   we want to catch:</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">     ^main:      - function entry point (always instrumented)</span></span><br><span class="line"><span class="comment">     ^.L0:       - GCC branch label</span></span><br><span class="line"><span class="comment">     ^.LBB0_0:   - clang branch label (but only in clang mode)</span></span><br><span class="line"><span class="comment">     ^\tjnz foo  - conditional branches</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">   ...but not:</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">     ^# BB#0:    - clang comments</span></span><br><span class="line"><span class="comment">     ^ # BB#0:   - ditto</span></span><br><span class="line"><span class="comment">     ^.Ltmp0:    - clang non-branch labels</span></span><br><span class="line"><span class="comment">     ^.LC0       - GCC non-branch labels</span></span><br><span class="line"><span class="comment">     ^.LBB0_0:   - ditto (when in GCC mode)</span></span><br><span class="line"><span class="comment">     ^\tjmp foo  - non-conditional jumps</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">   Additionally, clang and GCC on MacOS X follow a different convention</span></span><br><span class="line"><span class="comment">   with no leading dots on labels, hence the weird maze of #ifdefs</span></span><br><span class="line"><span class="comment">   later on.</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment"> */</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">/* If we&#x27;re in the right mood for instrumenting, check for function</span><br><span class="hljs-comment">   names or conditional labels. This is a bit messy, but in essence,</span><br><span class="hljs-comment">   we want to catch:</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">     ^main:      - function entry point (always instrumented)</span><br><span class="hljs-comment">     ^.L0:       - GCC branch label</span><br><span class="hljs-comment">     ^.LBB0_0:   - clang branch label (but only in clang mode)</span><br><span class="hljs-comment">     ^\tjnz foo  - conditional branches</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">   ...but not:</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">     ^# BB#0:    - clang comments</span><br><span class="hljs-comment">     ^ # BB#0:   - ditto</span><br><span class="hljs-comment">     ^.Ltmp0:    - clang non-branch labels</span><br><span class="hljs-comment">     ^.LC0       - GCC non-branch labels</span><br><span class="hljs-comment">     ^.LBB0_0:   - ditto (when in GCC mode)</span><br><span class="hljs-comment">     ^\tjmp foo  - non-conditional jumps</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">   Additionally, clang and GCC on MacOS X follow a different convention</span><br><span class="hljs-comment">   with no leading dots on labels, hence the weird maze of #ifdefs</span><br><span class="hljs-comment">   later on.</span><br><span class="hljs-comment"></span><br><span class="hljs-comment"> */</span><br></code></pre></td></tr></table></figure>
 
 <p>在<code>add_instrumentation()</code>函数中的变量<code>trampoline_fmt_64</code>和<code>trampoline_fmt_32</code>即为插桩代码，我们可以在文件<strong>afl-as.h</strong>中找到定义，这里我们直接看看64位的插桩代码</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">/* --- AFL TRAMPOLINE (64-BIT) --- */</span><br><span class="line"></span><br><span class="line">.align 4</span><br><span class="line"></span><br><span class="line">leaq -(128+24)(%%rsp), %%rsp</span><br><span class="line">movq %%rdx,  0(%%rsp)</span><br><span class="line">movq %%rcx,  8(%%rsp)</span><br><span class="line">movq %%rax, 16(%%rsp)</span><br><span class="line">movq $0x%08x, %%rcx</span><br><span class="line">call __afl_maybe_log</span><br><span class="line">movq 16(%%rsp), %%rax</span><br><span class="line">movq  8(%%rsp), %%rcx</span><br><span class="line">movq  0(%%rsp), %%rdx</span><br><span class="line">leaq (128+24)(%%rsp), %%rsp</span><br><span class="line"></span><br><span class="line">/* --- END --- */</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs assembly">/* --- AFL TRAMPOLINE (64-BIT) --- */<br><br>.align 4<br><br>leaq -(128+24)(%%rsp), %%rsp<br>movq %%rdx,  0(%%rsp)<br>movq %%rcx,  8(%%rsp)<br>movq %%rax, 16(%%rsp)<br>movq $0x%08x, %%rcx<br>call __afl_maybe_log<br>movq 16(%%rsp), %%rax<br>movq  8(%%rsp), %%rcx<br>movq  0(%%rsp), %%rdx<br>leaq (128+24)(%%rsp), %%rsp<br><br>/* --- END --- */<br></code></pre></td></tr></table></figure>
 
 <p>流程非常简单易懂，大致如下：</p>
 <ol>
@@ -162,26 +371,165 @@
 <p>这里直接来看看<code>__afl_maybe_log</code>函数，由于这段汇编逻辑过长，大概200多行。这里直接放<strong>ScUpax0s师傅</strong>的流程图</p>
 <p><img src="/img/article/fuzzAFL1/image-20230830151452876.png" alt="image-20230830151452876"></p>
 <p>流程图中涉及到的一些变量及含义如下：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">.lcomm   __afl_area_ptr, 8			/*共享内存地址*/</span><br><span class="line">.lcomm   __afl_prev_loc, 8			/*上一个插桩位置（id为R(100)随机数的值）*/</span><br><span class="line">.lcomm   __afl_fork_pid, 4			/*由fork产生的子进程的pid*/</span><br><span class="line">.lcomm   __afl_temp, 4				/*缓冲区*/</span><br><span class="line">.lcomm   __afl_setup_failure, 1		/*标志位，如果置位则直接退出*/</span><br><span class="line">.comm    __afl_global_area_ptr, 8, 8	/*全局指针*/</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs assembly">.lcomm   __afl_area_ptr, 8			/*共享内存地址*/<br>.lcomm   __afl_prev_loc, 8			/*上一个插桩位置（id为R(100)随机数的值）*/<br>.lcomm   __afl_fork_pid, 4			/*由fork产生的子进程的pid*/<br>.lcomm   __afl_temp, 4				/*缓冲区*/<br>.lcomm   __afl_setup_failure, 1		/*标志位，如果置位则直接退出*/<br>.comm    __afl_global_area_ptr, 8, 8	/*全局指针*/<br></code></pre></td></tr></table></figure>
 
 
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>【fuzz】AFL源码分析 part 1</div>
+      <div>http://loora1n.github.io/2023/08/30/【fuzz】AFL源码分析 part 1/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Loora1N</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年8月30日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
       
     </div>
-
+    <div class="license-icon iconfont"></div>
   </div>
 
-  <div class="article-footer">
-    <div class="article-meta pull-left">
 
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/09/01/%E3%80%90Kernel%E3%80%91%E4%B8%80%E4%BA%9B%E5%85%B3%E9%94%AE%E7%BB%93%E6%9E%84%E4%BD%93%E8%AE%B0%E5%BD%95/" title="【Kernel】一些trick记录（持续更新）">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">【Kernel】一些trick记录（持续更新）</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/08/29/ASAN%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90/" title="【fuzz】ASAN原理解析">
+                        <span class="hidden-mobile">【fuzz】ASAN原理解析</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments">
     
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#comments', function() {
+      var light = 'github-light';
+      var dark = 'github-dark';
+      var schema = document.documentElement.getAttribute('data-user-color-scheme');
+      if (schema === 'dark') {
+        schema = dark;
+      } else {
+        schema = light;
+      }
+      window.UtterancesThemeLight = light;
+      window.UtterancesThemeDark = dark;
+      var s = document.createElement('script');
+      s.setAttribute('src', 'https://utteranc.es/client.js');
+      s.setAttribute('repo', 'loora1n/comment');
+      s.setAttribute('issue-term', 'pathname');
+      
+      s.setAttribute('label', 'utterances');
+      
+      s.setAttribute('theme', schema);
+      s.setAttribute('crossorigin', 'anonymous');
+      document.getElementById('comments').appendChild(s);
+    })
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
 
-    
 
+  </article>
+
+
+          </article>
+        </div>
+      </div>
     </div>
 
-    
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
   </div>
-</article>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
 
   
 
@@ -191,24 +539,267 @@
 
 
 
+    
 
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
 
-    </main>
-
-    <footer class="site-footer">
-  <p class="site-info">
-    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
-    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
-    </br>
     
-    &copy; 2023 Loora1N
-    
-  </p>
-</footer>
-    
-    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
   </div>
 </div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://github.com/Loora1N" target="_blank" rel="nofollow noopener"><span>Loora1N</span></a> <i class="iconfont icon-love"></i> <a href="https://space.bilibili.com/33242548?spm_id_from=333.1007.0.0" target="_blank" rel="nofollow noopener"><span>鷺雨君</span></a>
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+  <span id="timeDate">载入天数...</span>
+  <span id="times">载入时分秒...</span>
+  <script>
+  var now = new Date();
+  function createtime(){
+      var grt= new Date("06/03/2022 00:00:00");//此处修改你的建站时间或者网站上线时间
+      now.setTime(now.getTime()+250);
+      days = (now - grt ) / 1000 / 60 / 60 / 24;
+      dnum = Math.floor(days);
+      hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum);
+      hnum = Math.floor(hours);
+      if(String(hnum).length ==1 ){
+          hnum = "0" + hnum;
+      }
+      minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+      mnum = Math.floor(minutes);
+      if(String(mnum).length ==1 ){
+                mnum = "0" + mnum;
+      }
+      seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+      snum = Math.round(seconds);
+      if(String(snum).length ==1 ){
+                snum = "0" + snum;
+      }
+      document.getElementById("timeDate").innerHTML = "🚀running🚀 for&nbsp"+dnum+"&nbspdays";  //此次自定义显示内容
+      document.getElementById("times").innerHTML = hnum + "&nbsphr&nbsp" + mnum + "&nbspmin&nbsp" + snum + "&nbspsec";
+  }  //此次自定义显示内容
+  setInterval("createtime()",250);
+  </script>   
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+  
+<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/xiantiao.js"></script>
+<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/love.js"></script>
+<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/caidai.js"></script>
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
 <!-- hexo injector body_end start -->
   <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
   <script data-pjax>
