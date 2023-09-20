@@ -1,294 +1,85 @@
-
-
-<!DOCTYPE html>
-<html lang="zh-CN" >
-
-<!--浏览器搞笑标题-->
-<script type="text/javascript" src="/js/FunnyTitle.js"></script>
-
-
-
+<!DOCTYPE HTML>
+<html>
 <head>
-  <meta charset="UTF-8">
-  <link rel="apple-touch-icon" sizes="76x76" href="/img/icon/duck.png">
-  <link rel="icon" href="/img/icon/duck.png">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta charset="utf-8">
   
-  <meta name="theme-color" content="#f58f98">
+  <title>【kernel】提权入门-part2 | 鷺雨のBlog</title>
+
+  
   <meta name="author" content="Loora1N">
+  
+
+  
+  <meta name="description" content="Blog of Loora1N">
+  
+
+  
+  
   <meta name="keywords" content="">
   
-    <meta name="description" content="从更改其他进程角度考虑提权思路">
-<meta property="og:type" content="article">
-<meta property="og:title" content="【kernel】提权入门-part2">
-<meta property="og:url" content="http://loora1n.github.io/2023/03/29/%E3%80%90kernel%E3%80%91%E6%8F%90%E6%9D%83%E5%85%A5%E9%97%A8-part2/index.html">
-<meta property="og:site_name" content="鷺雨のBlog">
-<meta property="og:description" content="从更改其他进程角度考虑提权思路">
-<meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://loora1n.github.io/img/article/%E6%8F%90%E6%9D%83%E5%85%A5%E9%97%A8/QQ%E5%9B%BE%E7%89%8720230329223721.png">
-<meta property="article:published_time" content="2023-03-29T15:01:33.056Z">
-<meta property="article:modified_time" content="2023-03-29T15:01:33.056Z">
-<meta property="article:author" content="Loora1N">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://loora1n.github.io/img/article/%E6%8F%90%E6%9D%83%E5%85%A5%E9%97%A8/QQ%E5%9B%BE%E7%89%8720230329223721.png">
-  
-  
-  
-  <title>【kernel】提权入门-part2 - 鷺雨のBlog</title>
 
-  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
 
+  <meta property="og:title" content="【kernel】提权入门-part2"/>
 
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
-
-
-
-<!-- 主题依赖的图标库，不要自行修改 -->
-<!-- Do not modify the link that theme dependent icons -->
-
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
-
-
-
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
-
-
-<link  rel="stylesheet" href="/css/main.css" />
-
-
-  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
-  
-
-
+  <meta property="og:site_name" content="鷺雨のBlog"/>
 
   
-<link rel="stylesheet" href="/css/fluid-extention.css">
-<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/bynotes/texiao/source/css/gundongtiao.css">
-
-
-
-  <script id="fluid-configs">
-    var Fluid = window.Fluid || {};
-    Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"loora1n.github.io","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"lftEbNU4XPuR5dgHNV3WdWxP-gzGzoHsz","app_key":"b3uLUVGLeOWDwREWHMBr0jo9","server_url":"https://lftebnu4.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
-
-    if (CONFIG.web_analytics.follow_dnt) {
-      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
-      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
-    }
-  </script>
-  <script  src="/js/utils.js" ></script>
-  <script  src="/js/color-schema.js" ></script>
+  <meta property="og:image" content="/favicon.ico"/>
   
 
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-    
-  
-
-
-
-  
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="鷺雨のBlog" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
 <meta name="generator" content="Hexo 6.2.0"></head>
 
 
 <body>
-  
+<div class="blog">
+  <div class="content">
 
-  <header>
-    
-
-<div class="header-inner" style="height: 70vh;">
-  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
-  <div class="container">
-    <a class="navbar-brand" href="/">
-      <strong>鷺雨のBlog</strong>
-    </a>
-
-    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
-            data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <div class="animated-icon"><span></span><span></span><span></span></div>
-    </button>
-
-    <!-- Collapsible content -->
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav ml-auto text-center">
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/">
-                <i class="iconfont icon-home-fill"></i>
-                首页
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/archives/">
-                <i class="iconfont icon-archive-fill"></i>
-                归档
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/about/">
-                <i class="iconfont icon-user-fill"></i>
-                关于
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/links/">
-                <i class="iconfont icon-link-fill"></i>
-                友链
-              </a>
-            </li>
-          
-        
-        
-          <li class="nav-item" id="search-btn">
-            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
-              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
-            </a>
-          </li>
-          
-        
-        
-      </ul>
-    </div>
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">鷺雨のBlog</a>
+    </h1>
+    <p class="site-description"></p>
   </div>
-</nav>
+  <nav class="site-navigation">
+    <ul>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
 
   
-
-<div id="banner" class="banner" parallax=true
-     style="background: url('/img/bg/3.png') no-repeat center center; background-size: cover;">
-  <div class="full-bg-img">
-    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
-      <div class="banner-text text-center fade-in-up">
-        <div class="h2">
-          
-            <span id="subtitle" data-typed-text="【kernel】提权入门-part2"></span>
-          
-        </div>
-
-        
-          
-  <div class="mt-3">
     
+    <h3 class="article-title"><span>【kernel】提权入门-part2</span></h3>
     
-      <span class="post-meta">
-        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-03-29 23:01" pubdate>
-          2023年3月29日 晚上
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a target="_blank" href="//2023/03/29/【kernel】提权入门-part2/" rel="bookmark noopener">
+        <time class="entry-date published" datetime="2023-03-29T15:01:33.056Z">
+          2023-03-29
         </time>
-      </span>
-    
-  </div>
-
-  <div class="mt-1">
-    
-      <span class="post-meta mr-2">
-        <i class="iconfont icon-chart"></i>
-        
-          3.6k 字
-        
-      </span>
-    
-
-    
-      <span class="post-meta mr-2">
-        <i class="iconfont icon-clock-fill"></i>
-        
-        
-        
-          30 分钟
-        
-      </span>
-    
-
-    
-    
-      
-        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
-          <i class="iconfont icon-eye" aria-hidden="true"></i>
-          阅读量 <span id="leancloud-page-views"></span>
-        </span>
-        
-      
-    
+      </a>
+    </span>
   </div>
 
 
-        
-      </div>
+  
 
+  <div class="article-content">
+    <div class="entry">
       
-    </div>
-  </div>
-</div>
-
-</div>
-
-  </header>
-
-  <main>
-    
-      
-
-<div class="container-fluid nopadding-x">
-  <div class="row nomargin-x">
-    <div class="side-col d-none d-lg-block col-lg-2">
-      
-
-    </div>
-
-    <div class="col-lg-8 nopadding-x-md">
-      <div class="container nopadding-x-md" id="board-ctn">
-        <div id="board">
-          <article class="post-content mx-auto">
-            <!-- SEO header -->
-            <h1 style="display: none">【kernel】提权入门-part2</h1>
-            
-            
-              <div class="markdown-body">
-                
-                <p>如果我们可以改变特权进程的执行轨迹，也可以实现提权。这里我们从以下角度来考虑如何改变特权进程的执行轨迹。</p>
+        <p>如果我们可以改变特权进程的执行轨迹，也可以实现提权。这里我们从以下角度来考虑如何改变特权进程的执行轨迹。</p>
 <ul>
 <li>改数据</li>
 <li>改代码</li>
@@ -310,7 +101,7 @@
 </li>
 </ol>
 <p>这里我们也给出使用 <code>modprobe_path</code> 的模板。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// step 1. modify modprobe_path to the target value</span><br><br><span class="hljs-comment">// step 2. create related file</span><br>system(<span class="hljs-string">&quot;echo -ne &#x27;#!/bin/sh\n/bin/cp /flag /home/pwn/flag\n/bin/chmod 777 /home/pwn/flag\ncat flag&#x27; &gt; /home/pwn/catflag.sh&quot;</span>);<br>system(<span class="hljs-string">&quot;chmod +x /home/pwn/catflag.sh&quot;</span>);<br><br><span class="hljs-comment">// step 3. trigger it using unknown executable</span><br>system(<span class="hljs-string">&quot;echo -ne &#x27;\\xff\\xff\\xff\\xff&#x27; &gt; /home/pwn/dummy&quot;</span>);<br>system(<span class="hljs-string">&quot;chmod +x /home/pwn/dummy&quot;</span>);<br>system(<span class="hljs-string">&quot;/home/pwn/dummy&quot;</span>);<br><br><span class="hljs-comment">// step 3. trigger it using unknown protocol</span><br>socket(AF_INET,SOCK_STREAM,<span class="hljs-number">132</span>);<br></code></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// step 1. modify modprobe_path to the target value</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// step 2. create related file</span></span><br><span class="line">system(<span class="string">&quot;echo -ne &#x27;#!/bin/sh\n/bin/cp /flag /home/pwn/flag\n/bin/chmod 777 /home/pwn/flag\ncat flag&#x27; &gt; /home/pwn/catflag.sh&quot;</span>);</span><br><span class="line">system(<span class="string">&quot;chmod +x /home/pwn/catflag.sh&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// step 3. trigger it using unknown executable</span></span><br><span class="line">system(<span class="string">&quot;echo -ne &#x27;\\xff\\xff\\xff\\xff&#x27; &gt; /home/pwn/dummy&quot;</span>);</span><br><span class="line">system(<span class="string">&quot;chmod +x /home/pwn/dummy&quot;</span>);</span><br><span class="line">system(<span class="string">&quot;/home/pwn/dummy&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// step 3. trigger it using unknown protocol</span></span><br><span class="line">socket(AF_INET,SOCK_STREAM,<span class="number">132</span>);</span><br></pre></td></tr></table></figure>
 
 <p>在这个过程中，我们着重关注下如何定位 <code>modprobe_path</code>。</p>
 <h5 id="直接定位"><a href="#直接定位" class="headerlink" title="直接定位"></a>直接定位</h5><p>由于 <code>modprobe_path</code> 的取值是确定的，所以我们可以直接扫描内存，寻找对应的字符串。这需要我们具有扫描内存的能力。</p>
@@ -324,10 +115,10 @@
 <h3 id="修改-vDSO-代码"><a href="#修改-vDSO-代码" class="headerlink" title="修改 vDSO 代码"></a>修改 vDSO 代码</h3><p>内核中 vDSO 的代码会被映射到所有的用户态进程中。如果有一个高特权的进程会周期性地调用 vDSO 中的函数，那我们可以考虑把 vDSO 中相应的函数修改为特定的 shellcode。当高权限的进程执行相应的代码时，我们就可以进行提权。</p>
 <p>在早期的时候，Linux 中的 vDSO 是可写的，考虑到这样的风险，Kees Cook 提出引入 <code>post-init read-only</code> 的数据，即将那些初始化后不再被写的数据标记为只读，来防御这样的利用。</p>
 <p>在引入之前，vDSO 对应的 raw_data 只是标记了对齐属性。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-built_in">fprintf</span>(outfile, <span class="hljs-string">&quot;/* AUTOMATICALLY GENERATED -- DO NOT EDIT */\n\n&quot;</span>);<br><span class="hljs-built_in">fprintf</span>(outfile, <span class="hljs-string">&quot;#include &lt;linux/linkage.h&gt;\n&quot;</span>);<br><span class="hljs-built_in">fprintf</span>(outfile, <span class="hljs-string">&quot;#include &lt;asm/page_types.h&gt;\n&quot;</span>);<br><span class="hljs-built_in">fprintf</span>(outfile, <span class="hljs-string">&quot;#include &lt;asm/vdso.h&gt;\n&quot;</span>);<br><span class="hljs-built_in">fprintf</span>(outfile, <span class="hljs-string">&quot;\n&quot;</span>);<br><span class="hljs-built_in">fprintf</span>(outfile,<br>    <span class="hljs-string">&quot;static unsigned char raw_data[%lu] __page_aligned_data = &#123;&quot;</span>,<br>    mapping_size);<br></code></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">fprintf</span>(outfile, <span class="string">&quot;/* AUTOMATICALLY GENERATED -- DO NOT EDIT */\n\n&quot;</span>);</span><br><span class="line"><span class="built_in">fprintf</span>(outfile, <span class="string">&quot;#include &lt;linux/linkage.h&gt;\n&quot;</span>);</span><br><span class="line"><span class="built_in">fprintf</span>(outfile, <span class="string">&quot;#include &lt;asm/page_types.h&gt;\n&quot;</span>);</span><br><span class="line"><span class="built_in">fprintf</span>(outfile, <span class="string">&quot;#include &lt;asm/vdso.h&gt;\n&quot;</span>);</span><br><span class="line"><span class="built_in">fprintf</span>(outfile, <span class="string">&quot;\n&quot;</span>);</span><br><span class="line"><span class="built_in">fprintf</span>(outfile,</span><br><span class="line">    <span class="string">&quot;static unsigned char raw_data[%lu] __page_aligned_data = &#123;&quot;</span>,</span><br><span class="line">    mapping_size);</span><br></pre></td></tr></table></figure>
 
 <p>引入之后，vDSO 对应的 raw_data 则被标记为了初始化后只读。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-built_in">fprintf</span>(outfile, <span class="hljs-string">&quot;/* AUTOMATICALLY GENERATED -- DO NOT EDIT */\n\n&quot;</span>);<br><span class="hljs-built_in">fprintf</span>(outfile, <span class="hljs-string">&quot;#include &lt;linux/linkage.h&gt;\n&quot;</span>);<br><span class="hljs-built_in">fprintf</span>(outfile, <span class="hljs-string">&quot;#include &lt;asm/page_types.h&gt;\n&quot;</span>);<br><span class="hljs-built_in">fprintf</span>(outfile, <span class="hljs-string">&quot;#include &lt;asm/vdso.h&gt;\n&quot;</span>);<br><span class="hljs-built_in">fprintf</span>(outfile, <span class="hljs-string">&quot;\n&quot;</span>);<br><span class="hljs-built_in">fprintf</span>(outfile,<br>    <span class="hljs-string">&quot;static unsigned char raw_data[%lu] __ro_after_init __aligned(PAGE_SIZE) = &#123;&quot;</span>,<br>    mapping_size);<br></code></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">fprintf</span>(outfile, <span class="string">&quot;/* AUTOMATICALLY GENERATED -- DO NOT EDIT */\n\n&quot;</span>);</span><br><span class="line"><span class="built_in">fprintf</span>(outfile, <span class="string">&quot;#include &lt;linux/linkage.h&gt;\n&quot;</span>);</span><br><span class="line"><span class="built_in">fprintf</span>(outfile, <span class="string">&quot;#include &lt;asm/page_types.h&gt;\n&quot;</span>);</span><br><span class="line"><span class="built_in">fprintf</span>(outfile, <span class="string">&quot;#include &lt;asm/vdso.h&gt;\n&quot;</span>);</span><br><span class="line"><span class="built_in">fprintf</span>(outfile, <span class="string">&quot;\n&quot;</span>);</span><br><span class="line"><span class="built_in">fprintf</span>(outfile,</span><br><span class="line">    <span class="string">&quot;static unsigned char raw_data[%lu] __ro_after_init __aligned(PAGE_SIZE) = &#123;&quot;</span>,</span><br><span class="line">    mapping_size);</span><br></pre></td></tr></table></figure>
 
 <p>通过修改 vDSO 进行提权的基本方式如下</p>
 <ul>
@@ -340,448 +131,66 @@
 <ol>
 <li>在 IDA 里定位 <code>init_vdso</code> 函数的地址</li>
 </ol>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs C">__int64 <span class="hljs-title function_">init_vdso</span><span class="hljs-params">()</span><br>&#123;<br>  init_vdso_image(&amp;vdso_image_64 + <span class="hljs-number">0x20000000</span>);<br>  init_vdso_image(&amp;vdso_image_x32 + <span class="hljs-number">0x20000000</span>);<br>  cpu_maps_update_begin();<br>  on_each_cpu((<span class="hljs-type">char</span> *)startup_64 + <span class="hljs-number">0x100003EA0</span>LL, <span class="hljs-number">0LL</span>, <span class="hljs-number">1LL</span>);<br>  _register_cpu_notifier(&amp;sdata + <span class="hljs-number">536882764</span>);<br>  cpu_maps_update_done();<br>  <span class="hljs-keyword">return</span> <span class="hljs-number">0LL</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">__int64 <span class="title function_">init_vdso</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">  init_vdso_image(&amp;vdso_image_64 + <span class="number">0x20000000</span>);</span><br><span class="line">  init_vdso_image(&amp;vdso_image_x32 + <span class="number">0x20000000</span>);</span><br><span class="line">  cpu_maps_update_begin();</span><br><span class="line">  on_each_cpu((<span class="type">char</span> *)startup_64 + <span class="number">0x100003EA0</span>LL, <span class="number">0LL</span>, <span class="number">1LL</span>);</span><br><span class="line">  _register_cpu_notifier(&amp;sdata + <span class="number">536882764</span>);</span><br><span class="line">  cpu_maps_update_done();</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0LL</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <ol>
 <li>可以看到 <code>vdso_image_64</code> 和 <code>vdso_image_x32</code>。以<code>vdso_image_64</code> 为例，点到该变量的地址</li>
 </ol>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs assembly">.rodata:FFFFFFFF81A01300                 public vdso_image_64<br>.rodata:FFFFFFFF81A01300 vdso_image_64   dq offset raw_data      ; DATA XREF: arch_setup_additional_pages+18↑o<br>.rodata:FFFFFFFF81A01300                                         ; init_vdso+1↓o<br></code></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">.rodata:FFFFFFFF81A01300                 public vdso_image_64</span><br><span class="line">.rodata:FFFFFFFF81A01300 vdso_image_64   dq offset raw_data      ; DATA XREF: arch_setup_additional_pages+18↑o</span><br><span class="line">.rodata:FFFFFFFF81A01300                                         ; init_vdso+1↓o</span><br></pre></td></tr></table></figure>
 
 <ol>
 <li>点击 <code>raw_data</code> 即可知道 64 位 vDSO 在内核镜像中的地址，可以看到，vDSO 确实是以页对齐的。</li>
 </ol>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs assembly">.data:FFFFFFFF81E04000 raw_data        db  7Fh ;              ; DATA XREF: .rodata:vdso_image_64↑o<br>.data:FFFFFFFF81E04001                 db  45h ; E<br>.data:FFFFFFFF81E04002                 db  4Ch ; L<br>.data:FFFFFFFF81E04003                 db  46h ; F<br></code></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">.data:FFFFFFFF81E04000 raw_data        db  7Fh ;              ; DATA XREF: .rodata:vdso_image_64↑o</span><br><span class="line">.data:FFFFFFFF81E04001                 db  45h ; E</span><br><span class="line">.data:FFFFFFFF81E04002                 db  4Ch ; L</span><br><span class="line">.data:FFFFFFFF81E04003                 db  46h ; F</span><br></pre></td></tr></table></figure>
 
 <p>从最后的符号来看，我们也可以直接使用 <code>raw_data</code> 来寻找 vDSO。</p>
 <h4 id="内存中定位"><a href="#内存中定位" class="headerlink" title="内存中定位"></a>内存中定位</h4><h5 id="直接定位-1"><a href="#直接定位-1" class="headerlink" title="直接定位"></a>直接定位</h5><p>vDSO 其实是一个 ELF 文件，具有 ELF 文件头。同时，vDSO 中特定位置存储着导出函数的字符串。因此我们可以根据这两个特征来扫描内存，定位 vDSO 的位置。</p>
 <h5 id="间接定位-1"><a href="#间接定位-1" class="headerlink" title="间接定位"></a>间接定位</h5><p>考虑到 vDSO 相对于内核基地址的偏移是固定的，我们可以先获取到内核的基地址，然后根据相对偏移来得到 vDSO 的地址。</p>
 
-                
-              </div>
-            
-            <hr/>
-            <div>
-              <div class="post-metas my-3">
-  
-  
-</div>
-
-
-              
-  
-
-  <div class="license-box my-3">
-    <div class="license-title">
-      <div>【kernel】提权入门-part2</div>
-      <div>http://loora1n.github.io/2023/03/29/【kernel】提权入门-part2/</div>
-    </div>
-    <div class="license-meta">
-      
-        <div class="license-meta-item">
-          <div>作者</div>
-          <div>Loora1N</div>
-        </div>
-      
-      
-        <div class="license-meta-item license-meta-date">
-          <div>发布于</div>
-          <div>2023年3月29日</div>
-        </div>
-      
-      
-      
-        <div class="license-meta-item">
-          <div>许可协议</div>
-          <div>
-            
-              
-              
-                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
-                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
-                    <i class="iconfont icon-by"></i>
-                  </span>
-                </a>
-              
-            
-          </div>
-        </div>
       
     </div>
-    <div class="license-icon iconfont"></div>
+
   </div>
 
+  <div class="article-footer">
+    <div class="article-meta pull-left">
 
-
-              
-                <div class="post-prevnext my-3">
-                  <article class="post-prev col-6">
-                    
-                    
-                      <a href="/2023/03/31/%E3%80%90Linux%20kernel%E5%85%A5%E9%97%A8%E3%80%91%E5%86%85%E6%A0%B8%E6%9C%AC%E5%9C%B0%E8%B0%83%E8%AF%95/" title="【kernel】内核本地调试入门">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">【kernel】内核本地调试入门</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
-                  </article>
-                  <article class="post-next col-6">
-                    
-                    
-                      <a href="/2023/03/29/%E3%80%90kernel%E3%80%91%E6%8F%90%E6%9D%83%E5%85%A5%E9%97%A8-part1/" title="【kernel】提权入门-part1">
-                        <span class="hidden-mobile">【kernel】提权入门-part1</span>
-                        <span class="visible-mobile">下一篇</span>
-                        <i class="iconfont icon-arrowright"></i>
-                      </a>
-                    
-                  </article>
-                </div>
-              
-            </div>
-
-            
-  <article id="comments">
     
-  <script type="text/javascript">
-    Fluid.utils.loadComments('#comments', function() {
-      var light = 'github-light';
-      var dark = 'github-dark';
-      var schema = document.documentElement.getAttribute('data-user-color-scheme');
-      if (schema === 'dark') {
-        schema = dark;
-      } else {
-        schema = light;
-      }
-      window.UtterancesThemeLight = light;
-      window.UtterancesThemeDark = dark;
-      var s = document.createElement('script');
-      s.setAttribute('src', 'https://utteranc.es/client.js');
-      s.setAttribute('repo', 'loora1n/comment');
-      s.setAttribute('issue-term', 'pathname');
-      
-      s.setAttribute('label', 'utterances');
-      
-      s.setAttribute('theme', schema);
-      s.setAttribute('crossorigin', 'anonymous');
-      document.getElementById('comments').appendChild(s);
-    })
-  </script>
-  <noscript>Please enable JavaScript to view the comments</noscript>
 
-
-  </article>
-
-
-          </article>
-        </div>
-      </div>
-    </div>
-
-    <div class="side-col d-none d-lg-block col-lg-2">
-      
-  <aside class="sidebar" style="margin-left: -1rem">
-    <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
-  <div class="toc-body" id="toc-body"></div>
-</div>
-
-
-
-  </aside>
-
+    
 
     </div>
+
+    
+  </div>
+</article>
+
+  
+
+
+
+
+
+
+
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2023 Loora1N
+    
+  </p>
+</footer>
+    
+    
   </div>
 </div>
-
-
-
-
-
-  
-
-
-
-  
-
-
-
-  
-
-
-
-  
-
-
-
-  
-
-
-
-
-
-
-
-    
-
-    
-      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
-        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
-      </a>
-    
-
-    
-      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
-     aria-hidden="true">
-  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
-        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body mx-3">
-        <div class="md-form mb-5">
-          <input type="text" id="local-search-input" class="form-control validate">
-          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
-        </div>
-        <div class="list-group" id="local-search-result"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-    
-
-    
-  </main>
-
-  <footer>
-    <div class="footer-inner">
-  
-    <div class="footer-content">
-       <a href="https://github.com/Loora1N" target="_blank" rel="nofollow noopener"><span>Loora1N</span></a> <i class="iconfont icon-love"></i> <a href="https://space.bilibili.com/33242548?spm_id_from=333.1007.0.0" target="_blank" rel="nofollow noopener"><span>鷺雨君</span></a>
-    </div>
-  
-  
-    <div class="statistics">
-  
-  
-
-  
-    
-      <span id="leancloud-site-pv-container" style="display: none">
-        总访问量 
-        <span id="leancloud-site-pv"></span>
-         次
-      </span>
-    
-    
-      <span id="leancloud-site-uv-container" style="display: none">
-        总访客数 
-        <span id="leancloud-site-uv"></span>
-         人
-      </span>
-    
-    
-
-  
-</div>
-
-  
-  
-  
-  <span id="timeDate">载入天数...</span>
-  <span id="times">载入时分秒...</span>
-  <script>
-  var now = new Date();
-  function createtime(){
-      var grt= new Date("06/03/2022 00:00:00");//此处修改你的建站时间或者网站上线时间
-      now.setTime(now.getTime()+250);
-      days = (now - grt ) / 1000 / 60 / 60 / 24;
-      dnum = Math.floor(days);
-      hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum);
-      hnum = Math.floor(hours);
-      if(String(hnum).length ==1 ){
-          hnum = "0" + hnum;
-      }
-      minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
-      mnum = Math.floor(minutes);
-      if(String(mnum).length ==1 ){
-                mnum = "0" + mnum;
-      }
-      seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
-      snum = Math.round(seconds);
-      if(String(snum).length ==1 ){
-                snum = "0" + snum;
-      }
-      document.getElementById("timeDate").innerHTML = "🚀running🚀 for&nbsp"+dnum+"&nbspdays";  //此次自定义显示内容
-      document.getElementById("times").innerHTML = hnum + "&nbsphr&nbsp" + mnum + "&nbspmin&nbsp" + snum + "&nbspsec";
-  }  //此次自定义显示内容
-  setInterval("createtime()",250);
-  </script>   
-</div>
-
-  </footer>
-
-  <!-- Scripts -->
-  
-  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
-  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
-
-  <script>
-    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
-    NProgress.start()
-    window.addEventListener('load', function() {
-      NProgress.done();
-    })
-  </script>
-
-
-<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
-<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
-<script  src="/js/events.js" ></script>
-<script  src="/js/plugins.js" ></script>
-
-
-  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
-  <script>
-    (function (window, document) {
-      var typing = Fluid.plugins.typing;
-      var subtitle = document.getElementById('subtitle');
-      if (!subtitle || !typing) {
-        return;
-      }
-      var text = subtitle.getAttribute('data-typed-text');
-      
-        typing(text);
-      
-    })(window, document);
-  </script>
-
-
-
-
-
-
-
-  
-<script>
-  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
-    var toc = jQuery('#toc');
-    if (toc.length === 0 || !window.tocbot) { return; }
-    var boardCtn = jQuery('#board-ctn');
-    var boardTop = boardCtn.offset().top;
-
-    window.tocbot.init(Object.assign({
-      tocSelector     : '#toc-body',
-      contentSelector : '.markdown-body',
-      linkClass       : 'tocbot-link',
-      activeLinkClass : 'tocbot-active-link',
-      listClass       : 'tocbot-list',
-      isCollapsedClass: 'tocbot-is-collapsed',
-      collapsibleClass: 'tocbot-is-collapsible',
-      scrollSmooth    : true,
-      includeTitleTags: true,
-      headingsOffset  : -boardTop,
-    }, CONFIG.toc));
-    if (toc.find('.toc-list-item').length > 0) {
-      toc.css('visibility', 'visible');
-    }
-
-    Fluid.events.registerRefreshCallback(function() {
-      if ('tocbot' in window) {
-        tocbot.refresh();
-        var toc = jQuery('#toc');
-        if (toc.length === 0 || !tocbot) {
-          return;
-        }
-        if (toc.find('.toc-list-item').length > 0) {
-          toc.css('visibility', 'visible');
-        }
-      }
-    });
-  });
-</script>
-
-
-  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
-
-  <script>Fluid.plugins.codeWidget();</script>
-
-
-  
-<script>
-  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
-    window.anchors.options = {
-      placement: CONFIG.anchorjs.placement,
-      visible  : CONFIG.anchorjs.visible
-    };
-    if (CONFIG.anchorjs.icon) {
-      window.anchors.options.icon = CONFIG.anchorjs.icon;
-    }
-    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
-    var res = [];
-    for (var item of el) {
-      res.push('.markdown-body > ' + item.trim());
-    }
-    if (CONFIG.anchorjs.placement === 'left') {
-      window.anchors.options.class = 'anchorjs-link-left';
-    }
-    window.anchors.add(res.join(', '));
-
-    Fluid.events.registerRefreshCallback(function() {
-      if ('anchors' in window) {
-        anchors.removeAll();
-        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
-        var res = [];
-        for (var item of el) {
-          res.push('.markdown-body > ' + item.trim());
-        }
-        if (CONFIG.anchorjs.placement === 'left') {
-          anchors.options.class = 'anchorjs-link-left';
-        }
-        anchors.add(res.join(', '));
-      }
-    });
-  });
-</script>
-
-
-  
-<script>
-  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
-    Fluid.plugins.fancyBox();
-  });
-</script>
-
-
-  <script>Fluid.plugins.imageCaption();</script>
-
-  <script defer src="/js/leancloud.js" ></script>
-
-  <script  src="/js/local-search.js" ></script>
-
-
-
-
-  
-<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/xiantiao.js"></script>
-<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/love.js"></script>
-<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/caidai.js"></script>
-
-
-
-<!-- 主题的启动项，将它保持在最底部 -->
-<!-- the boot of the theme, keep it at the bottom -->
-<script  src="/js/boot.js" ></script>
-
-
-  
-
-  <noscript>
-    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
-  </noscript>
 <!-- hexo injector body_end start -->
   <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
   <script data-pjax>

