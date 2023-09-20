@@ -1,804 +1,231 @@
-
-
 <!DOCTYPE html>
-<html lang="zh-CN" >
-
-<!--浏览器搞笑标题-->
-<script type="text/javascript" src="/js/FunnyTitle.js"></script>
-
-
-
-<head>
-  <meta charset="UTF-8">
-  <link rel="apple-touch-icon" sizes="76x76" href="/img/icon/duck.png">
-  <link rel="icon" href="/img/icon/duck.png">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
-  
-  <meta name="theme-color" content="#f58f98">
-  <meta name="author" content="Loora1N">
-  <meta name="keywords" content="">
-  
-    <meta name="description" content="Blog of Loora1N">
-<meta property="og:type" content="website">
-<meta property="og:title" content="鷺雨のBlog">
-<meta property="og:url" content="http://loora1n.github.io/index.html">
-<meta property="og:site_name" content="鷺雨のBlog">
-<meta property="og:description" content="Blog of Loora1N">
-<meta property="og:locale" content="zh_CN">
-<meta property="article:author" content="Loora1N">
-<meta name="twitter:card" content="summary_large_image">
-  
-  
-  
-  <title>鷺雨のBlog</title>
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
-
-
-
-
-
-<!-- 主题依赖的图标库，不要自行修改 -->
-<!-- Do not modify the link that theme dependent icons -->
-
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
-
-
-
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
-
-
-<link  rel="stylesheet" href="/css/main.css" />
-
-
-  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
-  
-
-
-
-  
-<link rel="stylesheet" href="/css/fluid-extention.css">
-<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/bynotes/texiao/source/css/gundongtiao.css">
-
-
-
-  <script id="fluid-configs">
-    var Fluid = window.Fluid || {};
-    Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"loora1n.github.io","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"lftEbNU4XPuR5dgHNV3WdWxP-gzGzoHsz","app_key":"b3uLUVGLeOWDwREWHMBr0jo9","server_url":"https://lftebnu4.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
-
-    if (CONFIG.web_analytics.follow_dnt) {
-      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
-      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
-    }
-  </script>
-  <script  src="/js/utils.js" ></script>
-  <script  src="/js/color-schema.js" ></script>
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
+<html>
+    <head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
+    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
+    <title>鷺雨のBlog | </title>
     
-  
+<link rel="stylesheet" href="/css/reset.css">
 
+    
+<link rel="stylesheet" href="/css/style.css">
 
+    
+<link rel="stylesheet" href="/css/markdown.css">
 
-  
+    
+<link rel="stylesheet" href="/css/fonts.css">
+
 <meta name="generator" content="Hexo 6.2.0"></head>
-
-
-<body>
-  
-
-  <header>
-    
-
-<div class="header-inner" style="height: 100vh;">
-  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
-  <div class="container">
-    <a class="navbar-brand" href="/">
-      <strong>鷺雨のBlog</strong>
-    </a>
-
-    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
-            data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <div class="animated-icon"><span></span><span></span><span></span></div>
-    </button>
-
-    <!-- Collapsible content -->
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav ml-auto text-center">
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/">
-                <i class="iconfont icon-home-fill"></i>
-                首页
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/archives/">
-                <i class="iconfont icon-archive-fill"></i>
-                归档
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/about/">
-                <i class="iconfont icon-user-fill"></i>
-                关于
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/links/">
-                <i class="iconfont icon-link-fill"></i>
-                友链
-              </a>
-            </li>
-          
-        
-        
-          <li class="nav-item" id="search-btn">
-            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
-              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
-            </a>
-          </li>
-          
-        
-        
-      </ul>
-    </div>
-  </div>
-</nav>
-
-  
-
-<div id="banner" class="banner" parallax=true
-     style="background: url('/img/bg/3.png') no-repeat center center; background-size: cover;">
-  <div class="full-bg-img">
-    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
-      <div class="banner-text text-center fade-in-up">
-        <div class="h2">
-          
-            <span id="subtitle" data-typed-text="子曰：“知者不惑，仁者不憂，勇者不懼”"></span>
-          
-        </div>
-
-        
-      </div>
-
-      
-        <div class="scroll-down-bar">
-          <i class="iconfont icon-arrowdown"></i>
-        </div>
-      
-    </div>
-  </div>
-</div>
-
-</div>
-
-  </header>
-
-  <main>
-    
-      <div class="container nopadding-x-md">
-        <div id="board"
-          style="margin-top: 0">
-          
-          <div class="container">
-            <div class="row">
-              <div class="col-12 col-md-10 m-auto">
+    <body>
+        <div class="paper">
+            <div class="paper-main">
                 
-
-
-  <div class="row mx-auto index-card">
-    
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2023/09/19/qemu%E9%80%83%E9%80%B8/" target="_self">
-          <img src="/img/article/escape-qemu/image-20230504161002653.png" alt="【Virtual】浅谈escape-qemu">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h1 class="index-header">
+                    <div class="header">
+    <a class="logo" href="/">鷺雨のBlog</a>
+    <ul class="nav">
         
-        <a href="/2023/09/19/qemu%E9%80%83%E9%80%B8/" target="_self">
-          【Virtual】浅谈escape-qemu
-        </a>
-      </h1>
+        <li><a href="/">首页</a></li>
+        
+        <li><a href="/archives">归档</a></li>
+        
+        <li><a href="/about">关于</a></li>
+        
+        <li><a href="/links">友链</a></li>
+        
+    </ul>
+</div>
+                
+                <div class="post-list">
+    
+    <div class="post">
+        <a class="post-title" href="/2023/09/19/qemu%E9%80%83%E9%80%B8/">【Virtual】浅谈escape-qemu</a>
+        <div class="post-except">
+            
+qemu逃逸这部分内容，在今年年初就有所涉猎，然而由于本人过于懒惰，这个部分的总结推了整整半年多。直到参加本月的HTICON2023，真正第一次在比赛中面对QEMU逃逸，发现了自己很多的不足之处。借这次机会将这部分内容作以总结。
 
-      
-      <a class="index-excerpt " href="/2023/09/19/qemu%E9%80%83%E9%80%B8/" target="_self">
-        <div>
-          qemu逃逸这部分内容，在今年年初就有所涉猎，然而由于本人过于懒惰，这个部分的总结推了整整半年多。直到参加本月的HTICON2023，真正第一次在比赛中面对QEMU逃逸，发现了自己很多的不足之处。借这次机会将这部分内容作以总结。
+
+PCI设备在目前的QEMU逃逸题目类型中，出题者一般会在qemu-system-x86_64(或是对应arm架构的qemu-system)的二进制程序中加入自己编写的、具有漏洞的PCI设备模块。每个PCI设备都对应一个PCI配置空间，包含该PC
+            <a class="read-more" href="/2023/09/19/qemu%E9%80%83%E9%80%B8/"> ... </a>
         </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-09-19 14:31" pubdate>
-              2023-09-19
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
+        <div class="post-date">2023.09.19</div>
+    </div>
     
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2023/09/11/%E3%80%90Kernel%E3%80%91Linux%20Huge%20Pages/" target="_self">
-          <img src="/img/article/hugepages/v2-e2cadc8bb0e4705001f4262547fb6ded_r.jpg" alt="【Kernel】Linux Huge Pages">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2023/09/11/%E3%80%90Kernel%E3%80%91Linux%20Huge%20Pages/" target="_self">
-          【Kernel】Linux Huge Pages
-        </a>
-      </h1>
+    <div class="post">
+        <a class="post-title" href="/2023/09/11/%E3%80%90Kernel%E3%80%91Linux%20Huge%20Pages/">【Kernel】Linux Huge Pages</a>
+        <div class="post-except">
+            
+在HITCON CTF 2023的一道QEMU escape题目中，利用到了Huge Pages这项技术，借此复现题目的机会，来学习了解下这部分知识。
 
-      
-      <a class="index-excerpt " href="/2023/09/11/%E3%80%90Kernel%E3%80%91Linux%20Huge%20Pages/" target="_self">
-        <div>
-          在HITCON CTF 2023的一道QEMU escape题目中，利用到了Huge Pages这项技术，借此复现题目机会，来学习了解下这部分知识。
+简介当进程使用 RAM 时，CPU 会将其标记为已被该进程使用。为了提高效率，CPU 以块的形式分配 RAM——4K 字节是许多平台上的默认值。这些块被称为页面。页面可以交换到磁盘等。
+由于进程地址空间是虚拟的，CPU和操作系统需要记住哪些页属于哪个进程，以及每个页存储在哪里。页面越多，查找内存映射位置所需的时间就越多。因
+            <a class="read-more" href="/2023/09/11/%E3%80%90Kernel%E3%80%91Linux%20Huge%20Pages/"> ... </a>
         </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-09-11 14:41" pubdate>
-              2023-09-11
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
+        <div class="post-date">2023.09.11</div>
+    </div>
     
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2023/09/07/%E3%80%90trick%E3%80%91house%20of%20blindness/" target="_self">
-          <img src="/img/article/blindness/image-20230907142037610.png" alt="【trick】house of blindness">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2023/09/07/%E3%80%90trick%E3%80%91house%20of%20blindness/" target="_self">
-          【trick】house of blindness
-        </a>
-      </h1>
+    <div class="post">
+        <a class="post-title" href="/2023/09/07/%E3%80%90trick%E3%80%91house%20of%20blindness/">【trick】house of blindness</a>
+        <div class="post-except">
+            
+在WMCTF 2023官方wp中，看到了一个十分新奇的手法house of blindness. 其无需leak地址却仍然能够hijack程序流，这里做以学习研究。本文例题使用WMCTF2023 blindness
+参考文章: issues in exit town - HackMD
 
-      
-      <a class="index-excerpt " href="/2023/09/07/%E3%80%90trick%E3%80%91house%20of%20blindness/" target="_self">
-        <div>
-          在WMCTF 2023官方wp中，看到了一个十分新奇的手法house of blindness. 其无需leak地址却仍然能够hijack程序流，这里做以学习研究
+前置首先补充一个关于malloc的前置知识
+
+如果申请的chunk大小非常大，那么便不会使用ptmalloc来进行chunk的分配，而是调用mmap()
+另外，这样申请出来的chunk位置与
+            <a class="read-more" href="/2023/09/07/%E3%80%90trick%E3%80%91house%20of%20blindness/"> ... </a>
         </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-09-07 18:48" pubdate>
-              2023-09-07
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
+        <div class="post-date">2023.09.07</div>
+    </div>
     
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2023/09/04/%E3%80%90fuzz%E3%80%91AFL%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%20part%202/" target="_self">
-          <img src="/img/article/fuzzAFL2/1632794034_615275b20ecc5e3dc8f7d.png" alt="【fuzz】AFL源码分析 part 2">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2023/09/04/%E3%80%90fuzz%E3%80%91AFL%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%20part%202/" target="_self">
-          【fuzz】AFL源码分析 part 2
-        </a>
-      </h1>
+    <div class="post">
+        <a class="post-title" href="/2023/09/04/%E3%80%90fuzz%E3%80%91AFL%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%20part%202/">【fuzz】AFL源码分析 part 2</a>
+        <div class="post-except">
+            
+上个一个part主要关注的是插桩相关部分的源码，这一节主要来查看afl-fuzz.c这个核心模块的源码部分
 
-      
-      <a class="index-excerpt " href="/2023/09/04/%E3%80%90fuzz%E3%80%91AFL%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%20part%202/" target="_self">
-        <div>
-          上一个part主要关注的是插桩相关部分的源码，本篇主要来查看afl-fuzz.c这个核心模块的源码部分
+概述由于该部分代码体量过大，我们只对核心部分进行源码解析。这部分总体可以分为三块：
+
+初始配置：进行fuzz环境配置相关工作
+fuzz执行：fuzz的主循环过程
+变异策略：测试用例的变异过程和方式
+
+预处理首先从main()函数着手进行分析。在完成初始配置后，main()同样利用time生成随机种子
+gettimeofday(&amp;tv, &amp;tz);
+s
+            <a class="read-more" href="/2023/09/04/%E3%80%90fuzz%E3%80%91AFL%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%20part%202/"> ... </a>
         </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-09-04 19:19" pubdate>
-              2023-09-04
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
+        <div class="post-date">2023.09.04</div>
+    </div>
     
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2023/09/01/%E3%80%90Kernel%E3%80%91%E4%B8%80%E4%BA%9B%E5%85%B3%E9%94%AE%E7%BB%93%E6%9E%84%E4%BD%93%E8%AE%B0%E5%BD%95/" target="_self">
-          <img src="/img/article/ktrick/5IcVxRaFQtg3HCW.png" alt="【Kernel】一些trick记录（持续更新）">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2023/09/01/%E3%80%90Kernel%E3%80%91%E4%B8%80%E4%BA%9B%E5%85%B3%E9%94%AE%E7%BB%93%E6%9E%84%E4%BD%93%E8%AE%B0%E5%BD%95/" target="_self">
-          【Kernel】一些trick记录（持续更新）
-        </a>
-      </h1>
+    <div class="post">
+        <a class="post-title" href="/2023/09/01/%E3%80%90Kernel%E3%80%91%E4%B8%80%E4%BA%9B%E5%85%B3%E9%94%AE%E7%BB%93%E6%9E%84%E4%BD%93%E8%AE%B0%E5%BD%95/">【Kernel】一些trick记录（持续更新）</a>
+        <div class="post-except">
+            pt_regs用于保存用户态–&gt;内核态切换时的用户态信息，在内核态返回时会从pt_regs恢复数据。因而若我们能控制rsp到达此位置，即可以使用用户态寄存器值辅助实现ROP
 
-      
-      <a class="index-excerpt " href="/2023/09/01/%E3%80%90Kernel%E3%80%91%E4%B8%80%E4%BA%9B%E5%85%B3%E9%94%AE%E7%BB%93%E6%9E%84%E4%BD%93%E8%AE%B0%E5%BD%95/" target="_self">
-        <div>
-          持续更新Kernel利用相关的一些结构体和trick
+list_head结构体简单的内核双链表结构，在内核中经常作为实现双链表结构的基础，定义如下
+//	https://elixir.bootlin.com/linux/latest/source/include/linux/types.h#L184
+
+struct list_head &#123;
+
+            <a class="read-more" href="/2023/09/01/%E3%80%90Kernel%E3%80%91%E4%B8%80%E4%BA%9B%E5%85%B3%E9%94%AE%E7%BB%93%E6%9E%84%E4%BD%93%E8%AE%B0%E5%BD%95/"> ... </a>
         </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-09-01 16:22" pubdate>
-              2023-09-01
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
+        <div class="post-date">2023.09.01</div>
+    </div>
     
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2023/08/30/%E3%80%90fuzz%E3%80%91AFL%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%20part%201/" target="_self">
-          <img src="/img/article/fuzzAFL1/1632794006_615275964fc6378475599.png" alt="【fuzz】AFL源码分析 part 1">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2023/08/30/%E3%80%90fuzz%E3%80%91AFL%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%20part%201/" target="_self">
-          【fuzz】AFL源码分析 part 1
-        </a>
-      </h1>
+    <div class="post">
+        <a class="post-title" href="/2023/08/30/%E3%80%90fuzz%E3%80%91AFL%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%20part%201/">【fuzz】AFL源码分析 part 1</a>
+        <div class="post-except">
+            
+本来想一周内完成，看来要延期了，尽量希望能在这几天内完成吧，31号晚上还有qax的一面😭😭，水平果然还是太次了。
+项目地址：google&#x2F;AFL(github.com)
 
-      
-      <a class="index-excerpt " href="/2023/08/30/%E3%80%90fuzz%E3%80%91AFL%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%20part%201/" target="_self">
-        <div>
-          AFL，全称“American Fuzzy Lop”，是由安全研究员Michal Zalewski开发的一款基于覆盖引导（Coverage-guided）的模糊测试工具。本文主要包含插桩部分源码解析，afl-gcc.c，afl-as.c
+前言AFL，全称“American Fuzzy Lop”，是由安全研究员Michal Zalewski开发的一款基于覆盖引导（Coverage-guided）的模糊测试工具，它通过记录输入样本的代码覆盖率（代码执行路径的覆盖情况），以此进行反馈，对输入样本进行调整以提高覆盖率，从而提升发现漏
+            <a class="read-more" href="/2023/08/30/%E3%80%90fuzz%E3%80%91AFL%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%20part%201/"> ... </a>
         </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-08-30 16:17" pubdate>
-              2023-08-30
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
+        <div class="post-date">2023.08.30</div>
+    </div>
     
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2023/08/29/ASAN%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90/" target="_self">
-          <img src="/img/article/asan/v2-2a937f952b8eab88609d9cba28c90959_720w.webp" alt="【fuzz】ASAN原理解析">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2023/08/29/ASAN%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90/" target="_self">
-          【fuzz】ASAN原理解析
-        </a>
-      </h1>
+    <div class="post">
+        <a class="post-title" href="/2023/08/29/ASAN%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90/">【fuzz】ASAN原理解析</a>
+        <div class="post-except">
+            前言
+参考文章：
 
-      
-      <a class="index-excerpt " href="/2023/08/29/ASAN%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90/" target="_self">
-        <div>
-          ASAN（Address Sanitizer）是针对 C/C++ 的快速内存错误检测工具，在运行时检测 C/C++ 代码中的多种内存错误。ASAN 早先是 LLVM 中的特性，后被集成到 GCC 4.8 中，在 4.9 版本中加入了对 ARM 平台的支持。
+工欲善其事必先利其器——AddressSanitizer - 知乎 (zhihu.com)
+google&#x2F;sanitizers(github.com)
+
+
+本所涉及到的相关代码可以在我的仓库内找到：how2ASAN&#x2F;README.md at main · Loora1N&#x2F;how2ASAN (github.com)
+ASAN简介ASAN（Address Sanitizer）是针对 C&#x2F;C++ 的快速内存错误检测工具，在
+            <a class="read-more" href="/2023/08/29/ASAN%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90/"> ... </a>
         </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-08-29 17:24" pubdate>
-              2023-08-29
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
+        <div class="post-date">2023.08.29</div>
+    </div>
     
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2023/08/23/%E3%80%90fuzz%E3%80%91AFL%E7%99%BD%E7%9A%AE%E4%B9%A6%E4%B8%AD%E8%8B%B1%E5%8F%8C%E8%AF%AD%E7%89%88/" target="_self">
-          <img src="/img/article/fuzzdoc/afl_gzip.png" alt="【fuzz】AFL白皮书中英双语版">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2023/08/23/%E3%80%90fuzz%E3%80%91AFL%E7%99%BD%E7%9A%AE%E4%B9%A6%E4%B8%AD%E8%8B%B1%E5%8F%8C%E8%AF%AD%E7%89%88/" target="_self">
-          【fuzz】AFL白皮书中英双语版
-        </a>
-      </h1>
+    <div class="post">
+        <a class="post-title" href="/2023/08/23/%E3%80%90fuzz%E3%80%91AFL%E7%99%BD%E7%9A%AE%E4%B9%A6%E4%B8%AD%E8%8B%B1%E5%8F%8C%E8%AF%AD%E7%89%88/">【fuzz】AFL白皮书中英双语版</a>
+        <div class="post-except">
+            前言
+最近想研究研究AFL整体内部逻辑源码，面试时也遇到了同样的问题，决定从AFL白皮书开始看看。网上有很多翻译版，但是要不就是没写完，要不就是机翻痕迹太重。决定自己完成这个任务，争取在一周内完成大部分核心源码的分析。又想到之前看网络协议栈和IO_FILE时的噩梦了😭😭😭
 
-      
-      <a class="index-excerpt " href="/2023/08/23/%E3%80%90fuzz%E3%80%91AFL%E7%99%BD%E7%9A%AE%E4%B9%A6%E4%B8%AD%E8%8B%B1%E5%8F%8C%E8%AF%AD%E7%89%88/" target="_self">
-        <div>
-          最近想研究研究AFL整体内部逻辑源码，面试时也遇到了同样的问题，决定从AFL白皮书开始看看。网上有很多翻译版，但是要不就是没写完，要不就是机翻痕迹太重。本人英语水平有限，如有问题可以文末评论区直接指出。我想做中英双语版也是尽量在一定程度上防止大家被我的蹩脚翻译带偏。
+本人英语水平有限，如有问题可以文末评论区直接指出。我想做中英双语版也是尽量在一定程度上防止大家被我的蹩脚翻译带偏。
+白皮书的原文部分我都会使用markdown的引用语法，另外，全文使用AFL简写替代
+            <a class="read-more" href="/2023/08/23/%E3%80%90fuzz%E3%80%91AFL%E7%99%BD%E7%9A%AE%E4%B9%A6%E4%B8%AD%E8%8B%B1%E5%8F%8C%E8%AF%AD%E7%89%88/"> ... </a>
         </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-08-23 17:25" pubdate>
-              2023-08-23
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
+        <div class="post-date">2023.08.23</div>
+    </div>
     
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2023/08/22/%E3%80%90fuzz%20trick%E3%80%91%E5%88%A9%E7%94%A8LCOV%E6%B5%8B%E9%87%8F%E4%BB%A3%E7%A0%81%E8%A6%86%E7%9B%96%E7%8E%87/" target="_self">
-          <img src="/img/article/lcov/Image2_2.png" alt="【fuzz trick】利用LCOV测量代码覆盖率">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2023/08/22/%E3%80%90fuzz%20trick%E3%80%91%E5%88%A9%E7%94%A8LCOV%E6%B5%8B%E9%87%8F%E4%BB%A3%E7%A0%81%E8%A6%86%E7%9B%96%E7%8E%87/" target="_self">
-          【fuzz trick】利用LCOV测量代码覆盖率
-        </a>
-      </h1>
+    <div class="post">
+        <a class="post-title" href="/2023/08/22/%E3%80%90fuzz%20trick%E3%80%91%E5%88%A9%E7%94%A8LCOV%E6%B5%8B%E9%87%8F%E4%BB%A3%E7%A0%81%E8%A6%86%E7%9B%96%E7%8E%87/">【fuzz trick】利用LCOV测量代码覆盖率</a>
+        <div class="post-except">
+            
+本文样例为LibTIFF version 4.0.4，以CVE-2016-9297漏洞举例 
 
-      
-      <a class="index-excerpt " href="/2023/08/22/%E3%80%90fuzz%20trick%E3%80%91%E5%88%A9%E7%94%A8LCOV%E6%B5%8B%E9%87%8F%E4%BB%A3%E7%A0%81%E8%A6%86%E7%9B%96%E7%8E%87/" target="_self">
-        <div>
-          好久没更新博客了，这两个月学习kernel加帮忙护网好忙。本文样例为LibTIFF version 4.0.4，来使用lcov辅助查看代码覆盖率
+Install直接使用apt安装包即可
+sudo apt install lcov
+
+Usage整体流程大致如下
+cd ./tiff-4.0.4/
+lcov --zerocounters --directory ./
+lcov --capture --initial --directory ./ --output-file app.info
+../install/bin/tiff
+            <a class="read-more" href="/2023/08/22/%E3%80%90fuzz%20trick%E3%80%91%E5%88%A9%E7%94%A8LCOV%E6%B5%8B%E9%87%8F%E4%BB%A3%E7%A0%81%E8%A6%86%E7%9B%96%E7%8E%87/"> ... </a>
         </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-08-22 13:50" pubdate>
-              2023-08-22
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
+        <div class="post-date">2023.08.22</div>
+    </div>
     
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2023/07/12/%E3%80%90IOT%E3%80%91%E5%B5%8C%E5%85%A5%E5%BC%8F%E8%AE%BE%E5%A4%87%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90/" target="_self">
-          <img src="/img/article/stm32/image-20230711195206201.png" alt="【IOT】嵌入式设备固件分析">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2023/07/12/%E3%80%90IOT%E3%80%91%E5%B5%8C%E5%85%A5%E5%BC%8F%E8%AE%BE%E5%A4%87%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90/" target="_self">
-          【IOT】嵌入式设备固件分析
-        </a>
-      </h1>
+    <div class="post">
+        <a class="post-title" href="/2023/07/12/%E3%80%90IOT%E3%80%91%E5%B5%8C%E5%85%A5%E5%BC%8F%E8%AE%BE%E5%A4%87%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90/">【IOT】嵌入式设备固件分析</a>
+        <div class="post-except">
+            嵌入式设备固件一般可以分为两类：
 
-      
-      <a class="index-excerpt " href="/2023/07/12/%E3%80%90IOT%E3%80%91%E5%B5%8C%E5%85%A5%E5%BC%8F%E8%AE%BE%E5%A4%87%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90/" target="_self">
-        <div>
-          从STM32固件分析入门嵌入式设备逆向
+有文件系统（如路由器固件这种）
+无文件系统（如STM32这种嵌入式设备固件，程序直接存放在flash中）
+
+针对第一类固件，分析起来比较简单，直接binwalk分离。然后去逆向对应的服务对应的二进制程序即可，也不需要考虑程序的加载地址。
+而对于第二类固件，往往就会比较复杂，需要分析程序的加载地址，也需要考虑外设的地址映射。
+
+本文将从SCTF2020的题目Password Lock入手，分析STM32固件作为入门
+
+题目信息这是一个STM3
+            <a class="read-more" href="/2023/07/12/%E3%80%90IOT%E3%80%91%E5%B5%8C%E5%85%A5%E5%BC%8F%E8%AE%BE%E5%A4%87%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90/"> ... </a>
         </div>
-      </a>
+        <div class="post-date">2023.07.12</div>
+    </div>
+    
+</div>
 
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-07-12 10:29" pubdate>
-              2023-07-12
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
+<div class="paginator">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/2/">下一页</a>
+</div>
+
+                <div class="footer">
+    <span>Copyright © 2022 鷺雨のBlog</span>
+    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
+</div>
 
 
-
-  <nav aria-label="navigation">
-    <span class="pagination" id="pagination">
-      <span class="page-number current">1</span><a class="page-number" href="/page/2/#board">2</a><a class="page-number" href="/page/3/#board">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/#board">6</a><a class="extend next" rel="next" href="/page/2/#board"><i class="iconfont icon-arrowright"></i></a>
-    </span>
-  </nav>
+<link rel="stylesheet" href="/css/a11y-dark.min.css">
 
 
+<script src="/js/highlight.min.js"></script>
 
-              </div>
+
+<script src="/js/highlightjs-line-numbers.js"></script>
+
+
+<script>
+    hljs.initHighlightingOnLoad();
+    hljs.initLineNumbersOnLoad();
+</script>
+
             </div>
-          </div>
         </div>
-      </div>
-    
-
-    
-      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
-        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
-      </a>
-    
-
-    
-      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
-     aria-hidden="true">
-  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
-        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body mx-3">
-        <div class="md-form mb-5">
-          <input type="text" id="local-search-input" class="form-control validate">
-          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
-        </div>
-        <div class="list-group" id="local-search-result"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-    
-
-    
-  </main>
-
-  <footer>
-    <div class="footer-inner">
-  
-    <div class="footer-content">
-       <a href="https://github.com/Loora1N" target="_blank" rel="nofollow noopener"><span>Loora1N</span></a> <i class="iconfont icon-love"></i> <a href="https://space.bilibili.com/33242548?spm_id_from=333.1007.0.0" target="_blank" rel="nofollow noopener"><span>鷺雨君</span></a>
-    </div>
-  
-  
-    <div class="statistics">
-  
-  
-
-  
-    
-      <span id="leancloud-site-pv-container" style="display: none">
-        总访问量 
-        <span id="leancloud-site-pv"></span>
-         次
-      </span>
-    
-    
-      <span id="leancloud-site-uv-container" style="display: none">
-        总访客数 
-        <span id="leancloud-site-uv"></span>
-         人
-      </span>
-    
-    
-
-  
-</div>
-
-  
-  
-  
-  <span id="timeDate">载入天数...</span>
-  <span id="times">载入时分秒...</span>
-  <script>
-  var now = new Date();
-  function createtime(){
-      var grt= new Date("06/03/2022 00:00:00");//此处修改你的建站时间或者网站上线时间
-      now.setTime(now.getTime()+250);
-      days = (now - grt ) / 1000 / 60 / 60 / 24;
-      dnum = Math.floor(days);
-      hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum);
-      hnum = Math.floor(hours);
-      if(String(hnum).length ==1 ){
-          hnum = "0" + hnum;
-      }
-      minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
-      mnum = Math.floor(minutes);
-      if(String(mnum).length ==1 ){
-                mnum = "0" + mnum;
-      }
-      seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
-      snum = Math.round(seconds);
-      if(String(snum).length ==1 ){
-                snum = "0" + snum;
-      }
-      document.getElementById("timeDate").innerHTML = "🚀running🚀 for&nbsp"+dnum+"&nbspdays";  //此次自定义显示内容
-      document.getElementById("times").innerHTML = hnum + "&nbsphr&nbsp" + mnum + "&nbspmin&nbsp" + snum + "&nbspsec";
-  }  //此次自定义显示内容
-  setInterval("createtime()",250);
-  </script>   
-</div>
-
-  </footer>
-
-  <!-- Scripts -->
-  
-  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
-  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
-
-  <script>
-    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
-    NProgress.start()
-    window.addEventListener('load', function() {
-      NProgress.done();
-    })
-  </script>
-
-
-<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
-<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
-<script  src="/js/events.js" ></script>
-<script  src="/js/plugins.js" ></script>
-
-
-  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
-  <script>
-    (function (window, document) {
-      var typing = Fluid.plugins.typing;
-      var subtitle = document.getElementById('subtitle');
-      if (!subtitle || !typing) {
-        return;
-      }
-      var text = subtitle.getAttribute('data-typed-text');
-      
-        typing(text);
-      
-    })(window, document);
-  </script>
-
-
-
-
-
-
-
-  <script defer src="/js/leancloud.js" ></script>
-
-  <script  src="/js/local-search.js" ></script>
-
-
-
-
-  
-<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/xiantiao.js"></script>
-<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/love.js"></script>
-<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/caidai.js"></script>
-
-
-
-<!-- 主题的启动项，将它保持在最底部 -->
-<!-- the boot of the theme, keep it at the bottom -->
-<script  src="/js/boot.js" ></script>
-
-
-  
-
-  <noscript>
-    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
-  </noscript>
-<!-- hexo injector body_end start -->
+    <!-- hexo injector body_end start -->
   <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
   <script data-pjax>
         function GithubCalendarConfig(){

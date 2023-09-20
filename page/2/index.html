@@ -1,804 +1,287 @@
-
-
 <!DOCTYPE html>
-<html lang="zh-CN" >
-
-<!--浏览器搞笑标题-->
-<script type="text/javascript" src="/js/FunnyTitle.js"></script>
-
-
-
-<head>
-  <meta charset="UTF-8">
-  <link rel="apple-touch-icon" sizes="76x76" href="/img/icon/duck.png">
-  <link rel="icon" href="/img/icon/duck.png">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
-  
-  <meta name="theme-color" content="#f58f98">
-  <meta name="author" content="Loora1N">
-  <meta name="keywords" content="">
-  
-    <meta name="description" content="Blog of Loora1N">
-<meta property="og:type" content="website">
-<meta property="og:title" content="鷺雨のBlog">
-<meta property="og:url" content="http://loora1n.github.io/page/2/index.html">
-<meta property="og:site_name" content="鷺雨のBlog">
-<meta property="og:description" content="Blog of Loora1N">
-<meta property="og:locale" content="zh_CN">
-<meta property="article:author" content="Loora1N">
-<meta name="twitter:card" content="summary_large_image">
-  
-  
-  
-  <title>鷺雨のBlog</title>
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
-
-
-
-
-
-<!-- 主题依赖的图标库，不要自行修改 -->
-<!-- Do not modify the link that theme dependent icons -->
-
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
-
-
-
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
-
-
-<link  rel="stylesheet" href="/css/main.css" />
-
-
-  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
-  
-
-
-
-  
-<link rel="stylesheet" href="/css/fluid-extention.css">
-<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/bynotes/texiao/source/css/gundongtiao.css">
-
-
-
-  <script id="fluid-configs">
-    var Fluid = window.Fluid || {};
-    Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"loora1n.github.io","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"lftEbNU4XPuR5dgHNV3WdWxP-gzGzoHsz","app_key":"b3uLUVGLeOWDwREWHMBr0jo9","server_url":"https://lftebnu4.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
-
-    if (CONFIG.web_analytics.follow_dnt) {
-      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
-      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
-    }
-  </script>
-  <script  src="/js/utils.js" ></script>
-  <script  src="/js/color-schema.js" ></script>
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
+<html>
+    <head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
+    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
+    <title>鷺雨のBlog | </title>
     
-  
+<link rel="stylesheet" href="/css/reset.css">
 
+    
+<link rel="stylesheet" href="/css/style.css">
 
+    
+<link rel="stylesheet" href="/css/markdown.css">
 
-  
+    
+<link rel="stylesheet" href="/css/fonts.css">
+
 <meta name="generator" content="Hexo 6.2.0"></head>
-
-
-<body>
-  
-
-  <header>
-    
-
-<div class="header-inner" style="height: 100vh;">
-  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
-  <div class="container">
-    <a class="navbar-brand" href="/">
-      <strong>鷺雨のBlog</strong>
-    </a>
-
-    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
-            data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <div class="animated-icon"><span></span><span></span><span></span></div>
-    </button>
-
-    <!-- Collapsible content -->
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav ml-auto text-center">
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/">
-                <i class="iconfont icon-home-fill"></i>
-                首页
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/archives/">
-                <i class="iconfont icon-archive-fill"></i>
-                归档
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/about/">
-                <i class="iconfont icon-user-fill"></i>
-                关于
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/links/">
-                <i class="iconfont icon-link-fill"></i>
-                友链
-              </a>
-            </li>
-          
-        
-        
-          <li class="nav-item" id="search-btn">
-            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
-              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
-            </a>
-          </li>
-          
-        
-        
-      </ul>
-    </div>
-  </div>
-</nav>
-
-  
-
-<div id="banner" class="banner" parallax=true
-     style="background: url('/img/bg/3.png') no-repeat center center; background-size: cover;">
-  <div class="full-bg-img">
-    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
-      <div class="banner-text text-center fade-in-up">
-        <div class="h2">
-          
-            <span id="subtitle" data-typed-text="子曰：“知者不惑，仁者不憂，勇者不懼”"></span>
-          
-        </div>
-
-        
-      </div>
-
-      
-        <div class="scroll-down-bar">
-          <i class="iconfont icon-arrowdown"></i>
-        </div>
-      
-    </div>
-  </div>
-</div>
-
-</div>
-
-  </header>
-
-  <main>
-    
-      <div class="container nopadding-x-md">
-        <div id="board"
-          style="margin-top: 0">
-          
-          <div class="container">
-            <div class="row">
-              <div class="col-12 col-md-10 m-auto">
+    <body>
+        <div class="paper">
+            <div class="paper-main">
                 
-
-
-  <div class="row mx-auto index-card">
-    
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2023/07/10/%E6%9F%90%E5%B8%82%E7%94%B5%E7%BD%91%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98%E5%B0%8F%E8%AE%B0/" target="_self">
-          <img src="/img/article/dig1/image-20230710154558220.png" alt="某市电网漏洞挖掘小记">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h1 class="index-header">
+                    <div class="header">
+    <a class="logo" href="/">鷺雨のBlog</a>
+    <ul class="nav">
         
-        <a href="/2023/07/10/%E6%9F%90%E5%B8%82%E7%94%B5%E7%BD%91%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98%E5%B0%8F%E8%AE%B0/" target="_self">
-          某市电网漏洞挖掘小记
-        </a>
-      </h1>
+        <li><a href="/">首页</a></li>
+        
+        <li><a href="/archives">归档</a></li>
+        
+        <li><a href="/about">关于</a></li>
+        
+        <li><a href="/links">友链</a></li>
+        
+    </ul>
+</div>
+                
+                <div class="post-list">
+    
+    <div class="post">
+        <a class="post-title" href="/2023/07/10/%E6%9F%90%E5%B8%82%E7%94%B5%E7%BD%91%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98%E5%B0%8F%E8%AE%B0/">某市电网漏洞挖掘小记</a>
+        <div class="post-except">
+            由于电网设施保护非常严格，整个网络拓扑也异常复杂，说实话前两天一直在梳理整个体系架构（后来发现完全没必要）。整整4天，找到两个栈溢出，但都没法利用，只好按DOS交了。据我了解，从外网进入内部网络的可能性几乎没有，实际漏挖也是需要线下网线接入交换机。
 
-      
-      <a class="index-excerpt " href="/2023/07/10/%E6%9F%90%E5%B8%82%E7%94%B5%E7%BD%91%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98%E5%B0%8F%E8%AE%B0/" target="_self">
-        <div>
-          上周实习出差去某市国家电网进行二进制漏洞挖掘，也算是第一次实际环境漏挖。
+ 说实话我也不知道这种内网漏洞的意义是什么，感觉像是审潜在代码BUG
+
+接入设备首先就是接入交换机然后ssh上服务器，不过接入的时候是不能开启wifi，不能连接其他网络，不然监管系统会一直报警👮👮👮
+ssh上去之后的第一件
+            <a class="read-more" href="/2023/07/10/%E6%9F%90%E5%B8%82%E7%94%B5%E7%BD%91%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98%E5%B0%8F%E8%AE%B0/"> ... </a>
         </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-07-10 15:47" pubdate>
-              2023-07-10
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
+        <div class="post-date">2023.07.10</div>
+    </div>
     
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2023/05/16/%E3%80%90kernel%E3%80%91AntCTFxD3%5ECTF%20d3op%20WP/" target="_self">
-          <img src="/img/article/d3op/20230516214338.png" alt="【WP】AntCTFxD3^CTF d3op">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2023/05/16/%E3%80%90kernel%E3%80%91AntCTFxD3%5ECTF%20d3op%20WP/" target="_self">
-          【WP】AntCTFxD3^CTF d3op
-        </a>
-      </h1>
+    <div class="post">
+        <a class="post-title" href="/2023/05/16/%E3%80%90kernel%E3%80%91AntCTFxD3%5ECTF%20d3op%20WP/">【WP】AntCTFxD3^CTF d3op</a>
+        <div class="post-except">
+            
+本文采取根据官方wp的方式进行复现，需要官方WP的pdf文件也可以在评论区留言（侵删）
 
-      
-      <a class="index-excerpt " href="/2023/05/16/%E3%80%90kernel%E3%80%91AntCTFxD3%5ECTF%20d3op%20WP/" target="_self">
-        <div>
-          D3CTF一道iot的题目复现
+文件系统分析首先解压文件系统
+mkdir rootfs
+cd rootfs
+unsquashfs ../unsquashfs ../squashfs-root.img  
+
+在etc/os-release中我们能看到版本信息
+NAME=&quot;OpenWrt&quot;
+VERSION=&quot;22.03.3&quot;
+ID=&quot;openwrt&quot;
+ID_LI
+            <a class="read-more" href="/2023/05/16/%E3%80%90kernel%E3%80%91AntCTFxD3%5ECTF%20d3op%20WP/"> ... </a>
         </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-05-16 21:42" pubdate>
-              2023-05-16
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
+        <div class="post-date">2023.05.16</div>
+    </div>
     
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2023/04/25/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH8%E5%8F%8ACH23/" target="_self">
-          <img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH8%E5%8F%8ACH23.assets/image-20230425092925635.png" alt="网络协议栈CH8及CH23">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2023/04/25/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH8%E5%8F%8ACH23/" target="_self">
-          网络协议栈CH8及CH23
-        </a>
-      </h1>
+    <div class="post">
+        <a class="post-title" href="/2023/04/25/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH8%E5%8F%8ACH23/">网络协议栈CH8及CH23</a>
+        <div class="post-except">
+            
+昨晚搞到快两点，今天9.30才起床，希望11点半之前能搞完去吃饭😭
 
-      
-      <a class="index-excerpt " href="/2023/04/25/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH8%E5%8F%8ACH23/" target="_self">
-        <div>
-          昨晚搞到快两点，今天9.30才起床，希望11点半之前能搞完去吃饭😭
+第八章 IP：网际协议IP分组
+参照上图，有几个基本概念（本例中的传输层协议为UDP）：
+
+报文：由传输层送至IP的数据报，本身包含传输层首部和数据
+数据报：IP在报文的前面加上自己的IP首部，且根据长度考虑是否分片（上图1-2行）
+帧：IP将分好片的数据报交给数据链路层，数据链路填上自己的首部后变为帧（上图3行）
+分组：一个分片的数据报或者一个不需分片的数据报为分组
+
+
+ 需注意的是IP数据报结构存储
+            <a class="read-more" href="/2023/04/25/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH8%E5%8F%8ACH23/"> ... </a>
         </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-04-25 11:42" pubdate>
-              2023-04-25
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
+        <div class="post-date">2023.04.25</div>
+    </div>
     
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2023/04/25/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH4%E5%8F%8ACH6/" target="_self">
-          <img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH4%E5%8F%8ACH6.assets/image-20230424225903986.png" alt="网络协议栈CH4及CH6">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2023/04/25/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH4%E5%8F%8ACH6/" target="_self">
-          网络协议栈CH4及CH6
-        </a>
-      </h1>
-
-      
-      <a class="index-excerpt " href="/2023/04/25/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH4%E5%8F%8ACH6/" target="_self">
-        <div>
-          这两章复习的真没什么道理，全是函数源码分析，实在没什么看头。课件上还有几个练习题可以看看，希望考试别恶心人。
+    <div class="post">
+        <a class="post-title" href="/2023/04/25/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH4%E5%8F%8ACH6/">网络协议栈CH4及CH6</a>
+        <div class="post-except">
+            题外话
+去年11月份做IO相关源码的时候就已经觉得有些宏定义纯纯恶心，没想到今日的网络协议栈再一次体会了这种感觉😅，感谢网络协议栈让我重温旧日的美好时光。
+第四章 接口：以太网以太网接口
+IP分组的以太网帧如上图所示，包含6字节的目的和源地址，2字节的类型，末尾4字节的CRC。前14个字节我们在上一篇文章讨论输入输出时已经见过。对于IP分组，其类型是固定的0x0800（十进制2048）
+leintr函数
+ 感觉记住这几个函数干什么就行，也没啥特别说的。一个个源码都挺长的，放
+            <a class="read-more" href="/2023/04/25/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH4%E5%8F%8ACH6/"> ... </a>
         </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-04-25 01:42" pubdate>
-              2023-04-25
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
+        <div class="post-date">2023.04.25</div>
+    </div>
     
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2023/04/24/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88%E5%A4%8D%E4%B9%A0/" target="_self">
-          <img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88%E5%A4%8D%E4%B9%A0.assets/image-20230424174856553.png" alt="网络协议栈CH1-CH3">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2023/04/24/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88%E5%A4%8D%E4%B9%A0/" target="_self">
-          网络协议栈CH1-CH3
-        </a>
-      </h1>
+    <div class="post">
+        <a class="post-title" href="/2023/04/24/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88%E5%A4%8D%E4%B9%A0/">网络协议栈CH1-CH3</a>
+        <div class="post-except">
+            
+参考教材《TCP&#x2F;IP详解 卷2：实现》，文内示意图大多取自该教材。本文为复习时自行总结，难免存在不全或者错误，求求大伙轻喷。如有问题可以留言在文末评论区，或者直接私聊，我会及时更改文章内容。
 
-      
-      <a class="index-excerpt " href="/2023/04/24/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88%E5%A4%8D%E4%B9%A0/" target="_self">
-        <div>
-          参考教材《TCP/IP详解 卷2：实现》，文内示意图大多取自该教材。本文为复习时自行总结，难免存在不全或者错误，求求大伙轻喷。如有问题可以留言在文末评论区，或者直接私聊，我会及时更改文章内容。
+第一章 概述基本框架网络输入输出层间框架基本框架如下图所示，我们会在后面详细讨论输入输出
+
+UDP示例socket程序框架
+这段C代码也充当后续我们分析输入输出时的例子
+
+/*
+* Send a UDP datagram to the daytime server on 
+            <a class="read-more" href="/2023/04/24/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88%E5%A4%8D%E4%B9%A0/"> ... </a>
         </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-04-24 22:34" pubdate>
-              2023-04-24
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
+        <div class="post-date">2023.04.24</div>
+    </div>
     
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2023/03/31/%E3%80%90Linux%20kernel%E5%85%A5%E9%97%A8%E3%80%91%E5%86%85%E6%A0%B8%E6%9C%AC%E5%9C%B0%E8%B0%83%E8%AF%95/" target="_self">
-          <img src="/img/article/kernelgdb/image-20230331205128408.png" alt="【kernel】内核本地调试入门">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2023/03/31/%E3%80%90Linux%20kernel%E5%85%A5%E9%97%A8%E3%80%91%E5%86%85%E6%A0%B8%E6%9C%AC%E5%9C%B0%E8%B0%83%E8%AF%95/" target="_self">
-          【kernel】内核本地调试入门
-        </a>
-      </h1>
+    <div class="post">
+        <a class="post-title" href="/2023/03/31/%E3%80%90Linux%20kernel%E5%85%A5%E9%97%A8%E3%80%91%E5%86%85%E6%A0%B8%E6%9C%AC%E5%9C%B0%E8%B0%83%E8%AF%95/">【kernel】内核本地调试入门</a>
+        <div class="post-except">
+            提取vmlinux使用extract-vmlinux脚本提取，脚本下载地址：linux&#x2F;extract-vmlinux at master · torvalds&#x2F;linux (github.com)
+./extract-vmlinux ./bzImage &gt; vmlinux
 
-      
-      <a class="index-excerpt " href="/2023/03/31/%E3%80%90Linux%20kernel%E5%85%A5%E9%97%A8%E3%80%91%E5%86%85%E6%A0%B8%E6%9C%AC%E5%9C%B0%E8%B0%83%E8%AF%95/" target="_self">
-        <div>
-          pwn题目本地调试kernel及exp的方式
+开放调试端口在boot.sh中加入如下参数
+-gdb tcp::[port]
+#如下
+-gdb tcp::1234
+
+启动boot.sh
+调试
+root权限下运行
+
+gdb .
+            <a class="read-more" href="/2023/03/31/%E3%80%90Linux%20kernel%E5%85%A5%E9%97%A8%E3%80%91%E5%86%85%E6%A0%B8%E6%9C%AC%E5%9C%B0%E8%B0%83%E8%AF%95/"> ... </a>
         </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-03-31 20:53" pubdate>
-              2023-03-31
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
+        <div class="post-date">2023.03.31</div>
+    </div>
     
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2023/03/29/%E3%80%90kernel%E3%80%91%E6%8F%90%E6%9D%83%E5%85%A5%E9%97%A8-part2/" target="_self">
-          <img src="/img/article/%E6%8F%90%E6%9D%83%E5%85%A5%E9%97%A8/QQ%E5%9B%BE%E7%89%8720230329223721.png" alt="【kernel】提权入门-part2">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2023/03/29/%E3%80%90kernel%E3%80%91%E6%8F%90%E6%9D%83%E5%85%A5%E9%97%A8-part2/" target="_self">
-          【kernel】提权入门-part2
-        </a>
-      </h1>
+    <div class="post">
+        <a class="post-title" href="/2023/03/29/%E3%80%90kernel%E3%80%91%E6%8F%90%E6%9D%83%E5%85%A5%E9%97%A8-part2/">【kernel】提权入门-part2</a>
+        <div class="post-except">
+            如果我们可以改变特权进程的执行轨迹，也可以实现提权。这里我们从以下角度来考虑如何改变特权进程的执行轨迹。
 
-      
-      <a class="index-excerpt " href="/2023/03/29/%E3%80%90kernel%E3%80%91%E6%8F%90%E6%9D%83%E5%85%A5%E9%97%A8-part2/" target="_self">
-        <div>
-          从更改其他进程角度考虑提权思路
+改数据
+改代码
+
+改数据符号链接如果一个 root 权限的进程会执行一个符号链接的程序，并且该符号链接或者符号链接指向的程序可以由攻击者控制，攻击者就可以实现提权。
+call_usermodehelpercall_usermodehelper 是一种内核线程执行用户态应用的方式，并且启动的进程具有 root 权限。因此，如果我们能够控制具体要执行的应用，那就可以实现提权
+            <a class="read-more" href="/2023/03/29/%E3%80%90kernel%E3%80%91%E6%8F%90%E6%9D%83%E5%85%A5%E9%97%A8-part2/"> ... </a>
         </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-03-29 23:01" pubdate>
-              2023-03-29
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
+        <div class="post-date">2023.03.29</div>
+    </div>
     
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2023/03/29/%E3%80%90kernel%E3%80%91%E6%8F%90%E6%9D%83%E5%85%A5%E9%97%A8-part1/" target="_self">
-          <img src="/img/article/%E6%8F%90%E6%9D%83%E5%85%A5%E9%97%A8/QQ%E5%9B%BE%E7%89%8720230329223721.png" alt="【kernel】提权入门-part1">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2023/03/29/%E3%80%90kernel%E3%80%91%E6%8F%90%E6%9D%83%E5%85%A5%E9%97%A8-part1/" target="_self">
-          【kernel】提权入门-part1
-        </a>
-      </h1>
+    <div class="post">
+        <a class="post-title" href="/2023/03/29/%E3%80%90kernel%E3%80%91%E6%8F%90%E6%9D%83%E5%85%A5%E9%97%A8-part1/">【kernel】提权入门-part1</a>
+        <div class="post-except">
+            
+纠结了很久，决定还是开启这个模块的学习，在这个路口迷茫了很久了，一直没有决定好走向何处。虽然有可能会走错路，可能会学习很多看起来没用的东西，但希望Kernel的学习能够带我刚开始接触PWN时的乐趣。将会主要借助CTF wiki和《从0到1》
 
-      
-      <a class="index-excerpt " href="/2023/03/29/%E3%80%90kernel%E3%80%91%E6%8F%90%E6%9D%83%E5%85%A5%E9%97%A8-part1/" target="_self">
-        <div>
-          从cred角度考虑提权思路
+前置内核会通过进程的 task_struct 结构体中的 cred 指针来索引 cred 结构体，然后根据 cred 的内容来判断一个进程拥有的权限，如果 cred 结构体成员中的 uid-fsgid 都为 0，那一般就会认为进程具有
+            <a class="read-more" href="/2023/03/29/%E3%80%90kernel%E3%80%91%E6%8F%90%E6%9D%83%E5%85%A5%E9%97%A8-part1/"> ... </a>
         </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-03-29 23:01" pubdate>
-              2023-03-29
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
+        <div class="post-date">2023.03.29</div>
+    </div>
     
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2023/03/29/Linux%20Syscall%20Reference(64%20bit)/" target="_self">
-          <img src="/img/article/syscall/QQ%E5%9B%BE%E7%89%8720230329195658.png" alt="Linux Syscall Reference(64 bit)">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2023/03/29/Linux%20Syscall%20Reference(64%20bit)/" target="_self">
-          Linux Syscall Reference(64 bit)
-        </a>
-      </h1>
+    <div class="post">
+        <a class="post-title" href="/2023/03/29/Linux%20Syscall%20Reference(64%20bit)/">Linux Syscall Reference(64 bit)</a>
+        <div class="post-except">
+            
+列举了全部的64位syscall调用表，方便离线时进行查询
 
-      
-      <a class="index-excerpt " href="/2023/03/29/Linux%20Syscall%20Reference(64%20bit)/" target="_self">
-        <div>
-          列举了全部的64位syscall调用表，方便离线时进行查询
+
+
+
+#
+Name
+Registers
+Definition
+
+
+
+
+
+
+
+
+
+rax
+rdi
+rsi
+rdx
+r10
+r8
+r9
+
+
+
+
+
+0
+sys_read
+0x00
+unsigned int fd
+char __user *buf
+size_t count
+-
+-
+-
+fs&#x2F;read_write.c:621
+
+
+1
+sys_write
+0x01
+unsigned int fd
+const cha
+            <a class="read-more" href="/2023/03/29/Linux%20Syscall%20Reference(64%20bit)/"> ... </a>
         </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-03-29 19:41" pubdate>
-              2023-03-29
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
+        <div class="post-date">2023.03.29</div>
+    </div>
     
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2023/03/20/%E8%B7%B3%E8%BD%AC%E6%8C%87%E4%BB%A4%E6%B1%87%E6%80%BB/" target="_self">
-          <img src="/img/article/jmp/20230320213635.png" alt="跳转指令汇总">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2023/03/20/%E8%B7%B3%E8%BD%AC%E6%8C%87%E4%BB%A4%E6%B1%87%E6%80%BB/" target="_self">
-          跳转指令汇总
-        </a>
-      </h1>
+    <div class="post">
+        <a class="post-title" href="/2023/03/20/%E8%B7%B3%E8%BD%AC%E6%8C%87%E4%BB%A4%E6%B1%87%E6%80%BB/">跳转指令汇总</a>
+        <div class="post-except">
+            无条件跳转JMP ;无条件跳转
 
-      
-      <a class="index-excerpt " href="/2023/03/20/%E8%B7%B3%E8%BD%AC%E6%8C%87%E4%BB%A4%E6%B1%87%E6%80%BB/" target="_self">
-        <div>
-          跳转指令汇总，方便查询
+根据CX、ECX寄存器的值跳转JCXZ ;CX 为 0 则跳转
+JECXZ;ECX 为 0 则跳转
+
+根据标志位跳转的指令JE ;等于则跳转同JZJNE ;不等于则跳转同JNZ
+JNE ;不等于则跳转
+JA   ;无符号大于则跳转
+JNA  ;无符号不大于则跳转
+JAE  ;无符号大于等于则跳转		同JNB
+JNAE ;无符号不大于等于则跳转	同JB
+JB   ;无符号小于则跳转
+JNB  ;无符号不小于则跳转
+JBE  ;无符号小于等于则跳
+            <a class="read-more" href="/2023/03/20/%E8%B7%B3%E8%BD%AC%E6%8C%87%E4%BB%A4%E6%B1%87%E6%80%BB/"> ... </a>
         </div>
-      </a>
+        <div class="post-date">2023.03.20</div>
+    </div>
+    
+</div>
 
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-03-20 21:34" pubdate>
-              2023-03-20
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
+<div class="paginator">
+    <a class="extend prev" rel="prev" href="/">上一页</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/3/">下一页</a>
+</div>
+
+                <div class="footer">
+    <span>Copyright © 2022 鷺雨のBlog</span>
+    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
+</div>
 
 
-
-  <nav aria-label="navigation">
-    <span class="pagination" id="pagination">
-      <a class="extend prev" rel="prev" href="/"><i class="iconfont icon-arrowleft"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/#board">3</a><a class="page-number" href="/page/4/#board">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/#board">6</a><a class="extend next" rel="next" href="/page/3/#board"><i class="iconfont icon-arrowright"></i></a>
-    </span>
-  </nav>
+<link rel="stylesheet" href="/css/a11y-dark.min.css">
 
 
+<script src="/js/highlight.min.js"></script>
 
-              </div>
+
+<script src="/js/highlightjs-line-numbers.js"></script>
+
+
+<script>
+    hljs.initHighlightingOnLoad();
+    hljs.initLineNumbersOnLoad();
+</script>
+
             </div>
-          </div>
         </div>
-      </div>
-    
-
-    
-      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
-        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
-      </a>
-    
-
-    
-      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
-     aria-hidden="true">
-  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
-        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body mx-3">
-        <div class="md-form mb-5">
-          <input type="text" id="local-search-input" class="form-control validate">
-          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
-        </div>
-        <div class="list-group" id="local-search-result"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-    
-
-    
-  </main>
-
-  <footer>
-    <div class="footer-inner">
-  
-    <div class="footer-content">
-       <a href="https://github.com/Loora1N" target="_blank" rel="nofollow noopener"><span>Loora1N</span></a> <i class="iconfont icon-love"></i> <a href="https://space.bilibili.com/33242548?spm_id_from=333.1007.0.0" target="_blank" rel="nofollow noopener"><span>鷺雨君</span></a>
-    </div>
-  
-  
-    <div class="statistics">
-  
-  
-
-  
-    
-      <span id="leancloud-site-pv-container" style="display: none">
-        总访问量 
-        <span id="leancloud-site-pv"></span>
-         次
-      </span>
-    
-    
-      <span id="leancloud-site-uv-container" style="display: none">
-        总访客数 
-        <span id="leancloud-site-uv"></span>
-         人
-      </span>
-    
-    
-
-  
-</div>
-
-  
-  
-  
-  <span id="timeDate">载入天数...</span>
-  <span id="times">载入时分秒...</span>
-  <script>
-  var now = new Date();
-  function createtime(){
-      var grt= new Date("06/03/2022 00:00:00");//此处修改你的建站时间或者网站上线时间
-      now.setTime(now.getTime()+250);
-      days = (now - grt ) / 1000 / 60 / 60 / 24;
-      dnum = Math.floor(days);
-      hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum);
-      hnum = Math.floor(hours);
-      if(String(hnum).length ==1 ){
-          hnum = "0" + hnum;
-      }
-      minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
-      mnum = Math.floor(minutes);
-      if(String(mnum).length ==1 ){
-                mnum = "0" + mnum;
-      }
-      seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
-      snum = Math.round(seconds);
-      if(String(snum).length ==1 ){
-                snum = "0" + snum;
-      }
-      document.getElementById("timeDate").innerHTML = "🚀running🚀 for&nbsp"+dnum+"&nbspdays";  //此次自定义显示内容
-      document.getElementById("times").innerHTML = hnum + "&nbsphr&nbsp" + mnum + "&nbspmin&nbsp" + snum + "&nbspsec";
-  }  //此次自定义显示内容
-  setInterval("createtime()",250);
-  </script>   
-</div>
-
-  </footer>
-
-  <!-- Scripts -->
-  
-  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
-  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
-
-  <script>
-    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
-    NProgress.start()
-    window.addEventListener('load', function() {
-      NProgress.done();
-    })
-  </script>
-
-
-<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
-<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
-<script  src="/js/events.js" ></script>
-<script  src="/js/plugins.js" ></script>
-
-
-  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
-  <script>
-    (function (window, document) {
-      var typing = Fluid.plugins.typing;
-      var subtitle = document.getElementById('subtitle');
-      if (!subtitle || !typing) {
-        return;
-      }
-      var text = subtitle.getAttribute('data-typed-text');
-      
-        typing(text);
-      
-    })(window, document);
-  </script>
-
-
-
-
-
-
-
-  <script defer src="/js/leancloud.js" ></script>
-
-  <script  src="/js/local-search.js" ></script>
-
-
-
-
-  
-<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/xiantiao.js"></script>
-<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/love.js"></script>
-<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/caidai.js"></script>
-
-
-
-<!-- 主题的启动项，将它保持在最底部 -->
-<!-- the boot of the theme, keep it at the bottom -->
-<script  src="/js/boot.js" ></script>
-
-
-  
-
-  <noscript>
-    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
-  </noscript>
-<!-- hexo injector body_end start -->
+    <!-- hexo injector body_end start -->
   <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
   <script data-pjax>
         function GithubCalendarConfig(){

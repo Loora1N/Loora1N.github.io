@@ -1,294 +1,48 @@
-
-
 <!DOCTYPE html>
-<html lang="zh-CN" >
-
-<!--浏览器搞笑标题-->
-<script type="text/javascript" src="/js/FunnyTitle.js"></script>
-
-
-
-<head>
-  <meta charset="UTF-8">
-  <link rel="apple-touch-icon" sizes="76x76" href="/img/icon/duck.png">
-  <link rel="icon" href="/img/icon/duck.png">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
-  
-  <meta name="theme-color" content="#f58f98">
-  <meta name="author" content="Loora1N">
-  <meta name="keywords" content="">
-  
-    <meta name="description" content="这两章复习的真没什么道理，全是函数源码分析，实在没什么看头。课件上还有几个练习题可以看看，希望考试别恶心人。">
-<meta property="og:type" content="article">
-<meta property="og:title" content="网络协议栈CH4及CH6">
-<meta property="og:url" content="http://loora1n.github.io/2023/04/25/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH4%E5%8F%8ACH6/index.html">
-<meta property="og:site_name" content="鷺雨のBlog">
-<meta property="og:description" content="这两章复习的真没什么道理，全是函数源码分析，实在没什么看头。课件上还有几个练习题可以看看，希望考试别恶心人。">
-<meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://loora1n.github.io/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH4%E5%8F%8ACH6.assets/image-20230424225903986.png">
-<meta property="article:published_time" content="2023-04-24T17:42:20.756Z">
-<meta property="article:modified_time" content="2023-04-24T17:42:20.756Z">
-<meta property="article:author" content="Loora1N">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://loora1n.github.io/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH4%E5%8F%8ACH6.assets/image-20230424225903986.png">
-  
-  
-  
-  <title>网络协议栈CH4及CH6 - 鷺雨のBlog</title>
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
-
-
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
-
-
-
-<!-- 主题依赖的图标库，不要自行修改 -->
-<!-- Do not modify the link that theme dependent icons -->
-
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
-
-
-
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
-
-
-<link  rel="stylesheet" href="/css/main.css" />
-
-
-  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
-  
-
-
-
-  
-<link rel="stylesheet" href="/css/fluid-extention.css">
-<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/bynotes/texiao/source/css/gundongtiao.css">
-
-
-
-  <script id="fluid-configs">
-    var Fluid = window.Fluid || {};
-    Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"loora1n.github.io","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"lftEbNU4XPuR5dgHNV3WdWxP-gzGzoHsz","app_key":"b3uLUVGLeOWDwREWHMBr0jo9","server_url":"https://lftebnu4.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
-
-    if (CONFIG.web_analytics.follow_dnt) {
-      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
-      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
-    }
-  </script>
-  <script  src="/js/utils.js" ></script>
-  <script  src="/js/color-schema.js" ></script>
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
+<html>
+    <head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
+    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
+    <title>鷺雨のBlog | </title>
     
-  
+<link rel="stylesheet" href="/css/reset.css">
 
+    
+<link rel="stylesheet" href="/css/style.css">
 
+    
+<link rel="stylesheet" href="/css/markdown.css">
 
-  
+    
+<link rel="stylesheet" href="/css/fonts.css">
+
 <meta name="generator" content="Hexo 6.2.0"></head>
-
-
-<body>
-  
-
-  <header>
-    
-
-<div class="header-inner" style="height: 70vh;">
-  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
-  <div class="container">
-    <a class="navbar-brand" href="/">
-      <strong>鷺雨のBlog</strong>
-    </a>
-
-    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
-            data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <div class="animated-icon"><span></span><span></span><span></span></div>
-    </button>
-
-    <!-- Collapsible content -->
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav ml-auto text-center">
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/">
-                <i class="iconfont icon-home-fill"></i>
-                首页
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/archives/">
-                <i class="iconfont icon-archive-fill"></i>
-                归档
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/about/">
-                <i class="iconfont icon-user-fill"></i>
-                关于
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/links/">
-                <i class="iconfont icon-link-fill"></i>
-                友链
-              </a>
-            </li>
-          
-        
-        
-          <li class="nav-item" id="search-btn">
-            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
-              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
-            </a>
-          </li>
-          
-        
-        
-      </ul>
-    </div>
-  </div>
-</nav>
-
-  
-
-<div id="banner" class="banner" parallax=true
-     style="background: url('/img/bg/3.png') no-repeat center center; background-size: cover;">
-  <div class="full-bg-img">
-    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
-      <div class="banner-text text-center fade-in-up">
-        <div class="h2">
-          
-            <span id="subtitle" data-typed-text="网络协议栈CH4及CH6"></span>
-          
-        </div>
-
-        
-          
-  <div class="mt-3">
-    
-    
-      <span class="post-meta">
-        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-04-25 01:42" pubdate>
-          2023年4月25日 凌晨
-        </time>
-      </span>
-    
-  </div>
-
-  <div class="mt-1">
-    
-      <span class="post-meta mr-2">
-        <i class="iconfont icon-chart"></i>
-        
-          2.8k 字
-        
-      </span>
-    
-
-    
-      <span class="post-meta mr-2">
-        <i class="iconfont icon-clock-fill"></i>
-        
-        
-        
-          23 分钟
-        
-      </span>
-    
-
-    
-    
-      
-        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
-          <i class="iconfont icon-eye" aria-hidden="true"></i>
-          阅读量 <span id="leancloud-page-views"></span>
-        </span>
-        
-      
-    
-  </div>
-
-
-        
-      </div>
-
-      
-    </div>
-  </div>
-</div>
-
-</div>
-
-  </header>
-
-  <main>
-    
-      
-
-<div class="container-fluid nopadding-x">
-  <div class="row nomargin-x">
-    <div class="side-col d-none d-lg-block col-lg-2">
-      
-
-    </div>
-
-    <div class="col-lg-8 nopadding-x-md">
-      <div class="container nopadding-x-md" id="board-ctn">
-        <div id="board">
-          <article class="post-content mx-auto">
-            <!-- SEO header -->
-            <h1 style="display: none">网络协议栈CH4及CH6</h1>
-            
-            
-              <div class="markdown-body">
+    <body>
+        <div class="paper">
+            <div class="paper-main">
                 
-                <h2 id="题外话"><a href="#题外话" class="headerlink" title="题外话"></a>题外话</h2><p><img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH4%E5%8F%8ACH6.assets/image-20230424232559912.png" alt="image-20230424232559912"></p>
+                    <div class="post-header">
+    <a class="logo" href="/">鷺雨のBlog</a>
+    <a class="go-home" href="/">
+        <svg width="8" height="14" viewBox="0 0 8 14">
+            <path d="M7 1L1 7l6 6" stroke="#000" stroke-width="2" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </a>
+</div>
+                
+                <div class="post-main">
+
+    
+    
+        <div class="post-main-title">
+            网络协议栈CH4及CH6
+        </div>
+        <div class="post-meta">
+            2023-04-25
+        </div>
+        <div class="post-md">
+            <h2 id="题外话"><a href="#题外话" class="headerlink" title="题外话"></a>题外话</h2><p><img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH4%E5%8F%8ACH6.assets/image-20230424232559912.png" alt="image-20230424232559912"></p>
 <p>去年11月份做IO相关源码的时候就已经觉得有些宏定义纯纯恶心，没想到今日的网络协议栈再一次体会了这种感觉😅，感谢网络协议栈让我重温旧日的美好时光。</p>
 <h2 id="第四章-接口：以太网"><a href="#第四章-接口：以太网" class="headerlink" title="第四章 接口：以太网"></a>第四章 接口：以太网</h2><h3 id="以太网接口"><a href="#以太网接口" class="headerlink" title="以太网接口"></a>以太网接口</h3><p><img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH4%E5%8F%8ACH6.assets/image-20230424225903986.png" alt="image-20230424225903986"></p>
 <p>IP分组的以太网帧如上图所示，包含6字节的目的和源地址，2字节的类型，末尾4字节的CRC。前14个字节我们在上一篇文章讨论输入输出时已经见过。对于IP分组，其类型是固定的<strong>0x0800</strong>（十进制2048）</p>
@@ -296,8 +50,12 @@
 <p> 感觉记住这几个函数干什么就行，也没啥特别说的。一个个源码都挺长的，放上来估计也没人想看。</p>
 </blockquote>
 <p><code>leintr</code>检测硬件，并且如果有一个帧到达，就调用<code>leread</code>把这个帧从接口转移到一个mbuf链中。如果硬件报告一个帧已传输完或发现一个差错(如一个有错误的检验和)，则<code>leintr</code>更新相应的接口统计，复位这个硬件,并调用<code>lestart</code>来传输另一个帧。所有以太网设备驱动程序将它们接收到的帧传给<code>ether_input</code>做进一步的处理。设备驱动程序构造的mbuf链不包括以太网首部，以太网首部作为一个独立的参数传递给<code>ether_input</code>。结构<code>ether_header</code>如下所示：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">ether_</span> <span class="hljs-title">header</span> &#123;</span><br>	u_char ether_dhost[<span class="hljs-number">6</span>] ;		<span class="hljs-comment">/* Ethernet destination address */</span><br>	u_char ether_shost[<span class="hljs-number">6</span>] ;		<span class="hljs-comment">/* Ethernet source address*/</span><br>	u_short ether_type;			<span class="hljs-comment">/* Ethernet frame type */</span><br>&#125;;<br></code></pre></td></tr></table></figure>
-
+<pre><code class="c">struct ether_ header &#123;
+    u_char ether_dhost[6] ;		/* Ethernet destination address */
+    u_char ether_shost[6] ;		/* Ethernet source address*/
+    u_short ether_type;			/* Ethernet frame type */
+&#125;;
+</code></pre>
 <h3 id="leread函数"><a href="#leread函数" class="headerlink" title="leread函数"></a>leread函数</h3><p>函数<code>leread</code>的开始是由<code>leintr</code>传给它的一个连续的内存缓冲区,并且构造了一个<code>ether_header</code>结构和 一个mbuf链。这个链表存储来自以太网帧的数据。<code>leread</code>还将输入帧传给BPF。</p>
 <h3 id="ether-input函数"><a href="#ether-input函数" class="headerlink" title="ether_input函数"></a>ether_input函数</h3><p>函数<code>ether_input</code>，它检查结构<code>ether_header</code>来判断接收到的数据的类型，并将接收到的分组加入到队列中等待处理。</p>
 <h3 id="ether-output函数"><a href="#ether-output函数" class="headerlink" title="ether_output函数"></a>ether_output函数</h3><p>当一个网络层协议，如IP,调用此接口ifnet结构中指定的函数<code>if_ output</code>时，开始处理输出。所有以太网设备的<code>if_ output</code>是<code>ether_ output</code>。<code>ether_output</code>用14字节以太网首部封装一个以太网帧的数据部分，并将它放置到接口的发送队列中。</p>
@@ -310,8 +68,8 @@
 <p><strong>但在这门课里我不确定它是不是那么重要？</strong>😝</p>
 </blockquote>
 <p>原型如下：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">ioctl</span><span class="hljs-params">(<span class="hljs-type">int</span> fd, <span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> com, ...)</span>;<br></code></pre></td></tr></table></figure>
-
+<pre><code class="c">int ioctl(int fd, unsigned long com, ...);
+</code></pre>
 <p>这个函数的三个参数分别为如下含义：</p>
 <ul>
 <li>fd，文件描述符，即ioctl要交互的设备是谁</li>
@@ -334,8 +92,17 @@
 </ul>
 <h2 id="第6章-IP编址"><a href="#第6章-IP编址" class="headerlink" title="第6章 IP编址"></a>第6章 IP编址</h2><h3 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h3><p>几类IP地址划分，主机和路由器简单看看就好，也没什么说的</p>
 <p><img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH4%E5%8F%8ACH6.assets/image-20230425004924718.png" alt="image-20230425004924718"></p>
-<h3 id="sockaddr-in结构"><a href="#sockaddr-in结构" class="headerlink" title="sockaddr_in结构"></a>sockaddr_in结构</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">in_addr</span> &#123;</span><br>	u_1ong s_addr;			<span class="hljs-comment">/* 32-bit IP address, net byte order */</span><br>&#125;;<br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sockaddr_</span> <span class="hljs-title">in</span> &#123;</span><br>	u_char sin_len;				<span class="hljs-comment">/* sizeof (struct sockaddr_ in) = 16 */</span><br>	u_char sin_family;			<span class="hljs-comment">/* AF_INET */</span><br>	u_short sin_port;			<span class="hljs-comment">/* 16-bit port number, net byte order */</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">in_addr</span> <span class="hljs-title">sin_</span> <span class="hljs-title">addr</span> ;</span><br>	<span class="hljs-type">char</span> sin_zero[<span class="hljs-number">8</span>] ;			<span class="hljs-comment">/* unused */</span><br>&#125;;<br></code></pre></td></tr></table></figure>
-
+<h3 id="sockaddr-in结构"><a href="#sockaddr-in结构" class="headerlink" title="sockaddr_in结构"></a>sockaddr_in结构</h3><pre><code class="c">struct in_addr &#123;
+    u_1ong s_addr;			/* 32-bit IP address, net byte order */
+&#125;;
+struct sockaddr_ in &#123;
+    u_char sin_len;				/* sizeof (struct sockaddr_ in) = 16 */
+    u_char sin_family;			/* AF_INET */
+    u_short sin_port;			/* 16-bit port number, net byte order */
+    struct in_addr sin_ addr ;
+    char sin_zero[8] ;			/* unused */
+&#125;;
+</code></pre>
 <blockquote>
 <p>这个结构体比较简单，但还是挺常用的，需要额外注意的是s_addr的存储并不根据系统的大小端，而是根据网络流的顺序</p>
 </blockquote>
@@ -360,433 +127,34 @@
 <p><img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH4%E5%8F%8ACH6.assets/image-20230425014013419.png" alt="image-20230425014013419"></p>
 <p><img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH4%E5%8F%8ACH6.assets/image-20230425013925701.png" alt="image-20230425013925701"></p>
 
-                
-              </div>
-            
-            <hr/>
-            <div>
-              <div class="post-metas my-3">
-  
-  
+        </div>
+
+    
+
+</div>
+                <div class="footer">
+    <span>Copyright © 2022 鷺雨のBlog</span>
+    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
 </div>
 
 
-              
-  
-
-  <div class="license-box my-3">
-    <div class="license-title">
-      <div>网络协议栈CH4及CH6</div>
-      <div>http://loora1n.github.io/2023/04/25/网络协议栈CH4及CH6/</div>
-    </div>
-    <div class="license-meta">
-      
-        <div class="license-meta-item">
-          <div>作者</div>
-          <div>Loora1N</div>
-        </div>
-      
-      
-        <div class="license-meta-item license-meta-date">
-          <div>发布于</div>
-          <div>2023年4月25日</div>
-        </div>
-      
-      
-      
-        <div class="license-meta-item">
-          <div>许可协议</div>
-          <div>
-            
-              
-              
-                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
-                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
-                    <i class="iconfont icon-by"></i>
-                  </span>
-                </a>
-              
-            
-          </div>
-        </div>
-      
-    </div>
-    <div class="license-icon iconfont"></div>
-  </div>
+<link rel="stylesheet" href="/css/a11y-dark.min.css">
 
 
+<script src="/js/highlight.min.js"></script>
 
-              
-                <div class="post-prevnext my-3">
-                  <article class="post-prev col-6">
-                    
-                    
-                      <a href="/2023/04/25/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH8%E5%8F%8ACH23/" title="网络协议栈CH8及CH23">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">网络协议栈CH8及CH23</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
-                  </article>
-                  <article class="post-next col-6">
-                    
-                    
-                      <a href="/2023/04/24/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88%E5%A4%8D%E4%B9%A0/" title="网络协议栈CH1-CH3">
-                        <span class="hidden-mobile">网络协议栈CH1-CH3</span>
-                        <span class="visible-mobile">下一篇</span>
-                        <i class="iconfont icon-arrowright"></i>
-                      </a>
-                    
-                  </article>
-                </div>
-              
+
+<script src="/js/highlightjs-line-numbers.js"></script>
+
+
+<script>
+    hljs.initHighlightingOnLoad();
+    hljs.initLineNumbersOnLoad();
+</script>
+
             </div>
-
-            
-  <article id="comments">
-    
-  <script type="text/javascript">
-    Fluid.utils.loadComments('#comments', function() {
-      var light = 'github-light';
-      var dark = 'github-dark';
-      var schema = document.documentElement.getAttribute('data-user-color-scheme');
-      if (schema === 'dark') {
-        schema = dark;
-      } else {
-        schema = light;
-      }
-      window.UtterancesThemeLight = light;
-      window.UtterancesThemeDark = dark;
-      var s = document.createElement('script');
-      s.setAttribute('src', 'https://utteranc.es/client.js');
-      s.setAttribute('repo', 'loora1n/comment');
-      s.setAttribute('issue-term', 'pathname');
-      
-      s.setAttribute('label', 'utterances');
-      
-      s.setAttribute('theme', schema);
-      s.setAttribute('crossorigin', 'anonymous');
-      document.getElementById('comments').appendChild(s);
-    })
-  </script>
-  <noscript>Please enable JavaScript to view the comments</noscript>
-
-
-  </article>
-
-
-          </article>
         </div>
-      </div>
-    </div>
-
-    <div class="side-col d-none d-lg-block col-lg-2">
-      
-  <aside class="sidebar" style="margin-left: -1rem">
-    <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
-  <div class="toc-body" id="toc-body"></div>
-</div>
-
-
-
-  </aside>
-
-
-    </div>
-  </div>
-</div>
-
-
-
-
-
-  
-
-
-
-  
-
-
-
-  
-
-
-
-  
-
-
-
-  
-
-
-
-
-
-
-
-    
-
-    
-      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
-        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
-      </a>
-    
-
-    
-      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
-     aria-hidden="true">
-  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
-        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body mx-3">
-        <div class="md-form mb-5">
-          <input type="text" id="local-search-input" class="form-control validate">
-          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
-        </div>
-        <div class="list-group" id="local-search-result"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-    
-
-    
-  </main>
-
-  <footer>
-    <div class="footer-inner">
-  
-    <div class="footer-content">
-       <a href="https://github.com/Loora1N" target="_blank" rel="nofollow noopener"><span>Loora1N</span></a> <i class="iconfont icon-love"></i> <a href="https://space.bilibili.com/33242548?spm_id_from=333.1007.0.0" target="_blank" rel="nofollow noopener"><span>鷺雨君</span></a>
-    </div>
-  
-  
-    <div class="statistics">
-  
-  
-
-  
-    
-      <span id="leancloud-site-pv-container" style="display: none">
-        总访问量 
-        <span id="leancloud-site-pv"></span>
-         次
-      </span>
-    
-    
-      <span id="leancloud-site-uv-container" style="display: none">
-        总访客数 
-        <span id="leancloud-site-uv"></span>
-         人
-      </span>
-    
-    
-
-  
-</div>
-
-  
-  
-  
-  <span id="timeDate">载入天数...</span>
-  <span id="times">载入时分秒...</span>
-  <script>
-  var now = new Date();
-  function createtime(){
-      var grt= new Date("06/03/2022 00:00:00");//此处修改你的建站时间或者网站上线时间
-      now.setTime(now.getTime()+250);
-      days = (now - grt ) / 1000 / 60 / 60 / 24;
-      dnum = Math.floor(days);
-      hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum);
-      hnum = Math.floor(hours);
-      if(String(hnum).length ==1 ){
-          hnum = "0" + hnum;
-      }
-      minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
-      mnum = Math.floor(minutes);
-      if(String(mnum).length ==1 ){
-                mnum = "0" + mnum;
-      }
-      seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
-      snum = Math.round(seconds);
-      if(String(snum).length ==1 ){
-                snum = "0" + snum;
-      }
-      document.getElementById("timeDate").innerHTML = "🚀running🚀 for&nbsp"+dnum+"&nbspdays";  //此次自定义显示内容
-      document.getElementById("times").innerHTML = hnum + "&nbsphr&nbsp" + mnum + "&nbspmin&nbsp" + snum + "&nbspsec";
-  }  //此次自定义显示内容
-  setInterval("createtime()",250);
-  </script>   
-</div>
-
-  </footer>
-
-  <!-- Scripts -->
-  
-  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
-  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
-
-  <script>
-    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
-    NProgress.start()
-    window.addEventListener('load', function() {
-      NProgress.done();
-    })
-  </script>
-
-
-<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
-<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
-<script  src="/js/events.js" ></script>
-<script  src="/js/plugins.js" ></script>
-
-
-  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
-  <script>
-    (function (window, document) {
-      var typing = Fluid.plugins.typing;
-      var subtitle = document.getElementById('subtitle');
-      if (!subtitle || !typing) {
-        return;
-      }
-      var text = subtitle.getAttribute('data-typed-text');
-      
-        typing(text);
-      
-    })(window, document);
-  </script>
-
-
-
-
-
-
-
-  
-<script>
-  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
-    var toc = jQuery('#toc');
-    if (toc.length === 0 || !window.tocbot) { return; }
-    var boardCtn = jQuery('#board-ctn');
-    var boardTop = boardCtn.offset().top;
-
-    window.tocbot.init(Object.assign({
-      tocSelector     : '#toc-body',
-      contentSelector : '.markdown-body',
-      linkClass       : 'tocbot-link',
-      activeLinkClass : 'tocbot-active-link',
-      listClass       : 'tocbot-list',
-      isCollapsedClass: 'tocbot-is-collapsed',
-      collapsibleClass: 'tocbot-is-collapsible',
-      scrollSmooth    : true,
-      includeTitleTags: true,
-      headingsOffset  : -boardTop,
-    }, CONFIG.toc));
-    if (toc.find('.toc-list-item').length > 0) {
-      toc.css('visibility', 'visible');
-    }
-
-    Fluid.events.registerRefreshCallback(function() {
-      if ('tocbot' in window) {
-        tocbot.refresh();
-        var toc = jQuery('#toc');
-        if (toc.length === 0 || !tocbot) {
-          return;
-        }
-        if (toc.find('.toc-list-item').length > 0) {
-          toc.css('visibility', 'visible');
-        }
-      }
-    });
-  });
-</script>
-
-
-  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
-
-  <script>Fluid.plugins.codeWidget();</script>
-
-
-  
-<script>
-  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
-    window.anchors.options = {
-      placement: CONFIG.anchorjs.placement,
-      visible  : CONFIG.anchorjs.visible
-    };
-    if (CONFIG.anchorjs.icon) {
-      window.anchors.options.icon = CONFIG.anchorjs.icon;
-    }
-    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
-    var res = [];
-    for (var item of el) {
-      res.push('.markdown-body > ' + item.trim());
-    }
-    if (CONFIG.anchorjs.placement === 'left') {
-      window.anchors.options.class = 'anchorjs-link-left';
-    }
-    window.anchors.add(res.join(', '));
-
-    Fluid.events.registerRefreshCallback(function() {
-      if ('anchors' in window) {
-        anchors.removeAll();
-        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
-        var res = [];
-        for (var item of el) {
-          res.push('.markdown-body > ' + item.trim());
-        }
-        if (CONFIG.anchorjs.placement === 'left') {
-          anchors.options.class = 'anchorjs-link-left';
-        }
-        anchors.add(res.join(', '));
-      }
-    });
-  });
-</script>
-
-
-  
-<script>
-  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
-    Fluid.plugins.fancyBox();
-  });
-</script>
-
-
-  <script>Fluid.plugins.imageCaption();</script>
-
-  <script defer src="/js/leancloud.js" ></script>
-
-  <script  src="/js/local-search.js" ></script>
-
-
-
-
-  
-<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/xiantiao.js"></script>
-<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/love.js"></script>
-<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/caidai.js"></script>
-
-
-
-<!-- 主题的启动项，将它保持在最底部 -->
-<!-- the boot of the theme, keep it at the bottom -->
-<script  src="/js/boot.js" ></script>
-
-
-  
-
-  <noscript>
-    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
-  </noscript>
-<!-- hexo injector body_end start -->
+    <!-- hexo injector body_end start -->
   <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
   <script data-pjax>
         function GithubCalendarConfig(){

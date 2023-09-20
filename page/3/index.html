@@ -1,804 +1,213 @@
-
-
 <!DOCTYPE html>
-<html lang="zh-CN" >
-
-<!--浏览器搞笑标题-->
-<script type="text/javascript" src="/js/FunnyTitle.js"></script>
-
-
-
-<head>
-  <meta charset="UTF-8">
-  <link rel="apple-touch-icon" sizes="76x76" href="/img/icon/duck.png">
-  <link rel="icon" href="/img/icon/duck.png">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
-  
-  <meta name="theme-color" content="#f58f98">
-  <meta name="author" content="Loora1N">
-  <meta name="keywords" content="">
-  
-    <meta name="description" content="Blog of Loora1N">
-<meta property="og:type" content="website">
-<meta property="og:title" content="鷺雨のBlog">
-<meta property="og:url" content="http://loora1n.github.io/page/3/index.html">
-<meta property="og:site_name" content="鷺雨のBlog">
-<meta property="og:description" content="Blog of Loora1N">
-<meta property="og:locale" content="zh_CN">
-<meta property="article:author" content="Loora1N">
-<meta name="twitter:card" content="summary_large_image">
-  
-  
-  
-  <title>鷺雨のBlog</title>
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
-
-
-
-
-
-<!-- 主题依赖的图标库，不要自行修改 -->
-<!-- Do not modify the link that theme dependent icons -->
-
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
-
-
-
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
-
-
-<link  rel="stylesheet" href="/css/main.css" />
-
-
-  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
-  
-
-
-
-  
-<link rel="stylesheet" href="/css/fluid-extention.css">
-<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/bynotes/texiao/source/css/gundongtiao.css">
-
-
-
-  <script id="fluid-configs">
-    var Fluid = window.Fluid || {};
-    Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"loora1n.github.io","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"lftEbNU4XPuR5dgHNV3WdWxP-gzGzoHsz","app_key":"b3uLUVGLeOWDwREWHMBr0jo9","server_url":"https://lftebnu4.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
-
-    if (CONFIG.web_analytics.follow_dnt) {
-      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
-      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
-    }
-  </script>
-  <script  src="/js/utils.js" ></script>
-  <script  src="/js/color-schema.js" ></script>
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
+<html>
+    <head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
+    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
+    <title>鷺雨のBlog | </title>
     
-  
+<link rel="stylesheet" href="/css/reset.css">
 
+    
+<link rel="stylesheet" href="/css/style.css">
 
+    
+<link rel="stylesheet" href="/css/markdown.css">
 
-  
+    
+<link rel="stylesheet" href="/css/fonts.css">
+
 <meta name="generator" content="Hexo 6.2.0"></head>
-
-
-<body>
-  
-
-  <header>
-    
-
-<div class="header-inner" style="height: 100vh;">
-  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
-  <div class="container">
-    <a class="navbar-brand" href="/">
-      <strong>鷺雨のBlog</strong>
-    </a>
-
-    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
-            data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <div class="animated-icon"><span></span><span></span><span></span></div>
-    </button>
-
-    <!-- Collapsible content -->
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav ml-auto text-center">
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/">
-                <i class="iconfont icon-home-fill"></i>
-                首页
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/archives/">
-                <i class="iconfont icon-archive-fill"></i>
-                归档
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/about/">
-                <i class="iconfont icon-user-fill"></i>
-                关于
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/links/">
-                <i class="iconfont icon-link-fill"></i>
-                友链
-              </a>
-            </li>
-          
-        
-        
-          <li class="nav-item" id="search-btn">
-            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
-              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
-            </a>
-          </li>
-          
-        
-        
-      </ul>
-    </div>
-  </div>
-</nav>
-
-  
-
-<div id="banner" class="banner" parallax=true
-     style="background: url('/img/bg/3.png') no-repeat center center; background-size: cover;">
-  <div class="full-bg-img">
-    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
-      <div class="banner-text text-center fade-in-up">
-        <div class="h2">
-          
-            <span id="subtitle" data-typed-text="子曰：“知者不惑，仁者不憂，勇者不懼”"></span>
-          
-        </div>
-
-        
-      </div>
-
-      
-        <div class="scroll-down-bar">
-          <i class="iconfont icon-arrowdown"></i>
-        </div>
-      
-    </div>
-  </div>
-</div>
-
-</div>
-
-  </header>
-
-  <main>
-    
-      <div class="container nopadding-x-md">
-        <div id="board"
-          style="margin-top: 0">
-          
-          <div class="container">
-            <div class="row">
-              <div class="col-12 col-md-10 m-auto">
+    <body>
+        <div class="paper">
+            <div class="paper-main">
                 
-
-
-  <div class="row mx-auto index-card">
-    
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2022/12/07/%E3%80%90IO_FILE%E3%80%91%E6%BA%90%E7%A0%81%E8%AF%A6%E8%A7%A3-part2/" target="_self">
-          <img src="/img/article/fopen/t017448d9547dc07159-1669695992482-3.png" alt="【IO_FILE】源码详解-part2">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h1 class="index-header">
+                    <div class="header">
+    <a class="logo" href="/">鷺雨のBlog</a>
+    <ul class="nav">
         
-        <a href="/2022/12/07/%E3%80%90IO_FILE%E3%80%91%E6%BA%90%E7%A0%81%E8%AF%A6%E8%A7%A3-part2/" target="_self">
-          【IO_FILE】源码详解-part2
-        </a>
-      </h1>
+        <li><a href="/">首页</a></li>
+        
+        <li><a href="/archives">归档</a></li>
+        
+        <li><a href="/about">关于</a></li>
+        
+        <li><a href="/links">友链</a></li>
+        
+    </ul>
+</div>
+                
+                <div class="post-list">
+    
+    <div class="post">
+        <a class="post-title" href="/2022/12/07/%E3%80%90IO_FILE%E3%80%91%E6%BA%90%E7%A0%81%E8%AF%A6%E8%A7%A3-part2/">【IO_FILE】源码详解-part2</a>
+        <div class="post-except">
+            
+在上一篇文章中，主要对IO_FILE结构体相关以及fopen函数进行了深入的介绍。本文将继续从glibc2.36源码出发，介绍fread函数相关内容
 
-      
-      <a class="index-excerpt " href="/2022/12/07/%E3%80%90IO_FILE%E3%80%91%E6%BA%90%E7%A0%81%E8%AF%A6%E8%A7%A3-part2/" target="_self">
-        <div>
-          在上一篇文章中，主要对IO_FILE结构体相关以及fopen函数进行了深入的介绍。本文将继续从glibc2.36源码出发，介绍fread函数相关内容
+fread首先是一个宏定义，替换为_IO_fread函数
+//	htps://elixir.bootlin.com/glibc/latest/source/stdio-common/getw.c#L21
+#define fread(p, m, n, s) _IO_fread (p, m, n, s)
+
+// https://
+            <a class="read-more" href="/2022/12/07/%E3%80%90IO_FILE%E3%80%91%E6%BA%90%E7%A0%81%E8%AF%A6%E8%A7%A3-part2/"> ... </a>
         </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-12-07 20:53" pubdate>
-              2022-12-07
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
+        <div class="post-date">2022.12.07</div>
+    </div>
     
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2022/11/29/%E3%80%90IO_FILE%E3%80%91%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86%E6%A6%82%E8%A7%88/" target="_self">
-          <img src="/img/article/fopen/t017448d9547dc07159-1669695992482-3.png" alt="【IO_FILE】源码详解">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/11/29/%E3%80%90IO_FILE%E3%80%91%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86%E6%A6%82%E8%A7%88/" target="_self">
-          【IO_FILE】源码详解
-        </a>
-      </h1>
-
-      
-      <a class="index-excerpt " href="/2022/11/29/%E3%80%90IO_FILE%E3%80%91%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86%E6%A6%82%E8%A7%88/" target="_self">
-        <div>
-          由于glibc版本的不断更新，常见几种hook在glibc2.34终被舍去，我们急需一种能够在高版本的glibc下仍能有效的getshell方法。而IO_FILE作为heap题目的进阶技能逐渐引起大家注意，吸引了许多大佬投入其中。仅在2021-2022年期间就出现出现了大量以IO_FILE为基础的调用链利用方式，在比赛中也逐渐成为了当下heap题目的主流getshell方式。本文以glibc2.3
+    <div class="post">
+        <a class="post-title" href="/2022/11/29/%E3%80%90IO_FILE%E3%80%91%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86%E6%A6%82%E8%A7%88/">【IO_FILE】源码详解</a>
+        <div class="post-except">
+            
+由于glibc版本的不断更新，常见几种hook在glibc2.34终被舍去，我们急需一种能够在高版本的glibc下仍能有效的getshell方法。而IO_FILE作为heap题目的进阶技能逐渐引起大家注意，吸引了许多大佬投入其中。仅在在2021-2022年期间就出现出现了大量以IO_FILE为基础的调用链利用方式，在比赛中也逐渐成为了当下heap题目的主流getshell方式。本文以glibc2.36为例，从相关结构体以及fopen函数源码入手，详细介绍IO_FILE相关知
+            <a class="read-more" href="/2022/11/29/%E3%80%90IO_FILE%E3%80%91%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86%E6%A6%82%E8%A7%88/"> ... </a>
         </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-11-29 20:44" pubdate>
-              2022-11-29
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
+        <div class="post-date">2022.11.29</div>
+    </div>
     
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2022/11/25/%E3%80%90IO_FILE%E3%80%91FSOP/" target="_self">
-          <img src="/img/article/fsop/abort_routine.001.jpeg" alt="【IO_FILE】FSOP">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/11/25/%E3%80%90IO_FILE%E3%80%91FSOP/" target="_self">
-          【IO_FILE】FSOP
-        </a>
-      </h1>
+    <div class="post">
+        <a class="post-title" href="/2022/11/25/%E3%80%90IO_FILE%E3%80%91FSOP/">【IO_FILE】FSOP</a>
+        <div class="post-except">
+            
+FSOP 是 File Stream Oriented Programming 的缩写，根据前面对 FILE 的介绍得知进程内所有的_IO_FILE 结构会使用_chain 域相互连接形成一个链表，这个链表的头部由_IO_list_all 维护。另外由于网络上很多IO_FILE相关博客含有相关glibc源代码，但是并没有源代码的完整部分或者链接。在之后的博客中，我会包含该段代码在哪里可以查看得到。
 
-      
-      <a class="index-excerpt " href="/2022/11/25/%E3%80%90IO_FILE%E3%80%91FSOP/" target="_self">
-        <div>
-          FSOP 的核心思想就是劫持_IO_list_all 的值来伪造链表和其中的_IO_FILE 项，但是单纯的伪造只是构造了数据还需要某种方法进行触发。FSOP 选择的触发方法是调用_IO_flush_all_lockp，这个函数会刷新_IO_list_all 链表中所有项的文件流，相当于对每个 FILE 调用 fflush，也对应着会调用_IO_FILE_plus.vtable 中的_IO_ove
+介绍FSOP 的核心思想就是劫持_IO_list_all 的值来伪造链表和
+            <a class="read-more" href="/2022/11/25/%E3%80%90IO_FILE%E3%80%91FSOP/"> ... </a>
         </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-11-25 19:52" pubdate>
-              2022-11-25
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
+        <div class="post-date">2022.11.25</div>
+    </div>
     
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2022/11/13/%E3%80%90IO_FILE%E3%80%91house%20of%20cat/" target="_self">
-          <img src="/img/article/house_of_cat/image-20221113210513266.png" alt="【IO_FILE】house of cat">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/11/13/%E3%80%90IO_FILE%E3%80%91house%20of%20cat/" target="_self">
-          【IO_FILE】house of cat
-        </a>
-      </h1>
-
-      
-      <a class="index-excerpt " href="/2022/11/13/%E3%80%90IO_FILE%E3%80%91house%20of%20cat/" target="_self">
-        <div>
-          House of Cat利用了House of emma的虚表偏移修改思想，通过修改虚表指针的偏移，避免了对需要绕过TLS上 _pointer_chk_guard的检测相关的IO函数的调用，转而调用_IO_wfile_jumps中的_IO_wfile_seekoff函数，然后进入到_IO_switch_to_wget_mode函数中来攻击，从而使得攻击条件和利用变得更为简单。并且house of
+    <div class="post">
+        <a class="post-title" href="/2022/11/13/%E3%80%90IO_FILE%E3%80%91house%20of%20cat/">【IO_FILE】house of cat</a>
+        <div class="post-except">
+            前言House of Cat利用了House of emma的虚表偏移修改思想，通过修改虚表指针的偏移，避免了对需要绕过TLS上 _pointer_chk_guard的检测相关的IO函数的调用，转而调用**_IO_wfile_jumps中的_IO_wfile_seekoff函数，然后进入到_IO_switch_to_wget_mode函数中来攻击，从而使得攻击条件和利用变得更为简单。并且house of cat在FSOP的情况下也是可行的，只需修改虚表指针的偏移来调用_IO_
+            <a class="read-more" href="/2022/11/13/%E3%80%90IO_FILE%E3%80%91house%20of%20cat/"> ... </a>
         </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-11-13 21:31" pubdate>
-              2022-11-13
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
+        <div class="post-date">2022.11.13</div>
+    </div>
     
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2022/11/08/%E3%80%90CTFd%20%E4%BA%8C%E6%AC%A1%E5%BC%80%E5%8F%91%E3%80%91%E8%A7%A3%E9%A2%98%E6%92%AD%E6%8A%A5%E6%9C%BA%E5%99%A8%E4%BA%BA%20V2/" target="_self">
-          <img src="/img/article/botv2/image-20221108200108487.png" alt="【CTFd 二次开发】解题播报机器人 V2">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/11/08/%E3%80%90CTFd%20%E4%BA%8C%E6%AC%A1%E5%BC%80%E5%8F%91%E3%80%91%E8%A7%A3%E9%A2%98%E6%92%AD%E6%8A%A5%E6%9C%BA%E5%99%A8%E4%BA%BA%20V2/" target="_self">
-          【CTFd 二次开发】解题播报机器人 V2
-        </a>
-      </h1>
+    <div class="post">
+        <a class="post-title" href="/2022/11/08/%E3%80%90CTFd%20%E4%BA%8C%E6%AC%A1%E5%BC%80%E5%8F%91%E3%80%91%E8%A7%A3%E9%A2%98%E6%92%AD%E6%8A%A5%E6%9C%BA%E5%99%A8%E4%BA%BA%20V2/">【CTFd 二次开发】解题播报机器人 V2</a>
+        <div class="post-except">
+            
+本文基于 CTFd Version 3.4.3 开发，可能存在源码不相同的情况，阅读时请注意文章时效性。
 
-      
-      <a class="index-excerpt " href="/2022/11/08/%E3%80%90CTFd%20%E4%BA%8C%E6%AC%A1%E5%BC%80%E5%8F%91%E3%80%91%E8%A7%A3%E9%A2%98%E6%92%AD%E6%8A%A5%E6%9C%BA%E5%99%A8%E4%BA%BA%20V2/" target="_self">
-        <div>
-          实现CTFd创建新题目的播报以及题目信息更新时，进行播报
+更新内容
+实现CTFd创建新题目的播报，且仅在题目状态由hidden转为visible时播报
+实现题目信息更新时，进行播报
+
+
+前端页面修改appearance.html打开CTFd/CTFd/themes/admin/templates/configs/appearance.html，在上次更新的基础上增加题目创建播报文案，和题目信息更新播报文案接口。这里直接放出完
+            <a class="read-more" href="/2022/11/08/%E3%80%90CTFd%20%E4%BA%8C%E6%AC%A1%E5%BC%80%E5%8F%91%E3%80%91%E8%A7%A3%E9%A2%98%E6%92%AD%E6%8A%A5%E6%9C%BA%E5%99%A8%E4%BA%BA%20V2/"> ... </a>
         </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-11-08 20:14" pubdate>
-              2022-11-08
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
+        <div class="post-date">2022.11.08</div>
+    </div>
     
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2022/11/03/i%E6%98%A5%E7%A7%8B%E6%98%A5%E5%AD%A3%E8%B5%9B-%E5%8B%87%E8%80%85%E5%B7%85%E5%B3%B0-chunqiuIOT/" target="_self">
-          <img src="/img/article/chunqiuiot/image-20221103201403318.png" alt="i春秋春季赛-勇者巅峰-chunqiuIOT">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/11/03/i%E6%98%A5%E7%A7%8B%E6%98%A5%E5%AD%A3%E8%B5%9B-%E5%8B%87%E8%80%85%E5%B7%85%E5%B3%B0-chunqiuIOT/" target="_self">
-          i春秋春季赛-勇者巅峰-chunqiuIOT
-        </a>
-      </h1>
+    <div class="post">
+        <a class="post-title" href="/2022/11/03/i%E6%98%A5%E7%A7%8B%E6%98%A5%E5%AD%A3%E8%B5%9B-%E5%8B%87%E8%80%85%E5%B7%85%E5%B3%B0-chunqiuIOT/">i春秋春季赛-勇者巅峰-chunqiuIOT</a>
+        <div class="post-except">
+            前言这是今年上半年比赛的一道题目，那个时候才刚刚接触堆，栈也不是很熟。打开程序基本就放弃了，前一段时间复现了几个IOT相关的CVE，借此契机顺便看看几个月前自己放弃的那道题。有一说一，这道题的逆向部分还是很头疼的，逆了一个下午+一个早上才看完程序逻辑—-套皮堆题罢了。
 
-      
-      <a class="index-excerpt " href="/2022/11/03/i%E6%98%A5%E7%A7%8B%E6%98%A5%E5%AD%A3%E8%B5%9B-%E5%8B%87%E8%80%85%E5%B7%85%E5%B3%B0-chunqiuIOT/" target="_self">
-        <div>
-          这是今年上半年比赛的一道题目，那个时候才刚刚接触堆，栈也不是很熟。打开程序基本就放弃了，前一段时间复现了几个IOT相关的CVE，借此契机顺便看看几个月前自己放弃的那道题。有一说一，这道题的逆向部分还是很头疼的，逆了一个下午+一个早上才看完程序逻辑----套皮堆题罢了。
+我新建了一个库，用于存放各种比赛的题目，我博客内WP涉及的题目基本都能找到，链接：PWNchanllenge&#x2F;chunzhiIot at main · Loora1N&#x2F;PWNchanlle
+            <a class="read-more" href="/2022/11/03/i%E6%98%A5%E7%A7%8B%E6%98%A5%E5%AD%A3%E8%B5%9B-%E5%8B%87%E8%80%85%E5%B7%85%E5%B3%B0-chunqiuIOT/"> ... </a>
         </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-11-03 20:42" pubdate>
-              2022-11-03
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
+        <div class="post-date">2022.11.03</div>
+    </div>
     
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2022/11/01/%E3%80%90%E7%A5%A5%E4%BA%91%E6%9D%AF2022%E3%80%91PWN-WriteUp-protocol/" target="_self">
-          <img src="/img/article/protocol/image-20221101210554873.png" alt="【祥云杯2022】PWN-WriteUp-protocol">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/11/01/%E3%80%90%E7%A5%A5%E4%BA%91%E6%9D%AF2022%E3%80%91PWN-WriteUp-protocol/" target="_self">
-          【祥云杯2022】PWN-WriteUp-protocol
-        </a>
-      </h1>
+    <div class="post">
+        <a class="post-title" href="/2022/11/01/%E3%80%90%E7%A5%A5%E4%BA%91%E6%9D%AF2022%E3%80%91PWN-WriteUp-protocol/">【祥云杯2022】PWN-WriteUp-protocol</a>
+        <div class="post-except">
+            前言第一次见到google protobuf类型的题目，虽然是到签到题，但还是学到了一些新的东西
+逆向分析首先导入文件，当我看到左侧密密麻麻的无名函数就感受到了一丝不对劲
 
-      
-      <a class="index-excerpt " href="/2022/11/01/%E3%80%90%E7%A5%A5%E4%BA%91%E6%9D%AF2022%E3%80%91PWN-WriteUp-protocol/" target="_self">
-        <div>
-          第一次见到google protobuf类型的题目，虽然是到签到题，但还是学到了一些新的东西
+先运行一下程序，发现输出了一个Login:
+
+通过这个字符串定位到主函数位置
+
+
+基本可以确定是去掉符号表了，这样直接逆向显然不太行。先看看程序编译的环境是什么，然后重新导入一个sig
+
+成功确定版本Ubuntu 9.4.0-1ubuntu1~20.04.1,这个版本的libc应该是2.31，找一个对应的
+            <a class="read-more" href="/2022/11/01/%E3%80%90%E7%A5%A5%E4%BA%91%E6%9D%AF2022%E3%80%91PWN-WriteUp-protocol/"> ... </a>
         </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-11-01 21:44" pubdate>
-              2022-11-01
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
+        <div class="post-date">2022.11.01</div>
+    </div>
     
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2022/10/28/%E9%80%82%E7%94%A8%E5%A4%9A%E7%89%88%E6%9C%AClibc%E7%9A%84pwn-base/" target="_self">
-          <img src="/img/article/pwnbase/image-20221028202807333.png" alt="适用多版本libc的pwn-base">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/10/28/%E9%80%82%E7%94%A8%E5%A4%9A%E7%89%88%E6%9C%AClibc%E7%9A%84pwn-base/" target="_self">
-          适用多版本libc的pwn-base
-        </a>
-      </h1>
+    <div class="post">
+        <a class="post-title" href="/2022/10/28/%E9%80%82%E7%94%A8%E5%A4%9A%E7%89%88%E6%9C%AClibc%E7%9A%84pwn-base/">适用多版本libc的pwn-base</a>
+        <div class="post-except">
+            前言由于经常要在校内的CTFd平台上题，不使用pwn-base的构建方式会使得镜像体积过大，浪费许多服务器的存储空间。但使用pwn-base的情况下，不同题目libc要求不同，又需要构建多个pwn-base环境，过于麻烦。因而创建了这个可根据需求自行更换libc版本的pwn-base，有需要可以自己下载源码更改，链接在下方：
 
-      
-      <a class="index-excerpt " href="/2022/10/28/%E9%80%82%E7%94%A8%E5%A4%9A%E7%89%88%E6%9C%AClibc%E7%9A%84pwn-base/" target="_self">
-        <div>
-          由于经常要在校内的CTFd平台上题，不使用pwn-base的构建方式会使得镜像体积过大，浪费许多服务器的存储空间。但使用pwn-base的情况下，不同题目libc要求不同，又需要构建多个pwn-base环境，过于麻烦。因而创建了这个可根据需求自行更换libc版本的pwn-base
+docker：loora1n&#x2F;Ubuntu2.35
+链接：pwnbase&#x2F;Ubuntu2.35 at main · Loora1N
+            <a class="read-more" href="/2022/10/28/%E9%80%82%E7%94%A8%E5%A4%9A%E7%89%88%E6%9C%AClibc%E7%9A%84pwn-base/"> ... </a>
         </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-10-28 20:38" pubdate>
-              2022-10-28
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
+        <div class="post-date">2022.10.28</div>
+    </div>
     
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2022/10/27/%5BIO_FILE%5DHouse%20of%20kiwi/" target="_self">
-          <img src="/img/article/house_of_kiwi/image-20221026101620627-1666750587623-2.png" alt="【IO_FILE】House of kiwi">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/10/27/%5BIO_FILE%5DHouse%20of%20kiwi/" target="_self">
-          【IO_FILE】House of kiwi
-        </a>
-      </h1>
+    <div class="post">
+        <a class="post-title" href="/2022/10/27/%5BIO_FILE%5DHouse%20of%20kiwi/">【IO_FILE】House of kiwi</a>
+        <div class="post-except">
+            前言
+参考博客如下：
+从PWN题NULL_FXCK中学到的glibc知识
+House OF Kiwi
 
-      
-      <a class="index-excerpt " href="/2022/10/27/%5BIO_FILE%5DHouse%20of%20kiwi/" target="_self">
-        <div>
-          glibc中ptmalloc部分,从以前到现在都存在一个assret断言的问题,此处存在一个fflush(stderr)的函数调用,其中会调用_IO_file_jumps中的sync指针
+CTF的Pwn题里面,通常就会遇到一些加了沙盒的题目,这种加沙盒的题目,在2.29之后的堆题中,通常为以下两种方式
+
+劫持__free_hook,利用特定的gadget,将栈进行迁移
+劫持__malloc_hook为setcontext+61的gadget,以及劫持IO_list_all单链表中的指针在exit结束中,在_IO_cleanup函数会进行缓冲区的刷新,从而读取
+            <a class="read-more" href="/2022/10/27/%5BIO_FILE%5DHouse%20of%20kiwi/"> ... </a>
         </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-10-27 21:25" pubdate>
-              2022-10-27
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
+        <div class="post-date">2022.10.27</div>
+    </div>
     
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2022/10/25/vscode%E4%BD%BF%E7%94%A8pwntools%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE%E5%87%BA%E9%94%99/" target="_self">
-          <img src="/img/article/vscode-pwntools/image-20221025192616883.png" alt="vscode使用pwntools代码高亮出错">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/10/25/vscode%E4%BD%BF%E7%94%A8pwntools%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE%E5%87%BA%E9%94%99/" target="_self">
-          vscode使用pwntools代码高亮出错
-        </a>
-      </h1>
+    <div class="post">
+        <a class="post-title" href="/2022/10/25/vscode%E4%BD%BF%E7%94%A8pwntools%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE%E5%87%BA%E9%94%99/">vscode使用pwntools代码高亮出错</a>
+        <div class="post-except">
+            
+vscode在使用pwntools的send系列函数时，会出现高亮错误的情况，目前最好的解决办法时对pwntools源码进行更改
 
-      
-      <a class="index-excerpt " href="/2022/10/25/vscode%E4%BD%BF%E7%94%A8pwntools%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE%E5%87%BA%E9%94%99/" target="_self">
-        <div>
-          vscode在使用pwntools的send系列函数时，会出现高亮错误的情况，目前最好的解决办法时对pwntools源码进行更改
+右键send函数，选择Go to Definition，打开pwntools源码
+
+ctrl+F搜索send_raw函数
+
+把函数末尾的raise EOFError(&#39;Not implemented&#39;)更换成raise NotImplementedError()既可
+
+            <a class="read-more" href="/2022/10/25/vscode%E4%BD%BF%E7%94%A8pwntools%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE%E5%87%BA%E9%94%99/"> ... </a>
         </div>
-      </a>
+        <div class="post-date">2022.10.25</div>
+    </div>
+    
+</div>
 
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-10-25 19:32" pubdate>
-              2022-10-25
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
+<div class="paginator">
+    <a class="extend prev" rel="prev" href="/page/2/">上一页</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/4/">下一页</a>
+</div>
+
+                <div class="footer">
+    <span>Copyright © 2022 鷺雨のBlog</span>
+    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
+</div>
 
 
-
-  <nav aria-label="navigation">
-    <span class="pagination" id="pagination">
-      <a class="extend prev" rel="prev" href="/page/2/#board"><i class="iconfont icon-arrowleft"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/#board">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/#board">4</a><a class="page-number" href="/page/5/#board">5</a><a class="page-number" href="/page/6/#board">6</a><a class="extend next" rel="next" href="/page/4/#board"><i class="iconfont icon-arrowright"></i></a>
-    </span>
-  </nav>
+<link rel="stylesheet" href="/css/a11y-dark.min.css">
 
 
+<script src="/js/highlight.min.js"></script>
 
-              </div>
+
+<script src="/js/highlightjs-line-numbers.js"></script>
+
+
+<script>
+    hljs.initHighlightingOnLoad();
+    hljs.initLineNumbersOnLoad();
+</script>
+
             </div>
-          </div>
         </div>
-      </div>
-    
-
-    
-      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
-        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
-      </a>
-    
-
-    
-      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
-     aria-hidden="true">
-  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
-        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body mx-3">
-        <div class="md-form mb-5">
-          <input type="text" id="local-search-input" class="form-control validate">
-          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
-        </div>
-        <div class="list-group" id="local-search-result"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-    
-
-    
-  </main>
-
-  <footer>
-    <div class="footer-inner">
-  
-    <div class="footer-content">
-       <a href="https://github.com/Loora1N" target="_blank" rel="nofollow noopener"><span>Loora1N</span></a> <i class="iconfont icon-love"></i> <a href="https://space.bilibili.com/33242548?spm_id_from=333.1007.0.0" target="_blank" rel="nofollow noopener"><span>鷺雨君</span></a>
-    </div>
-  
-  
-    <div class="statistics">
-  
-  
-
-  
-    
-      <span id="leancloud-site-pv-container" style="display: none">
-        总访问量 
-        <span id="leancloud-site-pv"></span>
-         次
-      </span>
-    
-    
-      <span id="leancloud-site-uv-container" style="display: none">
-        总访客数 
-        <span id="leancloud-site-uv"></span>
-         人
-      </span>
-    
-    
-
-  
-</div>
-
-  
-  
-  
-  <span id="timeDate">载入天数...</span>
-  <span id="times">载入时分秒...</span>
-  <script>
-  var now = new Date();
-  function createtime(){
-      var grt= new Date("06/03/2022 00:00:00");//此处修改你的建站时间或者网站上线时间
-      now.setTime(now.getTime()+250);
-      days = (now - grt ) / 1000 / 60 / 60 / 24;
-      dnum = Math.floor(days);
-      hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum);
-      hnum = Math.floor(hours);
-      if(String(hnum).length ==1 ){
-          hnum = "0" + hnum;
-      }
-      minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
-      mnum = Math.floor(minutes);
-      if(String(mnum).length ==1 ){
-                mnum = "0" + mnum;
-      }
-      seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
-      snum = Math.round(seconds);
-      if(String(snum).length ==1 ){
-                snum = "0" + snum;
-      }
-      document.getElementById("timeDate").innerHTML = "🚀running🚀 for&nbsp"+dnum+"&nbspdays";  //此次自定义显示内容
-      document.getElementById("times").innerHTML = hnum + "&nbsphr&nbsp" + mnum + "&nbspmin&nbsp" + snum + "&nbspsec";
-  }  //此次自定义显示内容
-  setInterval("createtime()",250);
-  </script>   
-</div>
-
-  </footer>
-
-  <!-- Scripts -->
-  
-  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
-  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
-
-  <script>
-    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
-    NProgress.start()
-    window.addEventListener('load', function() {
-      NProgress.done();
-    })
-  </script>
-
-
-<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
-<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
-<script  src="/js/events.js" ></script>
-<script  src="/js/plugins.js" ></script>
-
-
-  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
-  <script>
-    (function (window, document) {
-      var typing = Fluid.plugins.typing;
-      var subtitle = document.getElementById('subtitle');
-      if (!subtitle || !typing) {
-        return;
-      }
-      var text = subtitle.getAttribute('data-typed-text');
-      
-        typing(text);
-      
-    })(window, document);
-  </script>
-
-
-
-
-
-
-
-  <script defer src="/js/leancloud.js" ></script>
-
-  <script  src="/js/local-search.js" ></script>
-
-
-
-
-  
-<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/xiantiao.js"></script>
-<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/love.js"></script>
-<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/caidai.js"></script>
-
-
-
-<!-- 主题的启动项，将它保持在最底部 -->
-<!-- the boot of the theme, keep it at the bottom -->
-<script  src="/js/boot.js" ></script>
-
-
-  
-
-  <noscript>
-    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
-  </noscript>
-<!-- hexo injector body_end start -->
+    <!-- hexo injector body_end start -->
   <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
   <script data-pjax>
         function GithubCalendarConfig(){
