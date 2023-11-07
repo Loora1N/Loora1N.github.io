@@ -1,3 +1,4 @@
+http://loora1n.github.io/2023/11/07/chop1/
 http://loora1n.github.io/2023/09/19/qemu%E9%80%83%E9%80%B8/
 http://loora1n.github.io/2023/09/11/%E3%80%90Kernel%E3%80%91Linux%20Huge%20Pages/
 http://loora1n.github.io/2023/09/07/%E3%80%90trick%E3%80%91house%20of%20blindness/
