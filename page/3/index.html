@@ -40,6 +40,62 @@
                 <div class="post-list">
     
     <div class="post">
+        <a class="post-title" href="/2023/03/29/Linux%20Syscall%20Reference(64%20bit)/">Linux Syscall Reference(64 bit)</a>
+        <div class="post-except">
+            
+列举了全部的64位syscall调用表，方便离线时进行查询
+
+
+
+
+#
+Name
+Registers
+Definition
+
+
+
+
+
+
+
+
+
+rax
+rdi
+rsi
+rdx
+r10
+r8
+r9
+
+
+
+
+
+0
+sys_read
+0x00
+unsigned int fd
+char __user *buf
+size_t count
+-
+-
+-
+fs&#x2F;read_write.c:621
+
+
+1
+sys_write
+0x01
+unsigned int fd
+const cha
+            <a class="read-more" href="/2023/03/29/Linux%20Syscall%20Reference(64%20bit)/"> ... </a>
+        </div>
+        <div class="post-date">2023.03.29</div>
+    </div>
+    
+    <div class="post">
         <a class="post-title" href="/2023/03/20/%E8%B7%B3%E8%BD%AC%E6%8C%87%E4%BB%A4%E6%B1%87%E6%80%BB/">跳转指令汇总</a>
         <div class="post-except">
             无条件跳转JMP ;无条件跳转
@@ -165,23 +221,6 @@ docker：loora1n&#x2F;Ubuntu2.35
             <a class="read-more" href="/2022/10/28/%E9%80%82%E7%94%A8%E5%A4%9A%E7%89%88%E6%9C%AClibc%E7%9A%84pwn-base/"> ... </a>
         </div>
         <div class="post-date">2022.10.28</div>
-    </div>
-    
-    <div class="post">
-        <a class="post-title" href="/2022/10/27/%5BIO_FILE%5DHouse%20of%20kiwi/">【IO_FILE】House of kiwi</a>
-        <div class="post-except">
-            前言
-参考博客如下：
-从PWN题NULL_FXCK中学到的glibc知识
-House OF Kiwi
-
-CTF的Pwn题里面,通常就会遇到一些加了沙盒的题目,这种加沙盒的题目,在2.29之后的堆题中,通常为以下两种方式
-
-劫持__free_hook,利用特定的gadget,将栈进行迁移
-劫持__malloc_hook为setcontext+61的gadget,以及劫持IO_list_all单链表中的指针在exit结束中,在_IO_cleanup函数会进行缓冲区的刷新,从而读取
-            <a class="read-more" href="/2022/10/27/%5BIO_FILE%5DHouse%20of%20kiwi/"> ... </a>
-        </div>
-        <div class="post-date">2022.10.27</div>
     </div>
     
 </div>

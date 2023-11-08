@@ -40,6 +40,25 @@
                 <div class="post-list">
     
     <div class="post">
+        <a class="post-title" href="/2023/08/22/%E3%80%90fuzz%20trick%E3%80%91%E5%88%A9%E7%94%A8LCOV%E6%B5%8B%E9%87%8F%E4%BB%A3%E7%A0%81%E8%A6%86%E7%9B%96%E7%8E%87/">【fuzz trick】利用LCOV测量代码覆盖率</a>
+        <div class="post-except">
+            
+本文样例为LibTIFF version 4.0.4，以CVE-2016-9297漏洞举例 
+
+Install直接使用apt安装包即可
+sudo apt install lcov
+
+Usage整体流程大致如下
+cd ./tiff-4.0.4/
+lcov --zerocounters --directory ./
+lcov --capture --initial --directory ./ --output-file app.info
+../install/bin/tiff
+            <a class="read-more" href="/2023/08/22/%E3%80%90fuzz%20trick%E3%80%91%E5%88%A9%E7%94%A8LCOV%E6%B5%8B%E9%87%8F%E4%BB%A3%E7%A0%81%E8%A6%86%E7%9B%96%E7%8E%87/"> ... </a>
+        </div>
+        <div class="post-date">2023.08.22</div>
+    </div>
+    
+    <div class="post">
         <a class="post-title" href="/2023/07/12/%E3%80%90IOT%E3%80%91%E5%B5%8C%E5%85%A5%E5%BC%8F%E8%AE%BE%E5%A4%87%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90/">【IOT】嵌入式设备固件分析</a>
         <div class="post-except">
             嵌入式设备固件一般可以分为两类：
@@ -190,62 +209,6 @@ call_usermodehelpercall_usermodehelper 是一种内核线程执行用户态应�
 
 前置内核会通过进程的 task_struct 结构体中的 cred 指针来索引 cred 结构体，然后根据 cred 的内容来判断一个进程拥有的权限，如果 cred 结构体成员中的 uid-fsgid 都为 0，那一般就会认为进程具有
             <a class="read-more" href="/2023/03/29/%E3%80%90kernel%E3%80%91%E6%8F%90%E6%9D%83%E5%85%A5%E9%97%A8-part1/"> ... </a>
-        </div>
-        <div class="post-date">2023.03.29</div>
-    </div>
-    
-    <div class="post">
-        <a class="post-title" href="/2023/03/29/Linux%20Syscall%20Reference(64%20bit)/">Linux Syscall Reference(64 bit)</a>
-        <div class="post-except">
-            
-列举了全部的64位syscall调用表，方便离线时进行查询
-
-
-
-
-#
-Name
-Registers
-Definition
-
-
-
-
-
-
-
-
-
-rax
-rdi
-rsi
-rdx
-r10
-r8
-r9
-
-
-
-
-
-0
-sys_read
-0x00
-unsigned int fd
-char __user *buf
-size_t count
--
--
--
-fs&#x2F;read_write.c:621
-
-
-1
-sys_write
-0x01
-unsigned int fd
-const cha
-            <a class="read-more" href="/2023/03/29/Linux%20Syscall%20Reference(64%20bit)/"> ... </a>
         </div>
         <div class="post-date">2023.03.29</div>
     </div>
