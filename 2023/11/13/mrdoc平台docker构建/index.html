@@ -22,51 +22,59 @@
         <div class="paper">
             <div class="paper-main">
                 
-                    <div class="header">
+                    <div class="post-header">
     <a class="logo" href="/">Loora1N&#39;s Blog | 鹭雨</a>
-    <ul class="nav">
-        
-        <li><a href="/">首页</a></li>
-        
-        <li><a href="/archives">归档</a></li>
-        
-        <li><a href="/about">关于</a></li>
-        
-        <li><a href="/links">友链</a></li>
-        
-    </ul>
+    <a class="go-home" href="/">
+        <svg width="8" height="14" viewBox="0 0 8 14">
+            <path d="M7 1L1 7l6 6" stroke="#000" stroke-width="2" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </a>
 </div>
                 
-                <div class="archive-list">
-    <ul class="archive">
-        
-        <li>
-            <span class="archive-date">2023.11.13</span>
-            <div class="archive-main">
-                <a class="archive-title" href="/2023/11/13/mrdoc%E5%B9%B3%E5%8F%B0docker%E6%9E%84%E5%BB%BA/">在NAS上docker构建MrDoc</a>
-                <!-- <a class="read-more" href="/2023/11/13/mrdoc%E5%B9%B3%E5%8F%B0docker%E6%9E%84%E5%BB%BA/"> ... </a> -->
-            </div>
-        </li>
-        
-        <li>
-            <span class="archive-date">2023.11.08</span>
-            <div class="archive-main">
-                <a class="archive-title" href="/2023/11/08/chop2/">【trick】溢出漏洞在异常处理中的利用手法-下</a>
-                <!-- <a class="read-more" href="/2023/11/08/chop2/"> ... </a> -->
-            </div>
-        </li>
-        
-        <li>
-            <span class="archive-date">2023.11.07</span>
-            <div class="archive-main">
-                <a class="archive-title" href="/2023/11/07/chop1/">【trick】溢出漏洞在异常处理中的利用手法-上</a>
-                <!-- <a class="read-more" href="/2023/11/07/chop1/"> ... </a> -->
-            </div>
-        </li>
-        
-    </ul>
-</div>
+                <div class="post-main">
 
+    
+    
+        <div class="post-main-title">
+            在NAS上docker构建MrDoc
+        </div>
+        <div class="post-meta">
+            2023-11-13
+        </div>
+        <div class="post-md">
+            <blockquote>
+<p>由于NAS的shell环境不太正常，甚至连git命令都没有，只能使用官方镜像搭建的方式，这里记录mrdoc平台搭建过程</p>
+</blockquote>
+<h2 id="拉取MrDoc源码"><a href="#拉取MrDoc源码" class="headerlink" title="拉取MrDoc源码"></a>拉取MrDoc源码</h2><p>在本地shell环境使用<code>git</code>拉取Mrdoc开源版源码</p>
+<pre><code class="sh">git clone https://gitee.com/zmister/MrDoc.git
+</code></pre>
+<p>用<code>scp</code>将源码上传至NAS平台的<code>/opt</code>目录</p>
+<pre><code class="sh">scp -r MrDoc user@192.168.1.172:/volume1/smb/wiki
+</code></pre>
+<h2 id="运行docker容器"><a href="#运行docker容器" class="headerlink" title="运行docker容器"></a>运行docker容器</h2><blockquote>
+<p>nas上的docker管理使用图形化工具，相比命令行需要注意参数</p>
+</blockquote>
+<p>打开工具<code>Container Manager</code>，在容器中新增<code>zmister/mrdoc:v6</code></p>
+<p><img src="/img/article/mrdoc/image-20231113105449535.png" alt="image-20231113105449535"></p>
+<p>然后设置端口映射和目录挂载(存储空间设置)</p>
+<p><img src="/img/article/mrdoc/image-20231113105632205.png" alt="image-20231113105632205"></p>
+<p>这里容器内部端口为10086，外部挑选一个不用的端口即可。然后将<code>MrDoc</code>源码目录挂载至容器内部的<code>/app</code>路径下即可，启动成功后可以在容器中查看状态。</p>
+<blockquote>
+<p>图片内有点小错误，图中&#x2F;opt需替换为&#x2F;app</p>
+</blockquote>
+<p><img src="/img/article/mrdoc/image-20231113110006500.png" alt="image-20231113110006500"></p>
+<h3 id="创建管理员用户"><a href="#创建管理员用户" class="headerlink" title="创建管理员用户"></a>创建管理员用户</h3><p>在容器中右键打开终端机，选择<code>使用命令新增</code>，输入<code>sh</code>打开shell环境</p>
+<p><img src="/img/article/mrdoc/image-20231113110201778.png" alt="image-20231113110201778"></p>
+<p>然后使用命令调用<code>manage.py</code>创建管理员</p>
+<pre><code class="sh">docker exec -it &lt;docker_name&gt; python manage.py createsuperuser
+</code></pre>
+<p>然后进入页面测试登录管理员用户</p>
+
+        </div>
+
+    
+
+</div>
                 <div class="footer">
     <span>Copyright © 2022 Loora1N&#39;s Blog | 鹭雨</span>
     <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>

@@ -2,6 +2,15 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://loora1n.github.io/2023/11/13/mrdoc%E5%B9%B3%E5%8F%B0docker%E6%9E%84%E5%BB%BA/</loc>
+    
+    <lastmod>2023-11-13</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>http://loora1n.github.io/2023/11/08/chop2/</loc>
     
     <lastmod>2023-11-08</lastmod>
@@ -535,7 +544,7 @@
 
   <url>
     <loc>http://loora1n.github.io/</loc>
-    <lastmod>2023-11-08</lastmod>
+    <lastmod>2023-11-13</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>

@@ -40,6 +40,19 @@
                 <div class="post-list">
     
     <div class="post">
+        <a class="post-title" href="/2023/08/23/%E3%80%90fuzz%E3%80%91AFL%E7%99%BD%E7%9A%AE%E4%B9%A6%E4%B8%AD%E8%8B%B1%E5%8F%8C%E8%AF%AD%E7%89%88/">【fuzz】AFL白皮书中英双语版</a>
+        <div class="post-except">
+            前言
+最近想研究研究AFL整体内部逻辑源码，面试时也遇到了同样的问题，决定从AFL白皮书开始看看。网上有很多翻译版，但是要不就是没写完，要不就是机翻痕迹太重。决定自己完成这个任务，争取在一周内完成大部分核心源码的分析。又想到之前看网络协议栈和IO_FILE时的噩梦了😭😭😭
+
+本人英语水平有限，如有问题可以文末评论区直接指出。我想做中英双语版也是尽量在一定程度上防止大家被我的蹩脚翻译带偏。
+白皮书的原文部分我都会使用markdown的引用语法，另外，全文使用AFL简写替代
+            <a class="read-more" href="/2023/08/23/%E3%80%90fuzz%E3%80%91AFL%E7%99%BD%E7%9A%AE%E4%B9%A6%E4%B8%AD%E8%8B%B1%E5%8F%8C%E8%AF%AD%E7%89%88/"> ... </a>
+        </div>
+        <div class="post-date">2023.08.23</div>
+    </div>
+    
+    <div class="post">
         <a class="post-title" href="/2023/08/22/%E3%80%90fuzz%20trick%E3%80%91%E5%88%A9%E7%94%A8LCOV%E6%B5%8B%E9%87%8F%E4%BB%A3%E7%A0%81%E8%A6%86%E7%9B%96%E7%8E%87/">【fuzz trick】利用LCOV测量代码覆盖率</a>
         <div class="post-except">
             
@@ -197,18 +210,6 @@ gdb .
 改数据符号链接如果一个 root 权限的进程会执行一个符号链接的程序，并且该符号链接或者符号链接指向的程序可以由攻击者控制，攻击者就可以实现提权。
 call_usermodehelpercall_usermodehelper 是一种内核线程执行用户态应用的方式，并且启动的进程具有 root 权限。因此，如果我们能够控制具体要执行的应用，那就可以实现提权
             <a class="read-more" href="/2023/03/29/%E3%80%90kernel%E3%80%91%E6%8F%90%E6%9D%83%E5%85%A5%E9%97%A8-part2/"> ... </a>
-        </div>
-        <div class="post-date">2023.03.29</div>
-    </div>
-    
-    <div class="post">
-        <a class="post-title" href="/2023/03/29/%E3%80%90kernel%E3%80%91%E6%8F%90%E6%9D%83%E5%85%A5%E9%97%A8-part1/">【kernel】提权入门-part1</a>
-        <div class="post-except">
-            
-纠结了很久，决定还是开启这个模块的学习，在这个路口迷茫了很久了，一直没有决定好走向何处。虽然有可能会走错路，可能会学习很多看起来没用的东西，但希望Kernel的学习能够带我刚开始接触PWN时的乐趣。将会主要借助CTF wiki和《从0到1》
-
-前置内核会通过进程的 task_struct 结构体中的 cred 指针来索引 cred 结构体，然后根据 cred 的内容来判断一个进程拥有的权限，如果 cred 结构体成员中的 uid-fsgid 都为 0，那一般就会认为进程具有
-            <a class="read-more" href="/2023/03/29/%E3%80%90kernel%E3%80%91%E6%8F%90%E6%9D%83%E5%85%A5%E9%97%A8-part1/"> ... </a>
         </div>
         <div class="post-date">2023.03.29</div>
     </div>

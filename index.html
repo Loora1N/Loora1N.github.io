@@ -40,6 +40,25 @@
                 <div class="post-list">
     
     <div class="post">
+        <a class="post-title" href="/2023/11/13/mrdoc%E5%B9%B3%E5%8F%B0docker%E6%9E%84%E5%BB%BA/">在NAS上docker构建MrDoc</a>
+        <div class="post-except">
+            
+由于NAS的shell环境不太正常，甚至连git命令都没有，只能使用官方镜像搭建的方式，这里记录mrdoc平台搭建过程
+
+拉取MrDoc源码在本地shell环境使用git拉取Mrdoc开源版源码
+git clone https://gitee.com/zmister/MrDoc.git
+
+用scp将源码上传至NAS平台的/opt目录
+scp -r MrDoc user@192.168.1.172:/volume1/smb/wiki
+
+运行docker容器
+nas上的dock
+            <a class="read-more" href="/2023/11/13/mrdoc%E5%B9%B3%E5%8F%B0docker%E6%9E%84%E5%BB%BA/"> ... </a>
+        </div>
+        <div class="post-date">2023.11.13</div>
+    </div>
+    
+    <div class="post">
         <a class="post-title" href="/2023/11/08/chop2/">【trick】溢出漏洞在异常处理中的利用手法-下</a>
         <div class="post-except">
             
@@ -168,19 +187,6 @@ ASAN简介ASAN（Address Sanitizer）是针对 C&#x2F;C++ 的快速内存错误�
             <a class="read-more" href="/2023/08/29/ASAN%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90/"> ... </a>
         </div>
         <div class="post-date">2023.08.29</div>
-    </div>
-    
-    <div class="post">
-        <a class="post-title" href="/2023/08/23/%E3%80%90fuzz%E3%80%91AFL%E7%99%BD%E7%9A%AE%E4%B9%A6%E4%B8%AD%E8%8B%B1%E5%8F%8C%E8%AF%AD%E7%89%88/">【fuzz】AFL白皮书中英双语版</a>
-        <div class="post-except">
-            前言
-最近想研究研究AFL整体内部逻辑源码，面试时也遇到了同样的问题，决定从AFL白皮书开始看看。网上有很多翻译版，但是要不就是没写完，要不就是机翻痕迹太重。决定自己完成这个任务，争取在一周内完成大部分核心源码的分析。又想到之前看网络协议栈和IO_FILE时的噩梦了😭😭😭
-
-本人英语水平有限，如有问题可以文末评论区直接指出。我想做中英双语版也是尽量在一定程度上防止大家被我的蹩脚翻译带偏。
-白皮书的原文部分我都会使用markdown的引用语法，另外，全文使用AFL简写替代
-            <a class="read-more" href="/2023/08/23/%E3%80%90fuzz%E3%80%91AFL%E7%99%BD%E7%9A%AE%E4%B9%A6%E4%B8%AD%E8%8B%B1%E5%8F%8C%E8%AF%AD%E7%89%88/"> ... </a>
-        </div>
-        <div class="post-date">2023.08.23</div>
     </div>
     
 </div>
