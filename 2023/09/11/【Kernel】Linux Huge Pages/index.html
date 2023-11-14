@@ -71,7 +71,7 @@
 <li>利用虚拟地址终端<code>PTE索引</code>部分，在<code>Page Table</code>中取出对应物理内存页地址</li>
 <li>此时虚拟地址所对应的物理地址就可以得到了，计算公式：<strong>物理地址 &#x3D; 虚拟地址低12位offset + 物理内存页地址</strong></li>
 </ol>
-<h2 id="Huge-Pages原理"><a href="#Huge-Pages原理" class="headerlink" title="Huge Pages原理"></a>Huge Pages原理</h2><p>在明白了上述内存地址的划分后，Huge Page的原理就比较好理解了，即扩大物理页大小，减少页表层级。在Linux中，主要的<code>HugePage</code>的大小为2MB(即12bit + 9bit)和1GB(即12bit + 9bit +bit)，下面以2MB的<code>HugePage</code>举例</p>
+<h2 id="Huge-Pages原理"><a href="#Huge-Pages原理" class="headerlink" title="Huge Pages原理"></a>Huge Pages原理</h2><p>在明白了上述内存地址的划分后，Huge Page的原理就比较好理解了，即扩大物理页大小，减少页表层级。在Linux中，主要的<code>HugePage</code>的大小为2MB(即12bit + 9bit)和1GB(即12bit + 9bit + 9bit)，下面以2MB的<code>HugePage</code>举例</p>
 <p><img src="/img/article/hugepages/v2-e2cadc8bb0e4705001f4262547fb6ded_r.jpg" alt="img"></p>
 <p>可以很明显的看到由于页大小扩大至2MB，其虚拟地址中，表示偏移的部分扩大到了(12+9)bit。原先的4级页表也变为3级页表，同理，1G大小的页对应2级页表。所以此时 <code>Page Middle Directory</code> 直接指向映射的物理内存页地址。</p>
 <blockquote>
