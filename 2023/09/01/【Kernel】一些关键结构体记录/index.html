@@ -36,7 +36,7 @@
     
     
         <div class="post-main-title">
-            【Kernel】一些trick记录（持续更新）
+            【Kernel】一些trick和struct记录（持续更新）
         </div>
         <div class="post-meta">
             2023-09-01
@@ -121,6 +121,91 @@ struct msg_msg &#123;
 </code></pre>
 <p>实际结构如下：</p>
 <p><img src="/img/article/ktrick/5IcVxRaFQtg3HCW.png" alt="image.png"></p>
+<h2 id="进程描述符-process-descriptor"><a href="#进程描述符-process-descriptor" class="headerlink" title="进程描述符(process descriptor)"></a>进程描述符(process descriptor)</h2><p>在内核中使用结构体 <code>task_struct</code> 表示一个进程，该结构体定义于内核源码<code>include/linux/sched.h</code>中，代码比较长就不在这里贴出了.一个进程描述符的结构应当如下图所示：</p>
+<p><img src="https://i.loli.net/2021/02/23/2W8xIfwqm9Y7Fru.png" alt="image.png"></p>
+<p>注意到<code>task_struct</code>的源码中有如下代码：</p>
+<pre><code class="c">/* Process credentials: */
+
+/* Tracer&#39;s credentials at attach: */
+const struct cred __rcu        *ptracer_cred;
+
+/* Objective and real subjective task credentials (COW): */
+const struct cred __rcu        *real_cred;
+
+/* Effective (overridable) subjective task credentials (COW): */
+const struct cred __rcu        *cred;
+</code></pre>
+<p><strong>Process credentials</strong> 是 kernel 用以判断一个进程权限的凭证，在 kernel 中使用 <code>cred</code> 结构体进行标识，对于一个进程而言应当有三个 cred：</p>
+<ul>
+<li><strong>ptracer_cred</strong>：使用<code>ptrace</code>系统调用跟踪该进程的上级进程的cred（gdb调试便是使用了这个系统调用，常见的反调试机制的原理便是提前占用了这个位置）</li>
+<li><strong>real_cred</strong>：即<strong>客体凭证</strong>（<strong>objective cred</strong>），通常是一个进程最初启动时所具有的权限</li>
+<li><strong>cred</strong>：即<strong>主体凭证</strong>（<strong>subjective cred</strong>），该进程的有效cred，kernel以此作为进程权限的凭证</li>
+</ul>
+<p>一般情况下，主体凭证与客体凭证的值是相同的</p>
+<blockquote>
+<p>例：当进程 A 向进程 B 发送消息时，A为主体，B为客体</p>
+</blockquote>
+<h3 id="进程权限凭证：cred结构体"><a href="#进程权限凭证：cred结构体" class="headerlink" title="进程权限凭证：cred结构体"></a>进程权限凭证：cred结构体</h3><p>对于一个进程，在内核当中使用一个结构体<code>cred</code>管理其权限，该结构体定义于内核源码<code>include/linux/cred.h</code>中，如下：</p>
+<pre><code class="c">struct cred &#123;
+    atomic_t    usage;
+#ifdef CONFIG_DEBUG_CREDENTIALS
+    atomic_t    subscribers;    /* number of processes subscribed */
+    void        *put_addr;
+    unsigned    magic;
+#define CRED_MAGIC    0x43736564
+#define CRED_MAGIC_DEAD    0x44656144
+#endif
+    kuid_t        uid;        /* real UID of the task */
+    kgid_t        gid;        /* real GID of the task */
+    kuid_t        suid;        /* saved UID of the task */
+    kgid_t        sgid;        /* saved GID of the task */
+    kuid_t        euid;        /* effective UID of the task */
+    kgid_t        egid;        /* effective GID of the task */
+    kuid_t        fsuid;        /* UID for VFS ops */
+    kgid_t        fsgid;        /* GID for VFS ops */
+    unsigned    securebits;    /* SUID-less security management */
+    kernel_cap_t    cap_inheritable; /* caps our children can inherit */
+    kernel_cap_t    cap_permitted;    /* caps we&#39;re permitted */
+    kernel_cap_t    cap_effective;    /* caps we can actually use */
+    kernel_cap_t    cap_bset;    /* capability bounding set */
+    kernel_cap_t    cap_ambient;    /* Ambient capability set */
+#ifdef CONFIG_KEYS
+    unsigned char    jit_keyring;    /* default keyring to attach requested
+                     * keys to */
+    struct key    *session_keyring; /* keyring inherited over fork */
+    struct key    *process_keyring; /* keyring private to this process */
+    struct key    *thread_keyring; /* keyring private to this thread */
+    struct key    *request_key_auth; /* assumed request_key authority */
+#endif
+#ifdef CONFIG_SECURITY
+    void        *security;    /* subjective LSM security */
+#endif
+    struct user_struct *user;    /* real user ID subscription */
+    struct user_namespace *user_ns; /* user_ns the caps and keyrings are relative to. */
+    struct group_info *group_info;    /* supplementary groups for euid/fsgid */
+    /* RCU deletion */
+    union &#123;
+        int non_rcu;            /* Can we skip RCU deletion? */
+        struct rcu_head    rcu;        /* RCU deletion hook */
+    &#125;;
+&#125; __randomize_layout;
+</code></pre>
+<p>我们主要关注<code>cred</code>结构体中管理权限的变量</p>
+<h3 id="用户ID-amp-组ID"><a href="#用户ID-amp-组ID" class="headerlink" title="用户ID &amp; 组ID"></a>用户ID &amp; 组ID</h3><p>一个cred结构体中记载了<strong>一个进程四种不同的用户ID</strong>：</p>
+<ul>
+<li><strong>真实用户ID</strong>（real UID）：标识一个进程<strong>启动时的用户ID</strong></li>
+<li><strong>保存用户ID</strong>（saved UID）：标识一个进程<strong>最初的有效用户ID</strong></li>
+<li><strong>有效用户ID</strong>（effective UID）：标识一个进程<strong>正在运行时所属的用户ID</strong>，一个进程在运行途中是可以改变自己所属用户的，因而权限机制也是通过有效用户ID进行认证的，内核通过 euid 来进行特权判断；为了防止用户一直使用高权限，当任务完成之后，euid 会与 suid 进行交换，恢复进程的有效权限</li>
+<li><strong>文件系统用户ID</strong>（UID for VFS ops）：标识一个进程<strong>创建文件时进行标识的用户ID</strong></li>
+</ul>
+<p>在通常情况下这几个ID应当都是相同的</p>
+<p>用户组ID同样分为四个：<code>真实组ID</code>、<code>保存组ID</code>、<code>有效组ID</code>、<code>文件系统组ID</code>，与用户ID是类似的，这里便不再赘叙</p>
+<h2 id="页-gt-区-gt-节点三级结构"><a href="#页-gt-区-gt-节点三级结构" class="headerlink" title="页-&gt;区-&gt;节点三级结构"></a>页-&gt;区-&gt;节点三级结构</h2><h3 id="页page"><a href="#页page" class="headerlink" title="页page"></a>页page</h3><p>Linux kernel 中使用 <code>page</code> 结构体来表示一个物理页框，<strong>每个物理页框都有着一个对应的 page 结构体</strong></p>
+<p><img src="https://i.loli.net/2021/11/25/MjWZmba9SLH1xIO.png" alt="image.png"></p>
+<h3 id="区zone"><a href="#区zone" class="headerlink" title="区zone"></a>区zone</h3><p>在 Linux 下将一个节点内不同用途的内存区域划分为不同的<code>区(zone)</code>，对应结构体 <code>struct zone</code></p>
+<p><img src="https://i.loli.net/2021/11/30/sOwdI5YMNUjLSib.png" alt="自己画的图.png"></p>
+<h3 id="节点node"><a href="#节点node" class="headerlink" title="节点node"></a>节点node</h3><p>zone 再向上一层便是<strong>节点</strong>——Linux 将_内存控制器(memory controller)_作为节点划分的依据，对于 UMA 架构而言只有一个节点，而对于 NUMA 架构而言通常有多个节点，对于同一个内存控制器下的 CPU 而言其对应的节点称之为_本地内存_，不同处理器之间通过总线进行进一步的连接。如下图所示，一个 MC 对应一个节点：</p>
+<p><img src="https://i.loli.net/2021/11/27/hAopSNYg23VeWzq.png" alt="image.png"></p>
 <hr>
 <blockquote>
 <p>下面这些留个坑，有空补上</p>
