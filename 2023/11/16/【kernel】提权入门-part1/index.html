@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
+    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
+    <title>Loora1N&#39;s Blog | 鹭雨 | </title>
+    
+<link rel="stylesheet" href="/css/reset.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/css/markdown.css">
+
+    
+<link rel="stylesheet" href="/css/fonts.css">
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+    <body>
+        <div class="paper">
+            <div class="paper-main">
+                
+                    <div class="post-header">
+    <a class="logo" href="/">Loora1N&#39;s Blog | 鹭雨</a>
+    <a class="go-home" href="/">
+        <svg width="8" height="14" viewBox="0 0 8 14">
+            <path d="M7 1L1 7l6 6" stroke="#000" stroke-width="2" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </a>
+</div>
+                
+                <div class="post-main">
+
+    
+    
+        <div class="post-main-title">
+            【kernel】提权入门-part1
+        </div>
+        <div class="post-meta">
+            2023-11-16
+        </div>
+        <div class="post-md">
+            <blockquote>
+<p>纠结了很久，决定还是开启这个模块的学习，在这个路口迷茫了很久了，一直没有决定好走向何处。虽然有可能会走错路，可能会学习很多看起来没用的东西，但希望Kernel的学习能够带我刚开始接触PWN时的乐趣。将会主要借助CTF wiki和《从0到1》</p>
+</blockquote>
+<h2 id="前置"><a href="#前置" class="headerlink" title="前置"></a>前置</h2><p>内核会通过进程的 <code>task_struct</code> 结构体中的 <code>cred</code> 指针来索引 <code>cred</code> 结构体，然后根据 <code>cred</code> 的内容来判断一个进程拥有的权限，如果 <code>cred</code> 结构体成员中的 <strong>uid-fsgid</strong> 都为 0，那一般就会认为进程具有 <strong>root</strong> 权限。</p>
+<pre><code class="c">struct cred &#123;
+    atomic_t    usage;
+#ifdef CONFIG_DEBUG_CREDENTIALS
+    atomic_t    subscribers;    /* number of processes subscribed */
+    void        *put_addr;
+    unsigned    magic;
+#define CRED_MAGIC  0x43736564
+#define CRED_MAGIC_DEAD 0x44656144
+#endif
+    kuid_t      uid;        /* real UID of the task */
+    kgid_t      gid;        /* real GID of the task */
+    kuid_t      suid;       /* saved UID of the task */
+    kgid_t      sgid;       /* saved GID of the task */
+    kuid_t      euid;       /* effective UID of the task */
+    kgid_t      egid;       /* effective GID of the task */
+    kuid_t      fsuid;      /* UID for VFS ops */
+    kgid_t      fsgid;      /* GID for VFS ops */
+  ...
+&#125;
+</code></pre>
+<p>因此，很自然就能想到两种思路来进行提权：</p>
+<ul>
+<li>直接修改 <code>cred</code> 结构体的内容</li>
+<li>修改 <code>task_struct</code> 结构体中的 cred 指针指向一个满足要求的 cred</li>
+</ul>
+<h2 id="直接定位"><a href="#直接定位" class="headerlink" title="直接定位"></a>直接定位</h2><p>cred 结构体的最前面记录了各种 id 信息，对于一个普通的进程而言，<code>uid-fsgid</code> 都是执行进程的用户的身份。因此我们可以通过扫描内存来定位 cred。</p>
+<pre><code class="c">struct cred &#123;
+    atomic_t    usage;
+#ifdef CONFIG_DEBUG_CREDENTIALS
+    atomic_t    subscribers;    /* number of processes subscribed */
+    void        *put_addr;
+    unsigned    magic;
+#define CRED_MAGIC  0x43736564
+#define CRED_MAGIC_DEAD 0x44656144
+#endif
+    kuid_t      uid;        /* real UID of the task */
+    kgid_t      gid;        /* real GID of the task */
+    kuid_t      suid;       /* saved UID of the task */
+    kgid_t      sgid;       /* saved GID of the task */
+    kuid_t      euid;       /* effective UID of the task */
+    kgid_t      egid;       /* effective GID of the task */
+    kuid_t      fsuid;      /* UID for VFS ops */
+    kgid_t      fsgid;      /* GID for VFS ops */
+  ...
+&#125;
+</code></pre>
+<p><strong>在实际定位的过程中，我们可能会发现很多满足要求的 cred，这主要是因为 cred 结构体可能会被拷贝、释放。</strong>一个很直观的想法是在定位的过程中，利用 usage 不为 0 来筛除掉一些 cred，但仍然会发现一些 usage 为 0 的 cred。这是因为 cred 从 usage 为 0， 到释放有一定的时间。此外，cred 是使用 rcu 延迟释放的。</p>
+<h2 id="间接定位"><a href="#间接定位" class="headerlink" title="间接定位"></a>间接定位</h2><h3 id="task-struct"><a href="#task-struct" class="headerlink" title="task_struct"></a>task_struct</h3><p>进程的 <code>task_struct</code> 结构体中会存放指向 cred 的指针，因此我们可以</p>
+<ol>
+<li>定位当前进程 <code>task_struct</code> 结构体的地址</li>
+<li>根据 cred 指针相对于 task_struct 结构体的偏移计算得出 <code>cred</code> 指针存储的地址</li>
+<li>获取 <code>cred</code> 具体的地址</li>
+</ol>
+<h3 id="comm"><a href="#comm" class="headerlink" title="comm"></a>comm</h3><p>comm 用来标记可执行文件的名字，位于进程的 <code>task_struct</code> 结构体中。我们可以发现 comm 其实在 cred 的正下方，所以我们也可以先定位 comm ，然后定位 cred 的地址。</p>
+<pre><code class="c">    /* Process credentials: */
+
+    /* Tracer&#39;s credentials at attach: */
+    const struct cred __rcu     *ptracer_cred;
+
+    /* Objective and real subjective task credentials (COW): */
+    const struct cred __rcu     *real_cred;
+
+    /* Effective (overridable) subjective task credentials (COW): */
+    const struct cred __rcu     *cred;
+
+#ifdef CONFIG_KEYS
+    /* Cached requested key. */
+    struct key          *cached_requested_key;
+#endif
+
+    /*
+     * executable name, excluding path.
+     *
+     * - normally initialized setup_new_exec()
+     * - access it with [gs]et_task_comm()
+     * - lock it with task_lock()
+     */
+    char                comm[TASK_COMM_LEN];
+</code></pre>
+<p>然而，在进程名字并不特殊的情况下，内核中可能会有多个同样的字符串，这会影响搜索的正确性与效率。因此，我们可以使用 prctl 设置进程的 comm 为一个特殊的字符串，然后再开始定位 comm。</p>
+<h2 id="修改"><a href="#修改" class="headerlink" title="修改"></a>修改</h2><p>在这种方法下，我们可以直接将 cred 中的 <code>uid-fsgid</code> 都修改为 0。当然修改的方式有很多种，比如说</p>
+<ul>
+<li>在我们具有任意地址读写后，可以直接修改 cred。</li>
+<li>在我们可以 ROP 执行代码后，可以利用 ROP gadget 修改 cred。</li>
+</ul>
+<h3 id="利用UAF修改"><a href="#利用UAF修改" class="headerlink" title="利用UAF修改"></a>利用UAF修改</h3><p>如果我们在进程初始化时能控制 cred 结构体的位置，并且我们可以在初始化后修改该部分的内容，那么我们就可以很容易地达到提权的目的。这里给出一个典型的例子</p>
+<ol>
+<li>申请一块与 cred 结构体大小一样的堆块</li>
+<li>释放该堆块</li>
+<li>fork 出新进程，恰好使用刚刚释放的堆块</li>
+<li>此时，修改 cred 结构体特定内存，从而提权</li>
+</ol>
+<p>非常有意思的是，在这个过程中，我们不需要任何的信息泄露。</p>
+<h3 id="利用commit-creds修改"><a href="#利用commit-creds修改" class="headerlink" title="利用commit_creds修改"></a>利用commit_creds修改</h3><p>我们还可以使用 <code>commit_creds(prepare_kernel_cred(0))</code> 来进行提权，该方式会自动生成一个合法的 cred，并定位当前线程的 <code>task_struct</code> 的位置，然后修改它的 cred 为新的 cred。该方式比较适用于控制程序执行流后使用。</p>
+<p><img src="/img/article/%E6%8F%90%E6%9D%83%E5%85%A5%E9%97%A8/elevation-of-privilege.png" alt="72b919b7-87bb-4312-97ea-b59fe4690b2e"></p>
+
+        </div>
+
+    
+
+</div>
+                <div class="footer">
+    <span>Copyright © 2022 Loora1N&#39;s Blog | 鹭雨</span>
+    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
+</div>
+
+
+<link rel="stylesheet" href="/css/a11y-dark.min.css">
+
+
+<script src="/js/highlight.min.js"></script>
+
+
+<script src="/js/highlightjs-line-numbers.js"></script>
+
+
+<script>
+    hljs.initHighlightingOnLoad();
+    hljs.initLineNumbersOnLoad();
+</script>
+
+            </div>
+        </div>
+    <!-- hexo injector body_end start -->
+  <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
+  <script data-pjax>
+        function GithubCalendarConfig(){
+            var git_githubapiurl ="https://python-github-calendar-api.vercel.app/api?Loora1N";
+            var git_color =['#ebedf0', '#fdcdec', '#fc9bd9', '#fa6ac5', '#f838b2', '#f5089f', '#c4067e', '#92055e', '#540336', '#48022f', '#30021f'];
+            var git_user ="Loora1N";
+            var parent_div_git = document.getElementById('recent-posts');
+            var git_div_html = '<div class="recent-post-item" style="width:100%;height:auto;padding:10px;"><div id="github_loading" style="width:10%;height:100%;margin:0 auto;display: block"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"  viewBox="0 0 50 50" style="enable-background:new 0 0 50 50" xml:space="preserve"><path fill="#d0d0d0" d="M25.251,6.461c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615V6.461z" transform="rotate(275.098 25 25)"><animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="0.6s" repeatCount="indefinite"></animateTransform></path></svg></div><div id="github_container"></div></div>';
+            if(parent_div_git && location.pathname =='/about/'){
+                console.log('已挂载github calendar')
+                // parent_div_git.innerHTML=git_div_html+parent_div_git.innerHTML // 无报错，但不影响使用(支持pjax跳转)
+                parent_div_git.insertAdjacentHTML("afterbegin",git_div_html) // 有报错，但不影响使用(支持pjax跳转)
+            };
+            GithubCalendar(git_githubapiurl,git_color,git_user)
+        }
+        if(document.getElementById('recent-posts')){
+            GithubCalendarConfig()
+        }
+    </script>
+    <style>#github_container{min-height:280px}@media screen and (max-width:650px) {#github_container{background-image:;min-height:0px}}</style>
+    <style></style><!-- hexo injector body_end end --></body>
+</html>

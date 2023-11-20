@@ -40,144 +40,90 @@
                 <div class="post-list">
     
     <div class="post">
-        <a class="post-title" href="/2023/03/29/%E3%80%90kernel%E3%80%91%E6%8F%90%E6%9D%83%E5%85%A5%E9%97%A8-part1/">【kernel】提权入门-part1</a>
+        <a class="post-title" href="/2023/11/16/qemu%E9%80%83%E9%80%B8/">【Virtual】浅谈escape-qemu</a>
         <div class="post-except">
             
-纠结了很久，决定还是开启这个模块的学习，在这个路口迷茫了很久了，一直没有决定好走向何处。虽然有可能会走错路，可能会学习很多看起来没用的东西，但希望Kernel的学习能够带我刚开始接触PWN时的乐趣。将会主要借助CTF wiki和《从0到1》
+qemu逃逸这部分内容，在今年年初就有所涉猎，然而由于本人过于懒惰，这个部分的总结推了整整半年多。直到参加本月的HTICON2023，真正第一次在比赛中面对QEMU逃逸，发现了自己很多的不足之处。借这次机会将这部分内容作以总结。
 
-前置内核会通过进程的 task_struct 结构体中的 cred 指针来索引 cred 结构体，然后根据 cred 的内容来判断一个进程拥有的权限，如果 cred 结构体成员中的 uid-fsgid 都为 0，那一般就会认为进程具有
-            <a class="read-more" href="/2023/03/29/%E3%80%90kernel%E3%80%91%E6%8F%90%E6%9D%83%E5%85%A5%E9%97%A8-part1/"> ... </a>
+
+PCI设备在目前的QEMU逃逸题目类型中，出题者一般会在qemu-system-x86_64(或是对应arm架构的qemu-system)的二进制程序中加入自己编写的、具有漏洞的PCI设备模块。每个PCI设备都对应一个PCI配置空间，包含该PC
+            <a class="read-more" href="/2023/11/16/qemu%E9%80%83%E9%80%B8/"> ... </a>
         </div>
-        <div class="post-date">2023.03.29</div>
+        <div class="post-date">2023.11.16</div>
     </div>
     
     <div class="post">
-        <a class="post-title" href="/2023/03/29/Linux%20Syscall%20Reference(64%20bit)/">Linux Syscall Reference(64 bit)</a>
+        <a class="post-title" href="/2023/11/16/srop/">setcontext &amp; SROP</a>
+        <div class="post-except">
+            前言
+SROP(Sigreturn Oriented Programming) 于 2014 年被 Vrije Universiteit Amsterdam 的 Erik Bosman 提出，其相关研究Framing Signals — A Return to Portable Shellcode 其中相关的 paper 以及如下：paper
+
+机制详解signal 机制是类 unix 系统中进程之间相互传递信息的一种方法。一般，我们也称其为软中断信号，或者软中断。比如说，进
+            <a class="read-more" href="/2023/11/16/srop/"> ... </a>
+        </div>
+        <div class="post-date">2023.11.16</div>
+    </div>
+    
+    <div class="post">
+        <a class="post-title" href="/2023/11/16/vscode%E4%BD%BF%E7%94%A8pwntools%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE%E5%87%BA%E9%94%99/">vscode使用pwntools代码高亮出错</a>
         <div class="post-except">
             
-列举了全部的64位syscall调用表，方便离线时进行查询
+vscode在使用pwntools的send系列函数时，会出现高亮错误的情况，目前最好的解决办法时对pwntools源码进行更改
 
+右键send函数，选择Go to Definition，打开pwntools源码
 
+ctrl+F搜索send_raw函数
 
+把函数末尾的raise EOFError(&#39;Not implemented&#39;)更换成raise NotImplementedError()既可
 
-#
-Name
-Registers
-Definition
-
-
-
-
-
-
-
-
-
-rax
-rdi
-rsi
-rdx
-r10
-r8
-r9
-
-
-
-
-
-0
-sys_read
-0x00
-unsigned int fd
-char __user *buf
-size_t count
--
--
--
-fs&#x2F;read_write.c:621
-
-
-1
-sys_write
-0x01
-unsigned int fd
-const cha
-            <a class="read-more" href="/2023/03/29/Linux%20Syscall%20Reference(64%20bit)/"> ... </a>
+            <a class="read-more" href="/2023/11/16/vscode%E4%BD%BF%E7%94%A8pwntools%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE%E5%87%BA%E9%94%99/"> ... </a>
         </div>
-        <div class="post-date">2023.03.29</div>
+        <div class="post-date">2023.11.16</div>
     </div>
     
     <div class="post">
-        <a class="post-title" href="/2023/03/20/%E8%B7%B3%E8%BD%AC%E6%8C%87%E4%BB%A4%E6%B1%87%E6%80%BB/">跳转指令汇总</a>
+        <a class="post-title" href="/2023/11/16/%E3%80%8A%E6%A0%BC%E8%B0%83%EF%BC%9A%E7%A4%BE%E4%BC%9A%E7%AD%89%E7%BA%A7%E4%B8%8E%E7%94%9F%E6%B4%BB%E5%93%81%E5%91%B3%E3%80%8B/">我的必读书目表(仍在更新)</a>
         <div class="post-except">
-            无条件跳转JMP ;无条件跳转
+            《格调：社会等级与生活品味》
+上世纪末期美国社会结构，对于现在的我们仍有许多警醒之处。
 
-根据CX、ECX寄存器的值跳转JCXZ ;CX 为 0 则跳转
-JECXZ;ECX 为 0 则跳转
 
-根据标志位跳转的指令JE ;等于则跳转同JZJNE ;不等于则跳转同JNZ
-JNE ;不等于则跳转
-JA   ;无符号大于则跳转
-JNA  ;无符号不大于则跳转
-JAE  ;无符号大于等于则跳转		同JNB
-JNAE ;无符号不大于等于则跳转	同JB
-JB   ;无符号小于则跳转
-JNB  ;无符号不小于则跳转
-JBE  ;无符号小于等于则跳
-            <a class="read-more" href="/2023/03/20/%E8%B7%B3%E8%BD%AC%E6%8C%87%E4%BB%A4%E6%B1%87%E6%80%BB/"> ... </a>
+《加速》
+本书讲解了现代社会中时间结构的改变，深入的揭示了现代社会中许多现象的本质原因。
+
+
+《新异化的诞生》
+社会加速批判理论大纲，辩证的思考当代人们的生活。
+
+
+《深入理解计算机系统》
+计算机底层原理,学计算机不读CSAPP，等于没学（doge）。
+
+
+《C++反汇编与逆向分析技术揭秘》
+本书既是一本全面而系统地讲解反汇编与逆向分析技术的安全类专著，又是一部深刻揭示C++内部工作机
+            <a class="read-more" href="/2023/11/16/%E3%80%8A%E6%A0%BC%E8%B0%83%EF%BC%9A%E7%A4%BE%E4%BC%9A%E7%AD%89%E7%BA%A7%E4%B8%8E%E7%94%9F%E6%B4%BB%E5%93%81%E5%91%B3%E3%80%8B/"> ... </a>
         </div>
-        <div class="post-date">2023.03.20</div>
+        <div class="post-date">2023.11.16</div>
     </div>
     
     <div class="post">
-        <a class="post-title" href="/2022/12/07/%E3%80%90IO_FILE%E3%80%91%E6%BA%90%E7%A0%81%E8%AF%A6%E8%A7%A3-part2/">【IO_FILE】源码详解-part2</a>
+        <a class="post-title" href="/2023/11/16/%E3%80%90CTFd%20%E4%BA%8C%E6%AC%A1%E5%BC%80%E5%8F%91%E3%80%91%E8%A7%A3%E9%A2%98%E6%92%AD%E6%8A%A5%E6%9C%BA%E5%99%A8%E4%BA%BA%20V1/">【CTFd 二次开发】解题播报机器人 V1</a>
         <div class="post-except">
             
-在上一篇文章中，主要对IO_FILE结构体相关以及fopen函数进行了深入的介绍。本文将继续从glibc2.36源码出发，介绍fread函数相关内容
+本文基于 CTFd Version 3.4.3 开发，可能存在源码不相同的情况，阅读时请注意文章时效性。机器人会一直更新，后续应该会有一二三血播报等更详尽的功能
+注：本文不做机器人相关代码更改，直接利用nonebot自带接口实现
 
-fread首先是一个宏定义，替换为_IO_fread函数
-//	htps://elixir.bootlin.com/glibc/latest/source/stdio-common/getw.c#L21
-#define fread(p, m, n, s) _IO_fread (p, m, n, s)
+前端页面修改config.html打开CTFd/CTFd/themes/admin/templates/config.html，更改左侧栏目标题
 
-// https://
-            <a class="read-more" href="/2022/12/07/%E3%80%90IO_FILE%E3%80%91%E6%BA%90%E7%A0%81%E8%AF%A6%E8%A7%A3-part2/"> ... </a>
+apperance.html打开CTFd/CTFd/themes/admin/templates/
+            <a class="read-more" href="/2023/11/16/%E3%80%90CTFd%20%E4%BA%8C%E6%AC%A1%E5%BC%80%E5%8F%91%E3%80%91%E8%A7%A3%E9%A2%98%E6%92%AD%E6%8A%A5%E6%9C%BA%E5%99%A8%E4%BA%BA%20V1/"> ... </a>
         </div>
-        <div class="post-date">2022.12.07</div>
+        <div class="post-date">2023.11.16</div>
     </div>
     
     <div class="post">
-        <a class="post-title" href="/2022/11/29/%E3%80%90IO_FILE%E3%80%91%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86%E6%A6%82%E8%A7%88/">【IO_FILE】源码详解</a>
-        <div class="post-except">
-            
-由于glibc版本的不断更新，常见几种hook在glibc2.34终被舍去，我们急需一种能够在高版本的glibc下仍能有效的getshell方法。而IO_FILE作为heap题目的进阶技能逐渐引起大家注意，吸引了许多大佬投入其中。仅在在2021-2022年期间就出现出现了大量以IO_FILE为基础的调用链利用方式，在比赛中也逐渐成为了当下heap题目的主流getshell方式。本文以glibc2.36为例，从相关结构体以及fopen函数源码入手，详细介绍IO_FILE相关知
-            <a class="read-more" href="/2022/11/29/%E3%80%90IO_FILE%E3%80%91%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86%E6%A6%82%E8%A7%88/"> ... </a>
-        </div>
-        <div class="post-date">2022.11.29</div>
-    </div>
-    
-    <div class="post">
-        <a class="post-title" href="/2022/11/25/%E3%80%90IO_FILE%E3%80%91FSOP/">【IO_FILE】FSOP</a>
-        <div class="post-except">
-            
-FSOP 是 File Stream Oriented Programming 的缩写，根据前面对 FILE 的介绍得知进程内所有的_IO_FILE 结构会使用_chain 域相互连接形成一个链表，这个链表的头部由_IO_list_all 维护。另外由于网络上很多IO_FILE相关博客含有相关glibc源代码，但是并没有源代码的完整部分或者链接。在之后的博客中，我会包含该段代码在哪里可以查看得到。
-
-介绍FSOP 的核心思想就是劫持_IO_list_all 的值来伪造链表和
-            <a class="read-more" href="/2022/11/25/%E3%80%90IO_FILE%E3%80%91FSOP/"> ... </a>
-        </div>
-        <div class="post-date">2022.11.25</div>
-    </div>
-    
-    <div class="post">
-        <a class="post-title" href="/2022/11/13/%E3%80%90IO_FILE%E3%80%91house%20of%20cat/">【IO_FILE】house of cat</a>
-        <div class="post-except">
-            前言House of Cat利用了House of emma的虚表偏移修改思想，通过修改虚表指针的偏移，避免了对需要绕过TLS上 _pointer_chk_guard的检测相关的IO函数的调用，转而调用**_IO_wfile_jumps中的_IO_wfile_seekoff函数，然后进入到_IO_switch_to_wget_mode函数中来攻击，从而使得攻击条件和利用变得更为简单。并且house of cat在FSOP的情况下也是可行的，只需修改虚表指针的偏移来调用_IO_
-            <a class="read-more" href="/2022/11/13/%E3%80%90IO_FILE%E3%80%91house%20of%20cat/"> ... </a>
-        </div>
-        <div class="post-date">2022.11.13</div>
-    </div>
-    
-    <div class="post">
-        <a class="post-title" href="/2022/11/08/%E3%80%90CTFd%20%E4%BA%8C%E6%AC%A1%E5%BC%80%E5%8F%91%E3%80%91%E8%A7%A3%E9%A2%98%E6%92%AD%E6%8A%A5%E6%9C%BA%E5%99%A8%E4%BA%BA%20V2/">【CTFd 二次开发】解题播报机器人 V2</a>
+        <a class="post-title" href="/2023/11/16/%E3%80%90CTFd%20%E4%BA%8C%E6%AC%A1%E5%BC%80%E5%8F%91%E3%80%91%E8%A7%A3%E9%A2%98%E6%92%AD%E6%8A%A5%E6%9C%BA%E5%99%A8%E4%BA%BA%20V2/">【CTFd 二次开发】解题播报机器人 V2</a>
         <div class="post-except">
             
 本文基于 CTFd Version 3.4.3 开发，可能存在源码不相同的情况，阅读时请注意文章时效性。
@@ -188,39 +134,81 @@ FSOP 是 File Stream Oriented Programming 的缩写，根据前面对 FILE 的�
 
 
 前端页面修改appearance.html打开CTFd/CTFd/themes/admin/templates/configs/appearance.html，在上次更新的基础上增加题目创建播报文案，和题目信息更新播报文案接口。这里直接放出完
-            <a class="read-more" href="/2022/11/08/%E3%80%90CTFd%20%E4%BA%8C%E6%AC%A1%E5%BC%80%E5%8F%91%E3%80%91%E8%A7%A3%E9%A2%98%E6%92%AD%E6%8A%A5%E6%9C%BA%E5%99%A8%E4%BA%BA%20V2/"> ... </a>
+            <a class="read-more" href="/2023/11/16/%E3%80%90CTFd%20%E4%BA%8C%E6%AC%A1%E5%BC%80%E5%8F%91%E3%80%91%E8%A7%A3%E9%A2%98%E6%92%AD%E6%8A%A5%E6%9C%BA%E5%99%A8%E4%BA%BA%20V2/"> ... </a>
         </div>
-        <div class="post-date">2022.11.08</div>
+        <div class="post-date">2023.11.16</div>
     </div>
     
     <div class="post">
-        <a class="post-title" href="/2022/11/03/i%E6%98%A5%E7%A7%8B%E6%98%A5%E5%AD%A3%E8%B5%9B-%E5%8B%87%E8%80%85%E5%B7%85%E5%B3%B0-chunqiuIOT/">i春秋春季赛-勇者巅峰-chunqiuIOT</a>
+        <a class="post-title" href="/2023/11/16/%E3%80%90IOT%20%E5%AD%A6%E4%B9%A0%E4%B8%80%E3%80%91%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E4%B8%8E%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/">【IOT 学习一】固件分析与漏洞利用</a>
         <div class="post-except">
-            前言这是今年上半年比赛的一道题目，那个时候才刚刚接触堆，栈也不是很熟。打开程序基本就放弃了，前一段时间复现了几个IOT相关的CVE，借此契机顺便看看几个月前自己放弃的那道题。有一说一，这道题的逆向部分还是很头疼的，逆了一个下午+一个早上才看完程序逻辑—-套皮堆题罢了。
+            
+本文内容是基于《物联网渗透测试》-美·亚伦古兹曼的学习总结
 
-我新建了一个库，用于存放各种比赛的题目，我博客内WP涉及的题目基本都能找到，链接：PWNchanllenge&#x2F;chunzhiIot at main · Loora1N&#x2F;PWNchanlle
-            <a class="read-more" href="/2022/11/03/i%E6%98%A5%E7%A7%8B%E6%98%A5%E5%AD%A3%E8%B5%9B-%E5%8B%87%E8%80%85%E5%B7%85%E5%B3%B0-chunqiuIOT/"> ... </a>
+固件提取
+在硬件厂商网站内直接下载
+
+固件更新时，利用中间人攻击，转发代理流量
+
+通过物理连接，直接从设备转储固件。固件存储为bin文件指令:
+ $ flashrom -p ft2232_spi:type=232H -r spidump.bin
+
+利用搜索引擎搜集固件，还可以利用 Google Hacking数据库搜索固件或设备
+
+
+
+MITM转发代理流量流程
+接下来，我们简要介绍了如何使用Kali Linux、
+            <a class="read-more" href="/2023/11/16/%E3%80%90IOT%20%E5%AD%A6%E4%B9%A0%E4%B8%80%E3%80%91%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E4%B8%8E%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/"> ... </a>
         </div>
-        <div class="post-date">2022.11.03</div>
+        <div class="post-date">2023.11.16</div>
     </div>
     
     <div class="post">
-        <a class="post-title" href="/2022/11/01/%E3%80%90%E7%A5%A5%E4%BA%91%E6%9D%AF2022%E3%80%91PWN-WriteUp-protocol/">【祥云杯2022】PWN-WriteUp-protocol</a>
+        <a class="post-title" href="/2023/11/16/%E3%80%90IOT%20%E5%AD%A6%E4%B9%A0%E4%B8%89%E3%80%91CVE-2019-17621%E5%A4%8D%E7%8E%B0/">【IOT 学习三】DLink路由器RCE漏洞 CVE-2019-17621复现</a>
         <div class="post-except">
-            前言第一次见到google protobuf类型的题目，虽然是到签到题，但还是学到了一些新的东西
-逆向分析首先导入文件，当我看到左侧密密麻麻的无名函数就感受到了一丝不对劲
-
-先运行一下程序，发现输出了一个Login:
-
-通过这个字符串定位到主函数位置
-
-
-基本可以确定是去掉符号表了，这样直接逆向显然不太行。先看看程序编译的环境是什么，然后重新导入一个sig
-
-成功确定版本Ubuntu 9.4.0-1ubuntu1~20.04.1,这个版本的libc应该是2.31，找一个对应的
-            <a class="read-more" href="/2022/11/01/%E3%80%90%E7%A5%A5%E4%BA%91%E6%9D%AF2022%E3%80%91PWN-WriteUp-protocol/"> ... </a>
+            前言
+链接：CVE - CVE-2019-17621 (mitre.org). The UPnP endpoint URL %2Fgena.cgi in the,UPnP service when connecting to the local network.)
+The UPnP endpoint URL &#x2F;gena.cgi in the D-Link DIR-859 Wi-Fi router 1.05 and 1.06B01 Beta01 allows an U
+            <a class="read-more" href="/2023/11/16/%E3%80%90IOT%20%E5%AD%A6%E4%B9%A0%E4%B8%89%E3%80%91CVE-2019-17621%E5%A4%8D%E7%8E%B0/"> ... </a>
         </div>
-        <div class="post-date">2022.11.01</div>
+        <div class="post-date">2023.11.16</div>
+    </div>
+    
+    <div class="post">
+        <a class="post-title" href="/2023/11/16/%E3%80%90IOT%20%E5%AD%A6%E4%B9%A0%E4%BA%8C%E3%80%91%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E4%B8%8E%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8/">【IOT 学习二】固件分析与漏洞利用</a>
+        <div class="post-except">
+            
+本文内容是基于《物联网渗透测试》-美·亚伦古兹曼的学习总结
+
+基于固件仿真的动态分析前期准备
+书接上一篇文章的安装错误，在我几乎连续不断的尝试了10余个小时后，环境终于搭建完毕，这里采用Ubuntu20.04，Kali有各种各样奇葩问题是真有点麻烦。
+本篇文章写于2020&#x2F;9&#x2F;15，由于时间有效性的存在，本篇文章仅供参考
+
+
+项目下载首先下载下来项目FAT
+git clone https://github.com/attify/firmware-anal
+            <a class="read-more" href="/2023/11/16/%E3%80%90IOT%20%E5%AD%A6%E4%B9%A0%E4%BA%8C%E3%80%91%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E4%B8%8E%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8/"> ... </a>
+        </div>
+        <div class="post-date">2023.11.16</div>
+    </div>
+    
+    <div class="post">
+        <a class="post-title" href="/2023/11/16/%E3%80%90IOT%E3%80%91%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8C%85%E5%8F%8A%E6%89%93%E5%8C%85/">【IOT】固件解包及打包</a>
+        <div class="post-except">
+            解包binwalk -eM file.bin
+
+打包首先查看原.bin文件文件结构
+
+然后切割出文件目录之前的头部
+sudo dd if=file.bin of=head.bin bs=1 skip=0 count=1376400
+#if是原固件，of是输出文件，bs是单位长度，skip是偏移量，count是分区大小取到文件目录之前
+
+正常解包，然后更改文件内容，随后制作文件目录的bin文件
+sudo mksquashfs squashfs-root rootfs.bin -
+            <a class="read-more" href="/2023/11/16/%E3%80%90IOT%E3%80%91%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8C%85%E5%8F%8A%E6%89%93%E5%8C%85/"> ... </a>
+        </div>
+        <div class="post-date">2023.11.16</div>
     </div>
     
 </div>

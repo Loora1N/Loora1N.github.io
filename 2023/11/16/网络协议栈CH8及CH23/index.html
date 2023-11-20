@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
+    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
+    <title>Loora1N&#39;s Blog | 鹭雨 | </title>
+    
+<link rel="stylesheet" href="/css/reset.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/css/markdown.css">
+
+    
+<link rel="stylesheet" href="/css/fonts.css">
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+    <body>
+        <div class="paper">
+            <div class="paper-main">
+                
+                    <div class="post-header">
+    <a class="logo" href="/">Loora1N&#39;s Blog | 鹭雨</a>
+    <a class="go-home" href="/">
+        <svg width="8" height="14" viewBox="0 0 8 14">
+            <path d="M7 1L1 7l6 6" stroke="#000" stroke-width="2" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </a>
+</div>
+                
+                <div class="post-main">
+
+    
+    
+        <div class="post-main-title">
+            网络协议栈CH8及CH23
+        </div>
+        <div class="post-meta">
+            2023-11-16
+        </div>
+        <div class="post-md">
+            <blockquote>
+<p>昨晚搞到快两点，今天9.30才起床，希望11点半之前能搞完去吃饭😭</p>
+</blockquote>
+<h2 id="第八章-IP：网际协议"><a href="#第八章-IP：网际协议" class="headerlink" title="第八章 IP：网际协议"></a>第八章 IP：网际协议</h2><h3 id="IP分组"><a href="#IP分组" class="headerlink" title="IP分组"></a>IP分组</h3><p><img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH8%E5%8F%8ACH23.assets/image-20230425092925635.png" alt="image-20230425092925635"></p>
+<p>参照上图，有几个基本概念（本例中的传输层协议为UDP）：</p>
+<ul>
+<li><strong>报文</strong>：由传输层送至IP的数据报，本身包含传输层首部和数据</li>
+<li><strong>数据报</strong>：IP在报文的前面加上自己的IP首部，且根据长度考虑是否分片（上图1-2行）</li>
+<li><strong>帧</strong>：IP将分好片的数据报交给数据链路层，数据链路填上自己的首部后变为帧（上图3行）</li>
+<li><strong>分组</strong>：一个分片的数据报或者一个不需分片的数据报为分组</li>
+</ul>
+<blockquote>
+<p> 需注意的是IP数据报结构存储不受机器大小端的影响，均按照下面地址结构存储</p>
+</blockquote>
+<p><img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH8%E5%8F%8ACH23.assets/image-20230425093907332.png" alt="image-20230425093907332"></p>
+<p>IP数据报结构如上图所示，上面的个部分含义已在图中标出</p>
+<blockquote>
+<p>可能需注意的地方：<code>ip_hl</code>常用4字节度量，即当<code>ip_hl == 5</code>时，实际首部长度为5*4&#x3D;20。其中选项的部分为0~40不等，所以<code>ip_hl</code>的最大值为：(20+40)&#x2F;4 &#x3D; 15，最小值为：20&#x2F;4&#x3D;5。另外，由于ip_hl为4的倍数，所以选项的长度一般也为4的倍数。</p>
+</blockquote>
+<h3 id="ipintr函数"><a href="#ipintr函数" class="headerlink" title="ipintr函数"></a>ipintr函数</h3><pre><code class="c">void ipintr ()
+&#123;
+        struct ip *ip;
+        struct mbuf *m;
+        struct ipq *fp;
+        struct in_ifaddr *ia;
+        int hlen, s;
+    next:
+        /*
+            Get next datagram off input queue and get IP header
+            in first mbuf.
+        */
+        s = splimp() ;
+        IF_DEQUEUE (&amp;ipintrq, m) ;
+        sp1x(s);
+        if(m==0) return;
+        /*
+            很多很多代码😭
+        */
+        goto next；
+    bad:
+        m_freem(m);
+        goto next;
+&#125;    
+</code></pre>
+<p>该函数的基本框架如上，大致就是依靠两个goto实现对分组处理的循环，直到队列为空结束。中间省略的代码主要做下面几件事（实在太长了）：</p>
+<ol>
+<li>验证：把分组从<code>ipintrq</code>中取出，验证它们的内容，损坏和有差错的分组自动被丢弃。</li>
+<li>转发或不转发：调用<code>ip_dooptions</code>来处理IP选项，如果没到达最终目的地就尝试转发，反之交给对应传输层协议</li>
+<li>重装（重装在第10章讲，那我就不管了，开摆！）</li>
+<li>分用：重装完全的数据报，ip指针设置为到达目的地的完整数据报，反之为空</li>
+</ol>
+<h3 id="ip-forward函数"><a href="#ip-forward函数" class="headerlink" title="ip_forward函数"></a>ip_forward函数</h3><p>到达非目的地的分组需要被转发。只有当<strong>ipforwarding非零</strong>或当分组中包含<strong>源路由</strong>时，ipintr才调用该函数<code>ip_forward</code>实现转发。ip_forward依靠route结构体与路由表接口</p>
+<pre><code class="c">struct route&#123;
+    struct rtentry *ro_rt;
+    struct sockaddr ro_dst;
+&#125;
+</code></pre>
+<ul>
+<li><code>ro_rt</code> 指向与路由表相关的rtentry结构体</li>
+<li><code>ro_dst </code>指向存放目的地址信息的sockaddr结构体</li>
+</ul>
+<p><code>ip_forward()</code>的基本流程分为两部分：</p>
+<ul>
+<li>确定系统是否需要转发此分组，修改IP首部，位分组选择路由</li>
+<li>处理ICMP重定向报文，并把分组交给<code>ip_output</code>进行转发</li>
+</ul>
+<blockquote>
+<p>流程中可能需注意的点：</p>
+<ul>
+<li>IP转发算法把最近的路由缓存在全局route结构的ipforward_rt中</li>
+<li>当转发错误时，由且仅由路由器向源主机返回ICMP重定向报文，以此更新主机路由表</li>
+</ul>
+</blockquote>
+<h3 id="ip-output"><a href="#ip-output" class="headerlink" title="ip_output"></a>ip_output</h3><p><code>ip_output</code>为IP输出代码，主要为三部分：</p>
+<ul>
+<li>首部初始化</li>
+<li>路由选择</li>
+<li>源地址选择和分片</li>
+</ul>
+<h2 id="第23章-UDP"><a href="#第23章-UDP" class="headerlink" title="第23章 UDP"></a>第23章 UDP</h2><h3 id="整体数据传输框架"><a href="#整体数据传输框架" class="headerlink" title="整体数据传输框架"></a>整体数据传输框架</h3><p><img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH8%E5%8F%8ACH23.assets/image-20230425104820413.png" alt="image-20230425104820413"></p>
+<blockquote>
+<p>整体框架如上图所示，从上到下分别是：</p>
+<p>用户进程(应用层)–&gt;UDP(传输层)–&gt;IP(网络层)–&gt;数据链路层–&gt;硬件网卡(物理层)</p>
+</blockquote>
+<h3 id="UDP-首部"><a href="#UDP-首部" class="headerlink" title="UDP 首部"></a>UDP 首部</h3><p><img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH8%E5%8F%8ACH23.assets/image-20230425105506669.png" alt="image-20230425105506669"></p>
+<p>UDP首部如上图所示，对应域的含义也有标记。需要注意的是IP首部和UDP首部一般是紧挨在一起，我们在CH1-CH3中分析mbuf时已经可以注意到这种现象。而实际上在udp内相关函数（如<code>udp_input</code>,<code>udp_output</code>）处理时也会将两者放在一起使用，他们共同构成了结构体<code>udpiphdr</code>，如下所示：</p>
+<pre><code class="c">struct udpiphdr&#123;
+    struct ippvly ui_i; 	/* overlaid	ip structure*/
+    struct udphdr ui_u;		/* udp header*/
+&#125;
+</code></pre>
+<p>20字节的IP首部被定义为 ippvly结构体，如下所示，可自行对照IP首部结构图：</p>
+<pre><code class="c">struct ipov1y &#123;
+caddr_t ih_next, ih_prev;	/* for protocol sequence q&#39;s */
+u_char ih_x1; 				/* (unused) */
+u_char ih_pr;				/* protocol */
+short ih_len;				/* protocol length */
+struct in_addr ih_src; 		/* source internet address */
+struct in_addr ih_dst; 		/* destination internet address */
+&#125;;
+</code></pre>
+<h3 id="udp-init函数"><a href="#udp-init函数" class="headerlink" title="udp_init函数"></a>udp_init函数</h3><p>初始化函数，用来构建PCB双向链表的起始，让头部PCB的next指针和prev指针都指向自己。需注意UDP临时端口号由1024开始分配</p>
+<blockquote>
+<p>前0~1023端口为常用端口，一般都有固定对应服务，想要监听这些端口时也需要sudo权限</p>
+<p>PCB是22章的概念：PCB协议控制块存放各UDP和TCP插口所要求的多个信息片，UDP所需要的所有信息都可以在Internet PCB中找到，不存在UDP控制块</p>
+</blockquote>
+<h3 id="udp-out函数"><a href="#udp-out函数" class="headerlink" title="udp_out函数"></a>udp_out函数</h3><p>当程序调用send，sendto，sendmsg，write或writev时会发生UDP输出。基本流程如下图：<img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH8%E5%8F%8ACH23.assets/image-20230425111210300.png" alt="image-20230425111210300"></p>
+<p><code>udp_output</code>主要干这几件事：</p>
+<ul>
+<li>添加IP&#x2F;UDP首部，具体过程可以看前三章分析mbuf的部分</li>
+<li>检验和计算和伪首部</li>
+</ul>
+<p>我们在前三章分析mbuf时说到过，udp会填写一部分首部，ip会填写一部分首部，这里就是分别调用<code>udp_output</code>,<code>ip_output</code>实现的<img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH8%E5%8F%8ACH23.assets/image-20230425111755234.png" alt="image-20230425111755234"></p>
+<p>下图中阴影部分由<code>ip_output()</code>填写，其余浅色部分交由<code>udp_output()</code>填写</p>
+<p><img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH8%E5%8F%8ACH23.assets/image-20230425111716276.png" alt="image-20230425111716276"></p>
+<p>UDP在检验和时会包含三部分内容：12字节的伪首部，8字节的UDP首部，UDP数据</p>
+<p><img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH8%E5%8F%8ACH23.assets/image-20230425112329338.png" alt="image-20230425112329338"></p>
+<p>伪首部和UDP首部如上图所示，下图是填充首部和检验和的整个示意图</p>
+<p><img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH8%E5%8F%8ACH23.assets/image-20230425112939950.png" alt="image-20230425112939950"></p>
+<h3 id="CRC校验码"><a href="#CRC校验码" class="headerlink" title="CRC校验码"></a>CRC校验码</h3><p>这部分机组的时候学过，自行适当复习一下，课件例题如下</p>
+<p><img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH8%E5%8F%8ACH23.assets/image-20230425113213347.png" alt="image-20230425113213347"></p>
+<p><img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH8%E5%8F%8ACH23.assets/image-20230425113221906.png" alt="image-20230425113221906"></p>
+<h3 id="udp-input函数"><a href="#udp-input函数" class="headerlink" title="udp_input函数"></a>udp_input函数</h3><p>当IP在它的协议字段指定为UDP的输入队列上收到一个IP数据报时，才发生UDP的输入。IP通过协议交换表中的<code>pr_input</code>函数调用函数<code>udp_input</code>。因为IP的输入是在软件中断级，所以<code>udp_input</code>也在这一级上执行。<code>udp_input</code>的目标是把UDP数据报放置到合适的插口的缓存内，唤醒该插口上因输入阻塞的所有进程。<code>udp_input</code> 函数的主要分三个部分:</p>
+<ul>
+<li><p>UDP对收到的数据报完成<strong>一般性</strong>的确认;</p>
+</li>
+<li><p>处理目的地是<strong>单播地址的UDP数据报</strong>：找到合适的PCB,把数据报放到插口的缓存内，</p>
+</li>
+<li><p>处理目的地是<strong>广播或多播地址的UDP数据报</strong>：必须把数据报提交给多个插口。</p>
+</li>
+</ul>
+<blockquote>
+<p>确认部分可以继续复习前三章mbuf分析部分，个人感觉这本章和前三章关系还是比较紧密的，可以多对照看看</p>
+</blockquote>
+<h3 id="课后练习题"><a href="#课后练习题" class="headerlink" title="课后练习题"></a>课后练习题</h3><p><img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH8%E5%8F%8ACH23.assets/image-20230425114209049.png" alt="image-20230425114209049"></p>
+
+        </div>
+
+    
+
+</div>
+                <div class="footer">
+    <span>Copyright © 2022 Loora1N&#39;s Blog | 鹭雨</span>
+    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
+</div>
+
+
+<link rel="stylesheet" href="/css/a11y-dark.min.css">
+
+
+<script src="/js/highlight.min.js"></script>
+
+
+<script src="/js/highlightjs-line-numbers.js"></script>
+
+
+<script>
+    hljs.initHighlightingOnLoad();
+    hljs.initLineNumbersOnLoad();
+</script>
+
+            </div>
+        </div>
+    <!-- hexo injector body_end start -->
+  <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
+  <script data-pjax>
+        function GithubCalendarConfig(){
+            var git_githubapiurl ="https://python-github-calendar-api.vercel.app/api?Loora1N";
+            var git_color =['#ebedf0', '#fdcdec', '#fc9bd9', '#fa6ac5', '#f838b2', '#f5089f', '#c4067e', '#92055e', '#540336', '#48022f', '#30021f'];
+            var git_user ="Loora1N";
+            var parent_div_git = document.getElementById('recent-posts');
+            var git_div_html = '<div class="recent-post-item" style="width:100%;height:auto;padding:10px;"><div id="github_loading" style="width:10%;height:100%;margin:0 auto;display: block"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"  viewBox="0 0 50 50" style="enable-background:new 0 0 50 50" xml:space="preserve"><path fill="#d0d0d0" d="M25.251,6.461c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615V6.461z" transform="rotate(275.098 25 25)"><animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="0.6s" repeatCount="indefinite"></animateTransform></path></svg></div><div id="github_container"></div></div>';
+            if(parent_div_git && location.pathname =='/about/'){
+                console.log('已挂载github calendar')
+                // parent_div_git.innerHTML=git_div_html+parent_div_git.innerHTML // 无报错，但不影响使用(支持pjax跳转)
+                parent_div_git.insertAdjacentHTML("afterbegin",git_div_html) // 有报错，但不影响使用(支持pjax跳转)
+            };
+            GithubCalendar(git_githubapiurl,git_color,git_user)
+        }
+        if(document.getElementById('recent-posts')){
+            GithubCalendarConfig()
+        }
+    </script>
+    <style>#github_container{min-height:280px}@media screen and (max-width:650px) {#github_container{background-image:;min-height:0px}}</style>
+    <style></style><!-- hexo injector body_end end --></body>
+</html>

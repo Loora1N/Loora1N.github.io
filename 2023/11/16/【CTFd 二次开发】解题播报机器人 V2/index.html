@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
+    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
+    <title>Loora1N&#39;s Blog | 鹭雨 | </title>
+    
+<link rel="stylesheet" href="/css/reset.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/css/markdown.css">
+
+    
+<link rel="stylesheet" href="/css/fonts.css">
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+    <body>
+        <div class="paper">
+            <div class="paper-main">
+                
+                    <div class="post-header">
+    <a class="logo" href="/">Loora1N&#39;s Blog | 鹭雨</a>
+    <a class="go-home" href="/">
+        <svg width="8" height="14" viewBox="0 0 8 14">
+            <path d="M7 1L1 7l6 6" stroke="#000" stroke-width="2" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </a>
+</div>
+                
+                <div class="post-main">
+
+    
+    
+        <div class="post-main-title">
+            【CTFd 二次开发】解题播报机器人 V2
+        </div>
+        <div class="post-meta">
+            2023-11-16
+        </div>
+        <div class="post-md">
+            <blockquote>
+<p>本文基于 CTFd Version 3.4.3 开发，可能存在源码不相同的情况，阅读时请注意文章时效性。</p>
+</blockquote>
+<h2 id="更新内容"><a href="#更新内容" class="headerlink" title="更新内容"></a>更新内容</h2><ul>
+<li>实现CTFd创建新题目的播报，且仅在题目状态由<code>hidden</code>转为<code>visible</code>时播报</li>
+<li>实现题目信息更新时，进行播报</li>
+</ul>
+<p><img src="/img/article/botv2/image-20221108200108487.png" alt="效果展示"></p>
+<h2 id="前端页面修改"><a href="#前端页面修改" class="headerlink" title="前端页面修改"></a>前端页面修改</h2><h3 id="appearance-html"><a href="#appearance-html" class="headerlink" title="appearance.html"></a>appearance.html</h3><p>打开<code>CTFd/CTFd/themes/admin/templates/configs/appearance.html</code>，在上次更新的基础上增加题目创建播报文案，和题目信息更新播报文案接口。这里直接放出完整html，可自行对照</p>
+<pre><code class="html">&lt;div role=&quot;tabpanel&quot; class=&quot;tab-pane config-section active&quot; id=&quot;appearance&quot;&gt;
+    &lt;form method=&quot;POST&quot; autocomplete=&quot;off&quot; class=&quot;w-100&quot;&gt;
+        &lt;div class=&quot;form-group&quot;&gt;
+            &lt;label for=&quot;ctf_name&quot;&gt;
+                Competition Name
+                &lt;small class=&quot;form-text text-muted&quot;&gt;Competition name displayed instead of a logo&lt;/small&gt;
+            &lt;/label&gt;
+            &lt;input class=&quot;form-control&quot; id=&#39;ctf_name&#39; name=&#39;ctf_name&#39; type=&#39;text&#39; placeholder=&quot;CTF Name&quot;
+                   &#123;% if ctf_name is defined and ctf_name != None %&#125;value="&#123;&#123; ctf_name &#125;&#125;"&#123;% endif %&#125;&gt;
+        &lt;/div&gt;
+
+        &lt;div class=&quot;form-group&quot;&gt;
+            &lt;label&gt;
+                CTF Description&lt;br&gt;
+                &lt;small class=&quot;form-text text-muted&quot;&gt;
+                    Description for the CTF
+                &lt;/small&gt;
+            &lt;/label&gt;
+            &lt;textarea class=&quot;form-control&quot; type=&quot;text&quot; id=&quot;ctf_description&quot; name=&quot;ctf_description&quot; rows=&quot;5&quot;&gt;&#123;&#123; ctf_description &#125;&#125;&lt;/textarea&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;form-group&quot;&gt;
+            &lt;label for=&quot;bot-ip&quot;&gt;
+                Bot Address&lt;br&gt;
+                &lt;small class=&quot;form-text text-muted&quot;&gt;
+                    the address of QQ-bot
+                &lt;/small&gt;
+                &lt;small class=&quot;form-text text-muted&quot;&gt;
+                    eg. 127.0.0.1:1234
+                &lt;/small&gt;
+            &lt;/label&gt;
+            &lt;input class=&quot;form-control&quot; id=&#39;bot-ip&#39; name=&#39;bot_ip&#39; type=&#39;text&#39;
+                    &#123;% if bot_ip is defined and bot_ip != None %&#125;value="&#123;&#123; bot_ip &#125;&#125;"&#123;% endif %&#125;&gt;
+        &lt;/div&gt;
+
+        &lt;div class=&quot;form-group&quot;&gt;
+            &lt;label for=&quot;group-id&quot;&gt;
+                QQ Group Number&lt;br&gt;
+            &lt;/label&gt;
+            &lt;input class=&quot;form-control&quot; id=&#39;group-id&#39; name=&#39;group_id&#39; type=&#39;text&#39;
+                    &#123;% if group_id is defined and group_id != None %&#125;value="&#123;&#123; group_id &#125;&#125;"&#123;% endif %&#125;&gt;
+        &lt;/div&gt;
+
+
+        &lt;div class=&quot;form-group&quot;&gt;
+            &lt;label for=&quot;bot-text&quot;&gt;
+                解题播报消息格式&lt;br&gt;
+                &lt;small class=&quot;form-text text-muted&quot;&gt;
+                    ep. 恭喜%s做出题目%s，默认第一个参数为用户名，第二个参数为题目名称
+                &lt;/small&gt;
+            &lt;/label&gt;
+            &lt;input class=&quot;form-control&quot; id=&#39;bot-text&#39; name=&#39;bottext&#39; type=&#39;text&#39;
+                   &#123;% if bottext is defined and bottext != None %&#125;value="&#123;&#123; bottext &#125;&#125;"&#123;% endif %&#125;&gt;
+        &lt;/div&gt;
+
+        &lt;div class=&quot;form-group&quot;&gt;
+            &lt;label for=&quot;create-text&quot;&gt;
+                题目可见播报&lt;br&gt;
+                &lt;small class=&quot;form-text text-muted&quot;&gt;
+                    ep. 题目%s已登入平台
+                &lt;/small&gt;
+            &lt;/label&gt;
+            &lt;input class=&quot;form-control&quot; id=&#39;create-text&#39; name=&#39;createtext&#39; type=&#39;text&#39;
+                   &#123;% if createtext is defined and createtext != None %&#125;value="&#123;&#123; createtext &#125;&#125;"&#123;% endif %&#125;&gt;
+        &lt;/div&gt;
+
+        &lt;div class=&quot;form-group&quot;&gt;
+            &lt;label for=&quot;update-text&quot;&gt;
+                题目更新播报&lt;br&gt;
+                &lt;small class=&quot;form-text text-muted&quot;&gt;
+                    ep. 题目%s内容已更新
+                &lt;/small&gt;
+            &lt;/label&gt;
+            &lt;input class=&quot;form-control&quot; id=&#39;update-text&#39; name=&#39;updatetext&#39; type=&#39;text&#39;
+                   &#123;% if updatetext is defined and updatetext != None %&#125;value="&#123;&#123; updatetext &#125;&#125;"&#123;% endif %&#125;&gt;
+        &lt;/div&gt;
+
+        &lt;div class=&quot;form-group&quot;&gt;
+            &lt;label for=&quot;botof&quot;&gt;
+                Turn on the Bot
+            &lt;/label&gt;
+            &lt;div&gt;
+                &lt;select class=&quot;form-control custom-select&quot; id=&quot;botof&quot; name=&quot;bot&quot;&gt;
+                    &lt;option value=0 &#123;% if bot == 0 %&#125;selected&#123;% endif %&#125;&gt;
+                        OFF
+                    &lt;/option&gt;
+                    &lt;option value=1 &#123;% if bot == 1 %&#125;selected&#123;% endif %&#125;&gt;
+                        ON
+                    &lt;/option&gt;
+                &lt;/select&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;button type=&quot;submit&quot; class=&quot;btn btn-md btn-primary float-right&quot;&gt;Update&lt;/button&gt;
+    &lt;/form&gt;
+&lt;/div&gt;
+</code></pre>
+<h3 id="效果图"><a href="#效果图" class="headerlink" title="效果图"></a>效果图</h3><p><img src="/img/article/botv2/image-20221108200540771.png" alt="image-20221108200540771"></p>
+<h2 id="后端更改"><a href="#后端更改" class="headerlink" title="后端更改"></a>后端更改</h2><h3 id="views-py"><a href="#views-py" class="headerlink" title="views.py"></a>views.py</h3><p>打开<code>CTFd/CTFd/views.py</code>，添加变量<code>createtext</code>和<code>updatetext</code>，用于接收html页面数据</p>
+<p><img src="/img/article/botv2/image-20221108200717361.png" alt="image-20221108200717361"></p>
+<pre><code class="python"># Robot
+bot = request.form.get(&quot;bot&quot;)
+bottext = request.form.get(&quot;bottext&quot;)
+createtext = request.form.get(&quot;createtext&quot;)
+updatetext = updatetext.form.get(&quot;updatetext&quot;)
+group_id = request.form.get(&quot;group_id&quot;) #qq群号
+bot_ip = request.form.get(&quot;bot_ip&quot;) #机器人服务地址,如 127.0.0.1:8000
+set_config(&quot;bot&quot;, bot)
+set_config(&quot;bottext&quot;, bottext)
+set_config(&quot;createtext&quot;, createtext)
+set_config(&quot;updatetext&quot;, updatetext)
+set_config(&quot;group_id&quot;,group_id)
+set_config(&quot;bot_ip&quot;,bot_ip)
+</code></pre>
+<h3 id="challenge-py"><a href="#challenge-py" class="headerlink" title="challenge.py"></a>challenge.py</h3><p>打开<code>CTFd/CTFD/api/v1/challenges.py</code>，在<code>patch</code>函数内增加一段代码，在更新题目信息后进行逻辑判断，后调用机器人的API</p>
+<p><img src="/img/article/botv2/image-20221108201009252.png" alt="image-20221108201009252"></p>
+<p>完整函数代码如下：</p>
+<pre><code class="python">def patch(self, challenge_id):
+    data = request.get_json()
+    #TODO:
+    # Load data through schema for validation but not for insertion
+    schema = ChallengeSchema()
+    response = schema.load(data)
+    if response.errors:
+        return &#123;&quot;success&quot;: False, &quot;errors&quot;: response.errors&#125;, 400
+
+    challenge = Challenges.query.filter_by(id=challenge_id).first_or_404()
+    state_before = challenge.state
+    challenge_class = get_chal_class(challenge.type)
+    challenge = challenge_class.update(challenge, request)
+    response = challenge_class.read(challenge)
+    #ROBOT send message when update the information of challenge
+    bot = get_config(&quot;bot&quot;)
+    if (bot):
+        group_id = get_config(&quot;group_id&quot;)
+        bot_ip = get_config(&quot;bot_ip&quot;)
+        boturl = &quot;http://&quot;+str(bot_ip)+&quot;/send_group_msg?group_id=&quot;+str(group_id)+&quot;&amp;message=&quot;
+        if(challenge.state!=&quot;hidden&quot; and challenge.state!=&quot;locked&quot;):
+            if(state_before==&quot;hidden&quot;):
+                bottext = get_config(&quot;createtext&quot;)
+                botmessage = (bottext) % (challenge.name)
+                url = boturl + botmessage
+                requests.get(str(url))
+             elif(state_before!=&quot;hidden&quot;):
+                bottext = get_config(&quot;updatetext&quot;)
+                botmessage = (bottext) % (challenge.name)
+                url = boturl + botmessage
+                requests.get(str(url))
+
+    return &#123;&quot;success&quot;: True, &quot;data&quot;: response&#125;
+</code></pre>
+<blockquote>
+<p>后续在增加一二三血吧，这个功能略有点麻烦</p>
+</blockquote>
+
+        </div>
+
+    
+
+</div>
+                <div class="footer">
+    <span>Copyright © 2022 Loora1N&#39;s Blog | 鹭雨</span>
+    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
+</div>
+
+
+<link rel="stylesheet" href="/css/a11y-dark.min.css">
+
+
+<script src="/js/highlight.min.js"></script>
+
+
+<script src="/js/highlightjs-line-numbers.js"></script>
+
+
+<script>
+    hljs.initHighlightingOnLoad();
+    hljs.initLineNumbersOnLoad();
+</script>
+
+            </div>
+        </div>
+    <!-- hexo injector body_end start -->
+  <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
+  <script data-pjax>
+        function GithubCalendarConfig(){
+            var git_githubapiurl ="https://python-github-calendar-api.vercel.app/api?Loora1N";
+            var git_color =['#ebedf0', '#fdcdec', '#fc9bd9', '#fa6ac5', '#f838b2', '#f5089f', '#c4067e', '#92055e', '#540336', '#48022f', '#30021f'];
+            var git_user ="Loora1N";
+            var parent_div_git = document.getElementById('recent-posts');
+            var git_div_html = '<div class="recent-post-item" style="width:100%;height:auto;padding:10px;"><div id="github_loading" style="width:10%;height:100%;margin:0 auto;display: block"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"  viewBox="0 0 50 50" style="enable-background:new 0 0 50 50" xml:space="preserve"><path fill="#d0d0d0" d="M25.251,6.461c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615V6.461z" transform="rotate(275.098 25 25)"><animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="0.6s" repeatCount="indefinite"></animateTransform></path></svg></div><div id="github_container"></div></div>';
+            if(parent_div_git && location.pathname =='/about/'){
+                console.log('已挂载github calendar')
+                // parent_div_git.innerHTML=git_div_html+parent_div_git.innerHTML // 无报错，但不影响使用(支持pjax跳转)
+                parent_div_git.insertAdjacentHTML("afterbegin",git_div_html) // 有报错，但不影响使用(支持pjax跳转)
+            };
+            GithubCalendar(git_githubapiurl,git_color,git_user)
+        }
+        if(document.getElementById('recent-posts')){
+            GithubCalendarConfig()
+        }
+    </script>
+    <style>#github_container{min-height:280px}@media screen and (max-width:650px) {#github_container{background-image:;min-height:0px}}</style>
+    <style></style><!-- hexo injector body_end end --></body>
+</html>

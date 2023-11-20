@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
+    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
+    <title>Loora1N&#39;s Blog | 鹭雨 | </title>
+    
+<link rel="stylesheet" href="/css/reset.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/css/markdown.css">
+
+    
+<link rel="stylesheet" href="/css/fonts.css">
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+    <body>
+        <div class="paper">
+            <div class="paper-main">
+                
+                    <div class="post-header">
+    <a class="logo" href="/">Loora1N&#39;s Blog | 鹭雨</a>
+    <a class="go-home" href="/">
+        <svg width="8" height="14" viewBox="0 0 8 14">
+            <path d="M7 1L1 7l6 6" stroke="#000" stroke-width="2" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </a>
+</div>
+                
+                <div class="post-main">
+
+    
+    
+        <div class="post-main-title">
+            适用多版本libc的pwn-base
+        </div>
+        <div class="post-meta">
+            2023-11-16
+        </div>
+        <div class="post-md">
+            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>由于经常要在校内的CTFd平台上题，不使用pwn-base的构建方式会使得镜像体积过大，浪费许多服务器的存储空间。但使用pwn-base的情况下，不同题目libc要求不同，又需要构建多个pwn-base环境，过于麻烦。因而创建了这个可根据需求自行更换libc版本的pwn-base，有需要可以自己下载源码更改，链接在下方：</p>
+<blockquote>
+<p>docker：loora1n&#x2F;Ubuntu2.35</p>
+<p>链接：<a target="_blank" rel="noopener" href="https://github.com/Loora1N/pwnbase/tree/main/Ubuntu2.35">pwnbase&#x2F;Ubuntu2.35 at main · Loora1N&#x2F;pwnbase (github.com)</a></p>
+</blockquote>
+<p>这个库里同时还包含之前制作的Kernel pwn base</p>
+<p><img src="/img/article/pwnbase/image-20221028202807333.png" alt="pwnbase"></p>
+<h2 id="默认libc版本"><a href="#默认libc版本" class="headerlink" title="默认libc版本"></a>默认libc版本</h2><blockquote>
+<p>GNU C Library (Ubuntu GLIBC 2.35-0ubuntu3.1) stable release version 2.35. Copyright (C) 2022 Free Software Foundation, Inc. This is free software; see the source for copying conditions. There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. Compiled by GNU CC version 11.2.0. libc ABIs: UNIQUE IFUNC ABSOLUTE For bug reporting instructions, please see: <a target="_blank" rel="noopener" href="https://bugs.launchpad.net/ubuntu/+source/glibc/+bugs">https://bugs.launchpad.net/ubuntu/+source/glibc/+bugs</a>.</p>
+</blockquote>
+<h2 id="使用方式"><a href="#使用方式" class="headerlink" title="使用方式"></a>使用方式</h2><p>首先在创建一个文件夹用于构建你的题目镜像，如我这里的pwn文件夹</p>
+<p><img src="/img/article/pwnbase/image-20221028203034274.png" alt="题目文件夹"></p>
+<p>将你的题目和所需的libc, ld文件也放入这里，新建一个Dockerfile，粘贴如下内容即可</p>
+<pre><code class="dockerfile">FROM loora1n/ubuntu2.35
+COPY helloworld /pwn/pwn					
+COPY ld-2.32.so /pwn/ld-2.32.so		
+COPY libc-2.32.so /pwn/libc-2.32.so
+RUN chmod +x /pwn/pwn &amp;&amp; \
+    patchelf --set-interpreter /pwn/ld-2.32.so /pwn/pwn &amp;&amp; \
+    patchelf --replace-needed libc.so.6 /pwn/libc-2.32.so /pwn/pwn   
+</code></pre>
+<p>只需替换<code>COPY</code>后紧挨着的文件名即可，我这里以libc版本需求为2.32的helloworld为例。</p>
+<p>保存后，开始构建题目镜像即可</p>
+<pre><code class="shell">docker build -t usrname/image .
+docker push usrname/image
+</code></pre>
+
+        </div>
+
+    
+
+</div>
+                <div class="footer">
+    <span>Copyright © 2022 Loora1N&#39;s Blog | 鹭雨</span>
+    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
+</div>
+
+
+<link rel="stylesheet" href="/css/a11y-dark.min.css">
+
+
+<script src="/js/highlight.min.js"></script>
+
+
+<script src="/js/highlightjs-line-numbers.js"></script>
+
+
+<script>
+    hljs.initHighlightingOnLoad();
+    hljs.initLineNumbersOnLoad();
+</script>
+
+            </div>
+        </div>
+    <!-- hexo injector body_end start -->
+  <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
+  <script data-pjax>
+        function GithubCalendarConfig(){
+            var git_githubapiurl ="https://python-github-calendar-api.vercel.app/api?Loora1N";
+            var git_color =['#ebedf0', '#fdcdec', '#fc9bd9', '#fa6ac5', '#f838b2', '#f5089f', '#c4067e', '#92055e', '#540336', '#48022f', '#30021f'];
+            var git_user ="Loora1N";
+            var parent_div_git = document.getElementById('recent-posts');
+            var git_div_html = '<div class="recent-post-item" style="width:100%;height:auto;padding:10px;"><div id="github_loading" style="width:10%;height:100%;margin:0 auto;display: block"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"  viewBox="0 0 50 50" style="enable-background:new 0 0 50 50" xml:space="preserve"><path fill="#d0d0d0" d="M25.251,6.461c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615V6.461z" transform="rotate(275.098 25 25)"><animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="0.6s" repeatCount="indefinite"></animateTransform></path></svg></div><div id="github_container"></div></div>';
+            if(parent_div_git && location.pathname =='/about/'){
+                console.log('已挂载github calendar')
+                // parent_div_git.innerHTML=git_div_html+parent_div_git.innerHTML // 无报错，但不影响使用(支持pjax跳转)
+                parent_div_git.insertAdjacentHTML("afterbegin",git_div_html) // 有报错，但不影响使用(支持pjax跳转)
+            };
+            GithubCalendar(git_githubapiurl,git_color,git_user)
+        }
+        if(document.getElementById('recent-posts')){
+            GithubCalendarConfig()
+        }
+    </script>
+    <style>#github_container{min-height:280px}@media screen and (max-width:650px) {#github_container{background-image:;min-height:0px}}</style>
+    <style></style><!-- hexo injector body_end end --></body>
+</html>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
+    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
+    <title>Loora1N&#39;s Blog | 鹭雨 | </title>
+    
+<link rel="stylesheet" href="/css/reset.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/css/markdown.css">
+
+    
+<link rel="stylesheet" href="/css/fonts.css">
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+    <body>
+        <div class="paper">
+            <div class="paper-main">
+                
+                    <div class="post-header">
+    <a class="logo" href="/">Loora1N&#39;s Blog | 鹭雨</a>
+    <a class="go-home" href="/">
+        <svg width="8" height="14" viewBox="0 0 8 14">
+            <path d="M7 1L1 7l6 6" stroke="#000" stroke-width="2" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </a>
+</div>
+                
+                <div class="post-main">
+
+    
+    
+        <div class="post-main-title">
+            Kernel-pwnbase详解
+        </div>
+        <div class="post-meta">
+            2023-11-16
+        </div>
+        <div class="post-md">
+            <blockquote>
+<p>参加starnewctf week4后，想要复现一道kernel的题。网上基本找不到Kernel-pwn的base，因此做了这个pwnbase用于在ctfd上提供动态kernel题目。<br>base下载地址<a target="_blank" rel="noopener" href="https://github.com/Loora1N/pwnbase/tree/main/kernelbase">kernelbase</a></p>
+</blockquote>
+<h2 id="Dockfile"><a href="#Dockfile" class="headerlink" title="Dockfile"></a>Dockfile</h2><pre><code class="dockerfile">FROM ubuntu:20.04
+
+RUN sed -i &quot;s/http:\/\/archive.ubuntu.com/http:\/\/mirrors.tuna.tsinghua.edu.cn/g&quot; /etc/apt/sources.list &amp;&amp; \
+    apt-get update &amp;&amp; apt-get -y dist-upgrade &amp;&amp; \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y lib32z1 xinetd git libglib2.0-dev libfdt-dev libpixman-1-dev zlib1g-dev qemu qemu-system-x86
+
+RUN useradd -m ctf
+
+WORKDIR /home/ctf
+
+COPY ./ctf.xinetd /etc/xinetd.d/ctf
+COPY ./start.sh /start.sh
+RUN echo &quot;Blocked by ctf_xinetd&quot; &gt; /etc/banner_fail
+
+RUN chmod +x /start.sh
+
+COPY ./files/ /home/ctf/
+RUN chown -R root:ctf /home/ctf &amp;&amp; \
+    chmod -R 750 /home/ctf
+
+CMD [&quot;/start.sh&quot;]
+
+EXPOSE 9999
+</code></pre>
+<p>docker基础是ubuntu20.04，整个dockerfile主要是下载一些关键库，以及对目录权限的管理，最后会调用<code>start.sh</code>, 并且开放9999端口</p>
+<h2 id="start-sh"><a href="#start-sh" class="headerlink" title="start.sh"></a>start.sh</h2><pre><code class="sh">#!/bin/sh
+# Add your startup script
+
+# DO NOT DELETE
+/etc/init.d/xinetd start;
+sleep infinity;
+</code></pre>
+<p>东西很短，其实就是调用<code>ctf.xinetd</code></p>
+<h2 id="ctf-xinetd"><a href="#ctf-xinetd" class="headerlink" title="ctf.xinetd"></a>ctf.xinetd</h2><pre><code>service ctf
+&#123;
+    disable = no
+    socket_type = stream
+    protocol    = tcp
+    wait        = no
+    user        = root
+    type        = UNLISTED
+    port        = 9999
+    bind        = 0.0.0.0
+    server      = /usr/sbin/chroot
+    # replace helloworld to your program
+    server_args = --userspec=1000:1000 / ./home/ctf/helloworld
+    banner_fail = /etc/banner_fail
+    # safety options
+    per_source	= 10 # the maximum instances of this service per source IP address
+    rlimit_cpu	= 20 # the maximum number of CPU seconds that the service may use
+    #rlimit_as  = 1024M # the Address Space resource limit for the service
+    #access_times = 2:00-9:00 12:00-24:00
+&#125;
+</code></pre>
+<p>核心在13行的后半，nc连接后会调用helloworld程序</p>
+<h2 id="helloworld"><a href="#helloworld" class="headerlink" title="helloworld"></a>helloworld</h2><pre><code class="c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;signal.h&gt;
+
+void init()
+&#123;
+    setvbuf(stdin, 0LL, 2, 0LL);
+    setvbuf(stdout, 0LL, 2, 0LL);
+    setvbuf(stderr, 0LL, 2, 0LL);
+&#125;
+
+int main()
+&#123;
+    init();   
+    signal(SIGCHLD, SIG_DFL);
+    system(&quot;/home/ctf/boot.sh&quot;);
+&#125;
+</code></pre>
+<p>这个程序与普通的pwn题目类似，先初始化输入输出，随后调用boot.sh启动qemu即可。signal函数是为了防止system函数可能出现的错误。</p>
+<h2 id="boot-sh"><a href="#boot-sh" class="headerlink" title="boot.sh"></a>boot.sh</h2><pre><code class="sh">#!/bin/sh
+
+qemu-system-x86_64  \
+-m 128M \
+-kernel /home/ctf/bzImage \
+-initrd /home/ctf/rootfs.cpio \
+-monitor /dev/null \
+-cpu kvm64,+smep,+smap \
+-append &quot;root=/dev/ram console=ttyS0 oops=panic quiet panic=1 kaslr noapic&quot; \
+-nographic \
+-no-reboot 
+</code></pre>
+<p>关键在于 kernel和initrd一定要使用绝对路径，即便它们与<code>helloworld</code>在一个目录下，system调用时依然可能会出现找不到文件的情况出现，建议在 <code>-append</code>里加入 <code>noapic</code> 可以防止出现AIPC错误。</p>
+
+        </div>
+
+    
+
+</div>
+                <div class="footer">
+    <span>Copyright © 2022 Loora1N&#39;s Blog | 鹭雨</span>
+    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
+</div>
+
+
+<link rel="stylesheet" href="/css/a11y-dark.min.css">
+
+
+<script src="/js/highlight.min.js"></script>
+
+
+<script src="/js/highlightjs-line-numbers.js"></script>
+
+
+<script>
+    hljs.initHighlightingOnLoad();
+    hljs.initLineNumbersOnLoad();
+</script>
+
+            </div>
+        </div>
+    <!-- hexo injector body_end start -->
+  <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
+  <script data-pjax>
+        function GithubCalendarConfig(){
+            var git_githubapiurl ="https://python-github-calendar-api.vercel.app/api?Loora1N";
+            var git_color =['#ebedf0', '#fdcdec', '#fc9bd9', '#fa6ac5', '#f838b2', '#f5089f', '#c4067e', '#92055e', '#540336', '#48022f', '#30021f'];
+            var git_user ="Loora1N";
+            var parent_div_git = document.getElementById('recent-posts');
+            var git_div_html = '<div class="recent-post-item" style="width:100%;height:auto;padding:10px;"><div id="github_loading" style="width:10%;height:100%;margin:0 auto;display: block"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"  viewBox="0 0 50 50" style="enable-background:new 0 0 50 50" xml:space="preserve"><path fill="#d0d0d0" d="M25.251,6.461c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615V6.461z" transform="rotate(275.098 25 25)"><animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="0.6s" repeatCount="indefinite"></animateTransform></path></svg></div><div id="github_container"></div></div>';
+            if(parent_div_git && location.pathname =='/about/'){
+                console.log('已挂载github calendar')
+                // parent_div_git.innerHTML=git_div_html+parent_div_git.innerHTML // 无报错，但不影响使用(支持pjax跳转)
+                parent_div_git.insertAdjacentHTML("afterbegin",git_div_html) // 有报错，但不影响使用(支持pjax跳转)
+            };
+            GithubCalendar(git_githubapiurl,git_color,git_user)
+        }
+        if(document.getElementById('recent-posts')){
+            GithubCalendarConfig()
+        }
+    </script>
+    <style>#github_container{min-height:280px}@media screen and (max-width:650px) {#github_container{background-image:;min-height:0px}}</style>
+    <style></style><!-- hexo injector body_end end --></body>
+</html>
