@@ -137,6 +137,21 @@ fread首先是一个宏定义，替换为_IO_fread函数
     </div>
     
     <div class="post">
+        <a class="post-title" href="/2023/11/16/%E3%80%90Kernel%E3%80%91%E4%B8%80%E4%BA%9B%E5%85%B3%E9%94%AE%E7%BB%93%E6%9E%84%E4%BD%93%E8%AE%B0%E5%BD%95/">【Kernel】一些trick和struct记录（持续更新）</a>
+        <div class="post-except">
+            pt_regs用于保存用户态–&gt;内核态切换时的用户态信息，在内核态返回时会从pt_regs恢复数据。因而若我们能控制rsp到达此位置，即可以使用用户态寄存器值辅助实现ROP
+
+list_head结构体简单的内核双链表结构，在内核中经常作为实现双链表结构的基础，定义如下
+//	https://elixir.bootlin.com/linux/latest/source/include/linux/types.h#L184
+
+struct list_head &#123;
+
+            <a class="read-more" href="/2023/11/16/%E3%80%90Kernel%E3%80%91%E4%B8%80%E4%BA%9B%E5%85%B3%E9%94%AE%E7%BB%93%E6%9E%84%E4%BD%93%E8%AE%B0%E5%BD%95/"> ... </a>
+        </div>
+        <div class="post-date">2023.11.16</div>
+    </div>
+    
+    <div class="post">
         <a class="post-title" href="/2023/11/16/%E3%80%90Linux%20kernel%E5%85%A5%E9%97%A8%E3%80%91%E5%86%85%E6%A0%B8%E6%9C%AC%E5%9C%B0%E8%B0%83%E8%AF%95/">【kernel】内核本地调试入门</a>
         <div class="post-except">
             提取vmlinux使用extract-vmlinux脚本提取，脚本下载地址：linux&#x2F;extract-vmlinux at master · torvalds&#x2F;linux (github.com)
@@ -153,21 +168,6 @@ root权限下运行
 
 gdb .
             <a class="read-more" href="/2023/11/16/%E3%80%90Linux%20kernel%E5%85%A5%E9%97%A8%E3%80%91%E5%86%85%E6%A0%B8%E6%9C%AC%E5%9C%B0%E8%B0%83%E8%AF%95/"> ... </a>
-        </div>
-        <div class="post-date">2023.11.16</div>
-    </div>
-    
-    <div class="post">
-        <a class="post-title" href="/2023/11/16/%E3%80%90Kernel%E3%80%91%E4%B8%80%E4%BA%9B%E5%85%B3%E9%94%AE%E7%BB%93%E6%9E%84%E4%BD%93%E8%AE%B0%E5%BD%95/">【Kernel】一些trick和struct记录（持续更新）</a>
-        <div class="post-except">
-            pt_regs用于保存用户态–&gt;内核态切换时的用户态信息，在内核态返回时会从pt_regs恢复数据。因而若我们能控制rsp到达此位置，即可以使用用户态寄存器值辅助实现ROP
-
-list_head结构体简单的内核双链表结构，在内核中经常作为实现双链表结构的基础，定义如下
-//	https://elixir.bootlin.com/linux/latest/source/include/linux/types.h#L184
-
-struct list_head &#123;
-
-            <a class="read-more" href="/2023/11/16/%E3%80%90Kernel%E3%80%91%E4%B8%80%E4%BA%9B%E5%85%B3%E9%94%AE%E7%BB%93%E6%9E%84%E4%BD%93%E8%AE%B0%E5%BD%95/"> ... </a>
         </div>
         <div class="post-date">2023.11.16</div>
     </div>
