@@ -40,6 +40,19 @@
                 <div class="post-list">
     
     <div class="post">
+        <a class="post-title" href="/2023/11/21/%E6%A0%87%E5%BF%97%E4%BD%8D/">【OS】8086标志位汇总</a>
+        <div class="post-except">
+            
+CF:进位标志位。在无符号运算时，记录了运算结果的最高有效位向更高位的进位值或从更高位借位，产生进位或借位时CF&#x3D;1，否则CF&#x3D;0；
+PF:奇偶标志位。相关指令执行后结果所有bit中1的个数为偶数，那么PF&#x3D;1，1的个数为奇数则PF&#x3D;0；
+AF:辅助进位标志位。运算过程中看最后四位，不论长度为多少。最后四位向前有进位或者借位，AF&#x3D;1,否则AF&#x3D;0;
+ZF:零标志位。相关指令执行后结果为0那么ZF&#x3D;1,结
+            <a class="read-more" href="/2023/11/21/%E6%A0%87%E5%BF%97%E4%BD%8D/"> ... </a>
+        </div>
+        <div class="post-date">2023.11.21</div>
+    </div>
+    
+    <div class="post">
         <a class="post-title" href="/2023/11/16/ASAN%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90/">【fuzz】ASAN原理解析</a>
         <div class="post-except">
             前言
@@ -90,20 +103,6 @@ UAF(Use-after-free)在free()掉chunk之后，原本指向chunk的指针由于程
     </div>
     
     <div class="post">
-        <a class="post-title" href="/2023/11/16/Hexo%E9%83%A8%E7%BD%B2%E5%87%BA%E7%8E%B0%E9%94%99%E8%AF%AF%20Error%20Spawn%20failed%20%E8%A7%A3%E5%86%B3%E6%96%B9%E5%BC%8F/">Hexo部署出现错误 Error Spawn failed 解决方式(code 128)</a>
-        <div class="post-except">
-            
-记录一次报错处理方式，在更新了自己的必读书目之后，执行 hexo clean &amp;&amp; hexo g -d 时出现如下错误
-
-错误信息一Missing or invalid credentials.
-Error: connect ECONNREFUSED /run/user/1000/vscode-git-2098f677fa.sock
-    at PipeConnectWrap.afterConnect [as oncomplete] (node:net:1
-            <a class="read-more" href="/2023/11/16/Hexo%E9%83%A8%E7%BD%B2%E5%87%BA%E7%8E%B0%E9%94%99%E8%AF%AF%20Error%20Spawn%20failed%20%E8%A7%A3%E5%86%B3%E6%96%B9%E5%BC%8F/"> ... </a>
-        </div>
-        <div class="post-date">2023.11.16</div>
-    </div>
-    
-    <div class="post">
         <a class="post-title" href="/2023/11/16/Kernel-pwnbase%E8%AF%A6%E8%A7%A3/">Kernel-pwnbase详解</a>
         <div class="post-except">
             
@@ -113,6 +112,20 @@ DockfileFROM ubuntu:20.04
 
 RUN sed -i &quot;s/http:\/\/archive.ubuntu.com/http:\/\/mirrors.tuna.tsinghua.edu.cn/g&quot; /etc/ap
             <a class="read-more" href="/2023/11/16/Kernel-pwnbase%E8%AF%A6%E8%A7%A3/"> ... </a>
+        </div>
+        <div class="post-date">2023.11.16</div>
+    </div>
+    
+    <div class="post">
+        <a class="post-title" href="/2023/11/16/Hexo%E9%83%A8%E7%BD%B2%E5%87%BA%E7%8E%B0%E9%94%99%E8%AF%AF%20Error%20Spawn%20failed%20%E8%A7%A3%E5%86%B3%E6%96%B9%E5%BC%8F/">Hexo部署出现错误 Error Spawn failed 解决方式(code 128)</a>
+        <div class="post-except">
+            
+记录一次报错处理方式，在更新了自己的必读书目之后，执行 hexo clean &amp;&amp; hexo g -d 时出现如下错误
+
+错误信息一Missing or invalid credentials.
+Error: connect ECONNREFUSED /run/user/1000/vscode-git-2098f677fa.sock
+    at PipeConnectWrap.afterConnect [as oncomplete] (node:net:1
+            <a class="read-more" href="/2023/11/16/Hexo%E9%83%A8%E7%BD%B2%E5%87%BA%E7%8E%B0%E9%94%99%E8%AF%AF%20Error%20Spawn%20failed%20%E8%A7%A3%E5%86%B3%E6%96%B9%E5%BC%8F/"> ... </a>
         </div>
         <div class="post-date">2023.11.16</div>
     </div>
@@ -218,22 +231,6 @@ QEMU是一种通用的开源计算机仿真器和虚拟器。QEMU共有两种操
 ##首先安装qemu
 sudo 
             <a class="read-more" href="/2023/11/16/QEMU%20&%20arm%20%E7%AE%80%E6%98%93pwn%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/"> ... </a>
-        </div>
-        <div class="post-date">2023.11.16</div>
-    </div>
-    
-    <div class="post">
-        <a class="post-title" href="/2023/11/16/%5BIOT%20PWN%5D%20%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/">【IOT PWN】 环境搭建</a>
-        <div class="post-except">
-            硬件资源太多辣，以后看需求慢慢购入吧
-
-万用表，主要的功能是用来测试UART(TLL)中的几个接口，比如RX、TX、GND。
-CH340G设备(USB转TTL)，这个设备主要的将电脑与IoT设备用TTL线连接，方便进入IoT设备的终端(Shell)。
-电烙铁，这里买电烙铁的主要用途是焊接UART接口的针脚。
-焊锡丝
-针脚，针脚主要用来焊接UART接口
-编辑器，编程器主要是用来帮助我们dump IoT设备上例如闪存芯片里面的数据，一般都为固件包。编程器的话一般买CH341A够用
-            <a class="read-more" href="/2023/11/16/%5BIOT%20PWN%5D%20%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/"> ... </a>
         </div>
         <div class="post-date">2023.11.16</div>
     </div>

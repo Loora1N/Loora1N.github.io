@@ -256,7 +256,7 @@ const struct cred __rcu        *cred;
     int (*proc_show)(struct seq_file *m, void *driver);
 &#125; __randomize_layout;
 </code></pre>
-<p>拥有丰富的函数指针，其中<code>open</code>, <code>read</code>, <code>write</code>等等函数也放置其中。常见利用手法便是劫持<code>tty_operation</code>的函数指针，这样我们在对<code>/dev/ptmx</code>设备进行读写时，便可调用劫持后的指针地址。</p>
+<p>拥有丰富的函数指针，其中<code>open</code>, <code>read</code>, <code>write</code>等等函数也放置其中。常见利用手法便是劫持<code>tty_operation</code>的函数指针，这样我们在对<code>/dev/ptmx</code>设备进行读写操作时，便可调用劫持后的指针地址。</p>
 <hr>
 <blockquote>
 <p>下面这些留个坑，有空补上</p>
