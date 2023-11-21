@@ -40,43 +40,6 @@
                 <div class="post-list">
     
     <div class="post">
-        <a class="post-title" href="/2023/11/16/%E3%80%90IOT%E3%80%91%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8C%85%E5%8F%8A%E6%89%93%E5%8C%85/">【IOT】固件解包及打包</a>
-        <div class="post-except">
-            解包binwalk -eM file.bin
-
-打包首先查看原.bin文件文件结构
-
-然后切割出文件目录之前的头部
-sudo dd if=file.bin of=head.bin bs=1 skip=0 count=1376400
-#if是原固件，of是输出文件，bs是单位长度，skip是偏移量，count是分区大小取到文件目录之前
-
-正常解包，然后更改文件内容，随后制作文件目录的bin文件
-sudo mksquashfs squashfs-root rootfs.bin -
-            <a class="read-more" href="/2023/11/16/%E3%80%90IOT%E3%80%91%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8C%85%E5%8F%8A%E6%89%93%E5%8C%85/"> ... </a>
-        </div>
-        <div class="post-date">2023.11.16</div>
-    </div>
-    
-    <div class="post">
-        <a class="post-title" href="/2023/11/16/%E3%80%90IOT%E3%80%91%E5%B5%8C%E5%85%A5%E5%BC%8F%E8%AE%BE%E5%A4%87%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90/">【IOT】嵌入式设备固件分析</a>
-        <div class="post-except">
-            嵌入式设备固件一般可以分为两类：
-
-有文件系统（如路由器固件这种）
-无文件系统（如STM32这种嵌入式设备固件，程序直接存放在flash中）
-
-针对第一类固件，分析起来比较简单，直接binwalk分离。然后去逆向对应的服务对应的二进制程序即可，也不需要考虑程序的加载地址。
-而对于第二类固件，往往就会比较复杂，需要分析程序的加载地址，也需要考虑外设的地址映射。
-
-本文将从SCTF2020的题目Password Lock入手，分析STM32固件作为入门
-
-题目信息这是一个STM3
-            <a class="read-more" href="/2023/11/16/%E3%80%90IOT%E3%80%91%E5%B5%8C%E5%85%A5%E5%BC%8F%E8%AE%BE%E5%A4%87%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90/"> ... </a>
-        </div>
-        <div class="post-date">2023.11.16</div>
-    </div>
-    
-    <div class="post">
         <a class="post-title" href="/2023/11/16/%E3%80%90IO_FILE%E3%80%91FSOP/">【IO_FILE】FSOP</a>
         <div class="post-except">
             
@@ -187,6 +150,39 @@ lcov --zerocounters --directory ./
 lcov --capture --initial --directory ./ --output-file app.info
 ../install/bin/tiff
             <a class="read-more" href="/2023/11/16/%E3%80%90fuzz%20trick%E3%80%91%E5%88%A9%E7%94%A8LCOV%E6%B5%8B%E9%87%8F%E4%BB%A3%E7%A0%81%E8%A6%86%E7%9B%96%E7%8E%87/"> ... </a>
+        </div>
+        <div class="post-date">2023.11.16</div>
+    </div>
+    
+    <div class="post">
+        <a class="post-title" href="/2023/11/16/%E3%80%90fuzz%E3%80%91AFL%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%20part%201/">【fuzz】AFL源码分析 part 1</a>
+        <div class="post-except">
+            
+本来想一周内完成，看来要延期了，尽量希望能在这几天内完成吧，31号晚上还有qax的一面😭😭，水平果然还是太次了。
+项目地址：google&#x2F;AFL(github.com)
+
+前言AFL，全称“American Fuzzy Lop”，是由安全研究员Michal Zalewski开发的一款基于覆盖引导（Coverage-guided）的模糊测试工具，它通过记录输入样本的代码覆盖率（代码执行路径的覆盖情况），以此进行反馈，对输入样本进行调整以提高覆盖率，从而提升发现漏
+            <a class="read-more" href="/2023/11/16/%E3%80%90fuzz%E3%80%91AFL%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%20part%201/"> ... </a>
+        </div>
+        <div class="post-date">2023.11.16</div>
+    </div>
+    
+    <div class="post">
+        <a class="post-title" href="/2023/11/16/%E3%80%90fuzz%E3%80%91AFL%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%20part%202/">【fuzz】AFL源码分析 part 2</a>
+        <div class="post-except">
+            
+上个一个part主要关注的是插桩相关部分的源码，这一节主要来查看afl-fuzz.c这个核心模块的源码部分
+
+概述由于该部分代码体量过大，我们只对核心部分进行源码解析。这部分总体可以分为三块：
+
+初始配置：进行fuzz环境配置相关工作
+fuzz执行：fuzz的主循环过程
+变异策略：测试用例的变异过程和方式
+
+预处理首先从main()函数着手进行分析。在完成初始配置后，main()同样利用time生成随机种子
+gettimeofday(&amp;tv, &amp;tz);
+s
+            <a class="read-more" href="/2023/11/16/%E3%80%90fuzz%E3%80%91AFL%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%20part%202/"> ... </a>
         </div>
         <div class="post-date">2023.11.16</div>
     </div>

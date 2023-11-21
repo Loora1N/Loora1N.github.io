@@ -40,33 +40,6 @@
                 <div class="post-list">
     
     <div class="post">
-        <a class="post-title" href="/2023/11/16/nc%20%E6%98%AF%E4%BB%80%E4%B9%88/">nc/ncat 使用教学</a>
-        <div class="post-except">
-            
-本文用于介绍信息安全大赛中不少题目需要使用的 nc&#x2F;ncat 工具。如果有什么建议，可以在页面底部登录Github使用评论功能，我看不到账号密码的，不用担心🤩
-
-nc 是什么nc/ncat 是 netcat 的缩写，它可以读写 TCP 与 UDP 端口——或许你看不懂这句话，这没有关系。简单地说，它可以在字符界面下，让你和服务器沟通交流。
-一般来说，有很多题目都会要求你使用 nc 连接到他们的服务器，并且进行交互，获得 flag。
-如何安装 ncnc 命令在 m
-            <a class="read-more" href="/2023/11/16/nc%20%E6%98%AF%E4%BB%80%E4%B9%88/"> ... </a>
-        </div>
-        <div class="post-date">2023.11.16</div>
-    </div>
-    
-    <div class="post">
-        <a class="post-title" href="/2023/11/16/qemu%E9%80%83%E9%80%B8/">【Virtual】浅谈escape-qemu</a>
-        <div class="post-except">
-            
-qemu逃逸这部分内容，在今年年初就有所涉猎，然而由于本人过于懒惰，这个部分的总结推了整整半年多。直到参加本月的HTICON2023，真正第一次在比赛中面对QEMU逃逸，发现了自己很多的不足之处。借这次机会将这部分内容作以总结。
-
-
-PCI设备在目前的QEMU逃逸题目类型中，出题者一般会在qemu-system-x86_64(或是对应arm架构的qemu-system)的二进制程序中加入自己编写的、具有漏洞的PCI设备模块。每个PCI设备都对应一个PCI配置空间，包含该PC
-            <a class="read-more" href="/2023/11/16/qemu%E9%80%83%E9%80%B8/"> ... </a>
-        </div>
-        <div class="post-date">2023.11.16</div>
-    </div>
-    
-    <div class="post">
         <a class="post-title" href="/2023/11/16/srop/">setcontext &amp; SROP</a>
         <div class="post-except">
             前言
@@ -203,6 +176,43 @@ The UPnP endpoint URL &#x2F;gena.cgi in the D-Link DIR-859 Wi-Fi router 1.05 and
 项目下载首先下载下来项目FAT
 git clone https://github.com/attify/firmware-anal
             <a class="read-more" href="/2023/11/16/%E3%80%90IOT%20%E5%AD%A6%E4%B9%A0%E4%BA%8C%E3%80%91%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E4%B8%8E%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8/"> ... </a>
+        </div>
+        <div class="post-date">2023.11.16</div>
+    </div>
+    
+    <div class="post">
+        <a class="post-title" href="/2023/11/16/%E3%80%90IOT%E3%80%91%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8C%85%E5%8F%8A%E6%89%93%E5%8C%85/">【IOT】固件解包及打包</a>
+        <div class="post-except">
+            解包binwalk -eM file.bin
+
+打包首先查看原.bin文件文件结构
+
+然后切割出文件目录之前的头部
+sudo dd if=file.bin of=head.bin bs=1 skip=0 count=1376400
+#if是原固件，of是输出文件，bs是单位长度，skip是偏移量，count是分区大小取到文件目录之前
+
+正常解包，然后更改文件内容，随后制作文件目录的bin文件
+sudo mksquashfs squashfs-root rootfs.bin -
+            <a class="read-more" href="/2023/11/16/%E3%80%90IOT%E3%80%91%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8C%85%E5%8F%8A%E6%89%93%E5%8C%85/"> ... </a>
+        </div>
+        <div class="post-date">2023.11.16</div>
+    </div>
+    
+    <div class="post">
+        <a class="post-title" href="/2023/11/16/%E3%80%90IOT%E3%80%91%E5%B5%8C%E5%85%A5%E5%BC%8F%E8%AE%BE%E5%A4%87%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90/">【IOT】嵌入式设备固件分析</a>
+        <div class="post-except">
+            嵌入式设备固件一般可以分为两类：
+
+有文件系统（如路由器固件这种）
+无文件系统（如STM32这种嵌入式设备固件，程序直接存放在flash中）
+
+针对第一类固件，分析起来比较简单，直接binwalk分离。然后去逆向对应的服务对应的二进制程序即可，也不需要考虑程序的加载地址。
+而对于第二类固件，往往就会比较复杂，需要分析程序的加载地址，也需要考虑外设的地址映射。
+
+本文将从SCTF2020的题目Password Lock入手，分析STM32固件作为入门
+
+题目信息这是一个STM3
+            <a class="read-more" href="/2023/11/16/%E3%80%90IOT%E3%80%91%E5%B5%8C%E5%85%A5%E5%BC%8F%E8%AE%BE%E5%A4%87%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90/"> ... </a>
         </div>
         <div class="post-date">2023.11.16</div>
     </div>

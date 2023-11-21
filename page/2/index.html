@@ -40,22 +40,6 @@
                 <div class="post-list">
     
     <div class="post">
-        <a class="post-title" href="/2023/11/16/%5BIOT%20PWN%5D%20%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/">【IOT PWN】 环境搭建</a>
-        <div class="post-except">
-            硬件资源太多辣，以后看需求慢慢购入吧
-
-万用表，主要的功能是用来测试UART(TLL)中的几个接口，比如RX、TX、GND。
-CH340G设备(USB转TTL)，这个设备主要的将电脑与IoT设备用TTL线连接，方便进入IoT设备的终端(Shell)。
-电烙铁，这里买电烙铁的主要用途是焊接UART接口的针脚。
-焊锡丝
-针脚，针脚主要用来焊接UART接口
-编辑器，编程器主要是用来帮助我们dump IoT设备上例如闪存芯片里面的数据，一般都为固件包。编程器的话一般买CH341A够用
-            <a class="read-more" href="/2023/11/16/%5BIOT%20PWN%5D%20%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/"> ... </a>
-        </div>
-        <div class="post-date">2023.11.16</div>
-    </div>
-    
-    <div class="post">
         <a class="post-title" href="/2023/11/16/%5BIO_FILE%5DHouse%20of%20kiwi/">【IO_FILE】House of kiwi</a>
         <div class="post-except">
             前言
@@ -92,20 +76,6 @@ CTF的Pwn题里面,通常就会遇到一些加了沙盒的题目,这种加沙盒
 
 
             <a class="read-more" href="/2023/11/16/chop2/"> ... </a>
-        </div>
-        <div class="post-date">2023.11.16</div>
-    </div>
-    
-    <div class="post">
-        <a class="post-title" href="/2023/11/16/ciscn2022/">【CISCN2022】初赛PWN部分writeup</a>
-        <div class="post-except">
-            login-normal题如其名，一道简单的签到题目，比赛被打烂了。主要在于代码分析，还有可打印shellcode的利用。这里我用的是github上一个大佬的项目AE64，可以用来生成可打印的shellcode，相当好用，强推,链接放在这里。
-
- veritas501&#x2F;ae64: basic amd64 alphanumeric shellcode encoder (github.com)
-
-from pwn import *
-from ae64 import AE
-            <a class="read-more" href="/2023/11/16/ciscn2022/"> ... </a>
         </div>
         <div class="post-date">2023.11.16</div>
     </div>
@@ -216,6 +186,33 @@ scp -r MrDoc user@192.168.1.172:/volume1/smb/wiki
 运行docker容器
 nas上的dock
             <a class="read-more" href="/2023/11/16/mrdoc%E5%B9%B3%E5%8F%B0docker%E6%9E%84%E5%BB%BA/"> ... </a>
+        </div>
+        <div class="post-date">2023.11.16</div>
+    </div>
+    
+    <div class="post">
+        <a class="post-title" href="/2023/11/16/nc%20%E6%98%AF%E4%BB%80%E4%B9%88/">nc/ncat 使用教学</a>
+        <div class="post-except">
+            
+本文用于介绍信息安全大赛中不少题目需要使用的 nc&#x2F;ncat 工具。如果有什么建议，可以在页面底部登录Github使用评论功能，我看不到账号密码的，不用担心🤩
+
+nc 是什么nc/ncat 是 netcat 的缩写，它可以读写 TCP 与 UDP 端口——或许你看不懂这句话，这没有关系。简单地说，它可以在字符界面下，让你和服务器沟通交流。
+一般来说，有很多题目都会要求你使用 nc 连接到他们的服务器，并且进行交互，获得 flag。
+如何安装 ncnc 命令在 m
+            <a class="read-more" href="/2023/11/16/nc%20%E6%98%AF%E4%BB%80%E4%B9%88/"> ... </a>
+        </div>
+        <div class="post-date">2023.11.16</div>
+    </div>
+    
+    <div class="post">
+        <a class="post-title" href="/2023/11/16/qemu%E9%80%83%E9%80%B8/">【Virtual】浅谈escape-qemu</a>
+        <div class="post-except">
+            
+qemu逃逸这部分内容，在今年年初就有所涉猎，然而由于本人过于懒惰，这个部分的总结推了整整半年多。直到参加本月的HTICON2023，真正第一次在比赛中面对QEMU逃逸，发现了自己很多的不足之处。借这次机会将这部分内容作以总结。
+
+
+PCI设备在目前的QEMU逃逸题目类型中，出题者一般会在qemu-system-x86_64(或是对应arm架构的qemu-system)的二进制程序中加入自己编写的、具有漏洞的PCI设备模块。每个PCI设备都对应一个PCI配置空间，包含该PC
+            <a class="read-more" href="/2023/11/16/qemu%E9%80%83%E9%80%B8/"> ... </a>
         </div>
         <div class="post-date">2023.11.16</div>
     </div>
