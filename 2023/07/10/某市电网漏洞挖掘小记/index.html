@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
+    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
+    <title>Loora1N&#39;s Blog | 鹭雨 | </title>
+    
+<link rel="stylesheet" href="/css/reset.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/css/markdown.css">
+
+    
+<link rel="stylesheet" href="/css/fonts.css">
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+    <body>
+        <div class="paper">
+            <div class="paper-main">
+                
+                    <div class="post-header">
+    <a class="logo" href="/">Loora1N&#39;s Blog | 鹭雨</a>
+    <a class="go-home" href="/">
+        <svg width="8" height="14" viewBox="0 0 8 14">
+            <path d="M7 1L1 7l6 6" stroke="#000" stroke-width="2" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </a>
+</div>
+                
+                <div class="post-main">
+
+    
+    
+        <div class="post-main-title">
+            某市电网漏洞挖掘小记
+        </div>
+        <div class="post-meta">
+            2023-07-10
+        </div>
+        <div class="post-md">
+            <p>由于电网设施保护非常严格，整个网络拓扑也异常复杂，说实话前两天一直在梳理整个体系架构（后来发现完全没必要）。整整4天，找到两个栈溢出，但都没法利用，只好按DOS交了。据我了解，从外网进入内部网络的可能性几乎没有，实际漏挖也是需要线下网线接入交换机。</p>
+<blockquote>
+<p> 说实话我也不知道这种内网漏洞的意义是什么，感觉像是审潜在代码BUG</p>
+</blockquote>
+<h2 id="接入设备"><a href="#接入设备" class="headerlink" title="接入设备"></a>接入设备</h2><p>首先就是接入交换机然后ssh上服务器，不过接入的时候是不能开启wifi，不能连接其他网络，不然监管系统会一直报警👮👮👮</p>
+<p>ssh上去之后的第一件事就是看看内网的所有机器以及对应IP，以此确定从哪台机子的服务入手进行漏挖。</p>
+<pre><code class="sh">cat /etc/hosts #查看不同设备及对应IP
+</code></pre>
+<p>之后就是查看该设备有哪些服务是开启的</p>
+<pre><code class="sh">netstat -tulnp #查看所有的TCP/UDP进程
+# -t 为TCP -u为UDP
+
+#下面两个指令都是用来寻找程序路径
+ps - ef #查看进程
+whereis/which &lt;name&gt; 
+</code></pre>
+<p>找到对应可能存在漏洞的程序后，就可以<code>scp</code>拷贝到本机，然后IDA逆向分析了</p>
+<pre><code class="sh">scp name@127.0.0.1:&lt;remote path&gt; &lt;local path&gt;
+</code></pre>
+<h2 id="逆向分析"><a href="#逆向分析" class="headerlink" title="逆向分析"></a>逆向分析</h2><blockquote>
+<p>虽然新系统从安全角度考虑不会将源码交给我们。但我目前接触到的系统似乎未对程序进行任何混淆、加壳或者阻碍反汇编的行为，甚至变量的符号表都是存在的。逆向起来非常舒适，跟直接审源码区别也不大。</p>
+</blockquote>
+<p>由于这些服务大多都是标准的C&#x2F;S结构，那么分析的关键入口点就是找到<code>recv</code>, <code>recvfrom</code>, <code>read</code>这样的接收数据的函数。当然他们的接收函数往往都是自行封装后的，直接搜索函数不一定会有结果。</p>
+<p>找到接收函数之后，就是分析报文结构了。由于这些程序的通信都有一套符合自身标准的报文格式，熟悉对应的格式，可以更快速的理解后续的报文处理part。</p>
+<p>基本所有的报文结构都可以用<strong>header + body</strong>概况，关键便是理解<strong>header</strong>中各个字段的含义。这里的报文分析可以从两个角度进行处理：</p>
+<ul>
+<li>由于已经连入内网，可以直接用tcpdump抓取报文配合wireshark进行分析</li>
+<li>可以直接使用IDA PRO从处理流程的角度逆向分析</li>
+</ul>
+<p>上述两者相互配合效果会好很多</p>
+<pre><code class="sh">tcpdump -i any -n tcp port 9999 -w /tmp/123.cap #抓取TCP包
+tcpdump -i any -n udp port 9999 -w /tmp/123.cap #抓取UDP包
+</code></pre>
+<p>用上述命令保存抓到的包后，scp到本机用wireshark分析即可</p>
+<h2 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h2><p>在挖洞的时候我注意到，几乎所有的设备都是采用国产的linux某系统。不太清楚是该系统一直未更新的缘故还是gcc未更新的缘故，设备上所有的服务都没有<strong>canary</strong>和<strong>PIE</strong>防护。这在很大程度上降低了漏洞利用的难度，使得基于二进制漏洞的RCE更容易实现。</p>
+<p><img src="/img/article/dig1/image-20230710154558220.png" alt="image-20230710154558220"></p>
+
+        </div>
+
+    
+
+</div>
+                <div class="footer">
+    <span>Copyright © 2022 Loora1N&#39;s Blog | 鹭雨</span>
+    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
+</div>
+
+
+<link rel="stylesheet" href="/css/a11y-dark.min.css">
+
+
+<script src="/js/highlight.min.js"></script>
+
+
+<script src="/js/highlightjs-line-numbers.js"></script>
+
+
+<script>
+    hljs.initHighlightingOnLoad();
+    hljs.initLineNumbersOnLoad();
+</script>
+
+            </div>
+        </div>
+    <!-- hexo injector body_end start -->
+  <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
+  <script data-pjax>
+        function GithubCalendarConfig(){
+            var git_githubapiurl ="https://python-github-calendar-api.vercel.app/api?Loora1N";
+            var git_color =['#ebedf0', '#fdcdec', '#fc9bd9', '#fa6ac5', '#f838b2', '#f5089f', '#c4067e', '#92055e', '#540336', '#48022f', '#30021f'];
+            var git_user ="Loora1N";
+            var parent_div_git = document.getElementById('recent-posts');
+            var git_div_html = '<div class="recent-post-item" style="width:100%;height:auto;padding:10px;"><div id="github_loading" style="width:10%;height:100%;margin:0 auto;display: block"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"  viewBox="0 0 50 50" style="enable-background:new 0 0 50 50" xml:space="preserve"><path fill="#d0d0d0" d="M25.251,6.461c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615V6.461z" transform="rotate(275.098 25 25)"><animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="0.6s" repeatCount="indefinite"></animateTransform></path></svg></div><div id="github_container"></div></div>';
+            if(parent_div_git && location.pathname =='/about/'){
+                console.log('已挂载github calendar')
+                // parent_div_git.innerHTML=git_div_html+parent_div_git.innerHTML // 无报错，但不影响使用(支持pjax跳转)
+                parent_div_git.insertAdjacentHTML("afterbegin",git_div_html) // 有报错，但不影响使用(支持pjax跳转)
+            };
+            GithubCalendar(git_githubapiurl,git_color,git_user)
+        }
+        if(document.getElementById('recent-posts')){
+            GithubCalendarConfig()
+        }
+    </script>
+    <style>#github_container{min-height:280px}@media screen and (max-width:650px) {#github_container{background-image:;min-height:0px}}</style>
+    <style></style><!-- hexo injector body_end end --></body>
+</html>

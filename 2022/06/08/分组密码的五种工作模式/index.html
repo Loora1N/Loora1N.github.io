@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
+    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
+    <title>Loora1N&#39;s Blog | 鹭雨 | </title>
+    
+<link rel="stylesheet" href="/css/reset.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/css/markdown.css">
+
+    
+<link rel="stylesheet" href="/css/fonts.css">
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+    <body>
+        <div class="paper">
+            <div class="paper-main">
+                
+                    <div class="post-header">
+    <a class="logo" href="/">Loora1N&#39;s Blog | 鹭雨</a>
+    <a class="go-home" href="/">
+        <svg width="8" height="14" viewBox="0 0 8 14">
+            <path d="M7 1L1 7l6 6" stroke="#000" stroke-width="2" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </a>
+</div>
+                
+                <div class="post-main">
+
+    
+    
+        <div class="post-main-title">
+            分组密码的五种工作模式
+        </div>
+        <div class="post-meta">
+            2022-06-08
+        </div>
+        <div class="post-md">
+            <h2 id="电子密码本模式Electronic-Codebook-ECB"><a href="#电子密码本模式Electronic-Codebook-ECB" class="headerlink" title="电子密码本模式Electronic Codebook, ECB"></a>电子密码本模式Electronic Codebook, ECB</h2><blockquote>
+<p>明文分成64的分组进行加密，必要时填充，每个分组用同一密钥加密，同样明文分组加密得相同密文</p>
+</blockquote>
+<h3 id="示意图"><a href="#示意图" class="headerlink" title="示意图"></a>示意图</h3><p><img src="/img/article/cry-mode/cry1.png" alt="ECB"></p>
+<h3 id="局限性"><a href="#局限性" class="headerlink" title="局限性"></a>局限性</h3><ul>
+<li>ECB模式特别适合数据较少的情况，如安全传输DES密钥</li>
+<li>一段明文消息中若有几个相同的明文组，则密文也将出现几个相同的片段</li>
+<li>对于很长的消息，ECB是不安全的，如果消息是非常结构化的，密码分析可能利用其结构特征来破解</li>
+<li>ECB的弱点来源于其加密过的密文分组是互相独立的</li>
+</ul>
+<h2 id="密文分组链接模式Cipher-Block-Chaining-CBC"><a href="#密文分组链接模式Cipher-Block-Chaining-CBC" class="headerlink" title="密文分组链接模式Cipher Block Chaining (CBC)"></a>密文分组链接模式Cipher Block Chaining (CBC)</h2><blockquote>
+<p>加密输入是当前明文分组和前一密文分组的异或，形成一条链，使用相同的密钥， 这样每个明文分组的加密函数输入与明文分组之间不再有固定的关系</p>
+</blockquote>
+<h3 id="示意图-1"><a href="#示意图-1" class="headerlink" title="示意图"></a>示意图</h3><p><img src="/img/article/cry-mode/cry2.png" alt="CBC"></p>
+<h3 id="优点和局限"><a href="#优点和局限" class="headerlink" title="优点和局限"></a>优点和局限</h3><ul>
+<li>每个密文分组依赖于其他明文分组 </li>
+<li>明文消息中的任何一点变化都会影响密文分组 </li>
+<li>发送方和接收方需要共享初始向量Initial Value(IV)<ul>
+<li>如果IV被明文传送，则攻击者可以改变第一个分组的某些位，然后预先改变IV中的某些位，则接收者收到的P1也就相应改变了</li>
+<li>因此，IV必须是一个固定的值或者必须用ECB方式在消息之前加密传送</li>
+</ul>
+</li>
+<li>在消息的最后，还要处理不够长度的分组 <ul>
+<li>可以填充已知非数据值，或者在最后一块补上填充位长度</li>
+</ul>
+</li>
+</ul>
+<h2 id="密码反馈模式Cipher-FeedBack-CFB"><a href="#密码反馈模式Cipher-FeedBack-CFB" class="headerlink" title="密码反馈模式Cipher FeedBack (CFB)"></a>密码反馈模式Cipher FeedBack (CFB)</h2><blockquote>
+<ul>
+<li>是一种将DES转化成流密码的技术，不再要求报文被填充成整个分组，可以实时运行，如果要传输一个字符流，每个字符都可以使用面向字符的流密码加密后立即传输。</li>
+<li>加密：加密函数的输入是一个64位的移位寄存器，产生初始向量IV。加密函数高端j位与明文P1的第一单元异或，产生j位密文C1进入移位寄存器低端，继续加密，与P2输入异或，如此重复直到所有明文单元都完成加密。</li>
+<li>解密：采用相同方案，但是使用加密函数而非解密函数</li>
+</ul>
+</blockquote>
+<h3 id="示意图-2"><a href="#示意图-2" class="headerlink" title="示意图"></a>示意图</h3><p><img src="/img/article/cry-mode/cry3.png" alt="CFB"></p>
+<h3 id="优缺点"><a href="#优缺点" class="headerlink" title="优缺点"></a>优缺点</h3><ul>
+<li>当数据以位或字节形式到达时使用都是适当的 </li>
+<li>最通用的是流密码形式</li>
+</ul>
+<h2 id="输出反馈模式Output-FeedBack-OFB"><a href="#输出反馈模式Output-FeedBack-OFB" class="headerlink" title="输出反馈模式Output FeedBack (OFB)"></a>输出反馈模式Output FeedBack (OFB)</h2><blockquote>
+<p>结构上类似CFB，但是OFB中加密函数输出被反馈回移位寄存器，CFB中是密文单元被反馈回移位寄存器。优点是传输中的比特差错不会传播，缺点是比CFB更容易受报文流篡改攻击。</p>
+</blockquote>
+<h3 id="示意图-3"><a href="#示意图-3" class="headerlink" title="示意图"></a>示意图</h3><p><img src="/img/article/cry-mode/cry4.png" alt="OFB"></p>
+<h3 id="优缺点-1"><a href="#优缺点-1" class="headerlink" title="优缺点"></a>优缺点</h3><ul>
+<li>OFB的一个优点是传输过程中在某位上发生的错误不会影响到其他位。比如，C1中有1位发生了错误，只会影响到P1的恢复，后续的明文单元不受影响。</li>
+<li>OFB的缺点是，抗消息流篡改攻击的能力不如CFB。即密文中的某位取反，恢复出的明文相应位也取反</li>
+</ul>
+<h2 id="计数器模式Counter-CTR"><a href="#计数器模式Counter-CTR" class="headerlink" title="计数器模式Counter (CTR)"></a>计数器模式Counter (CTR)</h2><blockquote>
+<ul>
+<li>是一种新模式，虽然早就提出来了</li>
+<li>与OFB很像，但是加密的是计数器的值而不是任何反馈回来的值</li>
+<li>每一个明文分组都必须使用一个不同的密钥和计数器值，决不要重复使用Ci &#x3D; Pi XOR Oi Oi &#x3D; DESK1(i)</li>
+<li>可以用于高速网络加密中</li>
+</ul>
+</blockquote>
+<h3 id="示意图-4"><a href="#示意图-4" class="headerlink" title="示意图"></a>示意图</h3><p><img src="/img/article/cry-mode/cry5.png" alt="CTR"></p>
+<h3 id="优缺点-2"><a href="#优缺点-2" class="headerlink" title="优缺点"></a>优缺点</h3><ul>
+<li>高效<ul>
+<li>可以做并行加密</li>
+<li>对高速链路的突发数据加密尤其有效</li>
+</ul>
+</li>
+<li>可以对被加密的分组进行随机存取</li>
+<li>相当安全</li>
+<li>简洁</li>
+<li>必须决不重复使用密钥和计数器值</li>
+</ul>
+
+        </div>
+
+    
+
+</div>
+                <div class="footer">
+    <span>Copyright © 2022 Loora1N&#39;s Blog | 鹭雨</span>
+    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
+</div>
+
+
+<link rel="stylesheet" href="/css/a11y-dark.min.css">
+
+
+<script src="/js/highlight.min.js"></script>
+
+
+<script src="/js/highlightjs-line-numbers.js"></script>
+
+
+<script>
+    hljs.initHighlightingOnLoad();
+    hljs.initLineNumbersOnLoad();
+</script>
+
+            </div>
+        </div>
+    <!-- hexo injector body_end start -->
+  <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
+  <script data-pjax>
+        function GithubCalendarConfig(){
+            var git_githubapiurl ="https://python-github-calendar-api.vercel.app/api?Loora1N";
+            var git_color =['#ebedf0', '#fdcdec', '#fc9bd9', '#fa6ac5', '#f838b2', '#f5089f', '#c4067e', '#92055e', '#540336', '#48022f', '#30021f'];
+            var git_user ="Loora1N";
+            var parent_div_git = document.getElementById('recent-posts');
+            var git_div_html = '<div class="recent-post-item" style="width:100%;height:auto;padding:10px;"><div id="github_loading" style="width:10%;height:100%;margin:0 auto;display: block"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"  viewBox="0 0 50 50" style="enable-background:new 0 0 50 50" xml:space="preserve"><path fill="#d0d0d0" d="M25.251,6.461c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615V6.461z" transform="rotate(275.098 25 25)"><animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="0.6s" repeatCount="indefinite"></animateTransform></path></svg></div><div id="github_container"></div></div>';
+            if(parent_div_git && location.pathname =='/about/'){
+                console.log('已挂载github calendar')
+                // parent_div_git.innerHTML=git_div_html+parent_div_git.innerHTML // 无报错，但不影响使用(支持pjax跳转)
+                parent_div_git.insertAdjacentHTML("afterbegin",git_div_html) // 有报错，但不影响使用(支持pjax跳转)
+            };
+            GithubCalendar(git_githubapiurl,git_color,git_user)
+        }
+        if(document.getElementById('recent-posts')){
+            GithubCalendarConfig()
+        }
+    </script>
+    <style>#github_container{min-height:280px}@media screen and (max-width:650px) {#github_container{background-image:;min-height:0px}}</style>
+    <style></style><!-- hexo injector body_end end --></body>
+</html>

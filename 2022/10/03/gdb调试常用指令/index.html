@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
+    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
+    <title>Loora1N&#39;s Blog | 鹭雨 | </title>
+    
+<link rel="stylesheet" href="/css/reset.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/css/markdown.css">
+
+    
+<link rel="stylesheet" href="/css/fonts.css">
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+    <body>
+        <div class="paper">
+            <div class="paper-main">
+                
+                    <div class="post-header">
+    <a class="logo" href="/">Loora1N&#39;s Blog | 鹭雨</a>
+    <a class="go-home" href="/">
+        <svg width="8" height="14" viewBox="0 0 8 14">
+            <path d="M7 1L1 7l6 6" stroke="#000" stroke-width="2" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </a>
+</div>
+                
+                <div class="post-main">
+
+    
+    
+        <div class="post-main-title">
+            gdb调试常用指令
+        </div>
+        <div class="post-meta">
+            2022-10-03
+        </div>
+        <div class="post-md">
+            <blockquote>
+<p>gdb常用调试指令，包含pwngdb、pwndbg、peda、gef等插件的指令</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th align="center">命令名称</th>
+<th align="center">命令缩写</th>
+<th align="center">命令说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">run</td>
+<td align="center">r</td>
+<td align="center">运行一个待调试的程序</td>
+</tr>
+<tr>
+<td align="center">continue</td>
+<td align="center">c</td>
+<td align="center">让暂停的程序继续运行</td>
+</tr>
+<tr>
+<td align="center">next</td>
+<td align="center">n</td>
+<td align="center">运行到下一行</td>
+</tr>
+<tr>
+<td align="center">step</td>
+<td align="center">s</td>
+<td align="center">单步执行，遇到函数会进入</td>
+</tr>
+<tr>
+<td align="center">until</td>
+<td align="center">u</td>
+<td align="center">运行到指定行停下来</td>
+</tr>
+<tr>
+<td align="center">finish</td>
+<td align="center">fi</td>
+<td align="center">结束当前调用函数，回到上一层调用函数处</td>
+</tr>
+<tr>
+<td align="center">return</td>
+<td align="center">return</td>
+<td align="center">结束当前调用函数并返回指定值，到上一层函数调用处</td>
+</tr>
+<tr>
+<td align="center">jump</td>
+<td align="center">j</td>
+<td align="center">将当前程序执行流跳转到指定行或地址</td>
+</tr>
+<tr>
+<td align="center">print</td>
+<td align="center">p</td>
+<td align="center">打印变量或寄存器值</td>
+</tr>
+<tr>
+<td align="center">backtrace</td>
+<td align="center">bt</td>
+<td align="center">查看当前线程的调用堆栈</td>
+</tr>
+<tr>
+<td align="center">frame</td>
+<td align="center">f</td>
+<td align="center">切换到当前调用线程的指定堆栈</td>
+</tr>
+<tr>
+<td align="center">thread</td>
+<td align="center">thread</td>
+<td align="center">切换到指定线程</td>
+</tr>
+<tr>
+<td align="center">break</td>
+<td align="center">b</td>
+<td align="center">添加断点</td>
+</tr>
+<tr>
+<td align="center">tbreak</td>
+<td align="center">tb</td>
+<td align="center">添加临时断点</td>
+</tr>
+<tr>
+<td align="center">delete</td>
+<td align="center">d</td>
+<td align="center">删除断点</td>
+</tr>
+<tr>
+<td align="center">enable</td>
+<td align="center">enable</td>
+<td align="center">启用某个断点</td>
+</tr>
+<tr>
+<td align="center">disable</td>
+<td align="center">disable</td>
+<td align="center">禁用某个断点</td>
+</tr>
+<tr>
+<td align="center">watch</td>
+<td align="center">watch</td>
+<td align="center">监视某一个变量或内存地址的值是否发生变化</td>
+</tr>
+<tr>
+<td align="center">list</td>
+<td align="center">list</td>
+<td align="center">显示源码</td>
+</tr>
+<tr>
+<td align="center">info</td>
+<td align="center">info</td>
+<td align="center">查看断点 &#x2F; 线程等信息</td>
+</tr>
+<tr>
+<td align="center">ptype</td>
+<td align="center">ptype</td>
+<td align="center">查看变量类型</td>
+</tr>
+<tr>
+<td align="center">disassemble</td>
+<td align="center">disassemble</td>
+<td align="center">查看汇编代码</td>
+</tr>
+<tr>
+<td align="center">set args</td>
+<td align="center">set args</td>
+<td align="center">设置程序启动命令行参数</td>
+</tr>
+<tr>
+<td align="center">show args</td>
+<td align="center">show args</td>
+<td align="center">查看设置的命令行参数</td>
+</tr>
+<tr>
+<td align="center">heap –simple</td>
+<td align="center">heap -s</td>
+<td align="center">Simply print malloc_chunk struct’s contents</td>
+</tr>
+<tr>
+<td align="center">heap –verbose</td>
+<td align="center">heap -v</td>
+<td align="center">Print all chunk fields, even unused ones.</td>
+</tr>
+<tr>
+<td align="center">heapinfo</td>
+<td align="center">heapinfo</td>
+<td align="center">输出fastbin，top chunk， unsortbin，tcache等信息</td>
+</tr>
+<tr>
+<td align="center">heapbase</td>
+<td align="center">heapbase</td>
+<td align="center">获取heap基址</td>
+</tr>
+<tr>
+<td align="center">libc</td>
+<td align="center">libc</td>
+<td align="center">获取libc基址</td>
+</tr>
+<tr>
+<td align="center">magic</td>
+<td align="center">magic</td>
+<td align="center">Print useful variable and function in glibc</td>
+</tr>
+<tr>
+<td align="center">at</td>
+<td align="center">at</td>
+<td align="center">Attach by process name</td>
+</tr>
+<tr>
+<td align="center">x&#x2F;20x $addr</td>
+<td align="center">x&#x2F;20x $addr</td>
+<td align="center">查看指定地址内容</td>
+</tr>
+</tbody></table>
+
+        </div>
+
+    
+
+</div>
+                <div class="footer">
+    <span>Copyright © 2022 Loora1N&#39;s Blog | 鹭雨</span>
+    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
+</div>
+
+
+<link rel="stylesheet" href="/css/a11y-dark.min.css">
+
+
+<script src="/js/highlight.min.js"></script>
+
+
+<script src="/js/highlightjs-line-numbers.js"></script>
+
+
+<script>
+    hljs.initHighlightingOnLoad();
+    hljs.initLineNumbersOnLoad();
+</script>
+
+            </div>
+        </div>
+    <!-- hexo injector body_end start -->
+  <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
+  <script data-pjax>
+        function GithubCalendarConfig(){
+            var git_githubapiurl ="https://python-github-calendar-api.vercel.app/api?Loora1N";
+            var git_color =['#ebedf0', '#fdcdec', '#fc9bd9', '#fa6ac5', '#f838b2', '#f5089f', '#c4067e', '#92055e', '#540336', '#48022f', '#30021f'];
+            var git_user ="Loora1N";
+            var parent_div_git = document.getElementById('recent-posts');
+            var git_div_html = '<div class="recent-post-item" style="width:100%;height:auto;padding:10px;"><div id="github_loading" style="width:10%;height:100%;margin:0 auto;display: block"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"  viewBox="0 0 50 50" style="enable-background:new 0 0 50 50" xml:space="preserve"><path fill="#d0d0d0" d="M25.251,6.461c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615V6.461z" transform="rotate(275.098 25 25)"><animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="0.6s" repeatCount="indefinite"></animateTransform></path></svg></div><div id="github_container"></div></div>';
+            if(parent_div_git && location.pathname =='/about/'){
+                console.log('已挂载github calendar')
+                // parent_div_git.innerHTML=git_div_html+parent_div_git.innerHTML // 无报错，但不影响使用(支持pjax跳转)
+                parent_div_git.insertAdjacentHTML("afterbegin",git_div_html) // 有报错，但不影响使用(支持pjax跳转)
+            };
+            GithubCalendar(git_githubapiurl,git_color,git_user)
+        }
+        if(document.getElementById('recent-posts')){
+            GithubCalendarConfig()
+        }
+    </script>
+    <style>#github_container{min-height:280px}@media screen and (max-width:650px) {#github_container{background-image:;min-height:0px}}</style>
+    <style></style><!-- hexo injector body_end end --></body>
+</html>

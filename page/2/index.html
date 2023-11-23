@@ -40,181 +40,180 @@
                 <div class="post-list">
     
     <div class="post">
-        <a class="post-title" href="/2023/11/16/%5BIO_FILE%5DHouse%20of%20kiwi/">【IO_FILE】House of kiwi</a>
+        <a class="post-title" href="/2023/08/29/ASAN%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90/">【fuzz】ASAN原理解析</a>
         <div class="post-except">
             前言
-参考博客如下：
-从PWN题NULL_FXCK中学到的glibc知识
-House OF Kiwi
+参考文章：
 
-CTF的Pwn题里面,通常就会遇到一些加了沙盒的题目,这种加沙盒的题目,在2.29之后的堆题中,通常为以下两种方式
+工欲善其事必先利其器——AddressSanitizer - 知乎 (zhihu.com)
+google&#x2F;sanitizers(github.com)
 
-劫持__free_hook,利用特定的gadget,将栈进行迁移
-劫持__malloc_hook为setcontext+61的gadget,以及劫持IO_list_all单链表中的指针在exit结束中,在_IO_cleanup函数会进行缓冲区的刷新,从而读取
-            <a class="read-more" href="/2023/11/16/%5BIO_FILE%5DHouse%20of%20kiwi/"> ... </a>
+
+本所涉及到的相关代码可以在我的仓库内找到：how2ASAN&#x2F;README.md at main · Loora1N&#x2F;how2ASAN (github.com)
+ASAN简介ASAN（Address Sanitizer）是针对 C&#x2F;C++ 的快速内存错误检测工具，在
+            <a class="read-more" href="/2023/08/29/ASAN%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90/"> ... </a>
         </div>
-        <div class="post-date">2023.11.16</div>
+        <div class="post-date">2023.08.29</div>
     </div>
     
     <div class="post">
-        <a class="post-title" href="/2023/11/16/chop1/">【trick】溢出漏洞在异常处理中的利用手法-上</a>
+        <a class="post-title" href="/2023/08/23/%E3%80%90fuzz%E3%80%91AFL%E7%99%BD%E7%9A%AE%E4%B9%A6%E4%B8%AD%E8%8B%B1%E5%8F%8C%E8%AF%AD%E7%89%88/">【fuzz】AFL白皮书中英双语版</a>
+        <div class="post-except">
+            前言
+最近想研究研究AFL整体内部逻辑源码，面试时也遇到了同样的问题，决定从AFL白皮书开始看看。网上有很多翻译版，但是要不就是没写完，要不就是机翻痕迹太重。决定自己完成这个任务，争取在一周内完成大部分核心源码的分析。又想到之前看网络协议栈和IO_FILE时的噩梦了😭😭😭
+
+本人英语水平有限，如有问题可以文末评论区直接指出。我想做中英双语版也是尽量在一定程度上防止大家被我的蹩脚翻译带偏。
+白皮书的原文部分我都会使用markdown的引用语法，另外，全文使用AFL简写替代
+            <a class="read-more" href="/2023/08/23/%E3%80%90fuzz%E3%80%91AFL%E7%99%BD%E7%9A%AE%E4%B9%A6%E4%B8%AD%E8%8B%B1%E5%8F%8C%E8%AF%AD%E7%89%88/"> ... </a>
+        </div>
+        <div class="post-date">2023.08.23</div>
+    </div>
+    
+    <div class="post">
+        <a class="post-title" href="/2023/08/22/%E3%80%90fuzz%20trick%E3%80%91%E5%88%A9%E7%94%A8LCOV%E6%B5%8B%E9%87%8F%E4%BB%A3%E7%A0%81%E8%A6%86%E7%9B%96%E7%8E%87/">【fuzz trick】利用LCOV测量代码覆盖率</a>
         <div class="post-except">
             
- 本文已投稿至先知社区-技术文章板块😝：https://xz.aliyun.com/t/12967 有稿费真好，狠狠赚大米
+本文样例为LibTIFF version 4.0.4，以CVE-2016-9297漏洞举例 
 
+Install直接使用apt安装包即可
+sudo apt install lcov
 
-            <a class="read-more" href="/2023/11/16/chop1/"> ... </a>
+Usage整体流程大致如下
+cd ./tiff-4.0.4/
+lcov --zerocounters --directory ./
+lcov --capture --initial --directory ./ --output-file app.info
+../install/bin/tiff
+            <a class="read-more" href="/2023/08/22/%E3%80%90fuzz%20trick%E3%80%91%E5%88%A9%E7%94%A8LCOV%E6%B5%8B%E9%87%8F%E4%BB%A3%E7%A0%81%E8%A6%86%E7%9B%96%E7%8E%87/"> ... </a>
         </div>
-        <div class="post-date">2023.11.16</div>
+        <div class="post-date">2023.08.22</div>
     </div>
     
     <div class="post">
-        <a class="post-title" href="/2023/11/16/chop2/">【trick】溢出漏洞在异常处理中的利用手法-下</a>
+        <a class="post-title" href="/2023/07/12/%E3%80%90IOT%E3%80%91%E5%B5%8C%E5%85%A5%E5%BC%8F%E8%AE%BE%E5%A4%87%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90/">【IOT】嵌入式设备固件分析</a>
+        <div class="post-except">
+            嵌入式设备固件一般可以分为两类：
+
+有文件系统（如路由器固件这种）
+无文件系统（如STM32这种嵌入式设备固件，程序直接存放在flash中）
+
+针对第一类固件，分析起来比较简单，直接binwalk分离。然后去逆向对应的服务对应的二进制程序即可，也不需要考虑程序的加载地址。
+而对于第二类固件，往往就会比较复杂，需要分析程序的加载地址，也需要考虑外设的地址映射。
+
+本文将从SCTF2020的题目Password Lock入手，分析STM32固件作为入门
+
+题目信息这是一个STM3
+            <a class="read-more" href="/2023/07/12/%E3%80%90IOT%E3%80%91%E5%B5%8C%E5%85%A5%E5%BC%8F%E8%AE%BE%E5%A4%87%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90/"> ... </a>
+        </div>
+        <div class="post-date">2023.07.12</div>
+    </div>
+    
+    <div class="post">
+        <a class="post-title" href="/2023/07/10/%E6%9F%90%E5%B8%82%E7%94%B5%E7%BD%91%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98%E5%B0%8F%E8%AE%B0/">某市电网漏洞挖掘小记</a>
+        <div class="post-except">
+            由于电网设施保护非常严格，整个网络拓扑也异常复杂，说实话前两天一直在梳理整个体系架构（后来发现完全没必要）。整整4天，找到两个栈溢出，但都没法利用，只好按DOS交了。据我了解，从外网进入内部网络的可能性几乎没有，实际漏挖也是需要线下网线接入交换机。
+
+ 说实话我也不知道这种内网漏洞的意义是什么，感觉像是审潜在代码BUG
+
+接入设备首先就是接入交换机然后ssh上服务器，不过接入的时候是不能开启wifi，不能连接其他网络，不然监管系统会一直报警👮👮👮
+ssh上去之后的第一件
+            <a class="read-more" href="/2023/07/10/%E6%9F%90%E5%B8%82%E7%94%B5%E7%BD%91%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98%E5%B0%8F%E8%AE%B0/"> ... </a>
+        </div>
+        <div class="post-date">2023.07.10</div>
+    </div>
+    
+    <div class="post">
+        <a class="post-title" href="/2023/05/16/%E3%80%90kernel%E3%80%91AntCTFxD3%5ECTF%20d3op%20WP/">【WP】AntCTFxD3^CTF d3op</a>
         <div class="post-except">
             
- 本文已投稿至先知社区-技术文章板块😝：https://xz.aliyun.com/t/12994 有稿费真好，狠狠赚大米
+本文采取根据官方wp的方式进行复现，需要官方WP的pdf文件也可以在评论区留言（侵删）
 
+文件系统分析首先解压文件系统
+mkdir rootfs
+cd rootfs
+unsquashfs ../unsquashfs ../squashfs-root.img  
 
-            <a class="read-more" href="/2023/11/16/chop2/"> ... </a>
+在etc/os-release中我们能看到版本信息
+NAME=&quot;OpenWrt&quot;
+VERSION=&quot;22.03.3&quot;
+ID=&quot;openwrt&quot;
+ID_LI
+            <a class="read-more" href="/2023/05/16/%E3%80%90kernel%E3%80%91AntCTFxD3%5ECTF%20d3op%20WP/"> ... </a>
         </div>
-        <div class="post-date">2023.11.16</div>
+        <div class="post-date">2023.05.16</div>
     </div>
     
     <div class="post">
-        <a class="post-title" href="/2023/11/16/firmwalker-DLINK923B/">D-Link 923B路由器敏感信息搜集</a>
+        <a class="post-title" href="/2023/04/25/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH4%E5%8F%8ACH6/">网络协议栈CH4及CH6</a>
         <div class="post-except">
-            Firmware Directory&#x2F;root&#x2F;iot&#x2F;D-LINK923B&#x2F;2k&#x2F;rootSearch for password files##################################### passwdt&#x2F;bin&#x2F;passwdt&#x2F;etc&#x2F;passwdt&#x2F;var&#x2F;lib&#x2F;opkg&#x2F;alternatives&#x2F;pas
-            <a class="read-more" href="/2023/11/16/firmwalker-DLINK923B/"> ... </a>
+            题外话
+去年11月份做IO相关源码的时候就已经觉得有些宏定义纯纯恶心，没想到今日的网络协议栈再一次体会了这种感觉😅，感谢网络协议栈让我重温旧日的美好时光。
+第四章 接口：以太网以太网接口
+IP分组的以太网帧如上图所示，包含6字节的目的和源地址，2字节的类型，末尾4字节的CRC。前14个字节我们在上一篇文章讨论输入输出时已经见过。对于IP分组，其类型是固定的0x0800（十进制2048）
+leintr函数
+ 感觉记住这几个函数干什么就行，也没啥特别说的。一个个源码都挺长的，放
+            <a class="read-more" href="/2023/04/25/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH4%E5%8F%8ACH6/"> ... </a>
         </div>
-        <div class="post-date">2023.11.16</div>
+        <div class="post-date">2023.04.25</div>
     </div>
     
     <div class="post">
-        <a class="post-title" href="/2023/11/16/gdb%E8%B0%83%E8%AF%95%E5%B8%B8%E7%94%A8%E6%8C%87%E4%BB%A4/">gdb调试常用指令</a>
-        <div class="post-except">
-            
-gdb常用调试指令，包含pwngdb、pwndbg、peda、gef等插件的指令
-
-
-
-
-命令名称
-命令缩写
-命令说明
-
-
-
-run
-r
-运行一个待调试的程序
-
-
-continue
-c
-让暂停的程序继续运行
-
-
-next
-n
-运行到下一行
-
-
-step
-s
-单步执行，遇到函数会进入
-
-
-until
-u
-运行到指定行停下来
-
-
-finish
-fi
-结束当前调用函数，回到上一层调用函数处
-
-
-return
-return
-结束当前调用函数并返回指定值，到上一层函数调用处
-
-
-ju
-            <a class="read-more" href="/2023/11/16/gdb%E8%B0%83%E8%AF%95%E5%B8%B8%E7%94%A8%E6%8C%87%E4%BB%A4/"> ... </a>
-        </div>
-        <div class="post-date">2023.11.16</div>
-    </div>
-    
-    <div class="post">
-        <a class="post-title" href="/2023/11/16/how2heap%E2%91%A0%20botcake,einherjar,lore/">【how2heap】 botcake,einherjar,lore</a>
+        <a class="post-title" href="/2023/04/25/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH8%E5%8F%8ACH23/">网络协议栈CH8及CH23</a>
         <div class="post-except">
             
-本系列将针对glibc2.31及glibc2.35两个版本进行讨论，其他版本可以根据特性进行类推，建议先对各种堆块的基本特性和数据结构做已了解之后进行学习。
+昨晚搞到快两点，今天9.30才起床，希望11点半之前能搞完去吃饭😭
 
-house_of_botcakehouse_of_botcake利用的是块的分割，使得只存在uaf漏洞的前提下实现堆块的溢出,达到获取任意地址的目的，下面我们用how2heap中的例子进行理解。
-#include &lt;stdio.h&gt;
-#include &lt;stdlib.h&gt;
-#include &
-            <a class="read-more" href="/2023/11/16/how2heap%E2%91%A0%20botcake,einherjar,lore/"> ... </a>
+第八章 IP：网际协议IP分组
+参照上图，有几个基本概念（本例中的传输层协议为UDP）：
+
+报文：由传输层送至IP的数据报，本身包含传输层首部和数据
+数据报：IP在报文的前面加上自己的IP首部，且根据长度考虑是否分片（上图1-2行）
+帧：IP将分好片的数据报交给数据链路层，数据链路填上自己的首部后变为帧（上图3行）
+分组：一个分片的数据报或者一个不需分片的数据报为分组
+
+
+ 需注意的是IP数据报结构存储
+            <a class="read-more" href="/2023/04/25/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH8%E5%8F%8ACH23/"> ... </a>
         </div>
-        <div class="post-date">2023.11.16</div>
+        <div class="post-date">2023.04.25</div>
     </div>
     
     <div class="post">
-        <a class="post-title" href="/2023/11/16/i%E6%98%A5%E7%A7%8B%E6%98%A5%E5%AD%A3%E8%B5%9B-%E5%8B%87%E8%80%85%E5%B7%85%E5%B3%B0-chunqiuIOT/">i春秋春季赛-勇者巅峰-chunqiuIOT</a>
-        <div class="post-except">
-            前言这是今年上半年比赛的一道题目，那个时候才刚刚接触堆，栈也不是很熟。打开程序基本就放弃了，前一段时间复现了几个IOT相关的CVE，借此契机顺便看看几个月前自己放弃的那道题。有一说一，这道题的逆向部分还是很头疼的，逆了一个下午+一个早上才看完程序逻辑—-套皮堆题罢了。
-
-我新建了一个库，用于存放各种比赛的题目，我博客内WP涉及的题目基本都能找到，链接：PWNchanllenge&#x2F;chunzhiIot at main · Loora1N&#x2F;PWNchanlle
-            <a class="read-more" href="/2023/11/16/i%E6%98%A5%E7%A7%8B%E6%98%A5%E5%AD%A3%E8%B5%9B-%E5%8B%87%E8%80%85%E5%B7%85%E5%B3%B0-chunqiuIOT/"> ... </a>
-        </div>
-        <div class="post-date">2023.11.16</div>
-    </div>
-    
-    <div class="post">
-        <a class="post-title" href="/2023/11/16/mrdoc%E5%B9%B3%E5%8F%B0docker%E6%9E%84%E5%BB%BA/">在NAS上docker构建MrDoc</a>
+        <a class="post-title" href="/2023/04/24/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88%E5%A4%8D%E4%B9%A0/">网络协议栈CH1-CH3</a>
         <div class="post-except">
             
-由于NAS的shell环境不太正常，甚至连git命令都没有，只能使用官方镜像搭建的方式，这里记录mrdoc平台搭建过程
+参考教材《TCP&#x2F;IP详解 卷2：实现》，文内示意图大多取自该教材。本文为复习时自行总结，难免存在不全或者错误，求求大伙轻喷。如有问题可以留言在文末评论区，或者直接私聊，我会及时更改文章内容。
 
-拉取MrDoc源码在本地shell环境使用git拉取Mrdoc开源版源码
-git clone https://gitee.com/zmister/MrDoc.git
+第一章 概述基本框架网络输入输出层间框架基本框架如下图所示，我们会在后面详细讨论输入输出
 
-用scp将源码上传至NAS平台的/opt目录
-scp -r MrDoc user@192.168.1.172:/volume1/smb/wiki
+UDP示例socket程序框架
+这段C代码也充当后续我们分析输入输出时的例子
 
-运行docker容器
-nas上的dock
-            <a class="read-more" href="/2023/11/16/mrdoc%E5%B9%B3%E5%8F%B0docker%E6%9E%84%E5%BB%BA/"> ... </a>
+/*
+* Send a UDP datagram to the daytime server on 
+            <a class="read-more" href="/2023/04/24/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88%E5%A4%8D%E4%B9%A0/"> ... </a>
         </div>
-        <div class="post-date">2023.11.16</div>
+        <div class="post-date">2023.04.24</div>
     </div>
     
     <div class="post">
-        <a class="post-title" href="/2023/11/16/nc%20%E6%98%AF%E4%BB%80%E4%B9%88/">nc/ncat 使用教学</a>
+        <a class="post-title" href="/2023/03/31/%E3%80%90Linux%20kernel%E5%85%A5%E9%97%A8%E3%80%91%E5%86%85%E6%A0%B8%E6%9C%AC%E5%9C%B0%E8%B0%83%E8%AF%95/">【kernel】内核本地调试入门</a>
         <div class="post-except">
-            
-本文用于介绍信息安全大赛中不少题目需要使用的 nc&#x2F;ncat 工具。如果有什么建议，可以在页面底部登录Github使用评论功能，我看不到账号密码的，不用担心🤩
+            提取vmlinux使用extract-vmlinux脚本提取，脚本下载地址：linux&#x2F;extract-vmlinux at master · torvalds&#x2F;linux (github.com)
+./extract-vmlinux ./bzImage &gt; vmlinux
 
-nc 是什么nc/ncat 是 netcat 的缩写，它可以读写 TCP 与 UDP 端口——或许你看不懂这句话，这没有关系。简单地说，它可以在字符界面下，让你和服务器沟通交流。
-一般来说，有很多题目都会要求你使用 nc 连接到他们的服务器，并且进行交互，获得 flag。
-如何安装 ncnc 命令在 m
-            <a class="read-more" href="/2023/11/16/nc%20%E6%98%AF%E4%BB%80%E4%B9%88/"> ... </a>
+开放调试端口在boot.sh中加入如下参数
+-gdb tcp::[port]
+#如下
+-gdb tcp::1234
+
+启动boot.sh
+调试
+root权限下运行
+
+gdb .
+            <a class="read-more" href="/2023/03/31/%E3%80%90Linux%20kernel%E5%85%A5%E9%97%A8%E3%80%91%E5%86%85%E6%A0%B8%E6%9C%AC%E5%9C%B0%E8%B0%83%E8%AF%95/"> ... </a>
         </div>
-        <div class="post-date">2023.11.16</div>
-    </div>
-    
-    <div class="post">
-        <a class="post-title" href="/2023/11/16/qemu%E9%80%83%E9%80%B8/">【Virtual】浅谈escape-qemu</a>
-        <div class="post-except">
-            
-qemu逃逸这部分内容，在今年年初就有所涉猎，然而由于本人过于懒惰，这个部分的总结推了整整半年多。直到参加本月的HTICON2023，真正第一次在比赛中面对QEMU逃逸，发现了自己很多的不足之处。借这次机会将这部分内容作以总结。
-
-
-PCI设备在目前的QEMU逃逸题目类型中，出题者一般会在qemu-system-x86_64(或是对应arm架构的qemu-system)的二进制程序中加入自己编写的、具有漏洞的PCI设备模块。每个PCI设备都对应一个PCI配置空间，包含该PC
-            <a class="read-more" href="/2023/11/16/qemu%E9%80%83%E9%80%B8/"> ... </a>
-        </div>
-        <div class="post-date">2023.11.16</div>
+        <div class="post-date">2023.03.31</div>
     </div>
     
 </div>

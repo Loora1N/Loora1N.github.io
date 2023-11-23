@@ -1,0 +1,4878 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
+    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
+    <title>Loora1N&#39;s Blog | 鹭雨 | </title>
+    
+<link rel="stylesheet" href="/css/reset.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/css/markdown.css">
+
+    
+<link rel="stylesheet" href="/css/fonts.css">
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+    <body>
+        <div class="paper">
+            <div class="paper-main">
+                
+                    <div class="post-header">
+    <a class="logo" href="/">Loora1N&#39;s Blog | 鹭雨</a>
+    <a class="go-home" href="/">
+        <svg width="8" height="14" viewBox="0 0 8 14">
+            <path d="M7 1L1 7l6 6" stroke="#000" stroke-width="2" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </a>
+</div>
+                
+                <div class="post-main">
+
+    
+    
+        <div class="post-main-title">
+            Linux Syscall Reference(64 bit)
+        </div>
+        <div class="post-meta">
+            2023-03-29
+        </div>
+        <div class="post-md">
+            <blockquote>
+<p>列举了全部的64位syscall调用表，方便离线时进行查询</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Name</th>
+<th>Registers</th>
+<th>Definition</th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>rax</td>
+<td>rdi</td>
+<td>rsi</td>
+<td>rdx</td>
+<td>r10</td>
+<td>r8</td>
+<td>r9</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>0</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/read.2.html">sys_read</a></td>
+<td>0x00</td>
+<td>unsigned int fd</td>
+<td>char __user *buf</td>
+<td>size_t count</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/read_write.c#L621">fs&#x2F;read_write.c:621</a></td>
+</tr>
+<tr>
+<td>1</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/write.2.html">sys_write</a></td>
+<td>0x01</td>
+<td>unsigned int fd</td>
+<td>const char __user *buf</td>
+<td>size_t count</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/read_write.c#L646">fs&#x2F;read_write.c:646</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/open.2.html">sys_open</a></td>
+<td>0x02</td>
+<td>const char __user *filename</td>
+<td>int flags</td>
+<td>umode_t mode</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/fhandle.c#L256">fs&#x2F;fhandle.c:256</a></td>
+</tr>
+<tr>
+<td>3</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/close.2.html">sys_close</a></td>
+<td>0x03</td>
+<td>unsigned int fd</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/open.c#L1437">fs&#x2F;open.c:1437</a></td>
+</tr>
+<tr>
+<td>4</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/newstat.2.html">sys_newstat</a></td>
+<td>0x04</td>
+<td>const char __user *filename</td>
+<td>struct stat __user *statbuf</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/stat.c#L406">fs&#x2F;stat.c:406</a></td>
+</tr>
+<tr>
+<td>5</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/newfstat.2.html">sys_newfstat</a></td>
+<td>0x05</td>
+<td>unsigned int fd</td>
+<td>struct stat __user *statbuf</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/stat.c#L444">fs&#x2F;stat.c:444</a></td>
+</tr>
+<tr>
+<td>6</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/newlstat.2.html">sys_newlstat</a></td>
+<td>0x06</td>
+<td>const char __user *filename</td>
+<td>struct stat __user *statbuf</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/stat.c#L417">fs&#x2F;stat.c:417</a></td>
+</tr>
+<tr>
+<td>7</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/poll.2.html">sys_poll</a></td>
+<td>0x07</td>
+<td>struct pollfd __user *ufds</td>
+<td>unsigned int nfds</td>
+<td>int timeout</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/select.c#L1068">fs&#x2F;select.c:1068</a></td>
+</tr>
+<tr>
+<td>8</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/lseek.2.html">sys_lseek</a></td>
+<td>0x08</td>
+<td>unsigned int fd</td>
+<td>off_t offset</td>
+<td>unsigned int whence</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/read_write.c#L311">fs&#x2F;read_write.c:311</a></td>
+</tr>
+<tr>
+<td>9</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/mmap.2.html">sys_mmap</a></td>
+<td>0x09</td>
+<td>unsigned long addr</td>
+<td>unsigned long len</td>
+<td>int prot</td>
+<td>int flags</td>
+<td>int fd</td>
+<td>long off</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/arch/arm64/kernel/sys.c#L21">arch&#x2F;arm64&#x2F;kernel&#x2F;sys.c:21</a></td>
+</tr>
+<tr>
+<td>10</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/mprotect.2.html">sys_mprotect</a></td>
+<td>0x0a</td>
+<td>unsigned long start</td>
+<td>size_t len</td>
+<td>unsigned long prot</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/mm/mprotect.c#L816">mm&#x2F;mprotect.c:816</a></td>
+</tr>
+<tr>
+<td>11</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/munmap.2.html">sys_munmap</a></td>
+<td>0x0b</td>
+<td>unsigned long addr</td>
+<td>size_t len</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/mm/mmap.c#L2797">mm&#x2F;mmap.c:2797</a></td>
+</tr>
+<tr>
+<td>12</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/brk.2.html">sys_brk</a></td>
+<td>0x0c</td>
+<td>unsigned long brk</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/mm/mmap.c#L170">mm&#x2F;mmap.c:170</a></td>
+</tr>
+<tr>
+<td>13</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/rt_sigaction.2.html">sys_rt_sigaction</a></td>
+<td>0x0d</td>
+<td>int</td>
+<td>const struct sigaction __user *</td>
+<td>struct sigaction __user *</td>
+<td>size_t</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/signal.c#L4410">kernel&#x2F;signal.c:4410</a></td>
+</tr>
+<tr>
+<td>14</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/rt_sigprocmask.2.html">sys_rt_sigprocmask</a></td>
+<td>0x0e</td>
+<td>int how</td>
+<td>sigset_t __user *set</td>
+<td>sigset_t __user *oset</td>
+<td>size_t sigsetsize</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/signal.c#L3141">kernel&#x2F;signal.c:3141</a></td>
+</tr>
+<tr>
+<td>15</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/rt_sigreturn.2.html">sys_rt_sigreturn</a></td>
+<td>0x0f</td>
+<td>void</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>[not found:](<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/not">https://elixir.bootlin.com/linux/v5.17.5/source/not</a> found#L)</td>
+</tr>
+<tr>
+<td>16</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/ioctl.2.html">sys_ioctl</a></td>
+<td>0x10</td>
+<td>unsigned int fd</td>
+<td>unsigned int cmd</td>
+<td>unsigned long arg</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/ioctl.c#L856">fs&#x2F;ioctl.c:856</a></td>
+</tr>
+<tr>
+<td>17</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/pread64.2.html">sys_pread64</a></td>
+<td>0x11</td>
+<td>unsigned int fd</td>
+<td>char __user *buf</td>
+<td>size_t count</td>
+<td>loff_t pos</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/read_write.c#L672">fs&#x2F;read_write.c:672</a></td>
+</tr>
+<tr>
+<td>18</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/pwrite64.2.html">sys_pwrite64</a></td>
+<td>0x12</td>
+<td>unsigned int fd</td>
+<td>const char __user *buf</td>
+<td>size_t count</td>
+<td>loff_t pos</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/read_write.c#L706">fs&#x2F;read_write.c:706</a></td>
+</tr>
+<tr>
+<td>19</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/readv.2.html">sys_readv</a></td>
+<td>0x13</td>
+<td>unsigned long fd</td>
+<td>const struct iovec __user *vec</td>
+<td>unsigned long vlen</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/read_write.c#L1041">fs&#x2F;read_write.c:1041</a></td>
+</tr>
+<tr>
+<td>20</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/writev.2.html">sys_writev</a></td>
+<td>0x14</td>
+<td>unsigned long fd</td>
+<td>const struct iovec __user *vec</td>
+<td>unsigned long vlen</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/read_write.c#L1047">fs&#x2F;read_write.c:1047</a></td>
+</tr>
+<tr>
+<td>21</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/access.2.html">sys_access</a></td>
+<td>0x15</td>
+<td>const char __user *filename</td>
+<td>int mode</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/open.c#L503">fs&#x2F;open.c:503</a></td>
+</tr>
+<tr>
+<td>22</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/pipe.2.html">sys_pipe</a></td>
+<td>0x16</td>
+<td>int __user *fildes</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/pipe.c#L1031">fs&#x2F;pipe.c:1031</a></td>
+</tr>
+<tr>
+<td>23</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/select.2.html">sys_select</a></td>
+<td>0x17</td>
+<td>int n</td>
+<td>fd_set __user *inp</td>
+<td>fd_set __user *outp</td>
+<td>fd_set __user *exp</td>
+<td>struct __kernel_old_timeval __user *tvp</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/select.c#L726">fs&#x2F;select.c:726</a></td>
+</tr>
+<tr>
+<td>24</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/sched_yield.2.html">sys_sched_yield</a></td>
+<td>0x18</td>
+<td>void</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>[not found:](<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/not">https://elixir.bootlin.com/linux/v5.17.5/source/not</a> found#L)</td>
+</tr>
+<tr>
+<td>25</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/mremap.2.html">sys_mremap</a></td>
+<td>0x19</td>
+<td>unsigned long addr</td>
+<td>unsigned long old_len</td>
+<td>unsigned long new_len</td>
+<td>unsigned long flags</td>
+<td>unsigned long new_addr</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/mm/mremap.c#L889">mm&#x2F;mremap.c:889</a></td>
+</tr>
+<tr>
+<td>26</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/msync.2.html">sys_msync</a></td>
+<td>0x1a</td>
+<td>unsigned long start</td>
+<td>size_t len</td>
+<td>int flags</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/mm/msync.c#L32">mm&#x2F;msync.c:32</a></td>
+</tr>
+<tr>
+<td>27</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/mincore.2.html">sys_mincore</a></td>
+<td>0x1b</td>
+<td>unsigned long start</td>
+<td>size_t len</td>
+<td>unsigned char __user * vec</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/mm/mincore.c#L232">mm&#x2F;mincore.c:232</a></td>
+</tr>
+<tr>
+<td>28</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/madvise.2.html">sys_madvise</a></td>
+<td>0x1c</td>
+<td>unsigned long start</td>
+<td>size_t len</td>
+<td>int behavior</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/mm/madvise.c#L1440">mm&#x2F;madvise.c:1440</a></td>
+</tr>
+<tr>
+<td>29</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/shmget.2.html">sys_shmget</a></td>
+<td>0x1d</td>
+<td>key_t key</td>
+<td>size_t size</td>
+<td>int flag</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/ipc/shm.c#L850">ipc&#x2F;shm.c:850</a></td>
+</tr>
+<tr>
+<td>30</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/shmat.2.html">sys_shmat</a></td>
+<td>0x1e</td>
+<td>int shmid</td>
+<td>char __user *shmaddr</td>
+<td>int shmflg</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/ipc/shm.c#L1696">ipc&#x2F;shm.c:1696</a></td>
+</tr>
+<tr>
+<td>31</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/shmctl.2.html">sys_shmctl</a></td>
+<td>0x1f</td>
+<td>int shmid</td>
+<td>int cmd</td>
+<td>struct shmid_ds __user *buf</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/ipc/shm.c#L1299">ipc&#x2F;shm.c:1299</a></td>
+</tr>
+<tr>
+<td>32</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/dup.2.html">sys_dup</a></td>
+<td>0x20</td>
+<td>unsigned int fildes</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/file.c#L1269">fs&#x2F;file.c:1269</a></td>
+</tr>
+<tr>
+<td>33</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/dup2.2.html">sys_dup2</a></td>
+<td>0x21</td>
+<td>unsigned int oldfd</td>
+<td>unsigned int newfd</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/file.c#L1254">fs&#x2F;file.c:1254</a></td>
+</tr>
+<tr>
+<td>34</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/pause.2.html">sys_pause</a></td>
+<td>0x22</td>
+<td>void</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>[not found:](<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/not">https://elixir.bootlin.com/linux/v5.17.5/source/not</a> found#L)</td>
+</tr>
+<tr>
+<td>35</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/nanosleep.2.html">sys_nanosleep</a></td>
+<td>0x23</td>
+<td>struct __kernel_timespec __user *rqtp</td>
+<td>struct __kernel_timespec __user *rmtp</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/time/hrtimer.c#L2118">kernel&#x2F;time&#x2F;hrtimer.c:2118</a></td>
+</tr>
+<tr>
+<td>36</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/getitimer.2.html">sys_getitimer</a></td>
+<td>0x24</td>
+<td>int which</td>
+<td>struct __kernel_old_itimerval __user *value</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/time/itimer.c#L113">kernel&#x2F;time&#x2F;itimer.c:113</a></td>
+</tr>
+<tr>
+<td>37</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/alarm.2.html">sys_alarm</a></td>
+<td>0x25</td>
+<td>unsigned int seconds</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/time/itimer.c#L306">kernel&#x2F;time&#x2F;itimer.c:306</a></td>
+</tr>
+<tr>
+<td>38</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/setitimer.2.html">sys_setitimer</a></td>
+<td>0x26</td>
+<td>int which</td>
+<td>struct __kernel_old_itimerval __user *value</td>
+<td>struct __kernel_old_itimerval __user *ovalue</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/time/itimer.c#L332">kernel&#x2F;time&#x2F;itimer.c:332</a></td>
+</tr>
+<tr>
+<td>39</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/getpid.2.html">sys_getpid</a></td>
+<td>0x27</td>
+<td>void</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>[not found:](<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/not">https://elixir.bootlin.com/linux/v5.17.5/source/not</a> found#L)</td>
+</tr>
+<tr>
+<td>40</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/sendfile64.2.html">sys_sendfile64</a></td>
+<td>0x28</td>
+<td>int out_fd</td>
+<td>int in_fd</td>
+<td>loff_t __user *offset</td>
+<td>size_t count</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/read_write.c#L1309">fs&#x2F;read_write.c:1309</a></td>
+</tr>
+<tr>
+<td>41</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/socket.2.html">sys_socket</a></td>
+<td>0x29</td>
+<td>int</td>
+<td>int</td>
+<td>int</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/net/socket.c#L1647">net&#x2F;socket.c:1647</a></td>
+</tr>
+<tr>
+<td>42</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/connect.2.html">sys_connect</a></td>
+<td>0x2a</td>
+<td>int</td>
+<td>struct sockaddr __user *</td>
+<td>int</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/net/socket.c#L2000">net&#x2F;socket.c:2000</a></td>
+</tr>
+<tr>
+<td>43</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/accept.2.html">sys_accept</a></td>
+<td>0x2b</td>
+<td>int</td>
+<td>struct sockaddr __user *</td>
+<td>int __user *</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/net/socket.c#L1941">net&#x2F;socket.c:1941</a></td>
+</tr>
+<tr>
+<td>44</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/sendto.2.html">sys_sendto</a></td>
+<td>0x2c</td>
+<td>int</td>
+<td>void __user *</td>
+<td>size_t</td>
+<td>unsigned</td>
+<td>struct sockaddr __user *</td>
+<td>int</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/net/socket.c#L2125">net&#x2F;socket.c:2125</a></td>
+</tr>
+<tr>
+<td>45</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/recvfrom.2.html">sys_recvfrom</a></td>
+<td>0x2d</td>
+<td>int</td>
+<td>void __user *</td>
+<td>size_t</td>
+<td>unsigned</td>
+<td>struct sockaddr __user *</td>
+<td>int __user *</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/net/socket.c#L2183">net&#x2F;socket.c:2183</a></td>
+</tr>
+<tr>
+<td>46</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/sendmsg.2.html">sys_sendmsg</a></td>
+<td>0x2e</td>
+<td>int fd</td>
+<td>struct user_msghdr __user *msg</td>
+<td>unsigned flags</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/net/socket.c#L2572">net&#x2F;socket.c:2572</a></td>
+</tr>
+<tr>
+<td>47</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/recvmsg.2.html">sys_recvmsg</a></td>
+<td>0x2f</td>
+<td>int fd</td>
+<td>struct user_msghdr __user *msg</td>
+<td>unsigned flags</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/net/socket.c#L2780">net&#x2F;socket.c:2780</a></td>
+</tr>
+<tr>
+<td>48</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/shutdown.2.html">sys_shutdown</a></td>
+<td>0x30</td>
+<td>int</td>
+<td>int</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/net/socket.c#L2342">net&#x2F;socket.c:2342</a></td>
+</tr>
+<tr>
+<td>49</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/bind.2.html">sys_bind</a></td>
+<td>0x31</td>
+<td>int</td>
+<td>struct sockaddr __user *</td>
+<td>int</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/net/socket.c#L1785">net&#x2F;socket.c:1785</a></td>
+</tr>
+<tr>
+<td>50</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/listen.2.html">sys_listen</a></td>
+<td>0x32</td>
+<td>int</td>
+<td>int</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/net/socket.c#L1817">net&#x2F;socket.c:1817</a></td>
+</tr>
+<tr>
+<td>51</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/getsockname.2.html">sys_getsockname</a></td>
+<td>0x33</td>
+<td>int</td>
+<td>struct sockaddr __user *</td>
+<td>int __user *</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/net/socket.c#L2038">net&#x2F;socket.c:2038</a></td>
+</tr>
+<tr>
+<td>52</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/getpeername.2.html">sys_getpeername</a></td>
+<td>0x34</td>
+<td>int</td>
+<td>struct sockaddr __user *</td>
+<td>int __user *</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/net/socket.c#L2074">net&#x2F;socket.c:2074</a></td>
+</tr>
+<tr>
+<td>53</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/socketpair.2.html">sys_socketpair</a></td>
+<td>0x35</td>
+<td>int</td>
+<td>int</td>
+<td>int</td>
+<td>int __user *</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/net/socket.c#L1748">net&#x2F;socket.c:1748</a></td>
+</tr>
+<tr>
+<td>54</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/setsockopt.2.html">sys_setsockopt</a></td>
+<td>0x36</td>
+<td>int fd</td>
+<td>int level</td>
+<td>int optname</td>
+<td>char __user *optval</td>
+<td>int optlen</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/net/socket.c#L2260">net&#x2F;socket.c:2260</a></td>
+</tr>
+<tr>
+<td>55</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/getsockopt.2.html">sys_getsockopt</a></td>
+<td>0x37</td>
+<td>int fd</td>
+<td>int level</td>
+<td>int optname</td>
+<td>char __user *optval</td>
+<td>int __user *optlen</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/net/socket.c#L2308">net&#x2F;socket.c:2308</a></td>
+</tr>
+<tr>
+<td>56</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/clone.2.html">sys_clone</a></td>
+<td>0x38</td>
+<td>unsigned long</td>
+<td>unsigned long</td>
+<td>int __user *</td>
+<td>unsigned long</td>
+<td>int __user *</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/fork.c#L2785">kernel&#x2F;fork.c:2785</a></td>
+</tr>
+<tr>
+<td>57</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/fork.2.html">sys_fork</a></td>
+<td>0x39</td>
+<td>void</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>[not found:](<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/not">https://elixir.bootlin.com/linux/v5.17.5/source/not</a> found#L)</td>
+</tr>
+<tr>
+<td>58</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/vfork.2.html">sys_vfork</a></td>
+<td>0x3a</td>
+<td>void</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>[not found:](<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/not">https://elixir.bootlin.com/linux/v5.17.5/source/not</a> found#L)</td>
+</tr>
+<tr>
+<td>59</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/execve.2.html">sys_execve</a></td>
+<td>0x3b</td>
+<td>const char __user *filename</td>
+<td>const char __user *const __user *argv</td>
+<td>const char __user *const __user *envp</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/exec.c#L2087">fs&#x2F;exec.c:2087</a></td>
+</tr>
+<tr>
+<td>60</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/exit.2.html">sys_exit</a></td>
+<td>0x3c</td>
+<td>int error_code</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/exit.c#L915">kernel&#x2F;exit.c:915</a></td>
+</tr>
+<tr>
+<td>61</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/wait4.2.html">sys_wait4</a></td>
+<td>0x3d</td>
+<td>pid_t pid</td>
+<td>int __user *stat_addr</td>
+<td>int options</td>
+<td>struct rusage __user *ru</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/exit.c#L1730">kernel&#x2F;exit.c:1730</a></td>
+</tr>
+<tr>
+<td>62</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/kill.2.html">sys_kill</a></td>
+<td>0x3e</td>
+<td>pid_t pid</td>
+<td>int sig</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/signal.c#L3771">kernel&#x2F;signal.c:3771</a></td>
+</tr>
+<tr>
+<td>63</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/newuname.2.html">sys_newuname</a></td>
+<td>0x3f</td>
+<td>struct new_utsname __user *name</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/sys.c#L1288">kernel&#x2F;sys.c:1288</a></td>
+</tr>
+<tr>
+<td>64</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/semget.2.html">sys_semget</a></td>
+<td>0x40</td>
+<td>key_t key</td>
+<td>int nsems</td>
+<td>int semflg</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/ipc/sem.c#L624">ipc&#x2F;sem.c:624</a></td>
+</tr>
+<tr>
+<td>65</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/semop.2.html">sys_semop</a></td>
+<td>0x41</td>
+<td>int semid</td>
+<td>struct sembuf __user *sops</td>
+<td>unsigned nsops</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/ipc/sem.c#L2298">ipc&#x2F;sem.c:2298</a></td>
+</tr>
+<tr>
+<td>66</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/semctl.2.html">sys_semctl</a></td>
+<td>0x42</td>
+<td>int semid</td>
+<td>int semnum</td>
+<td>int cmd</td>
+<td>unsigned long arg</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/ipc/sem.c#L1705">ipc&#x2F;sem.c:1705</a></td>
+</tr>
+<tr>
+<td>67</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/shmdt.2.html">sys_shmdt</a></td>
+<td>0x43</td>
+<td>char __user *shmaddr</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/ipc/shm.c#L1837">ipc&#x2F;shm.c:1837</a></td>
+</tr>
+<tr>
+<td>68</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/msgget.2.html">sys_msgget</a></td>
+<td>0x44</td>
+<td>key_t key</td>
+<td>int msgflg</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/ipc/msg.c#L315">ipc&#x2F;msg.c:315</a></td>
+</tr>
+<tr>
+<td>69</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/msgsnd.2.html">sys_msgsnd</a></td>
+<td>0x45</td>
+<td>int msqid</td>
+<td>struct msgbuf __user *msgp</td>
+<td>size_t msgsz</td>
+<td>int msgflg</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/ipc/msg.c#L971">ipc&#x2F;msg.c:971</a></td>
+</tr>
+<tr>
+<td>70</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/msgrcv.2.html">sys_msgrcv</a></td>
+<td>0x46</td>
+<td>int msqid</td>
+<td>struct msgbuf __user *msgp</td>
+<td>size_t msgsz</td>
+<td>long msgtyp</td>
+<td>int msgflg</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/ipc/msg.c#L1270">ipc&#x2F;msg.c:1270</a></td>
+</tr>
+<tr>
+<td>71</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/msgctl.2.html">sys_msgctl</a></td>
+<td>0x47</td>
+<td>int msqid</td>
+<td>int cmd</td>
+<td>struct msqid_ds __user *buf</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/ipc/msg.c#L640">ipc&#x2F;msg.c:640</a></td>
+</tr>
+<tr>
+<td>72</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/fcntl.2.html">sys_fcntl</a></td>
+<td>0x48</td>
+<td>unsigned int fd</td>
+<td>unsigned int cmd</td>
+<td>unsigned long arg</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/fcntl.c#L439">fs&#x2F;fcntl.c:439</a></td>
+</tr>
+<tr>
+<td>73</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/flock.2.html">sys_flock</a></td>
+<td>0x49</td>
+<td>unsigned int fd</td>
+<td>unsigned int cmd</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/locks.c#L2084">fs&#x2F;locks.c:2084</a></td>
+</tr>
+<tr>
+<td>74</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/fsync.2.html">sys_fsync</a></td>
+<td>0x4a</td>
+<td>unsigned int fd</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/sync.c#L218">fs&#x2F;sync.c:218</a></td>
+</tr>
+<tr>
+<td>75</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/fdatasync.2.html">sys_fdatasync</a></td>
+<td>0x4b</td>
+<td>unsigned int fd</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/sync.c#L223">fs&#x2F;sync.c:223</a></td>
+</tr>
+<tr>
+<td>76</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/truncate.2.html">sys_truncate</a></td>
+<td>0x4c</td>
+<td>const char __user *path</td>
+<td>long length</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/open.c#L144">fs&#x2F;open.c:144</a></td>
+</tr>
+<tr>
+<td>77</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/ftruncate.2.html">sys_ftruncate</a></td>
+<td>0x4d</td>
+<td>unsigned int fd</td>
+<td>unsigned long length</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/open.c#L202">fs&#x2F;open.c:202</a></td>
+</tr>
+<tr>
+<td>78</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/getdents.2.html">sys_getdents</a></td>
+<td>0x4e</td>
+<td>unsigned int fd</td>
+<td>struct linux_dirent __user *dirent</td>
+<td>unsigned int count</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/readdir.c#L271">fs&#x2F;readdir.c:271</a></td>
+</tr>
+<tr>
+<td>79</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/getcwd.2.html">sys_getcwd</a></td>
+<td>0x4f</td>
+<td>char __user *buf</td>
+<td>unsigned long size</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/d_path.c#L411">fs&#x2F;d_path.c:411</a></td>
+</tr>
+<tr>
+<td>80</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/chdir.2.html">sys_chdir</a></td>
+<td>0x50</td>
+<td>const char __user *filename</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/open.c#L508">fs&#x2F;open.c:508</a></td>
+</tr>
+<tr>
+<td>81</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/fchdir.2.html">sys_fchdir</a></td>
+<td>0x51</td>
+<td>unsigned int fd</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/open.c#L534">fs&#x2F;open.c:534</a></td>
+</tr>
+<tr>
+<td>82</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/rename.2.html">sys_rename</a></td>
+<td>0x52</td>
+<td>const char __user *oldname</td>
+<td>const char __user *newname</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/namei.c#L4974">fs&#x2F;namei.c:4974</a></td>
+</tr>
+<tr>
+<td>83</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/mkdir.2.html">sys_mkdir</a></td>
+<td>0x53</td>
+<td>const char __user *pathname</td>
+<td>umode_t mode</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/namei.c#L4079">fs&#x2F;namei.c:4079</a></td>
+</tr>
+<tr>
+<td>84</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/rmdir.2.html">sys_rmdir</a></td>
+<td>0x54</td>
+<td>const char __user *pathname</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/namei.c#L4199">fs&#x2F;namei.c:4199</a></td>
+</tr>
+<tr>
+<td>85</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/creat.2.html">sys_creat</a></td>
+<td>0x55</td>
+<td>const char __user *pathname</td>
+<td>umode_t mode</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/open.c#L1396">fs&#x2F;open.c:1396</a></td>
+</tr>
+<tr>
+<td>86</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/link.2.html">sys_link</a></td>
+<td>0x56</td>
+<td>const char __user *oldname</td>
+<td>const char __user *newname</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/namei.c#L4632">fs&#x2F;namei.c:4632</a></td>
+</tr>
+<tr>
+<td>87</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/unlink.2.html">sys_unlink</a></td>
+<td>0x57</td>
+<td>const char __user *pathname</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/namei.c#L4366">fs&#x2F;namei.c:4366</a></td>
+</tr>
+<tr>
+<td>88</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/symlink.2.html">sys_symlink</a></td>
+<td>0x58</td>
+<td>const char __user *old</td>
+<td>const char __user *new</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/namei.c#L4450">fs&#x2F;namei.c:4450</a></td>
+</tr>
+<tr>
+<td>89</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/readlink.2.html">sys_readlink</a></td>
+<td>0x59</td>
+<td>const char __user *path</td>
+<td>char __user *buf</td>
+<td>int bufsiz</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/stat.c#L498">fs&#x2F;stat.c:498</a></td>
+</tr>
+<tr>
+<td>90</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/chmod.2.html">sys_chmod</a></td>
+<td>0x5a</td>
+<td>const char __user *filename</td>
+<td>umode_t mode</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/open.c#L661">fs&#x2F;open.c:661</a></td>
+</tr>
+<tr>
+<td>91</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/fchmod.2.html">sys_fchmod</a></td>
+<td>0x5b</td>
+<td>unsigned int fd</td>
+<td>umode_t mode</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/open.c#L625">fs&#x2F;open.c:625</a></td>
+</tr>
+<tr>
+<td>92</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/chown.2.html">sys_chown</a></td>
+<td>0x5c</td>
+<td>const char __user *filename</td>
+<td>uid_t user</td>
+<td>gid_t group</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/open.c#L785">fs&#x2F;open.c:785</a></td>
+</tr>
+<tr>
+<td>93</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/fchown.2.html">sys_fchown</a></td>
+<td>0x5d</td>
+<td>unsigned int fd</td>
+<td>uid_t user</td>
+<td>gid_t group</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/open.c#L821">fs&#x2F;open.c:821</a></td>
+</tr>
+<tr>
+<td>94</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/lchown.2.html">sys_lchown</a></td>
+<td>0x5e</td>
+<td>const char __user *filename</td>
+<td>uid_t user</td>
+<td>gid_t group</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/open.c#L790">fs&#x2F;open.c:790</a></td>
+</tr>
+<tr>
+<td>95</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/umask.2.html">sys_umask</a></td>
+<td>0x5f</td>
+<td>int mask</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/sys.c#L1864">kernel&#x2F;sys.c:1864</a></td>
+</tr>
+<tr>
+<td>96</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/gettimeofday.2.html">sys_gettimeofday</a></td>
+<td>0x60</td>
+<td>struct __kernel_old_timeval __user *tv</td>
+<td>struct timezone __user *tz</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/time/time.c#L140">kernel&#x2F;time&#x2F;time.c:140</a></td>
+</tr>
+<tr>
+<td>97</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/getrlimit.2.html">sys_getrlimit</a></td>
+<td>0x61</td>
+<td>unsigned int resource</td>
+<td>struct rlimit __user *rlim</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/sys.c#L1498">kernel&#x2F;sys.c:1498</a></td>
+</tr>
+<tr>
+<td>98</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/getrusage.2.html">sys_getrusage</a></td>
+<td>0x62</td>
+<td>int who</td>
+<td>struct rusage __user *ru</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/sys.c#L1838">kernel&#x2F;sys.c:1838</a></td>
+</tr>
+<tr>
+<td>99</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/sysinfo.2.html">sys_sysinfo</a></td>
+<td>0x63</td>
+<td>struct sysinfo __user *info</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/sys.c#L2716">kernel&#x2F;sys.c:2716</a></td>
+</tr>
+<tr>
+<td>100</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/times.2.html">sys_times</a></td>
+<td>0x64</td>
+<td>struct tms __user *tbuf</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/sys.c#L1005">kernel&#x2F;sys.c:1005</a></td>
+</tr>
+<tr>
+<td>101</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/ptrace.2.html">sys_ptrace</a></td>
+<td>0x65</td>
+<td>long request</td>
+<td>long pid</td>
+<td>unsigned long addr</td>
+<td>unsigned long data</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/ptrace.c#L1269">kernel&#x2F;ptrace.c:1269</a></td>
+</tr>
+<tr>
+<td>102</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/getuid.2.html">sys_getuid</a></td>
+<td>0x66</td>
+<td>void</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>[not found:](<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/not">https://elixir.bootlin.com/linux/v5.17.5/source/not</a> found#L)</td>
+</tr>
+<tr>
+<td>103</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/syslog.2.html">sys_syslog</a></td>
+<td>0x67</td>
+<td>int type</td>
+<td>char __user *buf</td>
+<td>int len</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/printk/printk.c#L1769">kernel&#x2F;printk&#x2F;printk.c:1769</a></td>
+</tr>
+<tr>
+<td>104</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/getgid.2.html">sys_getgid</a></td>
+<td>0x68</td>
+<td>void</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>[not found:](<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/not">https://elixir.bootlin.com/linux/v5.17.5/source/not</a> found#L)</td>
+</tr>
+<tr>
+<td>105</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/setuid.2.html">sys_setuid</a></td>
+<td>0x69</td>
+<td>uid_t uid</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/sys.c#L650">kernel&#x2F;sys.c:650</a></td>
+</tr>
+<tr>
+<td>106</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/setgid.2.html">sys_setgid</a></td>
+<td>0x6a</td>
+<td>gid_t gid</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/sys.c#L467">kernel&#x2F;sys.c:467</a></td>
+</tr>
+<tr>
+<td>107</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/geteuid.2.html">sys_geteuid</a></td>
+<td>0x6b</td>
+<td>void</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>[not found:](<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/not">https://elixir.bootlin.com/linux/v5.17.5/source/not</a> found#L)</td>
+</tr>
+<tr>
+<td>108</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/getegid.2.html">sys_getegid</a></td>
+<td>0x6c</td>
+<td>void</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>[not found:](<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/not">https://elixir.bootlin.com/linux/v5.17.5/source/not</a> found#L)</td>
+</tr>
+<tr>
+<td>109</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/setpgid.2.html">sys_setpgid</a></td>
+<td>0x6d</td>
+<td>pid_t pid</td>
+<td>pid_t pgid</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/sys.c#L1055">kernel&#x2F;sys.c:1055</a></td>
+</tr>
+<tr>
+<td>110</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/getppid.2.html">sys_getppid</a></td>
+<td>0x6e</td>
+<td>void</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>[not found:](<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/not">https://elixir.bootlin.com/linux/v5.17.5/source/not</a> found#L)</td>
+</tr>
+<tr>
+<td>111</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/getpgrp.2.html">sys_getpgrp</a></td>
+<td>0x6f</td>
+<td>void</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>[not found:](<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/not">https://elixir.bootlin.com/linux/v5.17.5/source/not</a> found#L)</td>
+</tr>
+<tr>
+<td>112</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/setsid.2.html">sys_setsid</a></td>
+<td>0x70</td>
+<td>void</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>[not found:](<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/not">https://elixir.bootlin.com/linux/v5.17.5/source/not</a> found#L)</td>
+</tr>
+<tr>
+<td>113</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/setreuid.2.html">sys_setreuid</a></td>
+<td>0x71</td>
+<td>uid_t ruid</td>
+<td>uid_t euid</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/sys.c#L587">kernel&#x2F;sys.c:587</a></td>
+</tr>
+<tr>
+<td>114</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/setregid.2.html">sys_setregid</a></td>
+<td>0x72</td>
+<td>gid_t rgid</td>
+<td>gid_t egid</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/sys.c#L421">kernel&#x2F;sys.c:421</a></td>
+</tr>
+<tr>
+<td>115</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/getgroups.2.html">sys_getgroups</a></td>
+<td>0x73</td>
+<td>int gidsetsize</td>
+<td>gid_t __user *grouplist</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/groups.c#L161">kernel&#x2F;groups.c:161</a></td>
+</tr>
+<tr>
+<td>116</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/setgroups.2.html">sys_setgroups</a></td>
+<td>0x74</td>
+<td>int gidsetsize</td>
+<td>gid_t __user *grouplist</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/groups.c#L198">kernel&#x2F;groups.c:198</a></td>
+</tr>
+<tr>
+<td>117</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/setresuid.2.html">sys_setresuid</a></td>
+<td>0x75</td>
+<td>uid_t ruid</td>
+<td>uid_t euid</td>
+<td>uid_t suid</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/sys.c#L730">kernel&#x2F;sys.c:730</a></td>
+</tr>
+<tr>
+<td>118</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/getresuid.2.html">sys_getresuid</a></td>
+<td>0x76</td>
+<td>uid_t __user *ruid</td>
+<td>uid_t __user *euid</td>
+<td>uid_t __user *suid</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/sys.c#L735">kernel&#x2F;sys.c:735</a></td>
+</tr>
+<tr>
+<td>119</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/setresgid.2.html">sys_setresgid</a></td>
+<td>0x77</td>
+<td>gid_t rgid</td>
+<td>gid_t egid</td>
+<td>gid_t sgid</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/sys.c#L813">kernel&#x2F;sys.c:813</a></td>
+</tr>
+<tr>
+<td>120</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/getresgid.2.html">sys_getresgid</a></td>
+<td>0x78</td>
+<td>gid_t __user *rgid</td>
+<td>gid_t __user *egid</td>
+<td>gid_t __user *sgid</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/sys.c#L818">kernel&#x2F;sys.c:818</a></td>
+</tr>
+<tr>
+<td>121</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/getpgid.2.html">sys_getpgid</a></td>
+<td>0x79</td>
+<td>pid_t pid</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/sys.c#L1154">kernel&#x2F;sys.c:1154</a></td>
+</tr>
+<tr>
+<td>122</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/setfsuid.2.html">sys_setfsuid</a></td>
+<td>0x7a</td>
+<td>uid_t uid</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/sys.c#L881">kernel&#x2F;sys.c:881</a></td>
+</tr>
+<tr>
+<td>123</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/setfsgid.2.html">sys_setfsgid</a></td>
+<td>0x7b</td>
+<td>gid_t gid</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/sys.c#L925">kernel&#x2F;sys.c:925</a></td>
+</tr>
+<tr>
+<td>124</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/getsid.2.html">sys_getsid</a></td>
+<td>0x7c</td>
+<td>pid_t pid</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/sys.c#L1168">kernel&#x2F;sys.c:1168</a></td>
+</tr>
+<tr>
+<td>125</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/capget.2.html">sys_capget</a></td>
+<td>0x7d</td>
+<td>cap_user_header_t header</td>
+<td>cap_user_data_t dataptr</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/capability.c#L148">kernel&#x2F;capability.c:148</a></td>
+</tr>
+<tr>
+<td>126</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/capset.2.html">sys_capset</a></td>
+<td>0x7e</td>
+<td>cap_user_header_t header</td>
+<td>const cap_user_data_t data</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/capability.c#L222">kernel&#x2F;capability.c:222</a></td>
+</tr>
+<tr>
+<td>127</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/rt_sigpending.2.html">sys_rt_sigpending</a></td>
+<td>0x7f</td>
+<td>sigset_t __user *set</td>
+<td>size_t sigsetsize</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/signal.c#L3213">kernel&#x2F;signal.c:3213</a></td>
+</tr>
+<tr>
+<td>128</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/rt_sigtimedwait.2.html">sys_rt_sigtimedwait</a></td>
+<td>0x80</td>
+<td>const sigset_t __user *uthese</td>
+<td>siginfo_t __user *uinfo</td>
+<td>const struct __kernel_timespec __user *uts</td>
+<td>size_t sigsetsize</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/signal.c#L3627">kernel&#x2F;signal.c:3627</a></td>
+</tr>
+<tr>
+<td>129</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/rt_sigqueueinfo.2.html">sys_rt_sigqueueinfo</a></td>
+<td>0x81</td>
+<td>pid_t pid</td>
+<td>int sig</td>
+<td>siginfo_t __user *uinfo</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/signal.c#L3996">kernel&#x2F;signal.c:3996</a></td>
+</tr>
+<tr>
+<td>130</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/rt_sigsuspend.2.html">sys_rt_sigsuspend</a></td>
+<td>0x82</td>
+<td>sigset_t __user *unewset</td>
+<td>size_t sigsetsize</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/signal.c#L4633">kernel&#x2F;signal.c:4633</a></td>
+</tr>
+<tr>
+<td>131</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/sigaltstack.2.html">sys_sigaltstack</a></td>
+<td>0x83</td>
+<td>const struct sigaltstack __user *uss</td>
+<td>struct sigaltstack __user *uoss</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/signal.c#L4227">kernel&#x2F;signal.c:4227</a></td>
+</tr>
+<tr>
+<td>132</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/utime.2.html">sys_utime</a></td>
+<td>0x84</td>
+<td>char __user *filename</td>
+<td>struct utimbuf __user *times</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/utimes.c#L214">fs&#x2F;utimes.c:214</a></td>
+</tr>
+<tr>
+<td>133</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/mknod.2.html">sys_mknod</a></td>
+<td>0x85</td>
+<td>const char __user *filename</td>
+<td>umode_t mode</td>
+<td>unsigned dev</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/namei.c#L3996">fs&#x2F;namei.c:3996</a></td>
+</tr>
+<tr>
+<td>134</td>
+<td>not implemented</td>
+<td>0x86</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/#L">:</a></td>
+</tr>
+<tr>
+<td>135</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/personality.2.html">sys_personality</a></td>
+<td>0x87</td>
+<td>unsigned int personality</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/exec_domain.c#L38">kernel&#x2F;exec_domain.c:38</a></td>
+</tr>
+<tr>
+<td>136</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/ustat.2.html">sys_ustat</a></td>
+<td>0x88</td>
+<td>unsigned dev</td>
+<td>struct ustat __user *ubuf</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/statfs.c#L248">fs&#x2F;statfs.c:248</a></td>
+</tr>
+<tr>
+<td>137</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/statfs.2.html">sys_statfs</a></td>
+<td>0x89</td>
+<td>const char __user * path</td>
+<td>struct statfs __user *buf</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/statfs.c#L192">fs&#x2F;statfs.c:192</a></td>
+</tr>
+<tr>
+<td>138</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/fstatfs.2.html">sys_fstatfs</a></td>
+<td>0x8a</td>
+<td>unsigned int fd</td>
+<td>struct statfs __user *buf</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/statfs.c#L213">fs&#x2F;statfs.c:213</a></td>
+</tr>
+<tr>
+<td>139</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/sysfs.2.html">sys_sysfs</a></td>
+<td>0x8b</td>
+<td>int option</td>
+<td>unsigned long arg1</td>
+<td>unsigned long arg2</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/filesystems.c#L191">fs&#x2F;filesystems.c:191</a></td>
+</tr>
+<tr>
+<td>140</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/getpriority.2.html">sys_getpriority</a></td>
+<td>0x8c</td>
+<td>int which</td>
+<td>int who</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/sys.c#L281">kernel&#x2F;sys.c:281</a></td>
+</tr>
+<tr>
+<td>141</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/setpriority.2.html">sys_setpriority</a></td>
+<td>0x8d</td>
+<td>int which</td>
+<td>int who</td>
+<td>int niceval</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/sys.c#L211">kernel&#x2F;sys.c:211</a></td>
+</tr>
+<tr>
+<td>142</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/sched_setparam.2.html">sys_sched_setparam</a></td>
+<td>0x8e</td>
+<td>pid_t pid</td>
+<td>struct sched_param __user *param</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/sched/core.c#L7872">kernel&#x2F;sched&#x2F;core.c:7872</a></td>
+</tr>
+<tr>
+<td>143</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/sched_getparam.2.html">sys_sched_getparam</a></td>
+<td>0x8f</td>
+<td>pid_t pid</td>
+<td>struct sched_param __user *param</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/sched/core.c#L7955">kernel&#x2F;sched&#x2F;core.c:7955</a></td>
+</tr>
+<tr>
+<td>144</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/sched_setscheduler.2.html">sys_sched_setscheduler</a></td>
+<td>0x90</td>
+<td>pid_t pid</td>
+<td>int policy</td>
+<td>struct sched_param __user *param</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/sched/core.c#L7857">kernel&#x2F;sched&#x2F;core.c:7857</a></td>
+</tr>
+<tr>
+<td>145</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/sched_getscheduler.2.html">sys_sched_getscheduler</a></td>
+<td>0x91</td>
+<td>pid_t pid</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/sched/core.c#L7926">kernel&#x2F;sched&#x2F;core.c:7926</a></td>
+</tr>
+<tr>
+<td>146</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/sched_get_priority_max.2.html">sys_sched_get_priority_max</a></td>
+<td>0x92</td>
+<td>int policy</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/sched/core.c#L8754">kernel&#x2F;sched&#x2F;core.c:8754</a></td>
+</tr>
+<tr>
+<td>147</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/sched_get_priority_min.2.html">sys_sched_get_priority_min</a></td>
+<td>0x93</td>
+<td>int policy</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/sched/core.c#L8781">kernel&#x2F;sched&#x2F;core.c:8781</a></td>
+</tr>
+<tr>
+<td>148</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/sched_rr_get_interval.2.html">sys_sched_rr_get_interval</a></td>
+<td>0x94</td>
+<td>pid_t pid</td>
+<td>struct __kernel_timespec __user *interval</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/sched/core.c#L8846">kernel&#x2F;sched&#x2F;core.c:8846</a></td>
+</tr>
+<tr>
+<td>149</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/mlock.2.html">sys_mlock</a></td>
+<td>0x95</td>
+<td>unsigned long start</td>
+<td>size_t len</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/mm/mlock.c#L614">mm&#x2F;mlock.c:614</a></td>
+</tr>
+<tr>
+<td>150</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/munlock.2.html">sys_munlock</a></td>
+<td>0x96</td>
+<td>unsigned long start</td>
+<td>size_t len</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/mm/mlock.c#L632">mm&#x2F;mlock.c:632</a></td>
+</tr>
+<tr>
+<td>151</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/mlockall.2.html">sys_mlockall</a></td>
+<td>0x97</td>
+<td>int flags</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/mm/mlock.c#L697">mm&#x2F;mlock.c:697</a></td>
+</tr>
+<tr>
+<td>152</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/munlockall.2.html">sys_munlockall</a></td>
+<td>0x98</td>
+<td>void</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>[not found:](<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/not">https://elixir.bootlin.com/linux/v5.17.5/source/not</a> found#L)</td>
+</tr>
+<tr>
+<td>153</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/vhangup.2.html">sys_vhangup</a></td>
+<td>0x99</td>
+<td>void</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>[not found:](<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/not">https://elixir.bootlin.com/linux/v5.17.5/source/not</a> found#L)</td>
+</tr>
+<tr>
+<td>155</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/pivot_root.2.html">sys_pivot_root</a></td>
+<td>0x9b</td>
+<td>const char __user *new_root</td>
+<td>const char __user *put_old</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/namespace.c#L3868">fs&#x2F;namespace.c:3868</a></td>
+</tr>
+<tr>
+<td>156</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/ni_syscall.2.html">sys_ni_syscall</a></td>
+<td>0x9c</td>
+<td>void</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>[not found:](<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/not">https://elixir.bootlin.com/linux/v5.17.5/source/not</a> found#L)</td>
+</tr>
+<tr>
+<td>157</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/prctl.2.html">sys_prctl</a></td>
+<td>0x9d</td>
+<td>int option</td>
+<td>unsigned long arg2</td>
+<td>unsigned long arg3</td>
+<td>unsigned long arg4</td>
+<td>unsigned long arg5</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/sys.c#L2351">kernel&#x2F;sys.c:2351</a></td>
+</tr>
+<tr>
+<td>159</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/adjtimex.2.html">sys_adjtimex</a></td>
+<td>0x9f</td>
+<td>struct __kernel_timex __user *txc_p</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/time/time.c#L269">kernel&#x2F;time&#x2F;time.c:269</a></td>
+</tr>
+<tr>
+<td>160</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/setrlimit.2.html">sys_setrlimit</a></td>
+<td>0xa0</td>
+<td>unsigned int resource</td>
+<td>struct rlimit __user *rlim</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/sys.c#L1711">kernel&#x2F;sys.c:1711</a></td>
+</tr>
+<tr>
+<td>161</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/chroot.2.html">sys_chroot</a></td>
+<td>0xa1</td>
+<td>const char __user *filename</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/open.c#L556">fs&#x2F;open.c:556</a></td>
+</tr>
+<tr>
+<td>162</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/sync.2.html">sys_sync</a></td>
+<td>0xa2</td>
+<td>void</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/sync.c#L149">fs&#x2F;sync.c:149</a></td>
+</tr>
+<tr>
+<td>163</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/acct.2.html">sys_acct</a></td>
+<td>0xa3</td>
+<td>const char __user *name</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/acct.c#L292">kernel&#x2F;acct.c:292</a></td>
+</tr>
+<tr>
+<td>164</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/settimeofday.2.html">sys_settimeofday</a></td>
+<td>0xa4</td>
+<td>struct __kernel_old_timeval __user *tv</td>
+<td>struct timezone __user *tz</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/time/time.c#L199">kernel&#x2F;time&#x2F;time.c:199</a></td>
+</tr>
+<tr>
+<td>165</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/mount.2.html">sys_mount</a></td>
+<td>0xa5</td>
+<td>char __user *dev_name</td>
+<td>char __user *dir_name</td>
+<td>char __user *type</td>
+<td>unsigned long flags</td>
+<td>void __user *data</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/namespace.c#L3568">fs&#x2F;namespace.c:3568</a></td>
+</tr>
+<tr>
+<td>166</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/umount.2.html">sys_umount</a></td>
+<td>0xa6</td>
+<td>char __user *name</td>
+<td>int flags</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/namespace.c#L1828">fs&#x2F;namespace.c:1828</a></td>
+</tr>
+<tr>
+<td>167</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/swapon.2.html">sys_swapon</a></td>
+<td>0xa7</td>
+<td>const char __user *specialfile</td>
+<td>int swap_flags</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/mm/swapfile.c#L2976">mm&#x2F;swapfile.c:2976</a></td>
+</tr>
+<tr>
+<td>168</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/swapoff.2.html">sys_swapoff</a></td>
+<td>0xa8</td>
+<td>const char __user *specialfile</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/mm/swapfile.c#L2381">mm&#x2F;swapfile.c:2381</a></td>
+</tr>
+<tr>
+<td>169</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/reboot.2.html">sys_reboot</a></td>
+<td>0xa9</td>
+<td>int magic1</td>
+<td>int magic2</td>
+<td>unsigned int cmd</td>
+<td>void __user *arg</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/reboot.c#L700">kernel&#x2F;reboot.c:700</a></td>
+</tr>
+<tr>
+<td>170</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/sethostname.2.html">sys_sethostname</a></td>
+<td>0xaa</td>
+<td>char __user *name</td>
+<td>int len</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/sys.c#L1356">kernel&#x2F;sys.c:1356</a></td>
+</tr>
+<tr>
+<td>171</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/setdomainname.2.html">sys_setdomainname</a></td>
+<td>0xab</td>
+<td>char __user *name</td>
+<td>int len</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/sys.c#L1410">kernel&#x2F;sys.c:1410</a></td>
+</tr>
+<tr>
+<td>172</td>
+<td></td>
+<td></td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/#L">:</a></td>
+</tr>
+<tr>
+<td>173</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/ioperm.2.html">sys_ioperm</a></td>
+<td>0xad</td>
+<td>unsigned long from</td>
+<td>unsigned long num</td>
+<td>int on</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/arch/x86/kernel/ioport.c#L152">arch&#x2F;x86&#x2F;kernel&#x2F;ioport.c:152</a></td>
+</tr>
+<tr>
+<td>174</td>
+<td>not implemented</td>
+<td>0xae</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/#L">:</a></td>
+</tr>
+<tr>
+<td>175</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/init_module.2.html">sys_init_module</a></td>
+<td>0xaf</td>
+<td>void __user *umod</td>
+<td>unsigned long len</td>
+<td>const char __user *uargs</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/module/main.c#L2896">kernel&#x2F;module&#x2F;main.c:2896</a></td>
+</tr>
+<tr>
+<td>176</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/delete_module.2.html">sys_delete_module</a></td>
+<td>0xb0</td>
+<td>const char __user *name_user</td>
+<td>unsigned int flags</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/module/main.c#L696">kernel&#x2F;module&#x2F;main.c:696</a></td>
+</tr>
+<tr>
+<td>177</td>
+<td>not implemented</td>
+<td>0xb1</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/#L">:</a></td>
+</tr>
+<tr>
+<td>178</td>
+<td>not implemented</td>
+<td>0xb2</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/#L">:</a></td>
+</tr>
+<tr>
+<td>179</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/quotactl.2.html">sys_quotactl</a></td>
+<td>0xb3</td>
+<td>unsigned int cmd</td>
+<td>const char __user *special</td>
+<td>qid_t id</td>
+<td>void __user *addr</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/quota/quota.c#L916">fs&#x2F;quota&#x2F;quota.c:916</a></td>
+</tr>
+<tr>
+<td>180</td>
+<td>not implemented</td>
+<td>0xb4</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/#L">:</a></td>
+</tr>
+<tr>
+<td>181</td>
+<td>not implemented</td>
+<td>0xb5</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/#L">:</a></td>
+</tr>
+<tr>
+<td>182</td>
+<td>not implemented</td>
+<td>0xb6</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/#L">:</a></td>
+</tr>
+<tr>
+<td>183</td>
+<td>not implemented</td>
+<td>0xb7</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/#L">:</a></td>
+</tr>
+<tr>
+<td>184</td>
+<td>not implemented</td>
+<td>0xb8</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/#L">:</a></td>
+</tr>
+<tr>
+<td>185</td>
+<td>not implemented</td>
+<td>0xb9</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/#L">:</a></td>
+</tr>
+<tr>
+<td>186</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/gettid.2.html">sys_gettid</a></td>
+<td>0xba</td>
+<td>void</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>[not found:](<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/not">https://elixir.bootlin.com/linux/v5.17.5/source/not</a> found#L)</td>
+</tr>
+<tr>
+<td>187</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/readahead.2.html">sys_readahead</a></td>
+<td>0xbb</td>
+<td>int fd</td>
+<td>loff_t offset</td>
+<td>size_t count</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/mm/readahead.c#L761">mm&#x2F;readahead.c:761</a></td>
+</tr>
+<tr>
+<td>188</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/setxattr.2.html">sys_setxattr</a></td>
+<td>0xbc</td>
+<td>const char __user *path</td>
+<td>const char __user *name</td>
+<td>const void __user *value</td>
+<td>size_t size</td>
+<td>int flags</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/xattr.c#L648">fs&#x2F;xattr.c:648</a></td>
+</tr>
+<tr>
+<td>189</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/lsetxattr.2.html">sys_lsetxattr</a></td>
+<td>0xbd</td>
+<td>const char __user *path</td>
+<td>const char __user *name</td>
+<td>const void __user *value</td>
+<td>size_t size</td>
+<td>int flags</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/xattr.c#L655">fs&#x2F;xattr.c:655</a></td>
+</tr>
+<tr>
+<td>190</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/fsetxattr.2.html">sys_fsetxattr</a></td>
+<td>0xbe</td>
+<td>int fd</td>
+<td>const char __user *name</td>
+<td>const void __user *value</td>
+<td>size_t size</td>
+<td>int flags</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/xattr.c#L662">fs&#x2F;xattr.c:662</a></td>
+</tr>
+<tr>
+<td>191</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/getxattr.2.html">sys_getxattr</a></td>
+<td>0xbf</td>
+<td>const char __user *path</td>
+<td>const char __user *name</td>
+<td>void __user *value</td>
+<td>size_t size</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/xattr.c#L760">fs&#x2F;xattr.c:760</a></td>
+</tr>
+<tr>
+<td>192</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/lgetxattr.2.html">sys_lgetxattr</a></td>
+<td>0xc0</td>
+<td>const char __user *path</td>
+<td>const char __user *name</td>
+<td>void __user *value</td>
+<td>size_t size</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/xattr.c#L766">fs&#x2F;xattr.c:766</a></td>
+</tr>
+<tr>
+<td>193</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/fgetxattr.2.html">sys_fgetxattr</a></td>
+<td>0xc1</td>
+<td>int fd</td>
+<td>const char __user *name</td>
+<td>void __user *value</td>
+<td>size_t size</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/xattr.c#L772">fs&#x2F;xattr.c:772</a></td>
+</tr>
+<tr>
+<td>194</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/listxattr.2.html">sys_listxattr</a></td>
+<td>0xc2</td>
+<td>const char __user *path</td>
+<td>char __user *list</td>
+<td>size_t size</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/xattr.c#L837">fs&#x2F;xattr.c:837</a></td>
+</tr>
+<tr>
+<td>195</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/llistxattr.2.html">sys_llistxattr</a></td>
+<td>0xc3</td>
+<td>const char __user *path</td>
+<td>char __user *list</td>
+<td>size_t size</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/xattr.c#L843">fs&#x2F;xattr.c:843</a></td>
+</tr>
+<tr>
+<td>196</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/flistxattr.2.html">sys_flistxattr</a></td>
+<td>0xc4</td>
+<td>int fd</td>
+<td>char __user *list</td>
+<td>size_t size</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/xattr.c#L849">fs&#x2F;xattr.c:849</a></td>
+</tr>
+<tr>
+<td>197</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/removexattr.2.html">sys_removexattr</a></td>
+<td>0xc5</td>
+<td>const char __user *path</td>
+<td>const char __user *name</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/xattr.c#L903">fs&#x2F;xattr.c:903</a></td>
+</tr>
+<tr>
+<td>198</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/lremovexattr.2.html">sys_lremovexattr</a></td>
+<td>0xc6</td>
+<td>const char __user *path</td>
+<td>const char __user *name</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/xattr.c#L909">fs&#x2F;xattr.c:909</a></td>
+</tr>
+<tr>
+<td>199</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/fremovexattr.2.html">sys_fremovexattr</a></td>
+<td>0xc7</td>
+<td>int fd</td>
+<td>const char __user *name</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/xattr.c#L915">fs&#x2F;xattr.c:915</a></td>
+</tr>
+<tr>
+<td>200</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/tkill.2.html">sys_tkill</a></td>
+<td>0xc8</td>
+<td>pid_t pid</td>
+<td>int sig</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/signal.c#L3968">kernel&#x2F;signal.c:3968</a></td>
+</tr>
+<tr>
+<td>201</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/time.2.html">sys_time</a></td>
+<td>0xc9</td>
+<td>__kernel_old_time_t __user *tloc</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/sys.c#L1005">kernel&#x2F;sys.c:1005</a></td>
+</tr>
+<tr>
+<td>202</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/futex.2.html">sys_futex</a></td>
+<td>0xca</td>
+<td>u32 __user *uaddr</td>
+<td>int op</td>
+<td>u32 val</td>
+<td>const struct __kernel_timespec __user *utime</td>
+<td>u32 __user *uaddr2</td>
+<td>u32 val3</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/futex/syscalls.c#L164">kernel&#x2F;futex&#x2F;syscalls.c:164</a></td>
+</tr>
+<tr>
+<td>203</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/sched_setaffinity.2.html">sys_sched_setaffinity</a></td>
+<td>0xcb</td>
+<td>pid_t pid</td>
+<td>unsigned int len</td>
+<td>unsigned long __user *user_mask_ptr</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/sched/core.c#L8211">kernel&#x2F;sched&#x2F;core.c:8211</a></td>
+</tr>
+<tr>
+<td>204</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/sched_getaffinity.2.html">sys_sched_getaffinity</a></td>
+<td>0xcc</td>
+<td>pid_t pid</td>
+<td>unsigned int len</td>
+<td>unsigned long __user *user_mask_ptr</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/sched/core.c#L8263">kernel&#x2F;sched&#x2F;core.c:8263</a></td>
+</tr>
+<tr>
+<td>205</td>
+<td>not implemented</td>
+<td>0xcd</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/#L">:</a></td>
+</tr>
+<tr>
+<td>206</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/io_setup.2.html">sys_io_setup</a></td>
+<td>0xce</td>
+<td>unsigned nr_reqs</td>
+<td>aio_context_t __user *ctx</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/aio.c#L1335">fs&#x2F;aio.c:1335</a></td>
+</tr>
+<tr>
+<td>207</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/io_destroy.2.html">sys_io_destroy</a></td>
+<td>0xcf</td>
+<td>aio_context_t ctx</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/aio.c#L1404">fs&#x2F;aio.c:1404</a></td>
+</tr>
+<tr>
+<td>208</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/io_getevents.2.html">sys_io_getevents</a></td>
+<td>0xd0</td>
+<td>aio_context_t ctx_id</td>
+<td>long min_nr</td>
+<td>long nr</td>
+<td>struct io_event __user *events</td>
+<td>struct __kernel_timespec __user *timeout</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/aio.c#L2218">fs&#x2F;aio.c:2218</a></td>
+</tr>
+<tr>
+<td>209</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/io_submit.2.html">sys_io_submit</a></td>
+<td>0xd1</td>
+<td>aio_context_t</td>
+<td>long</td>
+<td>struct iocb __user * __user *</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/aio.c#L2048">fs&#x2F;aio.c:2048</a></td>
+</tr>
+<tr>
+<td>210</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/io_cancel.2.html">sys_io_cancel</a></td>
+<td>0xd2</td>
+<td>aio_context_t ctx_id</td>
+<td>struct iocb __user *iocb</td>
+<td>struct io_event __user *result</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/aio.c#L2142">fs&#x2F;aio.c:2142</a></td>
+</tr>
+<tr>
+<td>211</td>
+<td>not implemented</td>
+<td>0xd3</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/#L">:</a></td>
+</tr>
+<tr>
+<td>212</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/lookup_dcookie.2.html">sys_lookup_dcookie</a></td>
+<td>0xd4</td>
+<td>u64 cookie64</td>
+<td>char __user *buf</td>
+<td>size_t len</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>[not found:](<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/not">https://elixir.bootlin.com/linux/v5.17.5/source/not</a> found#L)</td>
+</tr>
+<tr>
+<td>213</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/epoll_create.2.html">sys_epoll_create</a></td>
+<td>0xd5</td>
+<td>int size</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/eventpoll.c#L2037">fs&#x2F;eventpoll.c:2037</a></td>
+</tr>
+<tr>
+<td>214</td>
+<td>not implemented</td>
+<td>0xd6</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/#L">:</a></td>
+</tr>
+<tr>
+<td>215</td>
+<td>not implemented</td>
+<td>0xd7</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/#L">:</a></td>
+</tr>
+<tr>
+<td>216</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/remap_file_pages.2.html">sys_remap_file_pages</a></td>
+<td>0xd8</td>
+<td>unsigned long start</td>
+<td>unsigned long size</td>
+<td>unsigned long prot</td>
+<td>unsigned long pgoff</td>
+<td>unsigned long flags</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/mm/mmap.c#L2807">mm&#x2F;mmap.c:2807</a></td>
+</tr>
+<tr>
+<td>217</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/getdents64.2.html">sys_getdents64</a></td>
+<td>0xd9</td>
+<td>unsigned int fd</td>
+<td>struct linux_dirent64 __user *dirent</td>
+<td>unsigned int count</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/readdir.c#L354">fs&#x2F;readdir.c:354</a></td>
+</tr>
+<tr>
+<td>218</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/set_tid_address.2.html">sys_set_tid_address</a></td>
+<td>0xda</td>
+<td>int __user *tidptr</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/fork.c#L1769">kernel&#x2F;fork.c:1769</a></td>
+</tr>
+<tr>
+<td>219</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/restart_syscall.2.html">sys_restart_syscall</a></td>
+<td>0xdb</td>
+<td>void</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>[not found:](<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/not">https://elixir.bootlin.com/linux/v5.17.5/source/not</a> found#L)</td>
+</tr>
+<tr>
+<td>220</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/semtimedop.2.html">sys_semtimedop</a></td>
+<td>0xdc</td>
+<td>int semid</td>
+<td>struct sembuf __user *sops</td>
+<td>unsigned nsops</td>
+<td>const struct __kernel_timespec __user *timeout</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/ipc/sem.c#L2270">ipc&#x2F;sem.c:2270</a></td>
+</tr>
+<tr>
+<td>221</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/fadvise64.2.html">sys_fadvise64</a></td>
+<td>0xdd</td>
+<td>int fd</td>
+<td>loff_t offset</td>
+<td>size_t len</td>
+<td>int advice</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/mm/fadvise.c#L212">mm&#x2F;fadvise.c:212</a></td>
+</tr>
+<tr>
+<td>222</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/timer_create.2.html">sys_timer_create</a></td>
+<td>0xde</td>
+<td>clockid_t which_clock</td>
+<td>struct sigevent __user *timer_event_spec</td>
+<td>timer_t __user * created_timer_id</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/time/posix-timers.c#L577">kernel&#x2F;time&#x2F;posix-timers.c:577</a></td>
+</tr>
+<tr>
+<td>223</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/timer_settime.2.html">sys_timer_settime</a></td>
+<td>0xdf</td>
+<td>timer_t timer_id</td>
+<td>int flags</td>
+<td>const struct __kernel_itimerspec __user *new_setting</td>
+<td>struct __kernel_itimerspec __user *old_setting</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/time/posix-timers.c#L938">kernel&#x2F;time&#x2F;posix-timers.c:938</a></td>
+</tr>
+<tr>
+<td>224</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/timer_gettime.2.html">sys_timer_gettime</a></td>
+<td>0xe0</td>
+<td>timer_t timer_id</td>
+<td>struct __kernel_itimerspec __user *setting</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/time/posix-timers.c#L738">kernel&#x2F;time&#x2F;posix-timers.c:738</a></td>
+</tr>
+<tr>
+<td>225</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/timer_getoverrun.2.html">sys_timer_getoverrun</a></td>
+<td>0xe1</td>
+<td>timer_t timer_id</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/time/posix-timers.c#L777">kernel&#x2F;time&#x2F;posix-timers.c:777</a></td>
+</tr>
+<tr>
+<td>226</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/timer_delete.2.html">sys_timer_delete</a></td>
+<td>0xe2</td>
+<td>timer_t timer_id</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/time/posix-timers.c#L1004">kernel&#x2F;time&#x2F;posix-timers.c:1004</a></td>
+</tr>
+<tr>
+<td>227</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/clock_settime.2.html">sys_clock_settime</a></td>
+<td>0xe3</td>
+<td>clockid_t which_clock</td>
+<td>const struct __kernel_timespec __user *tp</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/time/posix-stubs.c#L60">kernel&#x2F;time&#x2F;posix-stubs.c:60</a></td>
+</tr>
+<tr>
+<td>228</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/clock_gettime.2.html">sys_clock_gettime</a></td>
+<td>0xe4</td>
+<td>clockid_t which_clock</td>
+<td>struct __kernel_timespec __user *tp</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/time/posix-stubs.c#L94">kernel&#x2F;time&#x2F;posix-stubs.c:94</a></td>
+</tr>
+<tr>
+<td>229</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/clock_getres.2.html">sys_clock_getres</a></td>
+<td>0xe5</td>
+<td>clockid_t which_clock</td>
+<td>struct __kernel_timespec __user *tp</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/time/posix-stubs.c#L109">kernel&#x2F;time&#x2F;posix-stubs.c:109</a></td>
+</tr>
+<tr>
+<td>230</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/clock_nanosleep.2.html">sys_clock_nanosleep</a></td>
+<td>0xe6</td>
+<td>clockid_t which_clock</td>
+<td>int flags</td>
+<td>const struct __kernel_timespec __user *rqtp</td>
+<td>struct __kernel_timespec __user *rmtp</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/time/posix-stubs.c#L128">kernel&#x2F;time&#x2F;posix-stubs.c:128</a></td>
+</tr>
+<tr>
+<td>231</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/exit_group.2.html">sys_exit_group</a></td>
+<td>0xe7</td>
+<td>int error_code</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/exit.c#L959">kernel&#x2F;exit.c:959</a></td>
+</tr>
+<tr>
+<td>232</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/epoll_wait.2.html">sys_epoll_wait</a></td>
+<td>0xe8</td>
+<td>int epfd</td>
+<td>struct epoll_event __user *events</td>
+<td>int maxevents</td>
+<td>int timeout</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/eventpoll.c#L2265">fs&#x2F;eventpoll.c:2265</a></td>
+</tr>
+<tr>
+<td>233</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/epoll_ctl.2.html">sys_epoll_ctl</a></td>
+<td>0xe9</td>
+<td>int epfd</td>
+<td>int op</td>
+<td>int fd</td>
+<td>struct epoll_event __user *event</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/eventpoll.c#L2207">fs&#x2F;eventpoll.c:2207</a></td>
+</tr>
+<tr>
+<td>234</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/tgkill.2.html">sys_tgkill</a></td>
+<td>0xea</td>
+<td>pid_t tgid</td>
+<td>pid_t pid</td>
+<td>int sig</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/signal.c#L3952">kernel&#x2F;signal.c:3952</a></td>
+</tr>
+<tr>
+<td>235</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/utimes.2.html">sys_utimes</a></td>
+<td>0xeb</td>
+<td>char __user *filename</td>
+<td>struct __kernel_old_timeval __user *utimes</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/utimes.c#L208">fs&#x2F;utimes.c:208</a></td>
+</tr>
+<tr>
+<td>236</td>
+<td>not implemented</td>
+<td>0xec</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/#L">:</a></td>
+</tr>
+<tr>
+<td>237</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/mbind.2.html">sys_mbind</a></td>
+<td>0xed</td>
+<td>unsigned long start</td>
+<td>unsigned long len</td>
+<td>unsigned long mode</td>
+<td>const unsigned long __user *nmask</td>
+<td>unsigned long maxnode</td>
+<td>unsigned flags</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/mm/mempolicy.c#L1558">mm&#x2F;mempolicy.c:1558</a></td>
+</tr>
+<tr>
+<td>238</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/set_mempolicy.2.html">sys_set_mempolicy</a></td>
+<td>0xee</td>
+<td>int mode</td>
+<td>const unsigned long __user *nmask</td>
+<td>unsigned long maxnode</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/mm/mempolicy.c#L1585">mm&#x2F;mempolicy.c:1585</a></td>
+</tr>
+<tr>
+<td>239</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/get_mempolicy.2.html">sys_get_mempolicy</a></td>
+<td>0xef</td>
+<td>int __user *policy</td>
+<td>unsigned long __user *nmask</td>
+<td>unsigned long maxnode</td>
+<td>unsigned long addr</td>
+<td>unsigned long flags</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/mm/mempolicy.c#L1717">mm&#x2F;mempolicy.c:1717</a></td>
+</tr>
+<tr>
+<td>240</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/mq_open.2.html">sys_mq_open</a></td>
+<td>0xf0</td>
+<td>const char __user *name</td>
+<td>int oflag</td>
+<td>umode_t mode</td>
+<td>struct mq_attr __user *attr</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/ipc/mqueue.c#L942">ipc&#x2F;mqueue.c:942</a></td>
+</tr>
+<tr>
+<td>241</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/mq_unlink.2.html">sys_mq_unlink</a></td>
+<td>0xf1</td>
+<td>const char __user *name</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/ipc/mqueue.c#L952">ipc&#x2F;mqueue.c:952</a></td>
+</tr>
+<tr>
+<td>242</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/mq_timedsend.2.html">sys_mq_timedsend</a></td>
+<td>0xf2</td>
+<td>mqd_t mqdes</td>
+<td>const char __user *msg_ptr</td>
+<td>size_t msg_len</td>
+<td>unsigned int msg_prio</td>
+<td>const struct __kernel_timespec __user *abs_timeout</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/ipc/mqueue.c#L1284">ipc&#x2F;mqueue.c:1284</a></td>
+</tr>
+<tr>
+<td>243</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/mq_timedreceive.2.html">sys_mq_timedreceive</a></td>
+<td>0xf3</td>
+<td>mqd_t mqdes</td>
+<td>char __user *msg_ptr</td>
+<td>size_t msg_len</td>
+<td>unsigned int __user *msg_prio</td>
+<td>const struct __kernel_timespec __user *abs_timeout</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/ipc/mqueue.c#L1298">ipc&#x2F;mqueue.c:1298</a></td>
+</tr>
+<tr>
+<td>244</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/mq_notify.2.html">sys_mq_notify</a></td>
+<td>0xf4</td>
+<td>mqd_t mqdes</td>
+<td>const struct sigevent __user *notification</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/ipc/mqueue.c#L1440">ipc&#x2F;mqueue.c:1440</a></td>
+</tr>
+<tr>
+<td>245</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/mq_getsetattr.2.html">sys_mq_getsetattr</a></td>
+<td>0xf5</td>
+<td>mqd_t mqdes</td>
+<td>const struct mq_attr __user *mqstat</td>
+<td>struct mq_attr __user *omqstat</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/ipc/mqueue.c#L1496">ipc&#x2F;mqueue.c:1496</a></td>
+</tr>
+<tr>
+<td>246</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/kexec_load.2.html">sys_kexec_load</a></td>
+<td>0xf6</td>
+<td>unsigned long entry</td>
+<td>unsigned long nr_segments</td>
+<td>struct kexec_segment __user *segments</td>
+<td>unsigned long flags</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/kexec.c#L228">kernel&#x2F;kexec.c:228</a></td>
+</tr>
+<tr>
+<td>247</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/waitid.2.html">sys_waitid</a></td>
+<td>0xf7</td>
+<td>int which</td>
+<td>pid_t pid</td>
+<td>struct siginfo __user *infop</td>
+<td>int options</td>
+<td>struct rusage __user *ru</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/exit.c#L1638">kernel&#x2F;exit.c:1638</a></td>
+</tr>
+<tr>
+<td>248</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/add_key.2.html">sys_add_key</a></td>
+<td>0xf8</td>
+<td>const char __user *_type</td>
+<td>const char __user *_description</td>
+<td>const void __user *_payload</td>
+<td>size_t plen</td>
+<td>key_serial_t destringid</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/security/keys/keyctl.c#L74">security&#x2F;keys&#x2F;keyctl.c:74</a></td>
+</tr>
+<tr>
+<td>249</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/request_key.2.html">sys_request_key</a></td>
+<td>0xf9</td>
+<td>const char __user *_type</td>
+<td>const char __user *_description</td>
+<td>const char __user *_callout_info</td>
+<td>key_serial_t destringid</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/security/keys/keyctl.c#L167">security&#x2F;keys&#x2F;keyctl.c:167</a></td>
+</tr>
+<tr>
+<td>250</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/keyctl.2.html">sys_keyctl</a></td>
+<td>0xfa</td>
+<td>int cmd</td>
+<td>unsigned long arg2</td>
+<td>unsigned long arg3</td>
+<td>unsigned long arg4</td>
+<td>unsigned long arg5</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/security/keys/keyctl.c#L1869">security&#x2F;keys&#x2F;keyctl.c:1869</a></td>
+</tr>
+<tr>
+<td>251</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/ioprio_set.2.html">sys_ioprio_set</a></td>
+<td>0xfb</td>
+<td>int which</td>
+<td>int who</td>
+<td>int ioprio</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/block/ioprio.c#L68">block&#x2F;ioprio.c:68</a></td>
+</tr>
+<tr>
+<td>252</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/ioprio_get.2.html">sys_ioprio_get</a></td>
+<td>0xfc</td>
+<td>int which</td>
+<td>int who</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/block/ioprio.c#L209">block&#x2F;ioprio.c:209</a></td>
+</tr>
+<tr>
+<td>253</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/inotify_init.2.html">sys_inotify_init</a></td>
+<td>0xfd</td>
+<td>void</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/notify/inotify/inotify_user.c#L720">fs&#x2F;notify&#x2F;inotify&#x2F;inotify_user.c:720</a></td>
+</tr>
+<tr>
+<td>254</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/inotify_add_watch.2.html">sys_inotify_add_watch</a></td>
+<td>0xfe</td>
+<td>int fd</td>
+<td>const char __user *path</td>
+<td>u32 mask</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/notify/inotify/inotify_user.c#L730">fs&#x2F;notify&#x2F;inotify&#x2F;inotify_user.c:730</a></td>
+</tr>
+<tr>
+<td>255</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/inotify_rm_watch.2.html">sys_inotify_rm_watch</a></td>
+<td>0xff</td>
+<td>int fd</td>
+<td>__s32 wd</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/notify/inotify/inotify_user.c#L794">fs&#x2F;notify&#x2F;inotify&#x2F;inotify_user.c:794</a></td>
+</tr>
+<tr>
+<td>256</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/migrate_pages.2.html">sys_migrate_pages</a></td>
+<td>0x100</td>
+<td>pid_t pid</td>
+<td>unsigned long maxnode</td>
+<td>const unsigned long __user *from</td>
+<td>const unsigned long __user *to</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/mm/mempolicy.c#L1679">mm&#x2F;mempolicy.c:1679</a></td>
+</tr>
+<tr>
+<td>257</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/openat.2.html">sys_openat</a></td>
+<td>0x101</td>
+<td>int dfd</td>
+<td>const char __user *filename</td>
+<td>int flags</td>
+<td>umode_t mode</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/open.c#L1337">fs&#x2F;open.c:1337</a></td>
+</tr>
+<tr>
+<td>258</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/mkdirat.2.html">sys_mkdirat</a></td>
+<td>0x102</td>
+<td>int dfd</td>
+<td>const char __user * pathname</td>
+<td>umode_t mode</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/namei.c#L4074">fs&#x2F;namei.c:4074</a></td>
+</tr>
+<tr>
+<td>259</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/mknodat.2.html">sys_mknodat</a></td>
+<td>0x103</td>
+<td>int dfd</td>
+<td>const char __user * filename</td>
+<td>umode_t mode</td>
+<td>unsigned dev</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/namei.c#L3990">fs&#x2F;namei.c:3990</a></td>
+</tr>
+<tr>
+<td>260</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/fchownat.2.html">sys_fchownat</a></td>
+<td>0x104</td>
+<td>int dfd</td>
+<td>const char __user *filename</td>
+<td>uid_t user</td>
+<td>gid_t group</td>
+<td>int flag</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/open.c#L779">fs&#x2F;open.c:779</a></td>
+</tr>
+<tr>
+<td>261</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/futimesat.2.html">sys_futimesat</a></td>
+<td>0x105</td>
+<td>int dfd</td>
+<td>const char __user *filename</td>
+<td>struct __kernel_old_timeval __user *utimes</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/utimes.c#L202">fs&#x2F;utimes.c:202</a></td>
+</tr>
+<tr>
+<td>262</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/newfstatat.2.html">sys_newfstatat</a></td>
+<td>0x106</td>
+<td>int dfd</td>
+<td>const char __user *filename</td>
+<td>struct stat __user *statbuf</td>
+<td>int flag</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/stat.c#L431">fs&#x2F;stat.c:431</a></td>
+</tr>
+<tr>
+<td>263</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/unlinkat.2.html">sys_unlinkat</a></td>
+<td>0x107</td>
+<td>int dfd</td>
+<td>const char __user * pathname</td>
+<td>int flag</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/namei.c#L4356">fs&#x2F;namei.c:4356</a></td>
+</tr>
+<tr>
+<td>264</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/renameat.2.html">sys_renameat</a></td>
+<td>0x108</td>
+<td>int olddfd</td>
+<td>const char __user * oldname</td>
+<td>int newdfd</td>
+<td>const char __user * newname</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/namei.c#L4967">fs&#x2F;namei.c:4967</a></td>
+</tr>
+<tr>
+<td>265</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/linkat.2.html">sys_linkat</a></td>
+<td>0x109</td>
+<td>int olddfd</td>
+<td>const char __user *oldname</td>
+<td>int newdfd</td>
+<td>const char __user *newname</td>
+<td>int flags</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/namei.c#L4625">fs&#x2F;namei.c:4625</a></td>
+</tr>
+<tr>
+<td>266</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/symlinkat.2.html">sys_symlinkat</a></td>
+<td>0x10a</td>
+<td>const char __user * oldname</td>
+<td>int newdfd</td>
+<td>const char __user * newname</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/namei.c#L4444">fs&#x2F;namei.c:4444</a></td>
+</tr>
+<tr>
+<td>267</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/readlinkat.2.html">sys_readlinkat</a></td>
+<td>0x10b</td>
+<td>int dfd</td>
+<td>const char __user *path</td>
+<td>char __user *buf</td>
+<td>int bufsiz</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/stat.c#L492">fs&#x2F;stat.c:492</a></td>
+</tr>
+<tr>
+<td>268</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/fchmodat.2.html">sys_fchmodat</a></td>
+<td>0x10c</td>
+<td>int dfd</td>
+<td>const char __user * filename</td>
+<td>umode_t mode</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/open.c#L655">fs&#x2F;open.c:655</a></td>
+</tr>
+<tr>
+<td>269</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/faccessat.2.html">sys_faccessat</a></td>
+<td>0x10d</td>
+<td>int dfd</td>
+<td>const char __user *filename</td>
+<td>int mode</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/open.c#L492">fs&#x2F;open.c:492</a></td>
+</tr>
+<tr>
+<td>270</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/pselect6.2.html">sys_pselect6</a></td>
+<td>0x10e</td>
+<td>int</td>
+<td>fd_set __user *</td>
+<td>fd_set __user *</td>
+<td>fd_set __user *</td>
+<td>struct __kernel_timespec __user *</td>
+<td>void __user *</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/select.c#L795">fs&#x2F;select.c:795</a></td>
+</tr>
+<tr>
+<td>271</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/ppoll.2.html">sys_ppoll</a></td>
+<td>0x10f</td>
+<td>struct pollfd __user *</td>
+<td>unsigned int</td>
+<td>struct __kernel_timespec __user *</td>
+<td>const sigset_t __user *</td>
+<td>size_t</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/select.c#L1101">fs&#x2F;select.c:1101</a></td>
+</tr>
+<tr>
+<td>272</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/unshare.2.html">sys_unshare</a></td>
+<td>0x110</td>
+<td>unsigned long unshare_flags</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/fork.c#L3262">kernel&#x2F;fork.c:3262</a></td>
+</tr>
+<tr>
+<td>273</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/set_robust_list.2.html">sys_set_robust_list</a></td>
+<td>0x111</td>
+<td>struct robust_list_head __user *head</td>
+<td>size_t len</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/futex/syscalls.c#L29">kernel&#x2F;futex&#x2F;syscalls.c:29</a></td>
+</tr>
+<tr>
+<td>274</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/get_robust_list.2.html">sys_get_robust_list</a></td>
+<td>0x112</td>
+<td>int pid</td>
+<td>struct robust_list_head __user * __user *head_ptr</td>
+<td>size_t __user *len_ptr</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/futex/syscalls.c#L49">kernel&#x2F;futex&#x2F;syscalls.c:49</a></td>
+</tr>
+<tr>
+<td>275</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/splice.2.html">sys_splice</a></td>
+<td>0x113</td>
+<td>int fd_in</td>
+<td>loff_t __user *off_in</td>
+<td>int fd_out</td>
+<td>loff_t __user *off_out</td>
+<td>size_t len</td>
+<td>unsigned int flags</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/splice.c#L1328">fs&#x2F;splice.c:1328</a></td>
+</tr>
+<tr>
+<td>276</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/tee.2.html">sys_tee</a></td>
+<td>0x114</td>
+<td>int fdin</td>
+<td>int fdout</td>
+<td>size_t len</td>
+<td>unsigned int flags</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/splice.c#L1694">fs&#x2F;splice.c:1694</a></td>
+</tr>
+<tr>
+<td>277</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/sync_file_range.2.html">sys_sync_file_range</a></td>
+<td>0x115</td>
+<td>int fd</td>
+<td>loff_t offset</td>
+<td>loff_t nbytes</td>
+<td>unsigned int flags</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/sync.c#L370">fs&#x2F;sync.c:370</a></td>
+</tr>
+<tr>
+<td>278</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/vmsplice.2.html">sys_vmsplice</a></td>
+<td>0x116</td>
+<td>int fd</td>
+<td>const struct iovec __user *iov</td>
+<td>unsigned long nr_segs</td>
+<td>unsigned int flags</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/splice.c#L1292">fs&#x2F;splice.c:1292</a></td>
+</tr>
+<tr>
+<td>279</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/move_pages.2.html">sys_move_pages</a></td>
+<td>0x117</td>
+<td>pid_t pid</td>
+<td>unsigned long nr_pages</td>
+<td>const void __user * __user *pages</td>
+<td>const int __user *nodes</td>
+<td>int __user *status</td>
+<td>int flags</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/mm/migrate.c#L2063">mm&#x2F;migrate.c:2063</a></td>
+</tr>
+<tr>
+<td>280</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/utimensat.2.html">sys_utimensat</a></td>
+<td>0x118</td>
+<td>int dfd</td>
+<td>const char __user *filename</td>
+<td>struct __kernel_timespec __user *utimes</td>
+<td>int flags</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/utimes.c#L147">fs&#x2F;utimes.c:147</a></td>
+</tr>
+<tr>
+<td>281</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/epoll_pwait.2.html">sys_epoll_pwait</a></td>
+<td>0x119</td>
+<td>int epfd</td>
+<td>struct epoll_event __user *events</td>
+<td>int maxevents</td>
+<td>int timeout</td>
+<td>const sigset_t __user *sigmask</td>
+<td>size_t sigsetsize</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/eventpoll.c#L2299">fs&#x2F;eventpoll.c:2299</a></td>
+</tr>
+<tr>
+<td>282</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/signalfd.2.html">sys_signalfd</a></td>
+<td>0x11a</td>
+<td>int ufd</td>
+<td>sigset_t __user *user_mask</td>
+<td>size_t sizemask</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/signalfd.c#L314">fs&#x2F;signalfd.c:314</a></td>
+</tr>
+<tr>
+<td>283</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/timerfd_create.2.html">sys_timerfd_create</a></td>
+<td>0x11b</td>
+<td>int clockid</td>
+<td>int flags</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/timerfd.c#L406">fs&#x2F;timerfd.c:406</a></td>
+</tr>
+<tr>
+<td>284</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/eventfd.2.html">sys_eventfd</a></td>
+<td>0x11c</td>
+<td>unsigned int count</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/eventfd.c#L463">fs&#x2F;eventfd.c:463</a></td>
+</tr>
+<tr>
+<td>285</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/fallocate.2.html">sys_fallocate</a></td>
+<td>0x11d</td>
+<td>int fd</td>
+<td>int mode</td>
+<td>loff_t offset</td>
+<td>loff_t len</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/open.c#L352">fs&#x2F;open.c:352</a></td>
+</tr>
+<tr>
+<td>286</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/timerfd_settime.2.html">sys_timerfd_settime</a></td>
+<td>0x11e</td>
+<td>int ufd</td>
+<td>int flags</td>
+<td>const struct __kernel_itimerspec __user *utmr</td>
+<td>struct __kernel_itimerspec __user *otmr</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/timerfd.c#L558">fs&#x2F;timerfd.c:558</a></td>
+</tr>
+<tr>
+<td>287</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/timerfd_gettime.2.html">sys_timerfd_gettime</a></td>
+<td>0x11f</td>
+<td>int ufd</td>
+<td>struct __kernel_itimerspec __user *otmr</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/timerfd.c#L576">fs&#x2F;timerfd.c:576</a></td>
+</tr>
+<tr>
+<td>288</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/accept4.2.html">sys_accept4</a></td>
+<td>0x120</td>
+<td>int</td>
+<td>struct sockaddr __user *</td>
+<td>int __user *</td>
+<td>int</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/net/socket.c#L1935">net&#x2F;socket.c:1935</a></td>
+</tr>
+<tr>
+<td>289</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/signalfd4.2.html">sys_signalfd4</a></td>
+<td>0x121</td>
+<td>int ufd</td>
+<td>sigset_t __user *user_mask</td>
+<td>size_t sizemask</td>
+<td>int flags</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/signalfd.c#L302">fs&#x2F;signalfd.c:302</a></td>
+</tr>
+<tr>
+<td>290</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/eventfd2.2.html">sys_eventfd2</a></td>
+<td>0x122</td>
+<td>unsigned int count</td>
+<td>int flags</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/eventfd.c#L458">fs&#x2F;eventfd.c:458</a></td>
+</tr>
+<tr>
+<td>291</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/epoll_create1.2.html">sys_epoll_create1</a></td>
+<td>0x123</td>
+<td>int flags</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/eventpoll.c#L2032">fs&#x2F;eventpoll.c:2032</a></td>
+</tr>
+<tr>
+<td>292</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/dup3.2.html">sys_dup3</a></td>
+<td>0x124</td>
+<td>unsigned int oldfd</td>
+<td>unsigned int newfd</td>
+<td>int flags</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/file.c#L1249">fs&#x2F;file.c:1249</a></td>
+</tr>
+<tr>
+<td>293</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/pipe2.2.html">sys_pipe2</a></td>
+<td>0x125</td>
+<td>int __user *fildes</td>
+<td>int flags</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/pipe.c#L1026">fs&#x2F;pipe.c:1026</a></td>
+</tr>
+<tr>
+<td>294</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/inotify_init1.2.html">sys_inotify_init1</a></td>
+<td>0x126</td>
+<td>int flags</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/notify/inotify/inotify_user.c#L720">fs&#x2F;notify&#x2F;inotify&#x2F;inotify_user.c:720</a></td>
+</tr>
+<tr>
+<td>295</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/preadv.2.html">sys_preadv</a></td>
+<td>0x127</td>
+<td>unsigned long fd</td>
+<td>const struct iovec __user *vec</td>
+<td>unsigned long vlen</td>
+<td>unsigned long pos_l</td>
+<td>unsigned long pos_h</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/read_write.c#L1053">fs&#x2F;read_write.c:1053</a></td>
+</tr>
+<tr>
+<td>296</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/pwritev.2.html">sys_pwritev</a></td>
+<td>0x128</td>
+<td>unsigned long fd</td>
+<td>const struct iovec __user *vec</td>
+<td>unsigned long vlen</td>
+<td>unsigned long pos_l</td>
+<td>unsigned long pos_h</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/read_write.c#L1073">fs&#x2F;read_write.c:1073</a></td>
+</tr>
+<tr>
+<td>297</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/rt_tgsigqueueinfo.2.html">sys_rt_tgsigqueueinfo</a></td>
+<td>0x129</td>
+<td>pid_t tgid</td>
+<td>pid_t pid</td>
+<td>int sig</td>
+<td>siginfo_t __user *uinfo</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/signal.c#L4036">kernel&#x2F;signal.c:4036</a></td>
+</tr>
+<tr>
+<td>298</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/perf_event_open.2.html">sys_perf_event_open</a></td>
+<td>0x12a</td>
+<td>struct perf_event_attr __user *attr_uptr</td>
+<td>pid_t pid</td>
+<td>int cpu</td>
+<td>int group_fd</td>
+<td>unsigned long flags</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/events/core.c#L12212">kernel&#x2F;events&#x2F;core.c:12212</a></td>
+</tr>
+<tr>
+<td>299</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/recvmmsg.2.html">sys_recvmmsg</a></td>
+<td>0x12b</td>
+<td>int fd</td>
+<td>struct mmsghdr __user *msg</td>
+<td>unsigned int vlen</td>
+<td>unsigned flags</td>
+<td>struct __kernel_timespec __user *timeout</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/net/socket.c#L2932">net&#x2F;socket.c:2932</a></td>
+</tr>
+<tr>
+<td>300</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/fanotify_init.2.html">sys_fanotify_init</a></td>
+<td>0x12c</td>
+<td>unsigned int flags</td>
+<td>unsigned int event_f_flags</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/notify/fanotify/fanotify_user.c#L1344">fs&#x2F;notify&#x2F;fanotify&#x2F;fanotify_user.c:1344</a></td>
+</tr>
+<tr>
+<td>301</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/fanotify_mark.2.html">sys_fanotify_mark</a></td>
+<td>0x12d</td>
+<td>int fanotify_fd</td>
+<td>unsigned int flags</td>
+<td>u64 mask</td>
+<td>int fd</td>
+<td>const char __user *pathname</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/notify/fanotify/fanotify_user.c#L1822">fs&#x2F;notify&#x2F;fanotify&#x2F;fanotify_user.c:1822</a></td>
+</tr>
+<tr>
+<td>302</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/prlimit64.2.html">sys_prlimit64</a></td>
+<td>0x12e</td>
+<td>pid_t pid</td>
+<td>unsigned int resource</td>
+<td>const struct rlimit64 __user *new_rlim</td>
+<td>struct rlimit64 __user *old_rlim</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/sys.c#L1664">kernel&#x2F;sys.c:1664</a></td>
+</tr>
+<tr>
+<td>303</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/name_to_handle_at.2.html">sys_name_to_handle_at</a></td>
+<td>0x12f</td>
+<td>int dfd</td>
+<td>const char __user *name</td>
+<td>struct file_handle __user *handle</td>
+<td>int __user *mnt_id</td>
+<td>int flag</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/fhandle.c#L93">fs&#x2F;fhandle.c:93</a></td>
+</tr>
+<tr>
+<td>304</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/open_by_handle_at.2.html">sys_open_by_handle_at</a></td>
+<td>0x130</td>
+<td>int mountdirfd</td>
+<td>struct file_handle __user *handle</td>
+<td>int flags</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/fhandle.c#L256">fs&#x2F;fhandle.c:256</a></td>
+</tr>
+<tr>
+<td>305</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/clock_adjtime.2.html">sys_clock_adjtime</a></td>
+<td>0x131</td>
+<td>clockid_t which_clock</td>
+<td>struct __kernel_timex __user *tx</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/time/posix-timers.c#L1121">kernel&#x2F;time&#x2F;posix-timers.c:1121</a></td>
+</tr>
+<tr>
+<td>306</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/syncfs.2.html">sys_syncfs</a></td>
+<td>0x132</td>
+<td>int fd</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/sync.c#L149">fs&#x2F;sync.c:149</a></td>
+</tr>
+<tr>
+<td>307</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/sendmmsg.2.html">sys_sendmmsg</a></td>
+<td>0x133</td>
+<td>int fd</td>
+<td>struct mmsghdr __user *msg</td>
+<td>unsigned int vlen</td>
+<td>unsigned flags</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/net/socket.c#L2648">net&#x2F;socket.c:2648</a></td>
+</tr>
+<tr>
+<td>308</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/setns.2.html">sys_setns</a></td>
+<td>0x134</td>
+<td>int fd</td>
+<td>int nstype</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/nsproxy.c#L527">kernel&#x2F;nsproxy.c:527</a></td>
+</tr>
+<tr>
+<td>309</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/getcpu.2.html">sys_getcpu</a></td>
+<td>0x135</td>
+<td>unsigned __user *cpu</td>
+<td>unsigned __user *node</td>
+<td>struct getcpu_cache __user *cache</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/sys.c#L2636">kernel&#x2F;sys.c:2636</a></td>
+</tr>
+<tr>
+<td>310</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/process_vm_readv.2.html">sys_process_vm_readv</a></td>
+<td>0x136</td>
+<td>pid_t pid</td>
+<td>const struct iovec __user *lvec</td>
+<td>unsigned long liovcnt</td>
+<td>const struct iovec __user *rvec</td>
+<td>unsigned long riovcnt</td>
+<td>unsigned long flags</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/mm/process_vm_access.c#L291">mm&#x2F;process_vm_access.c:291</a></td>
+</tr>
+<tr>
+<td>311</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/process_vm_writev.2.html">sys_process_vm_writev</a></td>
+<td>0x137</td>
+<td>pid_t pid</td>
+<td>const struct iovec __user *lvec</td>
+<td>unsigned long liovcnt</td>
+<td>const struct iovec __user *rvec</td>
+<td>unsigned long riovcnt</td>
+<td>unsigned long flags</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/mm/process_vm_access.c#L298">mm&#x2F;process_vm_access.c:298</a></td>
+</tr>
+<tr>
+<td>312</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/kcmp.2.html">sys_kcmp</a></td>
+<td>0x138</td>
+<td>pid_t pid1</td>
+<td>pid_t pid2</td>
+<td>int type</td>
+<td>unsigned long idx1</td>
+<td>unsigned long idx2</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/kcmp.c#L135">kernel&#x2F;kcmp.c:135</a></td>
+</tr>
+<tr>
+<td>313</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/finit_module.2.html">sys_finit_module</a></td>
+<td>0x139</td>
+<td>int fd</td>
+<td>const char __user *uargs</td>
+<td>int flags</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/module/main.c#L2916">kernel&#x2F;module&#x2F;main.c:2916</a></td>
+</tr>
+<tr>
+<td>314</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/sched_setattr.2.html">sys_sched_setattr</a></td>
+<td>0x13a</td>
+<td>pid_t pid</td>
+<td>struct sched_attr __user *attr</td>
+<td>unsigned int flags</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/sched/core.c#L7883">kernel&#x2F;sched&#x2F;core.c:7883</a></td>
+</tr>
+<tr>
+<td>315</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/sched_getattr.2.html">sys_sched_getattr</a></td>
+<td>0x13b</td>
+<td>pid_t pid</td>
+<td>struct sched_attr __user *attr</td>
+<td>unsigned int size</td>
+<td>unsigned int flags</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/sched/core.c#L8036">kernel&#x2F;sched&#x2F;core.c:8036</a></td>
+</tr>
+<tr>
+<td>316</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/renameat2.2.html">sys_renameat2</a></td>
+<td>0x13c</td>
+<td>int olddfd</td>
+<td>const char __user *oldname</td>
+<td>int newdfd</td>
+<td>const char __user *newname</td>
+<td>unsigned int flags</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/namei.c#L4960">fs&#x2F;namei.c:4960</a></td>
+</tr>
+<tr>
+<td>317</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/seccomp.2.html">sys_seccomp</a></td>
+<td>0x13d</td>
+<td>unsigned int op</td>
+<td>unsigned int flags</td>
+<td>void __user *uargs</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/seccomp.c#L2007">kernel&#x2F;seccomp.c:2007</a></td>
+</tr>
+<tr>
+<td>318</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/getrandom.2.html">sys_getrandom</a></td>
+<td>0x13e</td>
+<td>char __user *buf</td>
+<td>size_t count</td>
+<td>unsigned int flags</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/drivers/char/random.c#L1270">drivers&#x2F;char&#x2F;random.c:1270</a></td>
+</tr>
+<tr>
+<td>319</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/memfd_create.2.html">sys_memfd_create</a></td>
+<td>0x13f</td>
+<td>const char __user *uname_ptr</td>
+<td>unsigned int flags</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/mm/memfd.c#L266">mm&#x2F;memfd.c:266</a></td>
+</tr>
+<tr>
+<td>320</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/kexec_file_load.2.html">sys_kexec_file_load</a></td>
+<td>0x140</td>
+<td>int kernel_fd</td>
+<td>int initrd_fd</td>
+<td>unsigned long cmdline_len</td>
+<td>const char __user *cmdline_ptr</td>
+<td>unsigned long flags</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/kexec_file.c#L325">kernel&#x2F;kexec_file.c:325</a></td>
+</tr>
+<tr>
+<td>321</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/bpf.2.html">sys_bpf</a></td>
+<td>0x141</td>
+<td>int cmd</td>
+<td>union bpf_attr *attr</td>
+<td>unsigned int size</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/bpf/syscall.c#L5067">kernel&#x2F;bpf&#x2F;syscall.c:5067</a></td>
+</tr>
+<tr>
+<td>322</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/execveat.2.html">sys_execveat</a></td>
+<td>0x142</td>
+<td>int dfd</td>
+<td>const char __user *filename</td>
+<td>const char __user *const __user *argv</td>
+<td>const char __user *const __user *envp</td>
+<td>int flags</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/exec.c#L2095">fs&#x2F;exec.c:2095</a></td>
+</tr>
+<tr>
+<td>323</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/userfaultfd.2.html">sys_userfaultfd</a></td>
+<td>0x143</td>
+<td>int flags</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/userfaultfd.c#L2134">fs&#x2F;userfaultfd.c:2134</a></td>
+</tr>
+<tr>
+<td>324</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/membarrier.2.html">sys_membarrier</a></td>
+<td>0x144</td>
+<td>int cmd</td>
+<td>unsigned int flags</td>
+<td>int cpu_id</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/sched/membarrier.c#L579">kernel&#x2F;sched&#x2F;membarrier.c:579</a></td>
+</tr>
+<tr>
+<td>325</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/mlock2.2.html">sys_mlock2</a></td>
+<td>0x145</td>
+<td>unsigned long start</td>
+<td>size_t len</td>
+<td>int flags</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/mm/mlock.c#L619">mm&#x2F;mlock.c:619</a></td>
+</tr>
+<tr>
+<td>326</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/copy_file_range.2.html">sys_copy_file_range</a></td>
+<td>0x146</td>
+<td>int fd_in</td>
+<td>loff_t __user *off_in</td>
+<td>int fd_out</td>
+<td>loff_t __user *off_out</td>
+<td>size_t len</td>
+<td>unsigned int flags</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/read_write.c#L1559">fs&#x2F;read_write.c:1559</a></td>
+</tr>
+<tr>
+<td>327</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/preadv2.2.html">sys_preadv2</a></td>
+<td>0x147</td>
+<td>unsigned long fd</td>
+<td>const struct iovec __user *vec</td>
+<td>unsigned long vlen</td>
+<td>unsigned long pos_l</td>
+<td>unsigned long pos_h</td>
+<td>rwf_t flags</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/read_write.c#L1061">fs&#x2F;read_write.c:1061</a></td>
+</tr>
+<tr>
+<td>328</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/pwritev2.2.html">sys_pwritev2</a></td>
+<td>0x148</td>
+<td>unsigned long fd</td>
+<td>const struct iovec __user *vec</td>
+<td>unsigned long vlen</td>
+<td>unsigned long pos_l</td>
+<td>unsigned long pos_h</td>
+<td>rwf_t flags</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/read_write.c#L1081">fs&#x2F;read_write.c:1081</a></td>
+</tr>
+<tr>
+<td>329</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/pkey_mprotect.2.html">sys_pkey_mprotect</a></td>
+<td>0x149</td>
+<td>unsigned long start</td>
+<td>size_t len</td>
+<td>unsigned long prot</td>
+<td>int pkey</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/mm/mprotect.c#L824">mm&#x2F;mprotect.c:824</a></td>
+</tr>
+<tr>
+<td>330</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/pkey_alloc.2.html">sys_pkey_alloc</a></td>
+<td>0x14a</td>
+<td>unsigned long flags</td>
+<td>unsigned long init_val</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/mm/mprotect.c#L830">mm&#x2F;mprotect.c:830</a></td>
+</tr>
+<tr>
+<td>331</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/pkey_free.2.html">sys_pkey_free</a></td>
+<td>0x14b</td>
+<td>int pkey</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/mm/mprotect.c#L860">mm&#x2F;mprotect.c:860</a></td>
+</tr>
+<tr>
+<td>332</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/statx.2.html">sys_statx</a></td>
+<td>0x14c</td>
+<td>int dfd</td>
+<td>const char __user *path</td>
+<td>unsigned flags</td>
+<td>unsigned mask</td>
+<td>struct statx __user *buffer</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/stat.c#L661">fs&#x2F;stat.c:661</a></td>
+</tr>
+<tr>
+<td>333</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/io_pgetevents.2.html">sys_io_pgetevents</a></td>
+<td>0x14d</td>
+<td>aio_context_t ctx_id</td>
+<td>long min_nr</td>
+<td>long nr</td>
+<td>struct io_event __user *events</td>
+<td>struct __kernel_timespec __user *timeout</td>
+<td>const struct __aio_sigset *sig</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/aio.c#L2243">fs&#x2F;aio.c:2243</a></td>
+</tr>
+<tr>
+<td>334</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/rseq.2.html">sys_rseq</a></td>
+<td>0x14e</td>
+<td>struct rseq __user *rseq</td>
+<td>uint32_t rseq_len</td>
+<td>int flags</td>
+<td>uint32_t sig</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/rseq.c#L336">kernel&#x2F;rseq.c:336</a></td>
+</tr>
+<tr>
+<td>335</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/pidfd_send_signal.2.html">sys_pidfd_send_signal</a></td>
+<td>0x14f</td>
+<td>int pidfd</td>
+<td>int sig</td>
+<td>siginfo_t __user *info</td>
+<td>unsigned int flags</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/signal.c#L3846">kernel&#x2F;signal.c:3846</a></td>
+</tr>
+<tr>
+<td>336</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/io_uring_setup.2.html">sys_io_uring_setup</a></td>
+<td>0x150</td>
+<td>u32 entries</td>
+<td>struct io_uring_params __user *p</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/io_uring/io_uring.c#L3604">io_uring&#x2F;io_uring.c:3604</a></td>
+</tr>
+<tr>
+<td>337</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/io_uring_enter.2.html">sys_io_uring_enter</a></td>
+<td>0x151</td>
+<td>unsigned int fd</td>
+<td>u32 to_submit</td>
+<td>u32 min_complete</td>
+<td>u32 flags</td>
+<td>const void __user *argp</td>
+<td>size_t argsz</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/io_uring/io_uring.c#L3154">io_uring&#x2F;io_uring.c:3154</a></td>
+</tr>
+<tr>
+<td>338</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/io_uring_register.2.html">sys_io_uring_register</a></td>
+<td>0x152</td>
+<td>unsigned int fd</td>
+<td>unsigned int op</td>
+<td>void __user *arg</td>
+<td>unsigned int nr_args</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/io_uring/io_uring.c#L4050">io_uring&#x2F;io_uring.c:4050</a></td>
+</tr>
+<tr>
+<td>339</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/open_tree.2.html">sys_open_tree</a></td>
+<td>0x153</td>
+<td>int dfd</td>
+<td>const char __user *path</td>
+<td>unsigned flags</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/namespace.c#L2504">fs&#x2F;namespace.c:2504</a></td>
+</tr>
+<tr>
+<td>340</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/move_mount.2.html">sys_move_mount</a></td>
+<td>0x154</td>
+<td>int from_dfd</td>
+<td>const char __user *from_path</td>
+<td>int to_dfd</td>
+<td>const char __user *to_path</td>
+<td>unsigned int ms_flags</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/namespace.c#L3765">fs&#x2F;namespace.c:3765</a></td>
+</tr>
+<tr>
+<td>341</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/fsopen.2.html">sys_fsopen</a></td>
+<td>0x155</td>
+<td>const char __user *fs_name</td>
+<td>unsigned int flags</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/fsopen.c#L115">fs&#x2F;fsopen.c:115</a></td>
+</tr>
+<tr>
+<td>342</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/fsconfig.2.html">sys_fsconfig</a></td>
+<td>0x156</td>
+<td>int fs_fd</td>
+<td>unsigned int cmd</td>
+<td>const char __user *key</td>
+<td>const void __user *value</td>
+<td>int aux</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/fsopen.c#L314">fs&#x2F;fsopen.c:314</a></td>
+</tr>
+<tr>
+<td>343</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/fsmount.2.html">sys_fsmount</a></td>
+<td>0x157</td>
+<td>int fs_fd</td>
+<td>unsigned int flags</td>
+<td>unsigned int ms_flags</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/namespace.c#L3636">fs&#x2F;namespace.c:3636</a></td>
+</tr>
+<tr>
+<td>344</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/fspick.2.html">sys_fspick</a></td>
+<td>0x158</td>
+<td>int dfd</td>
+<td>const char __user *path</td>
+<td>unsigned int flags</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/fsopen.c#L158">fs&#x2F;fsopen.c:158</a></td>
+</tr>
+<tr>
+<td>345</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/pidfd_open.2.html">sys_pidfd_open</a></td>
+<td>0x159</td>
+<td>pid_t pid</td>
+<td>unsigned int flags</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/pid.c#L629">kernel&#x2F;pid.c:629</a></td>
+</tr>
+<tr>
+<td>346</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/clone3.2.html">sys_clone3</a></td>
+<td>0x15a</td>
+<td>struct clone_args __user *uargs</td>
+<td>size_t size</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/fork.c#L2959">kernel&#x2F;fork.c:2959</a></td>
+</tr>
+<tr>
+<td>347</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/close_range.2.html">sys_close_range</a></td>
+<td>0x15b</td>
+<td>unsigned int fd</td>
+<td>unsigned int max_fd</td>
+<td>unsigned int flags</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/open.c#L1462">fs&#x2F;open.c:1462</a></td>
+</tr>
+<tr>
+<td>348</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/openat2.2.html">sys_openat2</a></td>
+<td>0x15c</td>
+<td>int dfd</td>
+<td>const char __user *filename</td>
+<td>struct open_how *how</td>
+<td>size_t size</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/open.c#L1345">fs&#x2F;open.c:1345</a></td>
+</tr>
+<tr>
+<td>349</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/pidfd_getfd.2.html">sys_pidfd_getfd</a></td>
+<td>0x15d</td>
+<td>int pidfd</td>
+<td>int fd</td>
+<td>unsigned int flags</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/pid.c#L724">kernel&#x2F;pid.c:724</a></td>
+</tr>
+<tr>
+<td>350</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/faccessat2.2.html">sys_faccessat2</a></td>
+<td>0x15e</td>
+<td>int dfd</td>
+<td>const char __user *filename</td>
+<td>int mode</td>
+<td>int flags</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/open.c#L497">fs&#x2F;open.c:497</a></td>
+</tr>
+<tr>
+<td>351</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/process_madvise.2.html">sys_process_madvise</a></td>
+<td>0x15f</td>
+<td>int pidfd</td>
+<td>const struct iovec __user *vec</td>
+<td>size_t vlen</td>
+<td>int behavior</td>
+<td>unsigned int flags</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/mm/madvise.c#L1445">mm&#x2F;madvise.c:1445</a></td>
+</tr>
+<tr>
+<td>352</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/epoll_pwait2.2.html">sys_epoll_pwait2</a></td>
+<td>0x160</td>
+<td>int epfd</td>
+<td>struct epoll_event __user *events</td>
+<td>int maxevents</td>
+<td>const struct __kernel_timespec __user *timeout</td>
+<td>const sigset_t __user *sigmask</td>
+<td>size_t sigsetsize</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/eventpoll.c#L2310">fs&#x2F;eventpoll.c:2310</a></td>
+</tr>
+<tr>
+<td>353</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/mount_setattr.2.html">sys_mount_setattr</a></td>
+<td>0x161</td>
+<td>int dfd</td>
+<td>const char __user *path</td>
+<td>unsigned int flags</td>
+<td>struct mount_attr __user *uattr</td>
+<td>size_t usize</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/namespace.c#L4328">fs&#x2F;namespace.c:4328</a></td>
+</tr>
+<tr>
+<td>354</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/quotactl_fd.2.html">sys_quotactl_fd</a></td>
+<td>0x162</td>
+<td>unsigned int fd</td>
+<td>unsigned int cmd</td>
+<td>qid_t id</td>
+<td>void __user *addr</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/quota/quota.c#L972">fs&#x2F;quota&#x2F;quota.c:972</a></td>
+</tr>
+<tr>
+<td>355</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/landlock_create_ruleset.2.html">sys_landlock_create_ruleset</a></td>
+<td>0x163</td>
+<td>const struct landlock_ruleset_attr __user *attr</td>
+<td>size_t size</td>
+<td>__u32 flags</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/security/landlock/syscalls.c#L157">security&#x2F;landlock&#x2F;syscalls.c:157</a></td>
+</tr>
+<tr>
+<td>356</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/landlock_add_rule.2.html">sys_landlock_add_rule</a></td>
+<td>0x164</td>
+<td>int ruleset_fd</td>
+<td>enum landlock_rule_type rule_type</td>
+<td>const void __user *rule_attr</td>
+<td>__u32 flags</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/security/landlock/syscalls.c#L305">security&#x2F;landlock&#x2F;syscalls.c:305</a></td>
+</tr>
+<tr>
+<td>357</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/landlock_restrict_self.2.html">sys_landlock_restrict_self</a></td>
+<td>0x165</td>
+<td>int ruleset_fd</td>
+<td>__u32 flags</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/security/landlock/syscalls.c#L397">security&#x2F;landlock&#x2F;syscalls.c:397</a></td>
+</tr>
+<tr>
+<td>358</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/memfd_secret.2.html">sys_memfd_secret</a></td>
+<td>0x166</td>
+<td>unsigned int flags</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/mm/secretmem.c#L231">mm&#x2F;secretmem.c:231</a></td>
+</tr>
+<tr>
+<td>359</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/process_mrelease.2.html">sys_process_mrelease</a></td>
+<td>0x167</td>
+<td>int pidfd</td>
+<td>unsigned int flags</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/mm/oom_kill.c#L1200">mm&#x2F;oom_kill.c:1200</a></td>
+</tr>
+<tr>
+<td>360</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/futex_waitv.2.html">sys_futex_waitv</a></td>
+<td>0x168</td>
+<td>struct futex_waitv *waiters</td>
+<td>unsigned int nr_futexes</td>
+<td>unsigned int flags</td>
+<td>struct __kernel_timespec __user *timeout</td>
+<td>clockid_t clockid</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/kernel/futex/syscalls.c#L246">kernel&#x2F;futex&#x2F;syscalls.c:246</a></td>
+</tr>
+<tr>
+<td>361</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/set_mempolicy_home_node.2.html">sys_set_mempolicy_home_node</a></td>
+<td>0x169</td>
+<td>unsigned long start</td>
+<td>unsigned long len</td>
+<td>unsigned long home_node</td>
+<td>unsigned long flags</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/mm/mempolicy.c#L1487">mm&#x2F;mempolicy.c:1487</a></td>
+</tr>
+<tr>
+<td>362</td>
+<td>not implemented</td>
+<td>0x16a</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/#L">:</a></td>
+</tr>
+<tr>
+<td>363</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/rt_sigaction.2.html">compat_sys_rt_sigaction</a></td>
+<td>0x16b</td>
+<td>int</td>
+<td>const struct compat_sigaction __user *</td>
+<td>struct compat_sigaction __user *</td>
+<td>compat_size_t</td>
+<td>-</td>
+<td>-</td>
+<td>[not found:](<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/not">https://elixir.bootlin.com/linux/v5.17.5/source/not</a> found#L)</td>
+</tr>
+<tr>
+<td>365</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/ioctl.2.html">compat_sys_ioctl</a></td>
+<td>0x16d</td>
+<td>unsigned int fd</td>
+<td>unsigned int cmd</td>
+<td>compat_ulong_t arg</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>[not found:](<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/not">https://elixir.bootlin.com/linux/v5.17.5/source/not</a> found#L)</td>
+</tr>
+<tr>
+<td>366</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/readv.2.html">sys_readv</a></td>
+<td>0x16e</td>
+<td>unsigned long fd</td>
+<td>const struct iovec __user *vec</td>
+<td>unsigned long vlen</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/read_write.c#L1041">fs&#x2F;read_write.c:1041</a></td>
+</tr>
+<tr>
+<td>367</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/writev.2.html">sys_writev</a></td>
+<td>0x16f</td>
+<td>unsigned long fd</td>
+<td>const struct iovec __user *vec</td>
+<td>unsigned long vlen</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/read_write.c#L1047">fs&#x2F;read_write.c:1047</a></td>
+</tr>
+<tr>
+<td>368</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/recvfrom.2.html">compat_sys_recvfrom</a></td>
+<td>0x170</td>
+<td>int fd</td>
+<td>void __user *buf</td>
+<td>compat_size_t len</td>
+<td>unsigned flags</td>
+<td>struct sockaddr __user *addr</td>
+<td>int __user *addrlen</td>
+<td>[not found:](<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/not">https://elixir.bootlin.com/linux/v5.17.5/source/not</a> found#L)</td>
+</tr>
+<tr>
+<td>369</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/sendmsg.2.html">compat_sys_sendmsg</a></td>
+<td>0x171</td>
+<td>int fd</td>
+<td>struct compat_msghdr __user *msg</td>
+<td>unsigned flags</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>[not found:](<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/not">https://elixir.bootlin.com/linux/v5.17.5/source/not</a> found#L)</td>
+</tr>
+<tr>
+<td>370</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/recvmsg.2.html">compat_sys_recvmsg</a></td>
+<td>0x172</td>
+<td>int fd</td>
+<td>struct compat_msghdr __user *msg</td>
+<td>unsigned int flags</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>[not found:](<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/not">https://elixir.bootlin.com/linux/v5.17.5/source/not</a> found#L)</td>
+</tr>
+<tr>
+<td>371</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/execve.2.html">compat_sys_execve</a></td>
+<td>0x173</td>
+<td>const char __user *filename</td>
+<td>const compat_uptr_t __user *argv</td>
+<td>const compat_uptr_t __user *envp</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>[not found:](<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/not">https://elixir.bootlin.com/linux/v5.17.5/source/not</a> found#L)</td>
+</tr>
+<tr>
+<td>372</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/ptrace.2.html">compat_sys_ptrace</a></td>
+<td>0x174</td>
+<td>compat_long_t request</td>
+<td>compat_long_t pid</td>
+<td>compat_long_t addr</td>
+<td>compat_long_t data</td>
+<td>-</td>
+<td>-</td>
+<td>[not found:](<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/not">https://elixir.bootlin.com/linux/v5.17.5/source/not</a> found#L)</td>
+</tr>
+<tr>
+<td>373</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/rt_sigpending.2.html">compat_sys_rt_sigpending</a></td>
+<td>0x175</td>
+<td>compat_sigset_t __user *uset</td>
+<td>compat_size_t sigsetsize</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>[not found:](<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/not">https://elixir.bootlin.com/linux/v5.17.5/source/not</a> found#L)</td>
+</tr>
+<tr>
+<td>374</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/rt_sigtimedwait_time64.2.html">compat_sys_rt_sigtimedwait_time64</a></td>
+<td>0x176</td>
+<td>compat_sigset_t __user *uthese</td>
+<td>struct compat_siginfo __user *uinfo</td>
+<td>struct __kernel_timespec __user *uts</td>
+<td>compat_size_t sigsetsize</td>
+<td>-</td>
+<td>-</td>
+<td>[not found:](<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/not">https://elixir.bootlin.com/linux/v5.17.5/source/not</a> found#L)</td>
+</tr>
+<tr>
+<td>375</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/rt_sigqueueinfo.2.html">compat_sys_rt_sigqueueinfo</a></td>
+<td>0x177</td>
+<td>compat_pid_t pid</td>
+<td>int sig</td>
+<td>struct compat_siginfo __user *uinfo</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>[not found:](<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/not">https://elixir.bootlin.com/linux/v5.17.5/source/not</a> found#L)</td>
+</tr>
+<tr>
+<td>376</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/sigaltstack.2.html">compat_sys_sigaltstack</a></td>
+<td>0x178</td>
+<td>const compat_stack_t __user *uss_ptr</td>
+<td>compat_stack_t __user *uoss_ptr</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>[not found:](<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/not">https://elixir.bootlin.com/linux/v5.17.5/source/not</a> found#L)</td>
+</tr>
+<tr>
+<td>377</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/timer_create.2.html">compat_sys_timer_create</a></td>
+<td>0x179</td>
+<td>clockid_t which_clock</td>
+<td>struct compat_sigevent __user *timer_event_spec</td>
+<td>timer_t __user *created_timer_id</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>[not found:](<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/not">https://elixir.bootlin.com/linux/v5.17.5/source/not</a> found#L)</td>
+</tr>
+<tr>
+<td>378</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/mq_notify.2.html">compat_sys_mq_notify</a></td>
+<td>0x17a</td>
+<td>mqd_t mqdes</td>
+<td>const struct compat_sigevent __user *u_notification</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>[not found:](<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/not">https://elixir.bootlin.com/linux/v5.17.5/source/not</a> found#L)</td>
+</tr>
+<tr>
+<td>379</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/kexec_load.2.html">compat_sys_kexec_load</a></td>
+<td>0x17b</td>
+<td>compat_ulong_t entry</td>
+<td>compat_ulong_t nr_segments</td>
+<td>struct compat_kexec_segment __user *</td>
+<td>compat_ulong_t flags</td>
+<td>-</td>
+<td>-</td>
+<td>[not found:](<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/not">https://elixir.bootlin.com/linux/v5.17.5/source/not</a> found#L)</td>
+</tr>
+<tr>
+<td>380</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/waitid.2.html">compat_sys_waitid</a></td>
+<td>0x17c</td>
+<td>int</td>
+<td>compat_pid_t</td>
+<td>struct compat_siginfo __user *</td>
+<td>int</td>
+<td>struct compat_rusage __user *</td>
+<td>-</td>
+<td>[not found:](<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/not">https://elixir.bootlin.com/linux/v5.17.5/source/not</a> found#L)</td>
+</tr>
+<tr>
+<td>381</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/set_robust_list.2.html">compat_sys_set_robust_list</a></td>
+<td>0x17d</td>
+<td>struct compat_robust_list_head __user *head</td>
+<td>compat_size_t len</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>[not found:](<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/not">https://elixir.bootlin.com/linux/v5.17.5/source/not</a> found#L)</td>
+</tr>
+<tr>
+<td>382</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/get_robust_list.2.html">compat_sys_get_robust_list</a></td>
+<td>0x17e</td>
+<td>int pid</td>
+<td>compat_uptr_t __user *head_ptr</td>
+<td>compat_size_t __user *len_ptr</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>[not found:](<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/not">https://elixir.bootlin.com/linux/v5.17.5/source/not</a> found#L)</td>
+</tr>
+<tr>
+<td>383</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/vmsplice.2.html">sys_vmsplice</a></td>
+<td>0x17f</td>
+<td>int fd</td>
+<td>const struct iovec __user *iov</td>
+<td>unsigned long nr_segs</td>
+<td>unsigned int flags</td>
+<td>-</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/fs/splice.c#L1292">fs&#x2F;splice.c:1292</a></td>
+</tr>
+<tr>
+<td>384</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/move_pages.2.html">sys_move_pages</a></td>
+<td>0x180</td>
+<td>pid_t pid</td>
+<td>unsigned long nr_pages</td>
+<td>const void __user * __user *pages</td>
+<td>const int __user *nodes</td>
+<td>int __user *status</td>
+<td>int flags</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/mm/migrate.c#L2063">mm&#x2F;migrate.c:2063</a></td>
+</tr>
+<tr>
+<td>385</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/preadv64.2.html">compat_sys_preadv64</a></td>
+<td>0x181</td>
+<td>unsigned long fd</td>
+<td>const struct iovec __user *vec</td>
+<td>unsigned long vlen</td>
+<td>loff_t pos</td>
+<td>-</td>
+<td>-</td>
+<td>[not found:](<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/not">https://elixir.bootlin.com/linux/v5.17.5/source/not</a> found#L)</td>
+</tr>
+<tr>
+<td>386</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/pwritev64.2.html">compat_sys_pwritev64</a></td>
+<td>0x182</td>
+<td>unsigned long fd</td>
+<td>const struct iovec __user *vec</td>
+<td>unsigned long vlen</td>
+<td>loff_t pos</td>
+<td>-</td>
+<td>-</td>
+<td>[not found:](<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/not">https://elixir.bootlin.com/linux/v5.17.5/source/not</a> found#L)</td>
+</tr>
+<tr>
+<td>387</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/rt_tgsigqueueinfo.2.html">compat_sys_rt_tgsigqueueinfo</a></td>
+<td>0x183</td>
+<td>compat_pid_t tgid</td>
+<td>compat_pid_t pid</td>
+<td>int sig</td>
+<td>struct compat_siginfo __user *uinfo</td>
+<td>-</td>
+<td>-</td>
+<td>[not found:](<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/not">https://elixir.bootlin.com/linux/v5.17.5/source/not</a> found#L)</td>
+</tr>
+<tr>
+<td>388</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/recvmmsg_time64.2.html">compat_sys_recvmmsg_time64</a></td>
+<td>0x184</td>
+<td>int fd</td>
+<td>struct compat_mmsghdr __user *mmsg</td>
+<td>unsigned vlen</td>
+<td>unsigned int flags</td>
+<td>struct __kernel_timespec __user *timeout</td>
+<td>-</td>
+<td>[not found:](<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/not">https://elixir.bootlin.com/linux/v5.17.5/source/not</a> found#L)</td>
+</tr>
+<tr>
+<td>389</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/sendmmsg.2.html">compat_sys_sendmmsg</a></td>
+<td>0x185</td>
+<td>int fd</td>
+<td>struct compat_mmsghdr __user *mmsg</td>
+<td>unsigned vlen</td>
+<td>unsigned int flags</td>
+<td>-</td>
+<td>-</td>
+<td>[not found:](<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/not">https://elixir.bootlin.com/linux/v5.17.5/source/not</a> found#L)</td>
+</tr>
+<tr>
+<td>390</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/process_vm_readv.2.html">sys_process_vm_readv</a></td>
+<td>0x186</td>
+<td>pid_t pid</td>
+<td>const struct iovec __user *lvec</td>
+<td>unsigned long liovcnt</td>
+<td>const struct iovec __user *rvec</td>
+<td>unsigned long riovcnt</td>
+<td>unsigned long flags</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/mm/process_vm_access.c#L291">mm&#x2F;process_vm_access.c:291</a></td>
+</tr>
+<tr>
+<td>391</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/process_vm_writev.2.html">sys_process_vm_writev</a></td>
+<td>0x187</td>
+<td>pid_t pid</td>
+<td>const struct iovec __user *lvec</td>
+<td>unsigned long liovcnt</td>
+<td>const struct iovec __user *rvec</td>
+<td>unsigned long riovcnt</td>
+<td>unsigned long flags</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/mm/process_vm_access.c#L298">mm&#x2F;process_vm_access.c:298</a></td>
+</tr>
+<tr>
+<td>392</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/setsockopt.2.html">sys_setsockopt</a></td>
+<td>0x188</td>
+<td>int fd</td>
+<td>int level</td>
+<td>int optname</td>
+<td>char __user *optval</td>
+<td>int optlen</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/net/socket.c#L2260">net&#x2F;socket.c:2260</a></td>
+</tr>
+<tr>
+<td>393</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/getsockopt.2.html">sys_getsockopt</a></td>
+<td>0x189</td>
+<td>int fd</td>
+<td>int level</td>
+<td>int optname</td>
+<td>char __user *optval</td>
+<td>int __user *optlen</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/net/socket.c#L2308">net&#x2F;socket.c:2308</a></td>
+</tr>
+<tr>
+<td>394</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/io_setup.2.html">compat_sys_io_setup</a></td>
+<td>0x18a</td>
+<td>unsigned nr_reqs</td>
+<td>u32 __user *ctx32p</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>[not found:](<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/not">https://elixir.bootlin.com/linux/v5.17.5/source/not</a> found#L)</td>
+</tr>
+<tr>
+<td>395</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/io_submit.2.html">compat_sys_io_submit</a></td>
+<td>0x18b</td>
+<td>compat_aio_context_t ctx_id</td>
+<td>int nr</td>
+<td>u32 __user *iocb</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>[not found:](<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/not">https://elixir.bootlin.com/linux/v5.17.5/source/not</a> found#L)</td>
+</tr>
+<tr>
+<td>396</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/execveat.2.html">compat_sys_execveat</a></td>
+<td>0x18c</td>
+<td>int dfd</td>
+<td>const char __user *filename</td>
+<td>const compat_uptr_t __user *argv</td>
+<td>const compat_uptr_t __user *envp</td>
+<td>int flags</td>
+<td>-</td>
+<td>[not found:](<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/not">https://elixir.bootlin.com/linux/v5.17.5/source/not</a> found#L)</td>
+</tr>
+<tr>
+<td>397</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/preadv64v2.2.html">compat_sys_preadv64v2</a></td>
+<td>0x18d</td>
+<td>unsigned long fd</td>
+<td>const struct iovec __user *vec</td>
+<td>unsigned long vlen</td>
+<td>loff_t pos</td>
+<td>rwf_t flags</td>
+<td>-</td>
+<td>[not found:](<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/not">https://elixir.bootlin.com/linux/v5.17.5/source/not</a> found#L)</td>
+</tr>
+<tr>
+<td>398</td>
+<td><a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/pwritev64v2.2.html">compat_sys_pwritev64v2</a></td>
+<td>0x18e</td>
+<td>unsigned long fd</td>
+<td>const struct iovec __user *vec</td>
+<td>unsigned long vlen</td>
+<td>loff_t pos</td>
+<td>rwf_t flags</td>
+<td>-</td>
+<td>[not found:](<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.5/source/not">https://elixir.bootlin.com/linux/v5.17.5/source/not</a> found#L)</td>
+</tr>
+</tbody></table>
+
+        </div>
+
+    
+
+</div>
+                <div class="footer">
+    <span>Copyright © 2022 Loora1N&#39;s Blog | 鹭雨</span>
+    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
+</div>
+
+
+<link rel="stylesheet" href="/css/a11y-dark.min.css">
+
+
+<script src="/js/highlight.min.js"></script>
+
+
+<script src="/js/highlightjs-line-numbers.js"></script>
+
+
+<script>
+    hljs.initHighlightingOnLoad();
+    hljs.initLineNumbersOnLoad();
+</script>
+
+            </div>
+        </div>
+    <!-- hexo injector body_end start -->
+  <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
+  <script data-pjax>
+        function GithubCalendarConfig(){
+            var git_githubapiurl ="https://python-github-calendar-api.vercel.app/api?Loora1N";
+            var git_color =['#ebedf0', '#fdcdec', '#fc9bd9', '#fa6ac5', '#f838b2', '#f5089f', '#c4067e', '#92055e', '#540336', '#48022f', '#30021f'];
+            var git_user ="Loora1N";
+            var parent_div_git = document.getElementById('recent-posts');
+            var git_div_html = '<div class="recent-post-item" style="width:100%;height:auto;padding:10px;"><div id="github_loading" style="width:10%;height:100%;margin:0 auto;display: block"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"  viewBox="0 0 50 50" style="enable-background:new 0 0 50 50" xml:space="preserve"><path fill="#d0d0d0" d="M25.251,6.461c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615V6.461z" transform="rotate(275.098 25 25)"><animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="0.6s" repeatCount="indefinite"></animateTransform></path></svg></div><div id="github_container"></div></div>';
+            if(parent_div_git && location.pathname =='/about/'){
+                console.log('已挂载github calendar')
+                // parent_div_git.innerHTML=git_div_html+parent_div_git.innerHTML // 无报错，但不影响使用(支持pjax跳转)
+                parent_div_git.insertAdjacentHTML("afterbegin",git_div_html) // 有报错，但不影响使用(支持pjax跳转)
+            };
+            GithubCalendar(git_githubapiurl,git_color,git_user)
+        }
+        if(document.getElementById('recent-posts')){
+            GithubCalendarConfig()
+        }
+    </script>
+    <style>#github_container{min-height:280px}@media screen and (max-width:650px) {#github_container{background-image:;min-height:0px}}</style>
+    <style></style><!-- hexo injector body_end end --></body>
+</html>
