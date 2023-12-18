@@ -1,3 +1,4 @@
+http://loora1n.github.io/about/index.html
 http://loora1n.github.io/links/index.html
 http://loora1n.github.io/2022/12/07/%E3%80%90IO_FILE%E3%80%91%E6%BA%90%E7%A0%81%E8%AF%A6%E8%A7%A3-part2/
 http://loora1n.github.io/2022/09/12/%E9%9D%99%E6%80%81pwn/
@@ -56,5 +57,4 @@ http://loora1n.github.io/2022/06/07/Hexo%E9%83%A8%E7%BD%B2%E5%87%BA%E7%8E%B0%E9%
 http://loora1n.github.io/2022/06/03/HEAP%20%E6%94%BB%E5%87%BB%E6%96%B9%E5%BC%8F%E8%AE%B0%E5%BD%95%E4%BB%A5%E5%8F%8A%E6%80%BB%E7%BB%93/
 http://loora1n.github.io/2023/08/29/ASAN%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90/
 http://loora1n.github.io/2023/11/21/%E6%A0%87%E5%BF%97%E4%BD%8D/
-http://loora1n.github.io/about/index.html
 http://loora1n.github.io/
