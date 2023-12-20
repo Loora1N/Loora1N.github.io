@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
+    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
+    <title>Loora1N&#39;s Blog | 鹭雨 | </title>
+    
+<link rel="stylesheet" href="/css/reset.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/css/markdown.css">
+
+    
+<link rel="stylesheet" href="/css/fonts.css">
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+    <body>
+        <div class="paper">
+            <div class="paper-main">
+                
+                    <div class="post-header">
+    <a class="logo" href="/">Loora1N&#39;s Blog | 鹭雨</a>
+    <a class="go-home" href="/">
+        <svg width="8" height="14" viewBox="0 0 8 14">
+            <path d="M7 1L1 7l6 6" stroke="#000" stroke-width="2" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </a>
+</div>
+                
+                <div class="post-main">
+
+    
+    
+        <div class="post-main-title">
+            【Cloud】kubectl 报错connection reser by peer
+        </div>
+        <div class="post-meta">
+            2023-12-20
+        </div>
+        <div class="post-md">
+            <h2 id="情景"><a href="#情景" class="headerlink" title="情景"></a>情景</h2><p>配置k8s环境时，使用<code>minikube start</code>启动集群，尝试使用<code>kubectl</code>命令与其交互时出现报错如下：</p>
+<pre><code class="shell">┌─[loorain@ubuntu] - [~] - [8040]
+└─[$] kubectl cluster-info                                                                 [14:47:50]
+E1220 14:52:11.375271  103903 memcache.go:265] couldn&#39;t get current server API group list: Get &quot;https://192.168.49.2:8443/api?timeout=32s&quot;: context deadline exceeded - error from a previous attempt: read tcp 192.168.163.131:40832-&gt;192.168.163.1:7890: read: connection reset by peer
+^C
+┌─[loorain@ubuntu] - [~] - [8041]
+└─[$] kubectl get pods                                                                     [14:52:14]
+E1220 14:54:40.674768  106637 memcache.go:265] couldn&#39;t get current server API group list: Get &quot;https://192.168.49.2:8443/api?timeout=32s&quot;: context deadline exceeded - error from a previous attempt: read tcp 192.168.163.131:44286-&gt;192.168.163.1:7890: read: connection reset by peer
+</code></pre>
+<p>但是<code>kubectl config get-contexts</code>和<code>minikube status</code>都显示正常</p>
+<pre><code class="shell">┌─[loorain@ubuntu] - [~] - [8039]
+└─[$] kubectl config get-contexts                                                       
+CURRENT   NAME       CLUSTER    AUTHINFO   NAMESPACE
+*         minikube   minikube   minikube   default
+
+┌─[loorain@ubuntu] - [~] - [8071]
+└─[$] minikube status                                                     
+minikube
+type: Control Plane
+host: Running
+kubelet: Running
+apiserver: Running
+kubeconfig: Configured
+</code></pre>
+<p>报错的reset地址<strong>192.168.163.1:7890</strong>，是我为虚拟机设置的代理，所以大致确定应该是代理的问题.</p>
+<p>虽然测试<code>curl -x http://192.168.163.1:7890 https://www.google.com</code>能够正常访问，网络应该是没问题的，但不知道为什么<code>kubectl</code>就是用不了</p>
+<h2 id="修复"><a href="#修复" class="headerlink" title="修复"></a>修复</h2><p>要确定是否真的是代理的问题，可以使用unset取消代理的设置，测试下看看效果：</p>
+<pre><code class="shell">┌─[loorain@ubuntu] - [~] - [8053]
+└─[$] unset https_proxy http_proxy all_proxy                              [15:01:12]
+┌─[loorain@ubuntu] - [~] - [8054]
+└─[$] kubectl get nodes                                                   [15:01:47]
+NAME       STATUS   ROLES           AGE   VERSION
+minikube   Ready    control-plane   55m   v1.28.3
+</code></pre>
+<p>基本确认无误了。由于我代理设置写在<code>~/.zshrc</code>内，不太想更改，这里只好继续在<code>~/.zshrc</code>内增加一下内容:</p>
+<pre><code class="shell">export NO_PROXY=127.0.0.1,localhost,.cluster.local,192.168.49.0/24
+alias kubectl=&quot;https_proxy= http_proxy= all_proxy= NO_PROXY=$NO_PROXY kubectl&quot;
+</code></pre>
+<p>这里的<code>192.168.49.0/24</code>指k8s集群的ip列表之类的，可以使用<code>minikube profile list</code>查看下内容:</p>
+<pre><code class="shell">┌─[loorain@ubuntu] - [~/eBPF] - [8074]
+└─[$] minikube profile list                                               [15:54:02]
+|----------|-----------|---------|--------------|------|---------|---------|-------|--------|
+| Profile  | VM Driver | Runtime |      IP      | Port | Version | Status  | Nodes | Active |
+|----------|-----------|---------|--------------|------|---------|---------|-------|--------|
+| minikube | docker    | docker  | 192.168.49.2 | 8443 | v1.28.3 | Running |     1 | *      |
+|----------|-----------|---------|--------------|------|---------|---------|-------|--------|
+</code></pre>
+<p>重新<code>source ~/.zshrc</code>就可以正常使用<code>kubectl</code>命令了</p>
+
+        </div>
+
+    
+
+</div>
+                <div class="footer">
+    <span>Copyright © 2022 Loora1N&#39;s Blog | 鹭雨</span>
+    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
+</div>
+
+
+<link rel="stylesheet" href="/css/a11y-dark.min.css">
+
+
+<script src="/js/highlight.min.js"></script>
+
+
+<script src="/js/highlightjs-line-numbers.js"></script>
+
+
+<script>
+    hljs.initHighlightingOnLoad();
+    hljs.initLineNumbersOnLoad();
+</script>
+
+            </div>
+        </div>
+    <!-- hexo injector body_end start -->
+  <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
+  <script data-pjax>
+        function GithubCalendarConfig(){
+            var git_githubapiurl ="https://python-github-calendar-api.vercel.app/api?Loora1N";
+            var git_color =['#ebedf0', '#fdcdec', '#fc9bd9', '#fa6ac5', '#f838b2', '#f5089f', '#c4067e', '#92055e', '#540336', '#48022f', '#30021f'];
+            var git_user ="Loora1N";
+            var parent_div_git = document.getElementById('recent-posts');
+            var git_div_html = '<div class="recent-post-item" style="width:100%;height:auto;padding:10px;"><div id="github_loading" style="width:10%;height:100%;margin:0 auto;display: block"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"  viewBox="0 0 50 50" style="enable-background:new 0 0 50 50" xml:space="preserve"><path fill="#d0d0d0" d="M25.251,6.461c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615V6.461z" transform="rotate(275.098 25 25)"><animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="0.6s" repeatCount="indefinite"></animateTransform></path></svg></div><div id="github_container"></div></div>';
+            if(parent_div_git && location.pathname =='/about/'){
+                console.log('已挂载github calendar')
+                // parent_div_git.innerHTML=git_div_html+parent_div_git.innerHTML // 无报错，但不影响使用(支持pjax跳转)
+                parent_div_git.insertAdjacentHTML("afterbegin",git_div_html) // 有报错，但不影响使用(支持pjax跳转)
+            };
+            GithubCalendar(git_githubapiurl,git_color,git_user)
+        }
+        if(document.getElementById('recent-posts')){
+            GithubCalendarConfig()
+        }
+    </script>
+    <style>#github_container{min-height:280px}@media screen and (max-width:650px) {#github_container{background-image:;min-height:0px}}</style>
+    <style></style><!-- hexo injector body_end end --></body>
+</html>

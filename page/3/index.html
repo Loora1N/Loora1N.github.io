@@ -40,6 +40,27 @@
                 <div class="post-list">
     
     <div class="post">
+        <a class="post-title" href="/2023/03/31/%E3%80%90Linux%20kernel%E5%85%A5%E9%97%A8%E3%80%91%E5%86%85%E6%A0%B8%E6%9C%AC%E5%9C%B0%E8%B0%83%E8%AF%95/">【kernel】内核本地调试入门</a>
+        <div class="post-except">
+            提取vmlinux使用extract-vmlinux脚本提取，脚本下载地址：linux&#x2F;extract-vmlinux at master · torvalds&#x2F;linux (github.com)
+./extract-vmlinux ./bzImage &gt; vmlinux
+
+开放调试端口在boot.sh中加入如下参数
+-gdb tcp::[port]
+#如下
+-gdb tcp::1234
+
+启动boot.sh
+调试
+root权限下运行
+
+gdb .
+            <a class="read-more" href="/2023/03/31/%E3%80%90Linux%20kernel%E5%85%A5%E9%97%A8%E3%80%91%E5%86%85%E6%A0%B8%E6%9C%AC%E5%9C%B0%E8%B0%83%E8%AF%95/"> ... </a>
+        </div>
+        <div class="post-date">2023.03.31</div>
+    </div>
+    
+    <div class="post">
         <a class="post-title" href="/2023/03/29/Linux%20Syscall%20Reference(64%20bit)/">Linux Syscall Reference(64 bit)</a>
         <div class="post-except">
             
@@ -96,6 +117,18 @@ const cha
     </div>
     
     <div class="post">
+        <a class="post-title" href="/2023/03/29/%E3%80%90kernel%E3%80%91%E6%8F%90%E6%9D%83%E5%85%A5%E9%97%A8-part1/">【kernel】提权入门-part1</a>
+        <div class="post-except">
+            
+纠结了很久，决定还是开启这个模块的学习，在这个路口迷茫了很久了，一直没有决定好走向何处。虽然有可能会走错路，可能会学习很多看起来没用的东西，但希望Kernel的学习能够带我刚开始接触PWN时的乐趣。将会主要借助CTF wiki和《从0到1》
+
+前置内核会通过进程的 task_struct 结构体中的 cred 指针来索引 cred 结构体，然后根据 cred 的内容来判断一个进程拥有的权限，如果 cred 结构体成员中的 uid-fsgid 都为 0，那一般就会认为进程具有
+            <a class="read-more" href="/2023/03/29/%E3%80%90kernel%E3%80%91%E6%8F%90%E6%9D%83%E5%85%A5%E9%97%A8-part1/"> ... </a>
+        </div>
+        <div class="post-date">2023.03.29</div>
+    </div>
+    
+    <div class="post">
         <a class="post-title" href="/2023/03/29/%E3%80%90kernel%E3%80%91%E6%8F%90%E6%9D%83%E5%85%A5%E9%97%A8-part2/">【kernel】提权入门-part2</a>
         <div class="post-except">
             如果我们可以改变特权进程的执行轨迹，也可以实现提权。这里我们从以下角度来考虑如何改变特权进程的执行轨迹。
@@ -106,18 +139,6 @@ const cha
 改数据符号链接如果一个 root 权限的进程会执行一个符号链接的程序，并且该符号链接或者符号链接指向的程序可以由攻击者控制，攻击者就可以实现提权。
 call_usermodehelpercall_usermodehelper 是一种内核线程执行用户态应用的方式，并且启动的进程具有 root 权限。因此，如果我们能够控制具体要执行的应用，那就可以实现提权
             <a class="read-more" href="/2023/03/29/%E3%80%90kernel%E3%80%91%E6%8F%90%E6%9D%83%E5%85%A5%E9%97%A8-part2/"> ... </a>
-        </div>
-        <div class="post-date">2023.03.29</div>
-    </div>
-    
-    <div class="post">
-        <a class="post-title" href="/2023/03/29/%E3%80%90kernel%E3%80%91%E6%8F%90%E6%9D%83%E5%85%A5%E9%97%A8-part1/">【kernel】提权入门-part1</a>
-        <div class="post-except">
-            
-纠结了很久，决定还是开启这个模块的学习，在这个路口迷茫了很久了，一直没有决定好走向何处。虽然有可能会走错路，可能会学习很多看起来没用的东西，但希望Kernel的学习能够带我刚开始接触PWN时的乐趣。将会主要借助CTF wiki和《从0到1》
-
-前置内核会通过进程的 task_struct 结构体中的 cred 指针来索引 cred 结构体，然后根据 cred 的内容来判断一个进程拥有的权限，如果 cred 结构体成员中的 uid-fsgid 都为 0，那一般就会认为进程具有
-            <a class="read-more" href="/2023/03/29/%E3%80%90kernel%E3%80%91%E6%8F%90%E6%9D%83%E5%85%A5%E9%97%A8-part1/"> ... </a>
         </div>
         <div class="post-date">2023.03.29</div>
     </div>
@@ -206,17 +227,6 @@ FSOP 是 File Stream Oriented Programming 的缩写，根据前面对 FILE 的�
             <a class="read-more" href="/2022/11/08/%E3%80%90CTFd%20%E4%BA%8C%E6%AC%A1%E5%BC%80%E5%8F%91%E3%80%91%E8%A7%A3%E9%A2%98%E6%92%AD%E6%8A%A5%E6%9C%BA%E5%99%A8%E4%BA%BA%20V2/"> ... </a>
         </div>
         <div class="post-date">2022.11.08</div>
-    </div>
-    
-    <div class="post">
-        <a class="post-title" href="/2022/11/03/i%E6%98%A5%E7%A7%8B%E6%98%A5%E5%AD%A3%E8%B5%9B-%E5%8B%87%E8%80%85%E5%B7%85%E5%B3%B0-chunqiuIOT/">i春秋春季赛-勇者巅峰-chunqiuIOT</a>
-        <div class="post-except">
-            前言这是今年上半年比赛的一道题目，那个时候才刚刚接触堆，栈也不是很熟。打开程序基本就放弃了，前一段时间复现了几个IOT相关的CVE，借此契机顺便看看几个月前自己放弃的那道题。有一说一，这道题的逆向部分还是很头疼的，逆了一个下午+一个早上才看完程序逻辑—-套皮堆题罢了。
-
-我新建了一个库，用于存放各种比赛的题目，我博客内WP涉及的题目基本都能找到，链接：PWNchanllenge&#x2F;chunzhiIot at main · Loora1N&#x2F;PWNchanlle
-            <a class="read-more" href="/2022/11/03/i%E6%98%A5%E7%A7%8B%E6%98%A5%E5%AD%A3%E8%B5%9B-%E5%8B%87%E8%80%85%E5%B7%85%E5%B3%B0-chunqiuIOT/"> ... </a>
-        </div>
-        <div class="post-date">2022.11.03</div>
     </div>
     
 </div>
