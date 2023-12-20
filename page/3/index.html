@@ -40,6 +40,24 @@
                 <div class="post-list">
     
     <div class="post">
+        <a class="post-title" href="/2023/04/24/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88%E5%A4%8D%E4%B9%A0/">网络协议栈CH1-CH3</a>
+        <div class="post-except">
+            
+参考教材《TCP&#x2F;IP详解 卷2：实现》，文内示意图大多取自该教材。本文为复习时自行总结，难免存在不全或者错误，求求大伙轻喷。如有问题可以留言在文末评论区，或者直接私聊，我会及时更改文章内容。
+
+第一章 概述基本框架网络输入输出层间框架基本框架如下图所示，我们会在后面详细讨论输入输出
+
+UDP示例socket程序框架
+这段C代码也充当后续我们分析输入输出时的例子
+
+/*
+* Send a UDP datagram to the daytime server on 
+            <a class="read-more" href="/2023/04/24/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88%E5%A4%8D%E4%B9%A0/"> ... </a>
+        </div>
+        <div class="post-date">2023.04.24</div>
+    </div>
+    
+    <div class="post">
         <a class="post-title" href="/2023/03/31/%E3%80%90Linux%20kernel%E5%85%A5%E9%97%A8%E3%80%91%E5%86%85%E6%A0%B8%E6%9C%AC%E5%9C%B0%E8%B0%83%E8%AF%95/">【kernel】内核本地调试入门</a>
         <div class="post-except">
             提取vmlinux使用extract-vmlinux脚本提取，脚本下载地址：linux&#x2F;extract-vmlinux at master · torvalds&#x2F;linux (github.com)
@@ -117,18 +135,6 @@ const cha
     </div>
     
     <div class="post">
-        <a class="post-title" href="/2023/03/29/%E3%80%90kernel%E3%80%91%E6%8F%90%E6%9D%83%E5%85%A5%E9%97%A8-part1/">【kernel】提权入门-part1</a>
-        <div class="post-except">
-            
-纠结了很久，决定还是开启这个模块的学习，在这个路口迷茫了很久了，一直没有决定好走向何处。虽然有可能会走错路，可能会学习很多看起来没用的东西，但希望Kernel的学习能够带我刚开始接触PWN时的乐趣。将会主要借助CTF wiki和《从0到1》
-
-前置内核会通过进程的 task_struct 结构体中的 cred 指针来索引 cred 结构体，然后根据 cred 的内容来判断一个进程拥有的权限，如果 cred 结构体成员中的 uid-fsgid 都为 0，那一般就会认为进程具有
-            <a class="read-more" href="/2023/03/29/%E3%80%90kernel%E3%80%91%E6%8F%90%E6%9D%83%E5%85%A5%E9%97%A8-part1/"> ... </a>
-        </div>
-        <div class="post-date">2023.03.29</div>
-    </div>
-    
-    <div class="post">
         <a class="post-title" href="/2023/03/29/%E3%80%90kernel%E3%80%91%E6%8F%90%E6%9D%83%E5%85%A5%E9%97%A8-part2/">【kernel】提权入门-part2</a>
         <div class="post-except">
             如果我们可以改变特权进程的执行轨迹，也可以实现提权。这里我们从以下角度来考虑如何改变特权进程的执行轨迹。
@@ -139,6 +145,18 @@ const cha
 改数据符号链接如果一个 root 权限的进程会执行一个符号链接的程序，并且该符号链接或者符号链接指向的程序可以由攻击者控制，攻击者就可以实现提权。
 call_usermodehelpercall_usermodehelper 是一种内核线程执行用户态应用的方式，并且启动的进程具有 root 权限。因此，如果我们能够控制具体要执行的应用，那就可以实现提权
             <a class="read-more" href="/2023/03/29/%E3%80%90kernel%E3%80%91%E6%8F%90%E6%9D%83%E5%85%A5%E9%97%A8-part2/"> ... </a>
+        </div>
+        <div class="post-date">2023.03.29</div>
+    </div>
+    
+    <div class="post">
+        <a class="post-title" href="/2023/03/29/%E3%80%90kernel%E3%80%91%E6%8F%90%E6%9D%83%E5%85%A5%E9%97%A8-part1/">【kernel】提权入门-part1</a>
+        <div class="post-except">
+            
+纠结了很久，决定还是开启这个模块的学习，在这个路口迷茫了很久了，一直没有决定好走向何处。虽然有可能会走错路，可能会学习很多看起来没用的东西，但希望Kernel的学习能够带我刚开始接触PWN时的乐趣。将会主要借助CTF wiki和《从0到1》
+
+前置内核会通过进程的 task_struct 结构体中的 cred 指针来索引 cred 结构体，然后根据 cred 的内容来判断一个进程拥有的权限，如果 cred 结构体成员中的 uid-fsgid 都为 0，那一般就会认为进程具有
+            <a class="read-more" href="/2023/03/29/%E3%80%90kernel%E3%80%91%E6%8F%90%E6%9D%83%E5%85%A5%E9%97%A8-part1/"> ... </a>
         </div>
         <div class="post-date">2023.03.29</div>
     </div>
@@ -210,23 +228,6 @@ FSOP 是 File Stream Oriented Programming 的缩写，根据前面对 FILE 的�
             <a class="read-more" href="/2022/11/13/%E3%80%90IO_FILE%E3%80%91house%20of%20cat/"> ... </a>
         </div>
         <div class="post-date">2022.11.13</div>
-    </div>
-    
-    <div class="post">
-        <a class="post-title" href="/2022/11/08/%E3%80%90CTFd%20%E4%BA%8C%E6%AC%A1%E5%BC%80%E5%8F%91%E3%80%91%E8%A7%A3%E9%A2%98%E6%92%AD%E6%8A%A5%E6%9C%BA%E5%99%A8%E4%BA%BA%20V2/">【CTFd 二次开发】解题播报机器人 V2</a>
-        <div class="post-except">
-            
-本文基于 CTFd Version 3.4.3 开发，可能存在源码不相同的情况，阅读时请注意文章时效性。
-
-更新内容
-实现CTFd创建新题目的播报，且仅在题目状态由hidden转为visible时播报
-实现题目信息更新时，进行播报
-
-
-前端页面修改appearance.html打开CTFd/CTFd/themes/admin/templates/configs/appearance.html，在上次更新的基础上增加题目创建播报文案，和题目信息更新播报文案接口。这里直接放出完
-            <a class="read-more" href="/2022/11/08/%E3%80%90CTFd%20%E4%BA%8C%E6%AC%A1%E5%BC%80%E5%8F%91%E3%80%91%E8%A7%A3%E9%A2%98%E6%92%AD%E6%8A%A5%E6%9C%BA%E5%99%A8%E4%BA%BA%20V2/"> ... </a>
-        </div>
-        <div class="post-date">2022.11.08</div>
     </div>
     
 </div>

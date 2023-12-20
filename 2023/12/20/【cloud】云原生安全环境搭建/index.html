@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
+    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
+    <title>Loora1N&#39;s Blog | 鹭雨 | </title>
+    
+<link rel="stylesheet" href="/css/reset.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/css/markdown.css">
+
+    
+<link rel="stylesheet" href="/css/fonts.css">
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+    <body>
+        <div class="paper">
+            <div class="paper-main">
+                
+                    <div class="post-header">
+    <a class="logo" href="/">Loora1N&#39;s Blog | 鹭雨</a>
+    <a class="go-home" href="/">
+        <svg width="8" height="14" viewBox="0 0 8 14">
+            <path d="M7 1L1 7l6 6" stroke="#000" stroke-width="2" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </a>
+</div>
+                
+                <div class="post-main">
+
+    
+    
+        <div class="post-main-title">
+            【Cloud】云原生安全环境搭建
+        </div>
+        <div class="post-meta">
+            2023-12-20
+        </div>
+        <div class="post-md">
+            <blockquote>
+<p>毕设要搞个什么网络安全检测系统，干脆直接做ebpf开发，走容器安全，顺便研究研究云原生安全</p>
+<p>环境为ubuntu22.04，架构为x86_64</p>
+</blockquote>
+<h2 id="kubernetes"><a href="#kubernetes" class="headerlink" title="kubernetes"></a>kubernetes</h2><h3 id="使用curl安装kubectl"><a href="#使用curl安装kubectl" class="headerlink" title="使用curl安装kubectl"></a>使用curl安装kubectl</h3><h4 id="下载发行版"><a href="#下载发行版" class="headerlink" title="下载发行版"></a>下载发行版</h4><pre><code class="shell">curl -LO &quot;https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl&quot;
+</code></pre>
+<h4 id="验证文件"><a href="#验证文件" class="headerlink" title="验证文件"></a>验证文件</h4><pre><code class="shell">curl -LO &quot;https://dl.k8s.io/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl.sha256&quot;
+echo &quot;$(cat kubectl.sha256)  kubectl&quot; | sha256sum --check 
+</code></pre>
+<p>若输出为<code>kubectl: OK</code>则验证通过，否则<code>sha256</code>将以非零值退出</p>
+<h4 id="安装kubectl"><a href="#安装kubectl" class="headerlink" title="安装kubectl"></a>安装kubectl</h4><pre><code class="shell">sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+</code></pre>
+<blockquote>
+<p><strong>说明：</strong>若你没有目标系统的root权限，仍然可以将kubectl安装到目录<code>~/.local/bin</code>目录中：</p>
+<pre><code class="shell">chmod +x kubectl
+mkdir -p ~/.local/bin
+mv ./kubectl ~/.local/bin/kubectl
+</code></pre>
+</blockquote>
+<h4 id="执行测试"><a href="#执行测试" class="headerlink" title="执行测试"></a>执行测试</h4><pre><code class="shell">kubectl version --client
+#或者
+kubectl version --client --output=yaml
+</code></pre>
+<h3 id="kubectl的可选配置和插件"><a href="#kubectl的可选配置和插件" class="headerlink" title="kubectl的可选配置和插件"></a>kubectl的可选配置和插件</h3><h4 id="启用shell自动补全功能"><a href="#启用shell自动补全功能" class="headerlink" title="启用shell自动补全功能"></a>启用shell自动补全功能</h4><blockquote>
+<p>kubectl 为 Bash、Zsh、Fish 和 PowerShell 提供自动补全功能。由于我使用的是zsh，因而这里只记录zsh的设置方式，其他shell类型可以自行查询</p>
+</blockquote>
+<p>kubectl 通过命令 <code>kubectl completion zsh</code> 生成 Zsh 自动补全脚本。 在 Shell 中导入（Sourcing）该自动补全脚本，将启动 kubectl 自动补全功能。因此，我们需要编辑<code>~/.zshrc</code>并写入添加如下内容：</p>
+<pre><code class="shell">source &lt;(kubectl completion zsh)
+</code></pre>
+<p>重新加载 Shell 后，kubectl 自动补全功能将立即生效。</p>
+<blockquote>
+<p>如果你收到 <code>2: command not found: compdef</code> 这样的错误提示，那请将下面内容添加到 <code>~/.zshrc</code> 文件的开头：</p>
+<pre><code class="shell">autoload -Uz compinit
+compinit
+</code></pre>
+</blockquote>
+<h4 id="kubectl-convert"><a href="#kubectl-convert" class="headerlink" title="kubectl convert"></a>kubectl convert</h4><p>一个 Kubernetes 命令行工具 <code>kubectl</code> 的插件，允许你将清单在不同 API 版本间转换。 这对于将清单迁移到新的 Kubernetes 发行版上未被废弃的 API 版本时尤其有帮助。 更多信息请访问<a target="_blank" rel="noopener" href="https://kubernetes.io/zh-cn/docs/reference/using-api/deprecation-guide/#migrate-to-non-deprecated-apis">迁移到非弃用 API</a></p>
+<blockquote>
+<p>这里我并未安装，需要的话后续在补充</p>
+</blockquote>
+<h3 id="Minikube"><a href="#Minikube" class="headerlink" title="Minikube"></a>Minikube</h3><p>目前有两个便捷工具，可以用来在本地创建kubernetes集群，<a target="_blank" rel="noopener" href="https://kind.sigs.k8s.io/docs/user/quick-start/"><strong>Kind</strong></a> 和 <a target="_blank" rel="noopener" href="https://kind.sigs.k8s.io/docs/user/quick-start/"><strong>Minikube</strong></a>，这里我选择Minikube。</p>
+<blockquote>
+<p>选择Minikube的原因是<strong>chatGPT</strong>的解释，以下内容引用自chatGPT，仅供参考：</p>
+<blockquote>
+<p>选择使用 Kind 还是 Minikube 可能取决于你的需求和偏好：</p>
+<p><strong>Kind (Kubernetes in Docker):</strong></p>
+<ul>
+<li><strong>轻量级：</strong> Kind 在本地以 Docker 容器的形式运行 Kubernetes，因此相对轻量级且易于安装和管理。</li>
+<li><strong>快速启动：</strong> 它可以快速创建一个多节点的 Kubernetes 环境，非常适合测试和开发目的。</li>
+<li><strong>与 CI&#x2F;CD集成：</strong> Kind 也被广泛用于持续集成&#x2F;持续部署 (CI&#x2F;CD) 流水线中，因为它可以轻松地在 Docker 中创建临时的 Kubernetes 环境。</li>
+</ul>
+<p><strong>Minikube:</strong></p>
+<ul>
+<li><strong>全功能的本地 Kubernetes：</strong> Minikube 提供了一个完整的、单节点的 Kubernetes 集群，在本地可以进行开发和测试，模拟生产环境。</li>
+<li><strong>多平台支持：</strong> 它支持 Windows、macOS 和 Linux，并提供了方便的命令行工具来管理和操作 Kubernetes 环境。</li>
+<li><strong>功能更丰富：</strong> Minikube 提供了一些高级功能和配置选项，允许用户定制和配置 Kubernetes 集群。</li>
+</ul>
+<p>如果你想要快速轻松地在 Docker 中运行一个本地 Kubernetes 环境，并且对多节点并不是特别需要，Kind 可能是个不错的选择。但如果你需要一个更加接近生产环境、全功能的本地 Kubernetes 环境，Minikube 可能更适合你的需求。最终，这取决于你的具体使用场景和偏好。</p>
+</blockquote>
+</blockquote>
+<h4 id="安装minikube"><a href="#安装minikube" class="headerlink" title="安装minikube"></a>安装minikube</h4><blockquote>
+<p>minikube需求：</p>
+<ul>
+<li>2 CPUs or more</li>
+<li>2GB of free memory</li>
+<li>20GB of free disk space</li>
+<li>Internet connection</li>
+<li>Container or virtual machine manager, such as: <a target="_blank" rel="noopener" href="https://minikube.sigs.k8s.io/docs/drivers/docker/">Docker</a>, <a target="_blank" rel="noopener" href="https://minikube.sigs.k8s.io/docs/drivers/qemu/">QEMU</a>, <a target="_blank" rel="noopener" href="https://minikube.sigs.k8s.io/docs/drivers/hyperkit/">Hyperkit</a>, <a target="_blank" rel="noopener" href="https://minikube.sigs.k8s.io/docs/drivers/hyperv/">Hyper-V</a>, <a target="_blank" rel="noopener" href="https://minikube.sigs.k8s.io/docs/drivers/kvm2/">KVM</a>, <a target="_blank" rel="noopener" href="https://minikube.sigs.k8s.io/docs/drivers/parallels/">Parallels</a>, <a target="_blank" rel="noopener" href="https://minikube.sigs.k8s.io/docs/drivers/podman/">Podman</a>, <a target="_blank" rel="noopener" href="https://minikube.sigs.k8s.io/docs/drivers/virtualbox/">VirtualBox</a>, or <a target="_blank" rel="noopener" href="https://minikube.sigs.k8s.io/docs/drivers/vmware/">VMware Fusion&#x2F;Workstation</a></li>
+</ul>
+</blockquote>
+<p>稳定版安装：</p>
+<pre><code class="shell">curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+sudo install minikube-linux-amd64 /usr/local/bin/minikube
+</code></pre>
+<h4 id="strat-your-cluster"><a href="#strat-your-cluster" class="headerlink" title="strat your cluster"></a>strat your cluster</h4><pre><code class="shell">minikube start
+</code></pre>
+<h4 id="interact-with-your-cluster"><a href="#interact-with-your-cluster" class="headerlink" title="interact with your cluster"></a>interact with your cluster</h4><p>使用<strong>kubectl</strong>访问集群，如下等等</p>
+<pre><code class="shell">kubectl get po -A
+kubectl create deployment hello-minikube --image=kicbase/echo-server:1.0
+</code></pre>
+<blockquote>
+<p>如果使用kubectl出现类似 <strong>couldn’t get current server API group list: … read: connection reset by peer</strong>报错，可以查看我之前的文章尝试修复：<a href="https://loora1n.github.io/2023/12/20/%E3%80%90cloud%E3%80%91k8s%20kubectl%20%E8%AE%BF%E9%97%AEAPI%20%E5%87%BA%E7%8E%B0connection%20reser%20by%20peer/">Loora1N’s Blog鹭雨</a></p>
+</blockquote>
+
+        </div>
+
+    
+
+</div>
+                <div class="footer">
+    <span>Copyright © 2022 Loora1N&#39;s Blog | 鹭雨</span>
+    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
+</div>
+
+
+<link rel="stylesheet" href="/css/a11y-dark.min.css">
+
+
+<script src="/js/highlight.min.js"></script>
+
+
+<script src="/js/highlightjs-line-numbers.js"></script>
+
+
+<script>
+    hljs.initHighlightingOnLoad();
+    hljs.initLineNumbersOnLoad();
+</script>
+
+            </div>
+        </div>
+    <!-- hexo injector body_end start -->
+  <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
+  <script data-pjax>
+        function GithubCalendarConfig(){
+            var git_githubapiurl ="https://python-github-calendar-api.vercel.app/api?Loora1N";
+            var git_color =['#ebedf0', '#fdcdec', '#fc9bd9', '#fa6ac5', '#f838b2', '#f5089f', '#c4067e', '#92055e', '#540336', '#48022f', '#30021f'];
+            var git_user ="Loora1N";
+            var parent_div_git = document.getElementById('recent-posts');
+            var git_div_html = '<div class="recent-post-item" style="width:100%;height:auto;padding:10px;"><div id="github_loading" style="width:10%;height:100%;margin:0 auto;display: block"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"  viewBox="0 0 50 50" style="enable-background:new 0 0 50 50" xml:space="preserve"><path fill="#d0d0d0" d="M25.251,6.461c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615V6.461z" transform="rotate(275.098 25 25)"><animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="0.6s" repeatCount="indefinite"></animateTransform></path></svg></div><div id="github_container"></div></div>';
+            if(parent_div_git && location.pathname =='/about/'){
+                console.log('已挂载github calendar')
+                // parent_div_git.innerHTML=git_div_html+parent_div_git.innerHTML // 无报错，但不影响使用(支持pjax跳转)
+                parent_div_git.insertAdjacentHTML("afterbegin",git_div_html) // 有报错，但不影响使用(支持pjax跳转)
+            };
+            GithubCalendar(git_githubapiurl,git_color,git_user)
+        }
+        if(document.getElementById('recent-posts')){
+            GithubCalendarConfig()
+        }
+    </script>
+    <style>#github_container{min-height:280px}@media screen and (max-width:650px) {#github_container{background-image:;min-height:0px}}</style>
+    <style></style><!-- hexo injector body_end end --></body>
+</html>
