@@ -39,7 +39,7 @@
             【Cloud】kubectl 报错connection reset by peer
         </div>
         <div class="post-meta">
-            2023-12-20
+            2023-12-21
         </div>
         <div class="post-md">
             <h2 id="情景"><a href="#情景" class="headerlink" title="情景"></a>情景</h2><p>配置k8s环境时，使用<code>minikube start</code>启动集群，尝试使用<code>kubectl</code>命令与其交互时出现报错如下：</p>
@@ -67,7 +67,6 @@ apiserver: Running
 kubeconfig: Configured
 </code></pre>
 <p>报错的reset地址<strong>192.168.163.1:7890</strong>，是我为虚拟机设置的代理，所以大致确定应该是代理的问题.</p>
-<p>虽然测试<code>curl -x http://192.168.163.1:7890 https://www.google.com</code>能够正常访问，网络应该是没问题的，但不知道为什么<code>kubectl</code>就是用不了</p>
 <h2 id="修复"><a href="#修复" class="headerlink" title="修复"></a>修复</h2><p>要确定是否真的是代理的问题，可以使用unset取消代理的设置，测试下看看效果：</p>
 <pre><code class="shell">┌─[loorain@ubuntu] - [~] - [8053]
 └─[$] unset https_proxy http_proxy all_proxy                              [15:01:12]
@@ -76,11 +75,21 @@ kubeconfig: Configured
 NAME       STATUS   ROLES           AGE   VERSION
 minikube   Ready    control-plane   55m   v1.28.3
 </code></pre>
-<p>基本确认无误了。由于我代理设置写在<code>~/.zshrc</code>内，不太想更改，这里只好继续在<code>~/.zshrc</code>内增加一下内容:</p>
-<pre><code class="shell">export NO_PROXY=127.0.0.1,localhost,.cluster.local,192.168.49.0/24
-alias kubectl=&quot;https_proxy= http_proxy= all_proxy= NO_PROXY=$NO_PROXY kubectl&quot;
+<p>确定是因为我这里没有设置no_proxy，导致kubectl访问192.168.49.2这种本地的地址出错，这里继续在<code>~/.zshrc</code>内增加一下no_proxy环境变量内容:</p>
+<pre><code class="shell">export no_proxy=&quot;localhost \
+        127.0.0.0/8, \
+        10.0.0.0/8, \
+        172.1[6-9].0.0/16, \
+        172.2[0-9].0.0/16, \
+        192.168.0.0/16&quot;
+export NO_PROXY=&quot;localhost, \
+        127.0.0.0/8, \
+        10.0.0.0/8, \
+        172.1[6-9].0.0/16, \
+        172.2[0-9].0.0/16, \
+        192.168.0.0/16&quot;
 </code></pre>
-<p>这里的<code>192.168.49.0/24</code>指k8s集群的ip列表之类的，可以使用<code>minikube profile list</code>查看下内容:</p>
+<p>环境变量中<code>192.168.0.0/24</code>指k8s集群的ip列表，我这里也把一些常见的本地IP加入了<strong>no_proxy</strong>，可以使用<code>minikube profile list</code>查看下内容:</p>
 <pre><code class="shell">┌─[loorain@ubuntu] - [~/eBPF] - [8074]
 └─[$] minikube profile list                                               [15:54:02]
 |----------|-----------|---------|--------------|------|---------|---------|-------|--------|
