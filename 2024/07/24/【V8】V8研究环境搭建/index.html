@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
+    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
+    <title>Loora1N&#39;s Blog | 鹭雨 | </title>
+    
+<link rel="stylesheet" href="/css/reset.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/css/markdown.css">
+
+    
+<link rel="stylesheet" href="/css/fonts.css">
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+    <body>
+        <div class="paper">
+            <div class="paper-main">
+                
+                    <div class="post-header">
+    <a class="logo" href="/">Loora1N&#39;s Blog | 鹭雨</a>
+    <a class="go-home" href="/">
+        <svg width="8" height="14" viewBox="0 0 8 14">
+            <path d="M7 1L1 7l6 6" stroke="#000" stroke-width="2" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </a>
+</div>
+                
+                <div class="post-main">
+
+    
+    
+        <div class="post-main-title">
+            【V8】V8研究环境搭建
+        </div>
+        <div class="post-meta">
+            2024-07-24
+        </div>
+        <div class="post-md">
+            <blockquote>
+<p>博客停更了好久，最近尝试学学v8，希望能坚持坚持，并有所成果</p>
+</blockquote>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><blockquote>
+<p><a target="_blank" rel="noopener" href="https://www.anquanke.com/post/id/267518">https://www.anquanke.com/post/id/267518</a></p>
+<p><a target="_blank" rel="noopener" href="https://tokameine.gitbook.io/chose-me-or-javascript-v8">https://tokameine.gitbook.io/chose-me-or-javascript-v8</a></p>
+</blockquote>
+<h2 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h2><h3 id="运行环境搭建"><a href="#运行环境搭建" class="headerlink" title="运行环境搭建"></a>运行环境搭建</h3><p>clone开发者工具，下载v8源码以及依赖</p>
+<pre><code class="sh">sudo apt install bison cdbs curl flex g++ git python vim pkg-config
+git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+echo &#39;export PATH=$PATH:&quot;/path/to/depot_tools&quot;&#39; &gt;&gt; ~/.bashrc
+# /path/to/depot_tools改成depot_tools的目录
+fetch v8
+./v8/build/install-build-deps.sh --no-chromeos-fonts
+</code></pre>
+<blockquote>
+<p><code>fetch v8</code>命令会下载v8的源码，具体时间视网络情况而定</p>
+<p><code>--no-chromeos-fonts</code>为去除字体依赖，有需要可以去掉参数</p>
+</blockquote>
+<p>编译源码，为便于编译不同版本的源码，使用如下脚本：</p>
+<pre><code class="shell">#!/bin/bash
+VER=$1 
+if [ -z $2 ]; then
+        NAME=$VER
+else
+        NAME=$2
+fi
+cd /path/depot_tools/v8
+# /path/depot_tools/v8 换成自己的路径
+git reset --hard $VER
+gclient sync -D
+gn gen out/x64_$NAME.release --args=&#39;v8_monolithic=true v8_use_external_startup_data=false is_component_build=false is_debug=false target_cpu =&quot;x64&quot; use_goma=false goma_dir=&quot;None&quot; v8_enable_backtrace=true v8_enable_disassembler=true v8_enable_object_print=true v8_enable_verify_heap=true&#39;
+ninja -C out/x64_$NAME.release d8
+</code></pre>
+<p>例，只需替换对应版本号即可</p>
+<pre><code>./build.sh &quot;9.6.180.6&quot;
+</code></pre>
+<p>编译时间视机器性能而定，本人使用wsl2，编译完成大致需要十多分钟，在可接受范围内</p>
+<p><img src="/img/article/v8-1/325633f1d8bbd92195913fa0aab37c3.png" alt="325633f1d8bbd92195913fa0aab37c3"></p>
+<h4 id="报错处理"><a href="#报错处理" class="headerlink" title="报错处理"></a>报错处理</h4><p>在编译时，若python3版本较新，可能出现报错如下：</p>
+<pre><code class="sh">FAILED: gen/src/inspector/protocol/Forward.h gen/src/inspector/protocol/Protocol.cpp gen/src/inspector/protocol/Protocol.h gen/src/inspector/protocol/Console.cpp gen/src/inspector/protocol/Console.h gen/src/inspector/protocol/Debugger.cpp gen/src/inspector/protocol/Debugger.h gen/src/inspector/protocol/HeapProfiler.cpp gen/src/inspector/protocol/HeapProfiler.h gen/src/inspector/protocol/Profiler.cpp gen/src/inspector/protocol/Profiler.h gen/src/inspector/protocol/Runtime.cpp gen/src/inspector/protocol/Runtime.h gen/src/inspector/protocol/Schema.cpp gen/src/inspector/protocol/Schema.h gen/include/inspector/Debugger.h gen/include/inspector/Runtime.h gen/include/inspector/Schema.h 
+python3 ../../third_party/inspector_protocol/code_generator.py --jinja_dir ../../third_party/ --output_base gen/src/inspector --config ../../src/inspector/inspector_protocol_config.json --inspector_protocol_dir ///third_party/inspector_protocol
+Traceback (most recent call last):
+  File &quot;/home/loorain/v8/v8/out/x64_9.6.180.6.release/../../third_party/inspector_protocol/code_generator.py&quot;, line 702, in &lt;module&gt;
+    main()
+  File &quot;/home/loorain/v8/v8/out/x64_9.6.180.6.release/../../third_party/inspector_protocol/code_generator.py&quot;, line 584, in main
+    jinja_env = initialize_jinja_env(jinja_dir, config.protocol.output, config)
+  File &quot;/home/loorain/v8/v8/out/x64_9.6.180.6.release/../../third_party/inspector_protocol/code_generator.py&quot;, line 190, in initialize_jinja_env
+    import jinja2
+  File &quot;/home/loorain/v8/v8/third_party/jinja2/__init__.py&quot;, line 33, in &lt;module&gt;
+    from jinja2.environment import Environment, Template
+  File &quot;/home/loorain/v8/v8/third_party/jinja2/environment.py&quot;, line 16, in &lt;module&gt;
+    from jinja2.defaults import BLOCK_START_STRING, \
+  File &quot;/home/loorain/v8/v8/third_party/jinja2/defaults.py&quot;, line 32, in &lt;module&gt;
+    from jinja2.tests import TESTS as DEFAULT_TESTS
+  File &quot;/home/loorain/v8/v8/third_party/jinja2/tests.py&quot;, line 13, in &lt;module&gt;
+    from collections import Mapping
+ImportError: cannot import name &#39;Mapping&#39; from &#39;collections&#39;
+</code></pre>
+<p>这个错误是由于在Python 3.10及以后的版本中，<code>collections.Mapping</code>已经被移动到了<code>collections.abc</code>模块中。解决方式：</p>
+<ol>
+<li><strong>定位出错文件</strong>：根据错误信息，出错的文件是<code>jinja2/tests.py</code></li>
+<li><strong>编辑文件</strong>：打开<code>jinja2/tests.py</code>文件，找到导入<code>Mapping</code>的地方</li>
+<li><strong>修改导入语句</strong>：将<code>from collections import Mapping</code>修改为<code>from collections.abc import Mapping</code></li>
+</ol>
+<h3 id="调试环境"><a href="#调试环境" class="headerlink" title="调试环境"></a>调试环境</h3><p>将文件<code>v8/tools/gdbinit</code>，加入到<code>~/.gdbinit</code>中：</p>
+<pre><code class="shell">┌─[loorain@LAPTOP-Loora1N] - [~/v8/workdir] - [10125]
+└─[$] cat ~/.gdbinit                                                                                                               [9:59:35]
+source /home/loorain/pwndbg/gdbinit.py 
+#source ~/peda/peda.py
+source ~/Pwngdb/pwngdb.py
+source ~/Pwngdb/angelheap/gdbinit.py
+source /home/loorain/v8/v8/tools/gdbinit #这里是v8的路径
+
+define hook-run
+python
+import angelheap
+angelheap.init_angelheap()
+end
+end
+</code></pre>
+<h4 id="测试引擎"><a href="#测试引擎" class="headerlink" title="测试引擎"></a>测试引擎</h4><p>首先测试下编译好的引擎能否使用,编写test.js</p>
+<pre><code class="javascript">a = [1];
+%DebugPrint(a);
+%SystemBreak();
+</code></pre>
+<ul>
+<li><code>%DebugPrint(x);</code> 打印变量x相关信息</li>
+<li><code>%SystemBreak();</code>抛出中断，使得gdb在此处断点</li>
+</ul>
+<p>在 v8&#x2F;out&#x2F;x64_$name.release 目录下可以找到二进制程序 d8，它才是解析执行 js 代码的引擎。使用d8解析<code>test.js</code>，会报错如下：</p>
+<pre><code class="sh">┌─[loorain@LAPTOP-Loora1N] - [~/v8/workdir] - [10126]
+└─[$] ../v8/out/x64_9.6.180.6.release/d8 test.js --allow-native-syntax                                                             [9:59:47]
+Warning: unknown flag --allow-native-syntax.
+Try --help for options
+test.js:2: SyntaxError: Unexpected token &#39;%&#39;
+%DebugPrint(a);
+^
+SyntaxError: Unexpected token &#39;%&#39;
+</code></pre>
+<p>这是由于类似<code>%DebugPrint(a);</code>这样的代码，原生引擎无法直接解析，需要加入参数<code>----allow-native-syntax</code>，运行结果如下：</p>
+<pre><code class="sh">┌─[loorain@LAPTOP-Loora1N] - [~/v8/workdir] - [10127]
+└─[$] ../v8/out/x64_9.6.180.6.release/d8 test.js --allow-natives-syntax                                                           [10:01:35]
+DebugPrint: 0x3b2608049921: [JSArray]
+ - map: 0x3b2608203a41 &lt;Map(PACKED_SMI_ELEMENTS)&gt; [FastProperties]
+ - prototype: 0x3b26081cc0e9 &lt;JSArray[0]&gt;
+ - elements: 0x3b26081d3181 &lt;FixedArray[1]&gt; [PACKED_SMI_ELEMENTS (COW)]
+ - length: 1
+ - properties: 0x3b260800222d &lt;FixedArray[0]&gt;
+ - All own properties (excluding elements): &#123;
+    0x3b26080048f1: [String] in ReadOnlySpace: #length: 0x3b260814215d &lt;AccessorInfo&gt; (const accessor descriptor), location: descriptor
+ &#125;
+ - elements: 0x3b26081d3181 &lt;FixedArray[1]&gt; &#123;
+           0: 1
+ &#125;
+0x3b2608203a41: [Map]
+ - type: JS_ARRAY_TYPE
+ - instance size: 16
+ - inobject properties: 0
+ - elements kind: PACKED_SMI_ELEMENTS
+ - unused property fields: 0
+ - enum length: invalid
+ - back pointer: 0x3b26080023b5 &lt;undefined&gt;
+ - prototype_validity cell: 0x3b2608142405 &lt;Cell value= 1&gt;
+ - instance descriptors #1: 0x3b26081cc59d &lt;DescriptorArray[1]&gt;
+ - transitions #1: 0x3b26081cc5b9 &lt;TransitionArray[4]&gt;Transition array #1:
+     0x3b260800524d &lt;Symbol: (elements_transition_symbol)&gt;: (transition to HOLEY_SMI_ELEMENTS) -&gt; 0x3b2608203ab9 &lt;Map(HOLEY_SMI_ELEMENTS)&gt;
+
+ - prototype: 0x3b26081cc0e9 &lt;JSArray[0]&gt;
+ - constructor: 0x3b26081cbe85 &lt;JSFunction Array (sfi = 0x3b260814adc9)&gt;
+ - dependent code: 0x3b26080021b9 &lt;Other heap object (WEAK_FIXED_ARRAY_TYPE)&gt;
+ - construction counter: 0
+
+[1]    5022 trace trap  ../v8/out/x64_9.6.180.6.release/d8 test.js --allow-natives-syntax
+</code></pre>
+<h4 id="调试程序"><a href="#调试程序" class="headerlink" title="调试程序"></a>调试程序</h4><p>接下来就可以使用gdb调试d8引擎</p>
+<pre><code class="sh"> gdb ../v8/out/x64_9.6.180.6.release/d8 
+ ...
+ pwndbg&gt; r --allow-natives-syntax test.js
+ Starting program: /home/loorain/v8/v8/out/x64_9.6.180.6.release/d8 ./test.js  --allow-natives-syntax
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library &quot;/usr/lib/x86_64-linux-gnu/libthread_db.so.1&quot;.
+[New Thread 0x7f692cbb1640 (LWP 11776)]
+[New Thread 0x7f692c3b0640 (LWP 11777)]
+[New Thread 0x7f692bbaf640 (LWP 11778)]
+[New Thread 0x7f692b3ae640 (LWP 11779)]
+[New Thread 0x7f692abad640 (LWP 11780)]
+[New Thread 0x7f692a3ac640 (LWP 11781)]
+[New Thread 0x7f6929bab640 (LWP 11782)]
+[New Thread 0x7f69293aa640 (LWP 11783)]
+[New Thread 0x7f6928ba9640 (LWP 11784)]
+[New Thread 0x7f69283a8640 (LWP 11785)]
+[New Thread 0x7f6927ba7640 (LWP 11786)]
+[New Thread 0x7f69273a6640 (LWP 11787)]
+[New Thread 0x7f6926ba5640 (LWP 11788)]
+[New Thread 0x7f69263a4640 (LWP 11789)]
+[New Thread 0x7f6925ba3640 (LWP 11790)]
+DebugPrint: 0x2e008049931: [JSArray]
+ - map: 0x02e008203a41 &lt;Map(PACKED_SMI_ELEMENTS)&gt; [FastProperties]
+ - prototype: 0x02e0081cc0e9 &lt;JSArray[0]&gt;
+ - elements: 0x02e0081d3181 &lt;FixedArray[1]&gt; [PACKED_SMI_ELEMENTS (COW)]
+ - length: 1
+ - properties: 0x02e00800222d &lt;FixedArray[0]&gt;
+ - All own properties (excluding elements): &#123;
+    0x2e0080048f1: [String] in ReadOnlySpace: #length: 0x02e00814215d &lt;AccessorInfo&gt; (const accessor descriptor), location: descriptor
+ &#125;
+ - elements: 0x02e0081d3181 &lt;FixedArray[1]&gt; &#123;
+           0: 1
+ &#125;
+0x2e008203a41: [Map]
+ - type: JS_ARRAY_TYPE
+ - instance size: 16
+ - inobject properties: 0
+ - elements kind: PACKED_SMI_ELEMENTS
+ - unused property fields: 0
+ - enum length: invalid
+ - back pointer: 0x02e0080023b5 &lt;undefined&gt;
+ - prototype_validity cell: 0x02e008142405 &lt;Cell value= 1&gt;
+ - instance descriptors #1: 0x02e0081cc59d &lt;DescriptorArray[1]&gt;
+ - transitions #1: 0x02e0081cc5b9 &lt;TransitionArray[4]&gt;Transition array #1:
+     0x02e00800524d &lt;Symbol: (elements_transition_symbol)&gt;: (transition to HOLEY_SMI_ELEMENTS) -&gt; 0x02e008203ab9 &lt;Map(HOLEY_SMI_ELEMENTS)&gt;
+
+ - prototype: 0x02e0081cc0e9 &lt;JSArray[0]&gt;
+ - constructor: 0x02e0081cbe85 &lt;JSFunction Array (sfi = 0x2e00814adc9)&gt;
+ - dependent code: 0x02e0080021b9 &lt;Other heap object (WEAK_FIXED_ARRAY_TYPE)&gt;
+ - construction counter: 0
+</code></pre>
+<p>在刚刚添加的v8的<code>gbdinit</code>中，包含了一下新的辅助指令，如<code>job</code>，可以用来输出对象信息。其他具体命令可以查看刚刚的<code>gdbinit</code>文件，或者网址<a target="_blank" rel="noopener" href="https://chromium.googlesource.com/v8/v8/+/refs/heads/main/tools/gdbinit%EF%BC%8C%E5%9C%A8%E5%85%B6%E4%B8%AD%E7%9A%84define%E9%83%A8%E5%88%86%E6%9C%89%E6%89%80%E5%AE%9A%E4%B9%89%E3%80%82">https://chromium.googlesource.com/v8/v8/+/refs/heads/main/tools/gdbinit，在其中的define部分有所定义。</a></p>
+<p><img src="/img/article/v8-1/image-20240724110559162-1721790381538-2.png" alt="image-20240724110559162"></p>
+<p><img src="/img/article/v8-1/image-20240724110614457.png" alt="image-20240724110614457"></p>
+<p>用<code>job</code>输出刚刚的a可以得到结果</p>
+<pre><code class="sh">pwndbg&gt; job 0x2e008049931
+0x2e008049931: [JSArray]
+ - map: 0x02e008203a41 &lt;Map(PACKED_SMI_ELEMENTS)&gt; [FastProperties]
+ - prototype: 0x02e0081cc0e9 &lt;JSArray[0]&gt;
+ - elements: 0x02e0081d3181 &lt;FixedArray[1]&gt; [PACKED_SMI_ELEMENTS (COW)]
+ - length: 1
+ - properties: 0x02e00800222d &lt;FixedArray[0]&gt;
+ - All own properties (excluding elements): &#123;
+    0x2e0080048f1: [String] in ReadOnlySpace: #length: 0x02e00814215d &lt;AccessorInfo&gt; (const accessor descriptor), location: descriptor
+ &#125;
+ - elements: 0x02e0081d3181 &lt;FixedArray[1]&gt; &#123;
+           0: 1
+ &#125;
+</code></pre>
+<p>这里有经验的话，可以看到我们job查看的地址并不符合常理，末尾居然为1。这是因为使用job命令的时候，其地址要是其真实地址+1，也就是说，在上面的样例中，其真实地址为：<code>0x2e008049930</code></p>
+<pre><code class="sh">pwndbg&gt; x/4gx 0x2e008049930
+0x2e008049930:  0x0800222d08203a41      0x00000002081d3181
+0x2e008049940:  0x0000000000000000      0x0000000000000000
+</code></pre>
+<p>如果使用job命令，后面跟着的是其真实地址，会被解析成SMI（small integer）类型：</p>
+<pre><code class="sh">pwndbg&gt; job 0x2e008049930
+Smi: 0x4024c98 (67259544)
+</code></pre>
+<blockquote>
+<p>另外可以注意到 <strong>0x4024c98 * 2</strong>正好等于地址的低32位 <strong>0x8049930</strong></p>
+<p>这是因为job将其解析成了一个数据，v8 储存数据的方式有些特别，它会让这些整数都乘以二，也包括数组的长度，因此当 job 认为该地址是一个数字类型时，会将其除以二后的值当作本来的值，或者说，将原值左移一位后储存</p>
+</blockquote>
+<p>基本调试环境到这种程度就可以了。</p>
+
+        </div>
+
+    
+
+</div>
+                <div class="footer">
+    <span>Copyright © 2022 Loora1N&#39;s Blog | 鹭雨</span>
+    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
+</div>
+
+
+<link rel="stylesheet" href="/css/a11y-dark.min.css">
+
+
+<script src="/js/highlight.min.js"></script>
+
+
+<script src="/js/highlightjs-line-numbers.js"></script>
+
+
+<script>
+    hljs.initHighlightingOnLoad();
+    hljs.initLineNumbersOnLoad();
+</script>
+
+            </div>
+        </div>
+    <!-- hexo injector body_end start -->
+  <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
+  <script data-pjax>
+        function GithubCalendarConfig(){
+            var git_githubapiurl ="https://python-github-calendar-api.vercel.app/api?Loora1N";
+            var git_color =['#ebedf0', '#fdcdec', '#fc9bd9', '#fa6ac5', '#f838b2', '#f5089f', '#c4067e', '#92055e', '#540336', '#48022f', '#30021f'];
+            var git_user ="Loora1N";
+            var parent_div_git = document.getElementById('recent-posts');
+            var git_div_html = '<div class="recent-post-item" style="width:100%;height:auto;padding:10px;"><div id="github_loading" style="width:10%;height:100%;margin:0 auto;display: block"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"  viewBox="0 0 50 50" style="enable-background:new 0 0 50 50" xml:space="preserve"><path fill="#d0d0d0" d="M25.251,6.461c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615V6.461z" transform="rotate(275.098 25 25)"><animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="0.6s" repeatCount="indefinite"></animateTransform></path></svg></div><div id="github_container"></div></div>';
+            if(parent_div_git && location.pathname =='/about/'){
+                console.log('已挂载github calendar')
+                // parent_div_git.innerHTML=git_div_html+parent_div_git.innerHTML // 无报错，但不影响使用(支持pjax跳转)
+                parent_div_git.insertAdjacentHTML("afterbegin",git_div_html) // 有报错，但不影响使用(支持pjax跳转)
+            };
+            GithubCalendar(git_githubapiurl,git_color,git_user)
+        }
+        if(document.getElementById('recent-posts')){
+            GithubCalendarConfig()
+        }
+    </script>
+    <style>#github_container{min-height:280px}@media screen and (max-width:650px) {#github_container{background-image:;min-height:0px}}</style>
+    <style></style><!-- hexo injector body_end end --></body>
+</html>

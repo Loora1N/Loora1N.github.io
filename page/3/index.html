@@ -40,6 +40,27 @@
                 <div class="post-list">
     
     <div class="post">
+        <a class="post-title" href="/2023/04/25/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH8%E5%8F%8ACH23/">网络协议栈CH8及CH23</a>
+        <div class="post-except">
+            
+昨晚搞到快两点，今天9.30才起床，希望11点半之前能搞完去吃饭😭
+
+第八章 IP：网际协议IP分组
+参照上图，有几个基本概念（本例中的传输层协议为UDP）：
+
+报文：由传输层送至IP的数据报，本身包含传输层首部和数据
+数据报：IP在报文的前面加上自己的IP首部，且根据长度考虑是否分片（上图1-2行）
+帧：IP将分好片的数据报交给数据链路层，数据链路填上自己的首部后变为帧（上图3行）
+分组：一个分片的数据报或者一个不需分片的数据报为分组
+
+
+ 需注意的是IP数据报结构存储
+            <a class="read-more" href="/2023/04/25/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH8%E5%8F%8ACH23/"> ... </a>
+        </div>
+        <div class="post-date">2023.04.25</div>
+    </div>
+    
+    <div class="post">
         <a class="post-title" href="/2023/04/24/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88%E5%A4%8D%E4%B9%A0/">网络协议栈CH1-CH3</a>
         <div class="post-except">
             
@@ -219,15 +240,6 @@ FSOP 是 File Stream Oriented Programming 的缩写，根据前面对 FILE 的�
             <a class="read-more" href="/2022/11/25/%E3%80%90IO_FILE%E3%80%91FSOP/"> ... </a>
         </div>
         <div class="post-date">2022.11.25</div>
-    </div>
-    
-    <div class="post">
-        <a class="post-title" href="/2022/11/13/%E3%80%90IO_FILE%E3%80%91house%20of%20cat/">【IO_FILE】house of cat</a>
-        <div class="post-except">
-            前言House of Cat利用了House of emma的虚表偏移修改思想，通过修改虚表指针的偏移，避免了对需要绕过TLS上 _pointer_chk_guard的检测相关的IO函数的调用，转而调用**_IO_wfile_jumps中的_IO_wfile_seekoff函数，然后进入到_IO_switch_to_wget_mode函数中来攻击，从而使得攻击条件和利用变得更为简单。并且house of cat在FSOP的情况下也是可行的，只需修改虚表指针的偏移来调用_IO_
-            <a class="read-more" href="/2022/11/13/%E3%80%90IO_FILE%E3%80%91house%20of%20cat/"> ... </a>
-        </div>
-        <div class="post-date">2022.11.13</div>
     </div>
     
 </div>
