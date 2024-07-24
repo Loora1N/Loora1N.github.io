@@ -2,6 +2,15 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://loora1n.github.io/links/index.html</loc>
+    
+    <lastmod>2024-07-24</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>http://loora1n.github.io/2023/12/21/%E3%80%90cloud%E3%80%91k8s%20kubectl%20%E8%AE%BF%E9%97%AEAPI%20%E5%87%BA%E7%8E%B0connection%20reser%20by%20peer/</loc>
     
     <lastmod>2023-12-21</lastmod>
@@ -23,15 +32,6 @@
     <loc>http://loora1n.github.io/about/index.html</loc>
     
     <lastmod>2023-12-20</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>http://loora1n.github.io/links/index.html</loc>
-    
-    <lastmod>2023-11-22</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -553,7 +553,7 @@
 
   <url>
     <loc>http://loora1n.github.io/</loc>
-    <lastmod>2023-12-21</lastmod>
+    <lastmod>2024-07-24</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
