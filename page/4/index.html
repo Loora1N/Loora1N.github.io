@@ -40,6 +40,16 @@
                 <div class="post-list">
     
     <div class="post">
+        <a class="post-title" href="/2022/11/29/%E3%80%90IO_FILE%E3%80%91%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86%E6%A6%82%E8%A7%88/">【IO_FILE】源码详解</a>
+        <div class="post-except">
+            
+由于glibc版本的不断更新，常见几种hook在glibc2.34终被舍去，我们急需一种能够在高版本的glibc下仍能有效的getshell方法。而IO_FILE作为heap题目的进阶技能逐渐引起大家注意，吸引了许多大佬投入其中。仅在在2021-2022年期间就出现出现了大量以IO_FILE为基础的调用链利用方式，在比赛中也逐渐成为了当下heap题目的主流getshell方式。本文以glibc2.36为例，从相关结构体以及fopen函数源码入手，详细介绍IO_FILE相关知
+            <a class="read-more" href="/2022/11/29/%E3%80%90IO_FILE%E3%80%91%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86%E6%A6%82%E8%A7%88/"> ... </a>
+        </div>
+        <div class="post-date">2022.11.29</div>
+    </div>
+    
+    <div class="post">
         <a class="post-title" href="/2022/11/25/%E3%80%90IO_FILE%E3%80%91FSOP/">【IO_FILE】FSOP</a>
         <div class="post-except">
             
@@ -166,20 +176,6 @@ house_of_botcakehouse_of_botcake利用的是块的分割，使得只存在uaf漏
             <a class="read-more" href="/2022/10/20/how2heap%E2%91%A0%20botcake,einherjar,lore/"> ... </a>
         </div>
         <div class="post-date">2022.10.20</div>
-    </div>
-    
-    <div class="post">
-        <a class="post-title" href="/2022/10/18/Kernel-pwnbase%E8%AF%A6%E8%A7%A3/">Kernel-pwnbase详解</a>
-        <div class="post-except">
-            
-参加starnewctf week4后，想要复现一道kernel的题。网上基本找不到Kernel-pwn的base，因此做了这个pwnbase用于在ctfd上提供动态kernel题目。base下载地址kernelbase
-
-DockfileFROM ubuntu:20.04
-
-RUN sed -i &quot;s/http:\/\/archive.ubuntu.com/http:\/\/mirrors.tuna.tsinghua.edu.cn/g&quot; /etc/ap
-            <a class="read-more" href="/2022/10/18/Kernel-pwnbase%E8%AF%A6%E8%A7%A3/"> ... </a>
-        </div>
-        <div class="post-date">2022.10.18</div>
     </div>
     
 </div>

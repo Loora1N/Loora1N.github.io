@@ -1,3 +1,4 @@
+http://loora1n.github.io/2024/07/29/%E3%80%90V8%E3%80%91CVE-2020-6507%E5%A4%8D%E7%8E%B0/
 http://loora1n.github.io/2024/07/25/%E3%80%90V8%E3%80%91%E9%80%9A%E7%94%A8%E5%88%A9%E7%94%A8%E9%93%BE%E7%A0%94%E7%A9%B6/
 http://loora1n.github.io/2024/07/24/%E3%80%90V8%E3%80%91V8%E7%A0%94%E7%A9%B6%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/
 http://loora1n.github.io/links/index.html

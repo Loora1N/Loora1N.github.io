@@ -40,6 +40,27 @@
                 <div class="post-list">
     
     <div class="post">
+        <a class="post-title" href="/2023/05/16/%E3%80%90kernel%E3%80%91AntCTFxD3%5ECTF%20d3op%20WP/">【WP】AntCTFxD3^CTF d3op</a>
+        <div class="post-except">
+            
+本文采取根据官方wp的方式进行复现，需要官方WP的pdf文件也可以在评论区留言（侵删）
+
+文件系统分析首先解压文件系统
+mkdir rootfs
+cd rootfs
+unsquashfs ../unsquashfs ../squashfs-root.img  
+
+在etc/os-release中我们能看到版本信息
+NAME=&quot;OpenWrt&quot;
+VERSION=&quot;22.03.3&quot;
+ID=&quot;openwrt&quot;
+ID_LI
+            <a class="read-more" href="/2023/05/16/%E3%80%90kernel%E3%80%91AntCTFxD3%5ECTF%20d3op%20WP/"> ... </a>
+        </div>
+        <div class="post-date">2023.05.16</div>
+    </div>
+    
+    <div class="post">
         <a class="post-title" href="/2023/04/25/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH4%E5%8F%8ACH6/">网络协议栈CH4及CH6</a>
         <div class="post-except">
             题外话
@@ -232,16 +253,6 @@ fread首先是一个宏定义，替换为_IO_fread函数
             <a class="read-more" href="/2022/12/07/%E3%80%90IO_FILE%E3%80%91%E6%BA%90%E7%A0%81%E8%AF%A6%E8%A7%A3-part2/"> ... </a>
         </div>
         <div class="post-date">2022.12.07</div>
-    </div>
-    
-    <div class="post">
-        <a class="post-title" href="/2022/11/29/%E3%80%90IO_FILE%E3%80%91%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86%E6%A6%82%E8%A7%88/">【IO_FILE】源码详解</a>
-        <div class="post-except">
-            
-由于glibc版本的不断更新，常见几种hook在glibc2.34终被舍去，我们急需一种能够在高版本的glibc下仍能有效的getshell方法。而IO_FILE作为heap题目的进阶技能逐渐引起大家注意，吸引了许多大佬投入其中。仅在在2021-2022年期间就出现出现了大量以IO_FILE为基础的调用链利用方式，在比赛中也逐渐成为了当下heap题目的主流getshell方式。本文以glibc2.36为例，从相关结构体以及fopen函数源码入手，详细介绍IO_FILE相关知
-            <a class="read-more" href="/2022/11/29/%E3%80%90IO_FILE%E3%80%91%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86%E6%A6%82%E8%A7%88/"> ... </a>
-        </div>
-        <div class="post-date">2022.11.29</div>
     </div>
     
 </div>
