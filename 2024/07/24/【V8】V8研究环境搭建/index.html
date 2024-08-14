@@ -134,15 +134,13 @@ end
 </ul>
 <p>在 v8&#x2F;out&#x2F;x64_$name.release 目录下可以找到二进制程序 d8，它才是解析执行 js 代码的引擎。使用d8解析<code>test.js</code>，会报错如下：</p>
 <pre><code class="sh">┌─[loorain@LAPTOP-Loora1N] - [~/v8/workdir] - [10126]
-└─[$] ../v8/out/x64_9.6.180.6.release/d8 test.js --allow-native-syntax                                                             [9:59:47]
-Warning: unknown flag --allow-native-syntax.
-Try --help for options
+└─[$] ../v8/out/x64_9.6.180.6.release/d8 test.js                                                             [9:59:47]
 test.js:2: SyntaxError: Unexpected token &#39;%&#39;
 %DebugPrint(a);
 ^
 SyntaxError: Unexpected token &#39;%&#39;
 </code></pre>
-<p>这是由于类似<code>%DebugPrint(a);</code>这样的代码，原生引擎无法直接解析，需要加入参数<code>----allow-native-syntax</code>，运行结果如下：</p>
+<p>这是由于类似<code>%DebugPrint(a);</code>这样的代码，原生引擎无法直接解析，需要加入参数<code>--allow-natives-syntax</code>，运行结果如下：</p>
 <pre><code class="sh">┌─[loorain@LAPTOP-Loora1N] - [~/v8/workdir] - [10127]
 └─[$] ../v8/out/x64_9.6.180.6.release/d8 test.js --allow-natives-syntax                                                           [10:01:35]
 DebugPrint: 0x3b2608049921: [JSArray]
