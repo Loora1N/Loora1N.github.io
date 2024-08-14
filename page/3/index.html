@@ -40,6 +40,20 @@
                 <div class="post-list">
     
     <div class="post">
+        <a class="post-title" href="/2023/07/10/%E6%9F%90%E5%B8%82%E7%94%B5%E7%BD%91%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98%E5%B0%8F%E8%AE%B0/">某市电网漏洞挖掘小记</a>
+        <div class="post-except">
+            由于电网设施保护非常严格，整个网络拓扑也异常复杂，说实话前两天一直在梳理整个体系架构（后来发现完全没必要）。整整4天，找到两个栈溢出，但都没法利用，只好按DOS交了。据我了解，从外网进入内部网络的可能性几乎没有，实际漏挖也是需要线下网线接入交换机。
+
+ 说实话我也不知道这种内网漏洞的意义是什么，感觉像是审潜在代码BUG
+
+接入设备首先就是接入交换机然后ssh上服务器，不过接入的时候是不能开启wifi，不能连接其他网络，不然监管系统会一直报警👮👮👮
+ssh上去之后的第一件
+            <a class="read-more" href="/2023/07/10/%E6%9F%90%E5%B8%82%E7%94%B5%E7%BD%91%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98%E5%B0%8F%E8%AE%B0/"> ... </a>
+        </div>
+        <div class="post-date">2023.07.10</div>
+    </div>
+    
+    <div class="post">
         <a class="post-title" href="/2023/05/16/%E3%80%90kernel%E3%80%91AntCTFxD3%5ECTF%20d3op%20WP/">【WP】AntCTFxD3^CTF d3op</a>
         <div class="post-except">
             
@@ -237,22 +251,6 @@ JBE  ;无符号小于等于则跳
             <a class="read-more" href="/2023/03/20/%E8%B7%B3%E8%BD%AC%E6%8C%87%E4%BB%A4%E6%B1%87%E6%80%BB/"> ... </a>
         </div>
         <div class="post-date">2023.03.20</div>
-    </div>
-    
-    <div class="post">
-        <a class="post-title" href="/2022/12/07/%E3%80%90IO_FILE%E3%80%91%E6%BA%90%E7%A0%81%E8%AF%A6%E8%A7%A3-part2/">【IO_FILE】源码详解-part2</a>
-        <div class="post-except">
-            
-在上一篇文章中，主要对IO_FILE结构体相关以及fopen函数进行了深入的介绍。本文将继续从glibc2.36源码出发，介绍fread函数相关内容
-
-fread首先是一个宏定义，替换为_IO_fread函数
-//	htps://elixir.bootlin.com/glibc/latest/source/stdio-common/getw.c#L21
-#define fread(p, m, n, s) _IO_fread (p, m, n, s)
-
-// https://
-            <a class="read-more" href="/2022/12/07/%E3%80%90IO_FILE%E3%80%91%E6%BA%90%E7%A0%81%E8%AF%A6%E8%A7%A3-part2/"> ... </a>
-        </div>
-        <div class="post-date">2022.12.07</div>
     </div>
     
 </div>

@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
+    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
+    <title>Loora1N&#39;s Blog | 鹭雨 | </title>
+    
+<link rel="stylesheet" href="/css/reset.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/css/markdown.css">
+
+    
+<link rel="stylesheet" href="/css/fonts.css">
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+    <body>
+        <div class="paper">
+            <div class="paper-main">
+                
+                    <div class="post-header">
+    <a class="logo" href="/">Loora1N&#39;s Blog | 鹭雨</a>
+    <a class="go-home" href="/">
+        <svg width="8" height="14" viewBox="0 0 8 14">
+            <path d="M7 1L1 7l6 6" stroke="#000" stroke-width="2" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </a>
+</div>
+                
+                <div class="post-main">
+
+    
+    
+        <div class="post-main-title">
+            【V8】深入turbofan
+        </div>
+        <div class="post-meta">
+            2024-08-14
+        </div>
+        <div class="post-md">
+            <blockquote>
+<p>Dive in to sea of nodes!</p>
+</blockquote>
+<h2 id="前置"><a href="#前置" class="headerlink" title="前置"></a>前置</h2><h3 id="V8环境构建"><a href="#V8环境构建" class="headerlink" title="V8环境构建"></a>V8环境构建</h3><p>可见我博客之前部分的内容<a href="https://loora1n.github.io/2024/07/24/%E3%80%90V8%E3%80%91V8%E7%A0%94%E7%A9%B6%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/">V8研究环境搭建</a>，不再过多阐述。</p>
+<h3 id="Turbolizer"><a href="#Turbolizer" class="headerlink" title="Turbolizer"></a>Turbolizer</h3><p><strong>Turbolizer</strong>是一个图形化的工具，可以用辅助调试<strong>Turbofan</strong>的<code>sea of nodes</code></p>
+<pre><code class="sh"># 安装 
+cd tools/turbolizer
+npm i
+npm run-script build
+python3 -m http.server 8000
+</code></pre>
+<p>当使用<code>d8</code>运行JS文件时，可以使用参数<code>--trace-turbo</code>参数，会在当前目录<code>.cfg</code>和<code>.json</code>文件，导入web工具便可以正常使用了。</p>
+<h2 id="Overview"><a href="#Overview" class="headerlink" title="Overview"></a>Overview</h2><p> 首先，简要理解一下V8是如何在高层次上工作的</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://medium.com/reloading/javascript-start-up-performance-69200f43b201">JavaScript Start-up Performance</a></p>
+</blockquote>
+<p><img src="/img/article/v8-4/addy-ad3b2ea8f9be48a18c4bdad5041a3237.png" alt="How V8 Works"></p>
+<p>每当 Chrome 或 Node.js 必须执行某些 JavaScript 时，它会将源代码传递给 V8。V8 获取该 JavaScript 源代码并将其提供给所谓的<code>Parser</code>，该<code>Parser</code>会为源代码创建创建<strong>AST(Abstract Syntax Tree)</strong>.之后，AST被传递给<code>Ignition Interpreter</code>，在那里被转换为字节码序列。然后<code>Ignition</code> 会执行此字节码序列，并在执行的过程中，<code>Ignition</code>会收集有关某些操作输入的<strong>分析信息或反馈</strong>，以优化后续执行的字节码。</p>
+<h2 id="Compilation-pipeline"><a href="#Compilation-pipeline" class="headerlink" title="Compilation pipeline"></a>Compilation pipeline</h2><p>以如下代码举例</p>
+<pre><code class="js">let f = (o) =&gt; &#123;
+  var obj = [1,2,3];
+  var x = Math.ceil(Math.random());
+  return obj[o+x];
+&#125;
+
+for (let i = 0; i &lt; 0x10000; ++i) &#123;
+ f(i); 
+&#125;
+</code></pre>
+<p>使用参数<code>--trace-opt</code>可以跟踪优化,并且在输出中我们也能够看到<code>f</code>函数被<code>TurboFan</code>优化，如下图所示。</p>
+<p><img src="/img/article/v8-4/image-20240802140809608.png" alt="image-20240802140809608"></p>
+<p><strong>v8</strong>首先会生成<strong>ignition bytecode</strong>，如果这个函数会被执行很多次，<strong>TurboFan</strong>将会生成一些优化的代码。<strong>Ignition</strong>会收集类型信息，帮助Turbon进行代码的<strong>推测</strong>优化，推测意味着优化后的代码的运行是由假设前提决定的。</p>
+<p>举个例子，有如下代码，存在两个类<code>player</code>和<code>wall</code>，以及一个函数<code>move</code>用来对对象做操作</p>
+<pre><code class="js">class Player&#123;&#125;
+class Wall&#123;&#125;
+function move(o) &#123;
+    // ...
+&#125;
+player = new Player();
+move(player)
+move(player)
+...
+// ... optimize code! the move function handles very fast objects of type Player
+move(player)
+</code></pre>
+<p>如果我们用 <code>move</code>始终移动 <code>Player</code> 类型的对象，那么 Turbofan 生成的优化代码将假设期望接收 <code>Player</code> 对象，并且在这种情况下代码运行速度会非常快。</p>
+<p>但是，如果 10 分钟后，由于某种原因，代码移动了<code>wall</code>而不是<code>player</code>，这将打破<strong>TurboFan</strong>最初做出的假设。其生成的优化代码非常快，但也只能处理 <code>Player</code> 对象。因此，它需要被销毁，并生成一些<strong>ignition bytecode</strong>。这称为<code>deoptimization</code>，它需要消耗巨大的性能成本。如果我们继续移动 <code>Wall</code> 和 <code>Player</code>，TurboFan 将考虑到这一点并相应地再次优化代码。</p>
+<p>使用参数<code>--trace-opt</code>和<code>--trace-deopt</code>可以用来观察优化的过程</p>
+<pre><code class="js">class Player&#123;&#125;
+class Wall&#123;&#125;
+
+function move(obj) &#123;
+  var tmp = obj.x + 42;
+  var x = Math.random();
+  x += 1;
+  return tmp + x;
+&#125;
+
+for (var i = 0; i &lt; 0x10000; ++i) &#123;
+  move(new Player());
+&#125;
+move(new Wall());
+for (var i = 0; i &lt; 0x10000; ++i) &#123;
+  move(new Wall());
+&#125;
+</code></pre>
+<h2 id="Sea-of-Nodes"><a href="#Sea-of-Nodes" class="headerlink" title="Sea of Nodes"></a>Sea of Nodes</h2><blockquote>
+<p>Just a few words on sea of nodes. TurboFan works on a program representation called a <code>sea of nodes</code>. Nodes can represent arithmetic operations, load, stores, calls, constants etc. There are three types of edges that we describe one by one below.</p>
+</blockquote>
+<p>简单来说，TurboFan工作在称为<code>sea of nodes</code>的程序表示的基础上。<code>Nodes</code>可以用来代表算术运算、负载、存储、调用、常量等。我们将在下文逐一介绍三种类型的<code>edges</code>.</p>
+<h3 id="Control-edges"><a href="#Control-edges" class="headerlink" title="Control edges"></a>Control edges</h3><p><strong>Control edges</strong>与“控制流图”中的边类型相同，它们用于分支和循环。</p>
+<p><img src="/img/article/v8-4/control_draw.png" alt="control_draw"></p>
+<h3 id="Value-edges"><a href="#Value-edges" class="headerlink" title="Value edges"></a>Value edges</h3><p><strong>Value edges</strong>是“数据流图”中的边，拥有<strong>值依赖性</strong></p>
+<p><img src="/img/article/v8-4/value_draw.png" alt="value_draw"></p>
+<h3 id="Effect-edges"><a href="#Effect-edges" class="headerlink" title="Effect edges"></a>Effect edges</h3><p><strong>Effect edges</strong>主要对于读写这样的操作进行排序。</p>
+<p>例如<code>obj[x] = obj[x] + 1</code>这样的情况下，赋值发生在读取<code>obj[x]</code>之后，也就是说，读和写之间存在<strong>Effect edges</strong>，因此需要在读、加、写等操作之间需要使用<code>Effect edges</code>进行链接，最终形成 <code>load -&gt; add -&gt; store</code>这样的<code>effect chain</code>如下图：</p>
+<p><img src="/img/article/v8-4/effects.png" alt="effects.png"></p>
+<h2 id="optimization-phases"><a href="#optimization-phases" class="headerlink" title="optimization phases"></a>optimization phases</h2><p><strong>TurboFan</strong>的优化过程已经存在了许多漏洞，如<a target="_blank" rel="noopener" href="https://bugs.chromium.org/p/project-zero/issues/detail?id=1710">incorrect typing of Math.expm1</a>, [incorrect typing of String.(last)IndexOf](<a target="_blank" rel="noopener" href="https://bugs.chromium.org/p/chromium/issues/detail?id=762874&amp;can=2&amp;q=762874&amp;colspec=ID">https://bugs.chromium.org/p/chromium/issues/detail?id=762874&amp;can=2&amp;q=762874&amp;colspec=ID</a> Pri M Stars ReleaseBlock Component Status Owner Summary OS Modified).</p>
+<p>为了理解优化过程，阅读相关代码是最直接的方式，几个关键位置如下：</p>
+<ul>
+<li><p>src&#x2F;builtin</p>
+<blockquote>
+<p>所有内置函数（如 <code>Array#concat</code>）都实现在这里</p>
+</blockquote>
+</li>
+<li><p>src&#x2F;runtime</p>
+<blockquote>
+<p>实现所有运行时函数（如 <code>%DebugPrint</code>）的位置</p>
+</blockquote>
+</li>
+<li><p>src&#x2F;interpreter&#x2F;interpreter-generator.cc</p>
+<blockquote>
+<p>实现所有字节码处理程序的位置</p>
+</blockquote>
+</li>
+<li><p>src&#x2F;compiler</p>
+<blockquote>
+<p>TurboFan的主要仓库！</p>
+</blockquote>
+</li>
+<li><p>src&#x2F;compiler&#x2F;pipeline.cc</p>
+<blockquote>
+<p>构建图表、运行每个阶段和优化传递等的处理代码</p>
+</blockquote>
+</li>
+<li><p>src&#x2F;compiler&#x2F;opcodes.h</p>
+<blockquote>
+<p>定义 TurboFan 使用的所有操作码的宏</p>
+</blockquote>
+</li>
+<li><p>src&#x2F;compiler&#x2F;typer.cc</p>
+<blockquote>
+<p>通过 Typer reducer 实现打字</p>
+</blockquote>
+</li>
+<li><p>src&#x2F;compiler&#x2F;operation-typer.cc</p>
+<blockquote>
+<p>实现 Typer reducer 使用的其他一些类型化</p>
+</blockquote>
+</li>
+<li><p>src&#x2F;compiler&#x2F;simplified-lowering.cc</p>
+<blockquote>
+<p>实现简化的降低，其中将进行一些 CheckBounds 消除</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="优化流程"><a href="#优化流程" class="headerlink" title="优化流程"></a>优化流程</h3><p>以如下代码为例:</p>
+<pre><code class="js">function opt_me() &#123;
+  let x = Math.random();
+  let y = x + 2;
+  return y + 3;
+&#125;
+</code></pre>
+<p>我们可以使用多次运行或是使用<code>%OptimizeFuctionOnNextCall</code>进行强制代码优化。使用<code>--trace-turbo</code>参数生成用于<strong>turbolizer</strong> 的文件</p>
+<h4 id="Graph-builder-phase"><a href="#Graph-builder-phase" class="headerlink" title="Graph builder phase"></a>Graph builder phase</h4><p>可以直观的看到<code>NumberConstant</code>以及<code>SpeculativeNumberAdd</code> 是根据函数中的<code>x+2</code>，<code>x+3</code>部分得到的。</p>
+<p><img src="/img/article/v8-4/image-20240814134255871.png" alt="image-20240814134255871"></p>
+<h4 id="Typer-phase"><a href="#Typer-phase" class="headerlink" title="Typer phase"></a>Typer phase</h4><p>在图像创建后，就会进入优化阶段。优化阶段前期的一种优化方式为<code>TyperPhase</code>，由<code>OptimizeGraph</code>调用，代码如下:</p>
+<pre><code class="c">// pipeline.cc
+bool PipelineImpl::OptimizeGraph(Linkage* linkage) &#123;
+  PipelineData* data = this-&gt;data_;
+  // Type the graph and keep the Typer running such that new nodes get
+  // automatically typed when they are created.
+  Run&lt;TyperPhase&gt;(data-&gt;CreateTyper());
+</code></pre>
+<pre><code class="c">// pipeline.cc
+struct TyperPhase &#123;
+  void Run(PipelineData* data, Zone* temp_zone, Typer* typer) &#123;
+    // [...]
+    typer-&gt;Run(roots, &amp;induction_vars);
+  &#125;
+&#125;;
+</code></pre>
+<p>当<code>Typer</code>开始运行，他会遍历图中所有的node，并尝试减少一些node</p>
+<pre><code class="c">// typer.cc
+void Typer::Run(const NodeVector&amp; roots,
+                LoopVariableOptimizer* induction_vars) &#123;
+  // [...]
+  Visitor visitor(this, induction_vars);
+  GraphReducer graph_reducer(zone(), graph());
+  graph_reducer.AddReducer(&amp;visitor);
+  for (Node* const root : roots) graph_reducer.ReduceNode(root);
+  graph_reducer.ReduceGraph();
+  // [...]
+&#125;
+
+class Typer::Visitor : public Reducer &#123;
+// ...
+  Reduction Reduce(Node* node) override &#123;
+// calls visitors such as JSCallTyper
+&#125;
+</code></pre>
+<pre><code class="c">// typer.cc
+Type Typer::Visitor::JSCallTyper(Type fun, Typer* t) &#123;
+  if (!fun.IsHeapConstant() || !fun.AsHeapConstant()-&gt;Ref().IsJSFunction()) &#123;
+    return Type::NonInternal();
+  &#125;
+  JSFunctionRef function = fun.AsHeapConstant()-&gt;Ref().AsJSFunction();
+  if (!function.shared().HasBuiltinFunctionId()) &#123;
+    return Type::NonInternal();
+  &#125;
+  switch (function.shared().builtin_function_id()) &#123;
+    case BuiltinFunctionId::kMathRandom:
+      return Type::PlainNumber();
+</code></pre>
+<p>每当<code>TyperPhase</code>遍历至一个<code>JSCall</code>的node，便会调用<code>JSCallTyper</code>进行处理。如果我们查看<code>JSCallTyper</code>的代码，我们会发现每当被调用函数是一个内置函数时，它都会将一个<code>Type</code>与其关联起来。例如，对于内置函数 <code>MathRandom</code>，它清楚预测返回类型应当时<code>Type::PlainNumber</code>.</p>
+<pre><code class="c">Type Typer::Visitor::TypeNumberConstant(Node* node) &#123;
+  double number = OpParameter&lt;double&gt;(node-&gt;op());
+  return Type::NewConstant(number, zone());
+&#125;
+Type Type::NewConstant(double value, Zone* zone) &#123;
+  if (RangeType::IsInteger(value)) &#123;
+    return Range(value, value, zone);
+  &#125; else if (IsMinusZero(value)) &#123;
+    return Type::MinusZero();
+  &#125; else if (std::isnan(value)) &#123;
+    return Type::NaN();
+  &#125;
+
+  DCHECK(OtherNumberConstantType::IsOtherNumberConstant(value));
+  return OtherNumberConstant(value, zone);
+&#125;
+</code></pre>
+<p>对于节点<code>NumberConstant</code>来说就更简洁了，只需要读取<code>TypeNumberConstant</code>.在大多数情况下，这个类型将会是<code>Range</code>.若是<code>SpeculativeNumberAdd</code>的情况，可以查看<code>OperationTyper</code>.</p>
+<pre><code class="c">#define SPECULATIVE_NUMBER_BINOP(Name)                         \
+  Type OperationTyper::Speculative##Name(Type lhs, Type rhs) &#123; \
+    lhs = SpeculativeToNumber(lhs);                            \
+    rhs = SpeculativeToNumber(rhs);                            \
+    return Name(lhs, rhs);                                     \
+  &#125;
+SPECULATIVE_NUMBER_BINOP(NumberAdd)
+#undef SPECULATIVE_NUMBER_BINOP
+
+Type OperationTyper::SpeculativeToNumber(Type type) &#123;
+  return ToNumber(Type::Intersect(type, Type::NumberOrOddball(), zone()));
+&#125;
+</code></pre>
+<p> 根据这里的宏定义，他们最终被<code>OperationTyper::NumberAdd(Type lhs, Type rhs)</code>处理。为了获取右输入节点和左输入节点的类型，我们在它们上都调用 <code>SpeculativeToNumber</code>。为了简单起见，任何类型的 <code>Type：：Number</code> 都将保持相同的类型（<code>PlainNumber</code> 本身是 <code>Number</code>，它将保持 <code>PlainNumber</code>类型）。<code>Range（n，n）</code> 类型也将变成一个 <code>Number</code>，以便我们最终在两个 <code>Number</code> 上调用 <code>NumberAdd</code>。<code>NumberAdd</code> 主要检查一些极端情况，例如，两种类型中的一种是否为 <code>MinusZero</code>。在大多数情况下，该函数将仅返回 <code>PlainNumber</code> 类型。</p>
+<p>因此类型的变化流程:<code>JSCall(MathRandom)</code>变为<code>PlainNumber</code> -&gt; <code>NumberConstant[n]</code>在<code>n != NaN &amp; n != -0</code>时变为<code>Range(n, n)</code> -&gt; <code>Range(n, n)</code>的类型变为<code>PlainNumber</code> -&gt; <code>SpeculativeNumberAdd(PlainNumber, PlainNumber)</code>的类型变为<code>PlainNumber</code></p>
+<h2 id="未完待续…"><a href="#未完待续…" class="headerlink" title="未完待续…"></a>未完待续…</h2><blockquote>
+<p>临时有更重要的工作任务，后续在补写</p>
+</blockquote>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://doar-e.github.io/blog/2019/01/28/introduction-to-turbofan/">intoduction-to-turbofan</a></li>
+<li><a target="_blank" rel="noopener" href="https://securitylab.github.com/research/in_the_wild_chrome_cve_2021_30632/">in_the_wild_chrome_cve_2021_30632</a></li>
+<li><a target="_blank" rel="noopener" href="https://ponyfoo.com/articles/an-introduction-to-speculative-optimization-in-v8">An Intrduce to Speculative Optimization in V8</a></li>
+<li><a target="_blank" rel="noopener" href="https://medium.com/reloading/javascript-start-up-performance-69200f43b201">JavaScript Start-up Performance</a></li>
+</ul>
+
+        </div>
+
+    
+
+</div>
+                <div class="footer">
+    <span>Copyright © 2022 Loora1N&#39;s Blog | 鹭雨</span>
+    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
+</div>
+
+
+<link rel="stylesheet" href="/css/a11y-dark.min.css">
+
+
+<script src="/js/highlight.min.js"></script>
+
+
+<script src="/js/highlightjs-line-numbers.js"></script>
+
+
+<script>
+    hljs.initHighlightingOnLoad();
+    hljs.initLineNumbersOnLoad();
+</script>
+
+            </div>
+        </div>
+    <!-- hexo injector body_end start -->
+  <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
+  <script data-pjax>
+        function GithubCalendarConfig(){
+            var git_githubapiurl ="https://python-github-calendar-api.vercel.app/api?Loora1N";
+            var git_color =['#ebedf0', '#fdcdec', '#fc9bd9', '#fa6ac5', '#f838b2', '#f5089f', '#c4067e', '#92055e', '#540336', '#48022f', '#30021f'];
+            var git_user ="Loora1N";
+            var parent_div_git = document.getElementById('recent-posts');
+            var git_div_html = '<div class="recent-post-item" style="width:100%;height:auto;padding:10px;"><div id="github_loading" style="width:10%;height:100%;margin:0 auto;display: block"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"  viewBox="0 0 50 50" style="enable-background:new 0 0 50 50" xml:space="preserve"><path fill="#d0d0d0" d="M25.251,6.461c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615V6.461z" transform="rotate(275.098 25 25)"><animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="0.6s" repeatCount="indefinite"></animateTransform></path></svg></div><div id="github_container"></div></div>';
+            if(parent_div_git && location.pathname =='/about/'){
+                console.log('已挂载github calendar')
+                // parent_div_git.innerHTML=git_div_html+parent_div_git.innerHTML // 无报错，但不影响使用(支持pjax跳转)
+                parent_div_git.insertAdjacentHTML("afterbegin",git_div_html) // 有报错，但不影响使用(支持pjax跳转)
+            };
+            GithubCalendar(git_githubapiurl,git_color,git_user)
+        }
+        if(document.getElementById('recent-posts')){
+            GithubCalendarConfig()
+        }
+    </script>
+    <style>#github_container{min-height:280px}@media screen and (max-width:650px) {#github_container{background-image:;min-height:0px}}</style>
+    <style></style><!-- hexo injector body_end end --></body>
+</html>

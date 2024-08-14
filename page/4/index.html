@@ -40,6 +40,22 @@
                 <div class="post-list">
     
     <div class="post">
+        <a class="post-title" href="/2022/12/07/%E3%80%90IO_FILE%E3%80%91%E6%BA%90%E7%A0%81%E8%AF%A6%E8%A7%A3-part2/">【IO_FILE】源码详解-part2</a>
+        <div class="post-except">
+            
+在上一篇文章中，主要对IO_FILE结构体相关以及fopen函数进行了深入的介绍。本文将继续从glibc2.36源码出发，介绍fread函数相关内容
+
+fread首先是一个宏定义，替换为_IO_fread函数
+//	htps://elixir.bootlin.com/glibc/latest/source/stdio-common/getw.c#L21
+#define fread(p, m, n, s) _IO_fread (p, m, n, s)
+
+// https://
+            <a class="read-more" href="/2022/12/07/%E3%80%90IO_FILE%E3%80%91%E6%BA%90%E7%A0%81%E8%AF%A6%E8%A7%A3-part2/"> ... </a>
+        </div>
+        <div class="post-date">2022.12.07</div>
+    </div>
+    
+    <div class="post">
         <a class="post-title" href="/2022/11/29/%E3%80%90IO_FILE%E3%80%91%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86%E6%A6%82%E8%A7%88/">【IO_FILE】源码详解</a>
         <div class="post-except">
             
@@ -161,21 +177,6 @@ ctrl+F搜索send_raw函数
             <a class="read-more" href="/2022/10/25/vscode%E4%BD%BF%E7%94%A8pwntools%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE%E5%87%BA%E9%94%99/"> ... </a>
         </div>
         <div class="post-date">2022.10.25</div>
-    </div>
-    
-    <div class="post">
-        <a class="post-title" href="/2022/10/20/how2heap%E2%91%A0%20botcake,einherjar,lore/">【how2heap】 botcake,einherjar,lore</a>
-        <div class="post-except">
-            
-本系列将针对glibc2.31及glibc2.35两个版本进行讨论，其他版本可以根据特性进行类推，建议先对各种堆块的基本特性和数据结构做已了解之后进行学习。
-
-house_of_botcakehouse_of_botcake利用的是块的分割，使得只存在uaf漏洞的前提下实现堆块的溢出,达到获取任意地址的目的，下面我们用how2heap中的例子进行理解。
-#include &lt;stdio.h&gt;
-#include &lt;stdlib.h&gt;
-#include &
-            <a class="read-more" href="/2022/10/20/how2heap%E2%91%A0%20botcake,einherjar,lore/"> ... </a>
-        </div>
-        <div class="post-date">2022.10.20</div>
     </div>
     
 </div>
