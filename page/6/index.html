@@ -40,6 +40,31 @@
                 <div class="post-list">
     
     <div class="post">
+        <a class="post-title" href="/2022/09/14/%E3%80%90IOT%20%E5%AD%A6%E4%B9%A0%E4%B8%80%E3%80%91%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E4%B8%8E%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/">【IOT 学习一】固件分析与漏洞利用</a>
+        <div class="post-except">
+            
+本文内容是基于《物联网渗透测试》-美·亚伦古兹曼的学习总结
+
+固件提取
+在硬件厂商网站内直接下载
+
+固件更新时，利用中间人攻击，转发代理流量
+
+通过物理连接，直接从设备转储固件。固件存储为bin文件指令:
+ $ flashrom -p ft2232_spi:type=232H -r spidump.bin
+
+利用搜索引擎搜集固件，还可以利用 Google Hacking数据库搜索固件或设备
+
+
+
+MITM转发代理流量流程
+接下来，我们简要介绍了如何使用Kali Linux、
+            <a class="read-more" href="/2022/09/14/%E3%80%90IOT%20%E5%AD%A6%E4%B9%A0%E4%B8%80%E3%80%91%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E4%B8%8E%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/"> ... </a>
+        </div>
+        <div class="post-date">2022.09.14</div>
+    </div>
+    
+    <div class="post">
         <a class="post-title" href="/2022/09/13/%5BIOT%20PWN%5D%20%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/">【IOT PWN】 环境搭建</a>
         <div class="post-except">
             硬件资源太多辣，以后看需求慢慢购入吧
@@ -193,18 +218,6 @@ QEMU是一种通用的开源计算机仿真器和虚拟器。QEMU共有两种操
 ##首先安装qemu
 sudo 
             <a class="read-more" href="/2022/06/05/QEMU%20&%20arm%20%E7%AE%80%E6%98%93pwn%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/"> ... </a>
-        </div>
-        <div class="post-date">2022.06.05</div>
-    </div>
-    
-    <div class="post">
-        <a class="post-title" href="/2022/06/05/srop/">setcontext &amp; SROP</a>
-        <div class="post-except">
-            前言
-SROP(Sigreturn Oriented Programming) 于 2014 年被 Vrije Universiteit Amsterdam 的 Erik Bosman 提出，其相关研究Framing Signals — A Return to Portable Shellcode 其中相关的 paper 以及如下：paper
-
-机制详解signal 机制是类 unix 系统中进程之间相互传递信息的一种方法。一般，我们也称其为软中断信号，或者软中断。比如说，进
-            <a class="read-more" href="/2022/06/05/srop/"> ... </a>
         </div>
         <div class="post-date">2022.06.05</div>
     </div>
