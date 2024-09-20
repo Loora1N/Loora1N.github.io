@@ -40,6 +40,21 @@
                 <div class="post-list">
     
     <div class="post">
+        <a class="post-title" href="/2023/03/29/%E3%80%90kernel%E3%80%91%E6%8F%90%E6%9D%83%E5%85%A5%E9%97%A8-part2/">【kernel】提权入门-part2</a>
+        <div class="post-except">
+            如果我们可以改变特权进程的执行轨迹，也可以实现提权。这里我们从以下角度来考虑如何改变特权进程的执行轨迹。
+
+改数据
+改代码
+
+改数据符号链接如果一个 root 权限的进程会执行一个符号链接的程序，并且该符号链接或者符号链接指向的程序可以由攻击者控制，攻击者就可以实现提权。
+call_usermodehelpercall_usermodehelper 是一种内核线程执行用户态应用的方式，并且启动的进程具有 root 权限。因此，如果我们能够控制具体要执行的应用，那就可以实现提权
+            <a class="read-more" href="/2023/03/29/%E3%80%90kernel%E3%80%91%E6%8F%90%E6%9D%83%E5%85%A5%E9%97%A8-part2/"> ... </a>
+        </div>
+        <div class="post-date">2023.03.29</div>
+    </div>
+    
+    <div class="post">
         <a class="post-title" href="/2023/03/20/%E8%B7%B3%E8%BD%AC%E6%8C%87%E4%BB%A4%E6%B1%87%E6%80%BB/">跳转指令汇总</a>
         <div class="post-except">
             无条件跳转JMP ;无条件跳转
@@ -165,23 +180,6 @@ docker：loora1n&#x2F;Ubuntu2.35
             <a class="read-more" href="/2022/10/28/%E9%80%82%E7%94%A8%E5%A4%9A%E7%89%88%E6%9C%AClibc%E7%9A%84pwn-base/"> ... </a>
         </div>
         <div class="post-date">2022.10.28</div>
-    </div>
-    
-    <div class="post">
-        <a class="post-title" href="/2022/10/27/%5BIO_FILE%5DHouse%20of%20kiwi/">【IO_FILE】House of kiwi</a>
-        <div class="post-except">
-            前言
-参考博客如下：
-从PWN题NULL_FXCK中学到的glibc知识
-House OF Kiwi
-
-CTF的Pwn题里面,通常就会遇到一些加了沙盒的题目,这种加沙盒的题目,在2.29之后的堆题中,通常为以下两种方式
-
-劫持__free_hook,利用特定的gadget,将栈进行迁移
-劫持__malloc_hook为setcontext+61的gadget,以及劫持IO_list_all单链表中的指针在exit结束中,在_IO_cleanup函数会进行缓冲区的刷新,从而读取
-            <a class="read-more" href="/2022/10/27/%5BIO_FILE%5DHouse%20of%20kiwi/"> ... </a>
-        </div>
-        <div class="post-date">2022.10.27</div>
     </div>
     
 </div>

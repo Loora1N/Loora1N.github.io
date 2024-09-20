@@ -40,6 +40,26 @@
                 <div class="post-list">
     
     <div class="post">
+        <a class="post-title" href="/2024/09/20/%E3%80%90V8%E3%80%91HeapSpary/">【V8】V8利用手法-HeapSpary</a>
+        <div class="post-except">
+            
+本文讲解V8中的HeapSpary也就是常说的“堆喷”手法的基本原理和思想。后续会写一篇复现CVE-2021-38001的文章，讲解实际HeapSpary的利用和效果。
+
+V8中的堆结构
+图源：https://deepu.tech/memory-management-in-v8/
+
+首先，我们需要对V8中的堆结构有个基本认识。V8内存结构总体如下所示
+
+从图中可以看到，整个堆区域总体可以分为几个小区域：
+
+New space(Young generation)
+Old sp
+            <a class="read-more" href="/2024/09/20/%E3%80%90V8%E3%80%91HeapSpary/"> ... </a>
+        </div>
+        <div class="post-date">2024.09.20</div>
+    </div>
+    
+    <div class="post">
         <a class="post-title" href="/2024/09/12/%E3%80%90V8%E3%80%91%E6%97%A7%E7%89%88%E6%9C%ACV8%E7%BC%96%E8%AF%91jinja2%E6%8A%A5%E9%94%99%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3/">【V8】旧版本V8编译jinja2报错问题解决</a>
         <div class="post-except">
             
@@ -173,25 +193,6 @@ ZF:零标志位。相关指令执行后结果为0那么ZF&#x3D;1,结
             <a class="read-more" href="/2023/11/21/%E6%A0%87%E5%BF%97%E4%BD%8D/"> ... </a>
         </div>
         <div class="post-date">2023.11.21</div>
-    </div>
-    
-    <div class="post">
-        <a class="post-title" href="/2023/11/13/mrdoc%E5%B9%B3%E5%8F%B0docker%E6%9E%84%E5%BB%BA/">在NAS上docker构建MrDoc</a>
-        <div class="post-except">
-            
-由于NAS的shell环境不太正常，甚至连git命令都没有，只能使用官方镜像搭建的方式，这里记录mrdoc平台搭建过程
-
-拉取MrDoc源码在本地shell环境使用git拉取Mrdoc开源版源码
-git clone https://gitee.com/zmister/MrDoc.git
-
-用scp将源码上传至NAS平台的/opt目录
-scp -r MrDoc user@192.168.1.172:/volume1/smb/wiki
-
-运行docker容器
-nas上的dock
-            <a class="read-more" href="/2023/11/13/mrdoc%E5%B9%B3%E5%8F%B0docker%E6%9E%84%E5%BB%BA/"> ... </a>
-        </div>
-        <div class="post-date">2023.11.13</div>
     </div>
     
 </div>

