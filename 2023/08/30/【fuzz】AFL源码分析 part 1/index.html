@@ -1,48 +1,153 @@
 <!DOCTYPE html>
-<html>
-    <head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
-    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
-    <title>Loora1N&#39;s Blog | 鹭雨 | </title>
-    
-<link rel="stylesheet" href="/css/reset.css">
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    
-<link rel="stylesheet" href="/css/style.css">
+    <meta name="author" content="Loora1N">
 
-    
-<link rel="stylesheet" href="/css/markdown.css">
 
-    
-<link rel="stylesheet" href="/css/fonts.css">
 
-<meta name="generator" content="Hexo 6.2.0"></head>
-    <body>
-        <div class="paper">
-            <div class="paper-main">
-                
-                    <div class="post-header">
-    <a class="logo" href="/">Loora1N&#39;s Blog | 鹭雨</a>
-    <a class="go-home" href="/">
-        <svg width="8" height="14" viewBox="0 0 8 14">
-            <path d="M7 1L1 7l6 6" stroke="#000" stroke-width="2" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-    </a>
+    <meta name="description" content="Blog of Loora1N">
+
+
+
+
+
+<title>【fuzz】AFL源码分析 part 1 | Loora1N&#39;s Blog | 鹭雨</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Roboto+Mono&display=swap');
+</style>
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/menu.js"></script>
+    
+    <script src="/js/highlight.min.js"></script>
+    
+    <script src="/js/highlightjs-line-numbers.js"></script>
+    
+    <script src="/js/format.js"></script>
+    
+    <script src="/js/search.js"></script>
+    
+
+
+
+
+
+
+
+
+
+
+  <meta name="generator" content="Hexo 6.2.0"></head>
+  <body>
+    <div class="mask-border">
+    </div>
+
+    <div class="wrapper">
+
+      <div class="header">
+  <div class="flex-container">
+    <div class="header-inner">
+      <div class="site-brand-container">
+        <a href="/">
+          
+            Loora1N&#39;s Blog | 鹭雨
+          
+        </a>
+      </div>
+      <div id="menu-btn" class="menu-btn" onclick="toggleMenu()">
+        Menu
+      </div>
+      <nav class="site-nav">
+        <ul class="menu-list">
+          
+            
+              <li class="menu-item">
+                <a href="/">首页</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/archives/">索引</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/about/">述己</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/links/">友链</a>
+              </li> 
+                   
+          
+          
+            <li class="menu-item search-btn">
+              <a href="#">Search</a>
+            </li>
+          
+        </ul>
+      </nav>
+    </div>
+  </div>
 </div>
-                
-                <div class="post-main">
 
-    
-    
-        <div class="post-main-title">
-            【fuzz】AFL源码分析 part 1
+
+      <div class="main">
+        <div class="flex-container">
+          <article id="post">
+
+  
+    <div class="post-head">
+    <div class="post-info">
+        <div class="tag-list">
+            
         </div>
-        <div class="post-meta">
-            2023-08-30
+        <div class="post-title">
+            
+            
+                【fuzz】AFL源码分析 part 1
+            
+            
         </div>
-        <div class="post-md">
-            <blockquote>
+        <span class="post-date">
+            8月 30, 2023
+        </span>
+    </div>
+    <div class="post-img">
+        
+            <div class="h-line-primary"></div>
+              
+    </div>
+</div>
+    <div class="post-content">
+    <blockquote>
 <p>本来想一周内完成，看来要延期了，尽量希望能在这几天内完成吧，31号晚上还有qax的一面😭😭，水平果然还是太次了。</p>
 <p>项目地址：<a target="_blank" rel="noopener" href="https://github.com/google/AFL">google&#x2F;AFL(github.com)</a></p>
 </blockquote>
@@ -77,93 +182,27 @@
 </ul>
 <h2 id="普通插桩"><a href="#普通插桩" class="headerlink" title="普通插桩"></a>普通插桩</h2><h3 id="afl-gcc-c"><a href="#afl-gcc-c" class="headerlink" title="afl-gcc.c"></a>afl-gcc.c</h3><p><strong>afl-gcc.c</strong>本质上是对GCC 和 clang的封装，正如其在注释中写到的<em>wrapper for GCC and clang</em>。最常见的使用方式，便是在使用**.&#x2F;configure**时，直接将afl-gcc或着afl-clang的路径传给CC；同理对于C++代码，只需用afl-g++或者afl-clang++路径传给CXX即可。</p>
 <p>几个静态全局变量:</p>
-<pre><code class="c">static u8*  as_path;                /* Path to the AFL &#39;as&#39; wrapper      */
-static u8** cc_params;              /* Parameters passed to the real CC  */
-static u32  cc_par_cnt = 1;         /* Param count, including argv0      */
-static u8   be_quiet,               /* Quiet mode                        */
-            clang_mode;             /* Invoked as afl-clang*?            */
-</code></pre>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> u8*  as_path;                <span class="comment">/* Path to the AFL &#x27;as&#x27; wrapper      */</span></span><br><span class="line"><span class="type">static</span> u8** cc_params;              <span class="comment">/* Parameters passed to the real CC  */</span></span><br><span class="line"><span class="type">static</span> u32  cc_par_cnt = <span class="number">1</span>;         <span class="comment">/* Param count, including argv0      */</span></span><br><span class="line"><span class="type">static</span> u8   be_quiet,               <span class="comment">/* Quiet mode                        */</span></span><br><span class="line">            clang_mode;             <span class="comment">/* Invoked as afl-clang*?            */</span></span><br></pre></td></tr></table></figure>
+
 <h4 id="main"><a href="#main" class="headerlink" title="main"></a>main</h4><p>main函数的核心主体如下</p>
-<pre><code class="c">int main(int argc, char** argv) &#123;
-  ......
-      
-  find_as(argv[0]);
-    
-  edit_params(argc, argv);
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span>** argv)</span> &#123;</span><br><span class="line">  ......</span><br><span class="line">      </span><br><span class="line">  find_as(argv[<span class="number">0</span>]);</span><br><span class="line">    </span><br><span class="line">  edit_params(argc, argv);</span><br><span class="line"></span><br><span class="line">  execvp(cc_params[<span class="number">0</span>], (<span class="type">char</span>**)cc_params);</span><br><span class="line"></span><br><span class="line">  ......</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-  execvp(cc_params[0], (char**)cc_params);
-
-  ......
-  return 0;
-&#125;
-</code></pre>
 <ul>
 <li><code>find_as</code>: try to find our “fake” GNU assembler in AFL_PATH or at the location derived from argv[0]. If that fails, abort.</li>
 <li><code>edit_params</code>: Copy argv to <strong>cc_params</strong>, making the necessary edits.</li>
 <li><code>execvp</code>: 执行命令</li>
 </ul>
 <h3 id="edit-params"><a href="#edit-params" class="headerlink" title="edit_params"></a>edit_params</h3><p>在<code>edit_params</code>中，关键逻辑如下</p>
-<pre><code class="c">...
-    
- if (!strcmp(name, &quot;afl-g++&quot;)) &#123;
-  u8* alt_cxx = getenv(&quot;AFL_CXX&quot;);
-  cc_params[0] = alt_cxx ? alt_cxx : (u8*)&quot;g++&quot;;
-&#125; else if (!strcmp(name, &quot;afl-gcj&quot;)) &#123;
-  u8* alt_cc = getenv(&quot;AFL_GCJ&quot;);
-  cc_params[0] = alt_cc ? alt_cc : (u8*)&quot;gcj&quot;;
-&#125; else &#123;
-  u8* alt_cc = getenv(&quot;AFL_CC&quot;);
-  cc_params[0] = alt_cc ? alt_cc : (u8*)&quot;gcc&quot;;
-&#125;
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">    </span><br><span class="line"> <span class="keyword">if</span> (!<span class="built_in">strcmp</span>(name, <span class="string">&quot;afl-g++&quot;</span>)) &#123;</span><br><span class="line">  u8* alt_cxx = getenv(<span class="string">&quot;AFL_CXX&quot;</span>);</span><br><span class="line">  cc_params[<span class="number">0</span>] = alt_cxx ? alt_cxx : (u8*)<span class="string">&quot;g++&quot;</span>;</span><br><span class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span> (!<span class="built_in">strcmp</span>(name, <span class="string">&quot;afl-gcj&quot;</span>)) &#123;</span><br><span class="line">  u8* alt_cc = getenv(<span class="string">&quot;AFL_GCJ&quot;</span>);</span><br><span class="line">  cc_params[<span class="number">0</span>] = alt_cc ? alt_cc : (u8*)<span class="string">&quot;gcj&quot;</span>;</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">  u8* alt_cc = getenv(<span class="string">&quot;AFL_CC&quot;</span>);</span><br><span class="line">  cc_params[<span class="number">0</span>] = alt_cc ? alt_cc : (u8*)<span class="string">&quot;gcc&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line">    </span><br><span class="line">cc_params[cc_par_cnt++] = <span class="string">&quot;-B&quot;</span>;</span><br><span class="line">cc_params[cc_par_cnt++] = as_path;</span><br><span class="line"></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
 
-...
-    
-cc_params[cc_par_cnt++] = &quot;-B&quot;;
-cc_params[cc_par_cnt++] = as_path;
-
-...
-</code></pre>
 <p>总体逻辑比较简单，实际就是对参数做一些预处理，会用<code>gcc</code>替换<code>cc_params[0]</code>，利用<code>-B as_path</code>替换汇编器。因而在调用<code>execvp</code>执行命令时，本质上就是执行类似<code>gcc ... -B as_path ...</code>这样的效果。</p>
 <h2 id="afl-as-c"><a href="#afl-as-c" class="headerlink" title="afl-as.c"></a>afl-as.c</h2><p>在理解<code>afl-gcc.c</code>之后，我们就自然而然会想到，核心点在于关注<code>afl-as</code>和默认as的区别。类似于afl-gcc，afl-as也是一个对as的封装</p>
 <p>一些全局静态变量：</p>
-<pre><code class="c">static u8** as_params;          /* Parameters passed to the real &#39;as&#39;   */
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> u8** as_params;          <span class="comment">/* Parameters passed to the real &#x27;as&#x27;   */</span></span><br><span class="line"></span><br><span class="line"><span class="type">static</span> u8*  input_file;         <span class="comment">/* Originally specified input file      */</span></span><br><span class="line"><span class="type">static</span> u8*  modified_file;      <span class="comment">/* Instrumented file for the real &#x27;as&#x27;  */</span></span><br><span class="line"></span><br><span class="line"><span class="type">static</span> u8   be_quiet,           <span class="comment">/* Quiet mode (no stderr output)        */</span></span><br><span class="line">            clang_mode,         <span class="comment">/* Running in clang mode?               */</span></span><br><span class="line">            pass_thru,          <span class="comment">/* Just pass data through?              */</span></span><br><span class="line">            just_version,       <span class="comment">/* Just show version?                   */</span></span><br><span class="line">            sanitizer;          <span class="comment">/* Using ASAN / MSAN                    */</span></span><br><span class="line"></span><br><span class="line"><span class="type">static</span> u32  inst_ratio = <span class="number">100</span>,   <span class="comment">/* Instrumentation probability (%)      */</span></span><br><span class="line">            as_par_cnt = <span class="number">1</span>;     <span class="comment">/* Number of params to &#x27;as&#x27;             */</span></span><br></pre></td></tr></table></figure>
 
-static u8*  input_file;         /* Originally specified input file      */
-static u8*  modified_file;      /* Instrumented file for the real &#39;as&#39;  */
-
-static u8   be_quiet,           /* Quiet mode (no stderr output)        */
-            clang_mode,         /* Running in clang mode?               */
-            pass_thru,          /* Just pass data through?              */
-            just_version,       /* Just show version?                   */
-            sanitizer;          /* Using ASAN / MSAN                    */
-
-static u32  inst_ratio = 100,   /* Instrumentation probability (%)      */
-            as_par_cnt = 1;     /* Number of params to &#39;as&#39;             */
-</code></pre>
 <h3 id="main-1"><a href="#main-1" class="headerlink" title="main"></a>main</h3><p><code>main()</code>函数的核心主体如下，与afl-gcc.c中的<code>main</code>十分类似。比较明显，都是通过先对参数进行处理，然后调用<code>execvp()</code>去执行命令。</p>
-<pre><code class="c">int main(int argc, char** argv) &#123;
-  ...
-  gettimeofday(&amp;tv, &amp;tz);
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span>** argv)</span> &#123;</span><br><span class="line">  ...</span><br><span class="line">  gettimeofday(&amp;tv, &amp;tz);</span><br><span class="line"></span><br><span class="line">  rand_seed = tv.tv_sec ^ tv.tv_usec ^ getpid();</span><br><span class="line"></span><br><span class="line">  srandom(rand_seed);</span><br><span class="line"></span><br><span class="line">  edit_params(argc, argv);</span><br><span class="line">  ...  </span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (!just_version) add_instrumentation();</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (!(pid = fork())) &#123;</span><br><span class="line"></span><br><span class="line">    execvp(as_params[<span class="number">0</span>], (<span class="type">char</span>**)as_params);</span><br><span class="line">    FATAL(<span class="string">&quot;Oops, failed to execute &#x27;%s&#x27; - check your PATH&quot;</span>, as_params[<span class="number">0</span>]);</span><br><span class="line"></span><br><span class="line">  &#125;</span><br><span class="line">  ...</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-  rand_seed = tv.tv_sec ^ tv.tv_usec ^ getpid();
-
-  srandom(rand_seed);
-
-  edit_params(argc, argv);
-  ...  
-
-  if (!just_version) add_instrumentation();
-
-  if (!(pid = fork())) &#123;
-
-    execvp(as_params[0], (char**)as_params);
-    FATAL(&quot;Oops, failed to execute &#39;%s&#39; - check your PATH&quot;, as_params[0]);
-
-  &#125;
-  ...
-
-&#125;
-</code></pre>
 <ul>
 <li>第一部分，比较明显，利用时间和pid即生成随机数</li>
 <li><code>edit_params()</code>编辑参数</li>
@@ -171,82 +210,17 @@ static u32  inst_ratio = 100,   /* Instrumentation probability (%)      */
 <li>最后利用execvp调用指令</li>
 </ul>
 <h3 id="edit-params-1"><a href="#edit-params-1" class="headerlink" title="edit_params"></a>edit_params</h3><p>与afl-gcc的逻辑基本一致，替换参数，不过多赘述，核心部分如下：</p>
-<pre><code class="c"> static void edit_params(int argc, char** argv) &#123;
-    ...
-    
-    as_params[0] = afl_as ? afl_as : (u8*)&quot;as&quot;;
-    ...
-    
-    as_params[as_par_cnt++] = modified_file;
-    
-    as_params[as_par_cnt]   = NULL;
-&#125;
-</code></pre>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"> <span class="type">static</span> <span class="type">void</span> <span class="title function_">edit_params</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span>** argv)</span> &#123;</span><br><span class="line">    ...</span><br><span class="line">    </span><br><span class="line">    as_params[<span class="number">0</span>] = afl_as ? afl_as : (u8*)<span class="string">&quot;as&quot;</span>;</span><br><span class="line">    ...</span><br><span class="line">    </span><br><span class="line">    as_params[as_par_cnt++] = modified_file;</span><br><span class="line">    </span><br><span class="line">    as_params[as_par_cnt]   = <span class="literal">NULL</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <h3 id="add-instrumentation"><a href="#add-instrumentation" class="headerlink" title="add_instrumentation"></a>add_instrumentation</h3><p>比较明显的看到其他部分与afl-gcc基本相同，因而我们关键来看看<code>add_instrumentation()</code>函数这部分内容。这个函数主要用于处理输入的文件，然后生成<strong>modified_file</strong>.并在恰当的地方插桩。此函数的核心部分如下：</p>
-<pre><code class="c">static void add_instrumentation(void) &#123;
-    ...
-        /*
-        匹配合适的插桩位置
-        */
-    ...
-     while (fgets(line, MAX_LINE, inf)) &#123;
-         ...
-            
-        fprintf(outf, use_64bit ? trampoline_fmt_64 : trampoline_fmt_32,
-                R(MAP_SIZE));
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">add_instrumentation</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line">    ...</span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">        匹配合适的插桩位置</span></span><br><span class="line"><span class="comment">        */</span></span><br><span class="line">    ...</span><br><span class="line">     <span class="keyword">while</span> (fgets(line, MAX_LINE, inf)) &#123;</span><br><span class="line">     	...</span><br><span class="line">            </span><br><span class="line">        <span class="built_in">fprintf</span>(outf, use_64bit ? trampoline_fmt_64 : trampoline_fmt_32,</span><br><span class="line">                R(MAP_SIZE));</span><br><span class="line"></span><br><span class="line">    	ins_lines++;</span><br><span class="line">         </span><br><span class="line">         ...</span><br><span class="line">         </span><br><span class="line">         <span class="keyword">continue</span>;</span><br><span class="line">     &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-        ins_lines++;
-         
-         ...
-         
-         continue;
-     &#125;
-    ...
-&#125;
-</code></pre>
 <p>从源代码的注释中我们也能看到，AFL插桩的位置偏好，主要为<strong>函数入口，分支标签，条件分支标签…….</strong></p>
-<pre><code class="c">/* If we&#39;re in the right mood for instrumenting, check for function
-   names or conditional labels. This is a bit messy, but in essence,
-   we want to catch:
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* If we&#x27;re in the right mood for instrumenting, check for function</span></span><br><span class="line"><span class="comment">   names or conditional labels. This is a bit messy, but in essence,</span></span><br><span class="line"><span class="comment">   we want to catch:</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">     ^main:      - function entry point (always instrumented)</span></span><br><span class="line"><span class="comment">     ^.L0:       - GCC branch label</span></span><br><span class="line"><span class="comment">     ^.LBB0_0:   - clang branch label (but only in clang mode)</span></span><br><span class="line"><span class="comment">     ^\tjnz foo  - conditional branches</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">   ...but not:</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">     ^# BB#0:    - clang comments</span></span><br><span class="line"><span class="comment">     ^ # BB#0:   - ditto</span></span><br><span class="line"><span class="comment">     ^.Ltmp0:    - clang non-branch labels</span></span><br><span class="line"><span class="comment">     ^.LC0       - GCC non-branch labels</span></span><br><span class="line"><span class="comment">     ^.LBB0_0:   - ditto (when in GCC mode)</span></span><br><span class="line"><span class="comment">     ^\tjmp foo  - non-conditional jumps</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">   Additionally, clang and GCC on MacOS X follow a different convention</span></span><br><span class="line"><span class="comment">   with no leading dots on labels, hence the weird maze of #ifdefs</span></span><br><span class="line"><span class="comment">   later on.</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment"> */</span></span><br></pre></td></tr></table></figure>
 
-     ^main:      - function entry point (always instrumented)
-     ^.L0:       - GCC branch label
-     ^.LBB0_0:   - clang branch label (but only in clang mode)
-     ^\tjnz foo  - conditional branches
-
-   ...but not:
-
-     ^# BB#0:    - clang comments
-     ^ # BB#0:   - ditto
-     ^.Ltmp0:    - clang non-branch labels
-     ^.LC0       - GCC non-branch labels
-     ^.LBB0_0:   - ditto (when in GCC mode)
-     ^\tjmp foo  - non-conditional jumps
-
-   Additionally, clang and GCC on MacOS X follow a different convention
-   with no leading dots on labels, hence the weird maze of #ifdefs
-   later on.
-
- */
-</code></pre>
 <p>在<code>add_instrumentation()</code>函数中的变量<code>trampoline_fmt_64</code>和<code>trampoline_fmt_32</code>即为插桩代码，我们可以在文件<strong>afl-as.h</strong>中找到定义，这里我们直接看看64位的插桩代码</p>
-<pre><code class="assembly">/* --- AFL TRAMPOLINE (64-BIT) --- */
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">/* --- AFL TRAMPOLINE (64-BIT) --- */</span><br><span class="line"></span><br><span class="line">.align 4</span><br><span class="line"></span><br><span class="line">leaq -(128+24)(%%rsp), %%rsp</span><br><span class="line">movq %%rdx,  0(%%rsp)</span><br><span class="line">movq %%rcx,  8(%%rsp)</span><br><span class="line">movq %%rax, 16(%%rsp)</span><br><span class="line">movq $0x%08x, %%rcx</span><br><span class="line">call __afl_maybe_log</span><br><span class="line">movq 16(%%rsp), %%rax</span><br><span class="line">movq  8(%%rsp), %%rcx</span><br><span class="line">movq  0(%%rsp), %%rdx</span><br><span class="line">leaq (128+24)(%%rsp), %%rsp</span><br><span class="line"></span><br><span class="line">/* --- END --- */</span><br></pre></td></tr></table></figure>
 
-.align 4
-
-leaq -(128+24)(%%rsp), %%rsp
-movq %%rdx,  0(%%rsp)
-movq %%rcx,  8(%%rsp)
-movq %%rax, 16(%%rsp)
-movq $0x%08x, %%rcx
-call __afl_maybe_log
-movq 16(%%rsp), %%rax
-movq  8(%%rsp), %%rcx
-movq  0(%%rsp), %%rdx
-leaq (128+24)(%%rsp), %%rsp
-
-/* --- END --- */
-</code></pre>
 <p>流程非常简单易懂，大致如下：</p>
 <ol>
 <li>入栈保存寄存器</li>
@@ -256,42 +230,101 @@ leaq (128+24)(%%rsp), %%rsp
 <p>这里直接来看看<code>__afl_maybe_log</code>函数，由于这段汇编逻辑过长，大概200多行。这里直接放<strong>ScUpax0s师傅</strong>的流程图</p>
 <p><img src="/img/article/fuzzAFL1/image-20230830151452876.png" alt="image-20230830151452876"></p>
 <p>流程图中涉及到的一些变量及含义如下：</p>
-<pre><code class="assembly">  .lcomm   __afl_area_ptr, 8			/*共享内存地址*/
-  .lcomm   __afl_prev_loc, 8			/*上一个插桩位置（id为R(100)随机数的值）*/
-  .lcomm   __afl_fork_pid, 4			/*由fork产生的子进程的pid*/
-  .lcomm   __afl_temp, 4				/*缓冲区*/
-  .lcomm   __afl_setup_failure, 1		/*标志位，如果置位则直接退出*/
-  .comm    __afl_global_area_ptr, 8, 8	/*全局指针*/
-</code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">.lcomm   __afl_area_ptr, 8			/*共享内存地址*/</span><br><span class="line">.lcomm   __afl_prev_loc, 8			/*上一个插桩位置（id为R(100)随机数的值）*/</span><br><span class="line">.lcomm   __afl_fork_pid, 4			/*由fork产生的子进程的pid*/</span><br><span class="line">.lcomm   __afl_temp, 4				/*缓冲区*/</span><br><span class="line">.lcomm   __afl_setup_failure, 1		/*标志位，如果置位则直接退出*/</span><br><span class="line">.comm    __afl_global_area_ptr, 8, 8	/*全局指针*/</span><br></pre></td></tr></table></figure>
 
+
+</div> 
+
+<script>
+    window.onload = detectors();
+</script>
+    <div class="post-footer">
+    <div class="h-line-primary"></div>
+    <nav class="post-nav">
+        <div class="prev-item">
+           
+                <div class="icon arrow-left"></div>
+                <div class="post-link">
+                    <a href="/2023/09/04/%E3%80%90fuzz%E3%80%91AFL%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%20part%202/">Prev</a>
+                </div>
+            
         </div>
+        <div class="next-item">
+            
+                <div class="icon arrow-right"></div>
+                <div class="post-link">
+                  <a href="/2023/08/29/ASAN%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90/">Next</a>  
+                </div>  
+            
+        </div>
+    </nav>
+</div>
 
+    
+      <div class="post-comment">
+
+     
+
+     
+    
     
 
 </div>
-                <div class="footer">
-    <span>Copyright © 2022 Loora1N&#39;s Blog | 鹭雨</span>
-    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
+     
+  
+</article>
+        </div>
+      </div>
+      
+      <div class="footer">
+    <div class="flex-container">
+        <div class="footer-text">
+            
+            
+            
+                Powered by <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> & <a target="_blank" rel="noopener" href="https://github.com/zoeingwingkei/frame/">Frame</a>
+                
+        </div>
+    </div>
 </div>
 
+    </div>
 
-<link rel="stylesheet" href="/css/a11y-dark.min.css">
-
-
-<script src="/js/highlight.min.js"></script>
-
-
-<script src="/js/highlightjs-line-numbers.js"></script>
-
-
-<script>
-    hljs.initHighlightingOnLoad();
-    hljs.initLineNumbersOnLoad();
-</script>
-
+    
+      <div class="search-popup">
+    <div class="search-popup-overlay">  
+    </div>
+    <div class="search-popup-window" >
+        <div class="search-header">
+            <div class="search-input-container">
+              <input autocomplete="off" autocapitalize="off" maxlength="80"
+                     placeholder="Search Anything" spellcheck="false"
+                     type="search" class="search-input">
+            </div>
+            <div class="search-close-btn">
+                <div class="icon close-btn"></div>
             </div>
         </div>
-    <!-- hexo injector body_end start -->
+        <div class="search-result-container">
+        </div>
+    </div>
+</div>
+
+<script>
+    const searchConfig = {
+        path             : "/search.xml",
+        top_n_per_article: "1",
+        unescape         : "false",
+        trigger: "auto",
+        preload: "false"
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js"></script>
+<script src="/js/search.js"></script>
+    
+    
+
+  <!-- hexo injector body_end start -->
   <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
   <script data-pjax>
         function GithubCalendarConfig(){

@@ -1,48 +1,153 @@
 <!DOCTYPE html>
-<html>
-    <head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
-    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
-    <title>Loora1N&#39;s Blog | 鹭雨 | </title>
-    
-<link rel="stylesheet" href="/css/reset.css">
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    
-<link rel="stylesheet" href="/css/style.css">
+    <meta name="author" content="Loora1N">
 
-    
-<link rel="stylesheet" href="/css/markdown.css">
 
-    
-<link rel="stylesheet" href="/css/fonts.css">
 
-<meta name="generator" content="Hexo 6.2.0"></head>
-    <body>
-        <div class="paper">
-            <div class="paper-main">
-                
-                    <div class="post-header">
-    <a class="logo" href="/">Loora1N&#39;s Blog | 鹭雨</a>
-    <a class="go-home" href="/">
-        <svg width="8" height="14" viewBox="0 0 8 14">
-            <path d="M7 1L1 7l6 6" stroke="#000" stroke-width="2" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-    </a>
+    <meta name="description" content="Blog of Loora1N">
+
+
+
+
+
+<title>【IOT 学习二】固件分析与漏洞利用 | Loora1N&#39;s Blog | 鹭雨</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Roboto+Mono&display=swap');
+</style>
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/menu.js"></script>
+    
+    <script src="/js/highlight.min.js"></script>
+    
+    <script src="/js/highlightjs-line-numbers.js"></script>
+    
+    <script src="/js/format.js"></script>
+    
+    <script src="/js/search.js"></script>
+    
+
+
+
+
+
+
+
+
+
+
+  <meta name="generator" content="Hexo 6.2.0"></head>
+  <body>
+    <div class="mask-border">
+    </div>
+
+    <div class="wrapper">
+
+      <div class="header">
+  <div class="flex-container">
+    <div class="header-inner">
+      <div class="site-brand-container">
+        <a href="/">
+          
+            Loora1N&#39;s Blog | 鹭雨
+          
+        </a>
+      </div>
+      <div id="menu-btn" class="menu-btn" onclick="toggleMenu()">
+        Menu
+      </div>
+      <nav class="site-nav">
+        <ul class="menu-list">
+          
+            
+              <li class="menu-item">
+                <a href="/">首页</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/archives/">索引</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/about/">述己</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/links/">友链</a>
+              </li> 
+                   
+          
+          
+            <li class="menu-item search-btn">
+              <a href="#">Search</a>
+            </li>
+          
+        </ul>
+      </nav>
+    </div>
+  </div>
 </div>
-                
-                <div class="post-main">
 
-    
-    
-        <div class="post-main-title">
-            【IOT 学习二】固件分析与漏洞利用
+
+      <div class="main">
+        <div class="flex-container">
+          <article id="post">
+
+  
+    <div class="post-head">
+    <div class="post-info">
+        <div class="tag-list">
+            
         </div>
-        <div class="post-meta">
-            2022-09-15
+        <div class="post-title">
+            
+            
+                【IOT 学习二】固件分析与漏洞利用
+            
+            
         </div>
-        <div class="post-md">
-            <blockquote>
+        <span class="post-date">
+            9月 15, 2022
+        </span>
+    </div>
+    <div class="post-img">
+        
+            <div class="h-line-primary"></div>
+              
+    </div>
+</div>
+    <div class="post-content">
+    <blockquote>
 <p>本文内容是基于《物联网渗透测试》-美·亚伦古兹曼的学习总结</p>
 </blockquote>
 <h2 id="基于固件仿真的动态分析"><a href="#基于固件仿真的动态分析" class="headerlink" title="基于固件仿真的动态分析"></a>基于固件仿真的动态分析</h2><h3 id="前期准备"><a href="#前期准备" class="headerlink" title="前期准备"></a>前期准备</h3><blockquote>
@@ -51,73 +156,127 @@
 </blockquote>
 <p><img src="/img/article/iot-2/image-20220915191611191-1663245953755-2.png" alt="运行成功截图"></p>
 <h4 id="项目下载"><a href="#项目下载" class="headerlink" title="项目下载"></a>项目下载</h4><p>首先下载下来项目FAT</p>
-<pre><code class="bash">git clone https://github.com/attify/firmware-analysis-toolkit
-cd firmware-analysis-toolkit
-</code></pre>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/attify/firmware-analysis-toolkit</span><br><span class="line"><span class="built_in">cd</span> firmware-analysis-toolkit</span><br></pre></td></tr></table></figure>
+
 <p><strong>这里注意注意：先打开编辑setup.sh，不是运行不是运行！！！</strong></p>
 <p>先注释掉安装binwalk的部分，我们采用手动编译的方式</p>
 <p><img src="/img/article/iot-2/image-20220915191827246.png" alt="image-20220915191827246"></p>
-<h4 id="手动编译binwalk"><a href="#手动编译binwalk" class="headerlink" title="手动编译binwalk"></a>手动编译binwalk</h4><pre><code class="bash">git clone --depth=1 https://github.com/ReFirmLabs/binwalk.git
-cd binwalk
-sed -i &#39;/REQUIRED_UTILS=&quot;wget tar python&quot;/c\REQUIRED_UTILS=&quot;wget tar python3&quot;&#39; deps.sh
-</code></pre>
+<h4 id="手动编译binwalk"><a href="#手动编译binwalk" class="headerlink" title="手动编译binwalk"></a>手动编译binwalk</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> --depth=1 https://github.com/ReFirmLabs/binwalk.git</span><br><span class="line"><span class="built_in">cd</span> binwalk</span><br><span class="line">sed -i <span class="string">&#x27;/REQUIRED_UTILS=&quot;wget tar python&quot;/c\REQUIRED_UTILS=&quot;wget tar python3&quot;&#x27;</span> deps.sh</span><br></pre></td></tr></table></figure>
+
 <p>这时候要注意一个点，其中的一部分链接404找不到了。我突然发现<strong>binwalk</strong>多了一个4小时前的<strong>issue</strong>更新了链接，是真服了。<a target="_blank" rel="noopener" href="https://github.com/ReFirmLabs/binwalk/pull/613">fix stuffit archive’s download url by dev2ero · Pull Request #613 · ReFirmLabs&#x2F;binwalk (github.com)</a></p>
 <p><img src="/img/article/iot-2/image-20220915154244272.png" alt="image-20220915154244272"></p>
 <p>需要参照这个issue确定自己的下载地址没有问题后，运行</p>
-<pre><code class="bash">sudo ./deps.sh --yes
-sudo python3 ./setup.py install
-sudo apt-get install libmagic1
-</code></pre>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo ./deps.sh --<span class="built_in">yes</span></span><br><span class="line">sudo python3 ./setup.py install</span><br><span class="line">sudo apt-get install libmagic1</span><br></pre></td></tr></table></figure>
+
 <blockquote>
 <p> 如果在运行.&#x2F;deps.sh中出现问题，可同样根据其脚本手动输入命名安装相关依赖</p>
 </blockquote>
 <h4 id="安装jefferson"><a href="#安装jefferson" class="headerlink" title="安装jefferson"></a>安装jefferson</h4><blockquote>
 <p> <a target="_blank" rel="noopener" href="https://github.com/sviehb/jefferson">sviehb&#x2F;jefferson: JFFS2 filesystem extraction tool (github.com)</a></p>
 </blockquote>
-<pre><code class="bash">git clone https://github.com/sviehb/jefferson.git
-cd jefferson
-sudo apt update
-sudo apt install python3-pip liblzo2-dev
-sudo python3 -m pip install -r requirements.txt
-sudo python3 setup.py install
-</code></pre>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/sviehb/jefferson.git</span><br><span class="line"><span class="built_in">cd</span> jefferson</span><br><span class="line">sudo apt update</span><br><span class="line">sudo apt install python3-pip liblzo2-dev</span><br><span class="line">sudo python3 -m pip install -r requirements.txt</span><br><span class="line">sudo python3 setup.py install</span><br></pre></td></tr></table></figure>
+
 <p>回到FAT目录下，运行<code>setup.sh</code></p>
-<pre><code class="bash">./setup.sh
-</code></pre>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./setup.sh</span><br></pre></td></tr></table></figure>
+
 <p>安装成功后，更改<code>fat.config</code>文件内的<code>root</code>密码为当前系统的<code>root</code>账户密码</p>
 <p><img src="/img/article/iot-2/image-20220915193111383.png" alt="image-20220915193111383"></p>
 <p>然后正常运行即可，我存放了一些固件在GitHub上可以用于练习：<a target="_blank" rel="noopener" href="https://github.com/Loora1N/IOT-Frameware">Loora1N&#x2F;IOT-Frameware (github.com)</a></p>
-<pre><code class="bash">./fat.py &lt;firmware file&gt;
-</code></pre>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./fat.py &lt;firmware file&gt;</span><br></pre></td></tr></table></figure>
 
+
+</div> 
+
+<script>
+    window.onload = detectors();
+</script>
+    <div class="post-footer">
+    <div class="h-line-primary"></div>
+    <nav class="post-nav">
+        <div class="prev-item">
+           
+                <div class="icon arrow-left"></div>
+                <div class="post-link">
+                    <a href="/2022/09/16/%E3%80%90IOT%E3%80%91%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8C%85%E5%8F%8A%E6%89%93%E5%8C%85/">Prev</a>
+                </div>
+            
         </div>
+        <div class="next-item">
+            
+                <div class="icon arrow-right"></div>
+                <div class="post-link">
+                  <a href="/2022/09/14/firmwalker-DLINK923B/">Next</a>  
+                </div>  
+            
+        </div>
+    </nav>
+</div>
 
+    
+      <div class="post-comment">
+
+     
+
+     
+    
     
 
 </div>
-                <div class="footer">
-    <span>Copyright © 2022 Loora1N&#39;s Blog | 鹭雨</span>
-    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
+     
+  
+</article>
+        </div>
+      </div>
+      
+      <div class="footer">
+    <div class="flex-container">
+        <div class="footer-text">
+            
+            
+            
+                Powered by <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> & <a target="_blank" rel="noopener" href="https://github.com/zoeingwingkei/frame/">Frame</a>
+                
+        </div>
+    </div>
 </div>
 
+    </div>
 
-<link rel="stylesheet" href="/css/a11y-dark.min.css">
-
-
-<script src="/js/highlight.min.js"></script>
-
-
-<script src="/js/highlightjs-line-numbers.js"></script>
-
-
-<script>
-    hljs.initHighlightingOnLoad();
-    hljs.initLineNumbersOnLoad();
-</script>
-
+    
+      <div class="search-popup">
+    <div class="search-popup-overlay">  
+    </div>
+    <div class="search-popup-window" >
+        <div class="search-header">
+            <div class="search-input-container">
+              <input autocomplete="off" autocapitalize="off" maxlength="80"
+                     placeholder="Search Anything" spellcheck="false"
+                     type="search" class="search-input">
+            </div>
+            <div class="search-close-btn">
+                <div class="icon close-btn"></div>
             </div>
         </div>
-    <!-- hexo injector body_end start -->
+        <div class="search-result-container">
+        </div>
+    </div>
+</div>
+
+<script>
+    const searchConfig = {
+        path             : "/search.xml",
+        top_n_per_article: "1",
+        unescape         : "false",
+        trigger: "auto",
+        preload: "false"
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js"></script>
+<script src="/js/search.js"></script>
+    
+    
+
+  <!-- hexo injector body_end start -->
   <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
   <script data-pjax>
         function GithubCalendarConfig(){

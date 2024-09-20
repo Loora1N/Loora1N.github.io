@@ -1,48 +1,153 @@
 <!DOCTYPE html>
-<html>
-    <head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
-    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
-    <title>Loora1N&#39;s Blog | 鹭雨 | </title>
-    
-<link rel="stylesheet" href="/css/reset.css">
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    
-<link rel="stylesheet" href="/css/style.css">
+    <meta name="author" content="Loora1N">
 
-    
-<link rel="stylesheet" href="/css/markdown.css">
 
-    
-<link rel="stylesheet" href="/css/fonts.css">
 
-<meta name="generator" content="Hexo 6.2.0"></head>
-    <body>
-        <div class="paper">
-            <div class="paper-main">
-                
-                    <div class="post-header">
-    <a class="logo" href="/">Loora1N&#39;s Blog | 鹭雨</a>
-    <a class="go-home" href="/">
-        <svg width="8" height="14" viewBox="0 0 8 14">
-            <path d="M7 1L1 7l6 6" stroke="#000" stroke-width="2" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-    </a>
+    <meta name="description" content="Blog of Loora1N">
+
+
+
+
+
+<title>【fuzz】AFL源码分析 part 2 | Loora1N&#39;s Blog | 鹭雨</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Roboto+Mono&display=swap');
+</style>
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/menu.js"></script>
+    
+    <script src="/js/highlight.min.js"></script>
+    
+    <script src="/js/highlightjs-line-numbers.js"></script>
+    
+    <script src="/js/format.js"></script>
+    
+    <script src="/js/search.js"></script>
+    
+
+
+
+
+
+
+
+
+
+
+  <meta name="generator" content="Hexo 6.2.0"></head>
+  <body>
+    <div class="mask-border">
+    </div>
+
+    <div class="wrapper">
+
+      <div class="header">
+  <div class="flex-container">
+    <div class="header-inner">
+      <div class="site-brand-container">
+        <a href="/">
+          
+            Loora1N&#39;s Blog | 鹭雨
+          
+        </a>
+      </div>
+      <div id="menu-btn" class="menu-btn" onclick="toggleMenu()">
+        Menu
+      </div>
+      <nav class="site-nav">
+        <ul class="menu-list">
+          
+            
+              <li class="menu-item">
+                <a href="/">首页</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/archives/">索引</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/about/">述己</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/links/">友链</a>
+              </li> 
+                   
+          
+          
+            <li class="menu-item search-btn">
+              <a href="#">Search</a>
+            </li>
+          
+        </ul>
+      </nav>
+    </div>
+  </div>
 </div>
-                
-                <div class="post-main">
 
-    
-    
-        <div class="post-main-title">
-            【fuzz】AFL源码分析 part 2
+
+      <div class="main">
+        <div class="flex-container">
+          <article id="post">
+
+  
+    <div class="post-head">
+    <div class="post-info">
+        <div class="tag-list">
+            
         </div>
-        <div class="post-meta">
-            2023-09-04
+        <div class="post-title">
+            
+            
+                【fuzz】AFL源码分析 part 2
+            
+            
         </div>
-        <div class="post-md">
-            <blockquote>
+        <span class="post-date">
+            9月 4, 2023
+        </span>
+    </div>
+    <div class="post-img">
+        
+            <div class="h-line-primary"></div>
+              
+    </div>
+</div>
+    <div class="post-content">
+    <blockquote>
 <p>上个一个part主要关注的是插桩相关部分的源码，这一节主要来查看afl-fuzz.c这个核心模块的源码部分</p>
 </blockquote>
 <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>由于该部分代码体量过大，我们只对核心部分进行源码解析。这部分总体可以分为三块：</p>
@@ -52,15 +157,11 @@
 <li>变异策略：测试用例的变异过程和方式</li>
 </ol>
 <h2 id="预处理"><a href="#预处理" class="headerlink" title="预处理"></a>预处理</h2><p>首先从<code>main()</code>函数着手进行分析。在完成初始配置后，<code>main()</code>同样利用time生成随机种子</p>
-<pre><code class="c">gettimeofday(&amp;tv, &amp;tz);
-srandom(tv.tv_sec ^ tv.tv_usec ^ getpid());
-</code></pre>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">gettimeofday(&amp;tv, &amp;tz);</span><br><span class="line">srandom(tv.tv_sec ^ tv.tv_usec ^ getpid());</span><br></pre></td></tr></table></figure>
+
 <p>紧接着便是第一个循环</p>
-<pre><code class="c">while ((opt = getopt(argc, argv, &quot;+i:o:f:m:b:t:T:dnCB:S:M:x:QV&quot;)) &gt; 0)
-    switch(opt)&#123;
-            ...
-    &#125;
-</code></pre>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> ((opt = getopt(argc, argv, <span class="string">&quot;+i:o:f:m:b:t:T:dnCB:S:M:x:QV&quot;</span>)) &gt; <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">switch</span>(opt)&#123;</span><br><span class="line">            ...</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
 <p>这个循环的功能还是比较明显的。从下图的部分源代码和注释中，我们可以看出，其主要是获取命令行传入的参数，以及一些对应flag的设置。</p>
 <p><img src="/img/article/fuzzAFL2/image-20230904135719892.png" alt="image-20230904135719892"></p>
 <p>紧接着便是<code>setup_signal_handlers()</code>函数，主要是调用<code>sigaction()</code>，注册一些信号处理函数，具体内容如下：</p>
@@ -97,130 +198,24 @@ srandom(tv.tv_sec ^ tv.tv_usec ^ getpid());
 <blockquote>
 <p>关于tuple的定义可以查看我在AFL白皮书中有关Detecting new behaviors的内容:<a href="https://loora1n.github.io/2023/08/23/%E3%80%90fuzz%E3%80%91AFL%E7%99%BD%E7%9A%AE%E4%B9%A6%E4%B8%AD%E8%8B%B1%E5%8F%8C%E8%AF%AD%E7%89%88/">【fuzz】AFL白皮书中英双语版 - 鷺雨のBlog (loora1n.github.io)</a></p>
 </blockquote>
-<pre><code class="c">static void setup_shm(void) &#123;
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">setup_shm</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/*</span></span><br><span class="line"><span class="comment">  *		初始化</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line">  u8* shm_str;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (!in_bitmap) <span class="built_in">memset</span>(virgin_bits, <span class="number">255</span>, MAP_SIZE);</span><br><span class="line"></span><br><span class="line">  <span class="built_in">memset</span>(virgin_tmout, <span class="number">255</span>, MAP_SIZE);</span><br><span class="line">  <span class="built_in">memset</span>(virgin_crash, <span class="number">255</span>, MAP_SIZE);</span><br><span class="line">  <span class="comment">/*</span></span><br><span class="line"><span class="comment">  *		分配共享内存，关于shmget的内容可以看看这篇有关进程通信的博客</span></span><br><span class="line"><span class="comment">  *		https://www.cnblogs.com/52php/p/5861372.html</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line">  shm_id = shmget(IPC_PRIVATE, MAP_SIZE, IPC_CREAT | IPC_EXCL | <span class="number">0600</span>);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (shm_id &lt; <span class="number">0</span>) PFATAL(<span class="string">&quot;shmget() failed&quot;</span>);</span><br><span class="line"></span><br><span class="line">  atexit(remove_shm);<span class="comment">//注册atexit handler 为 remove_shm</span></span><br><span class="line"></span><br><span class="line">  shm_str = alloc_printf(<span class="string">&quot;%d&quot;</span>, shm_id);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (!dumb_mode) setenv(SHM_ENV_VAR, shm_str, <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">  ck_free(shm_str);</span><br><span class="line">  <span class="comment">/*</span></span><br><span class="line"><span class="comment">  *		启动进程对共享内存访问权限，返回共享内存首地址指针</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line">  trace_bits = shmat(shm_id, <span class="literal">NULL</span>, <span class="number">0</span>);</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">if</span> (trace_bits == (<span class="type">void</span> *)<span class="number">-1</span>) PFATAL(<span class="string">&quot;shmat() failed&quot;</span>);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-  /*
-  *		初始化
-  */
-  u8* shm_str;
-
-  if (!in_bitmap) memset(virgin_bits, 255, MAP_SIZE);
-
-  memset(virgin_tmout, 255, MAP_SIZE);
-  memset(virgin_crash, 255, MAP_SIZE);
-  /*
-  *		分配共享内存，关于shmget的内容可以看看这篇有关进程通信的博客
-  *		https://www.cnblogs.com/52php/p/5861372.html
-  */
-  shm_id = shmget(IPC_PRIVATE, MAP_SIZE, IPC_CREAT | IPC_EXCL | 0600);
-
-  if (shm_id &lt; 0) PFATAL(&quot;shmget() failed&quot;);
-
-  atexit(remove_shm);//注册atexit handler 为 remove_shm
-
-  shm_str = alloc_printf(&quot;%d&quot;, shm_id);
-
-  if (!dumb_mode) setenv(SHM_ENV_VAR, shm_str, 1);
-
-  ck_free(shm_str);
-  /*
-  *		启动进程对共享内存访问权限，返回共享内存首地址指针
-  */
-  trace_bits = shmat(shm_id, NULL, 0);
-  
-  if (trace_bits == (void *)-1) PFATAL(&quot;shmat() failed&quot;);
-
-&#125;
-</code></pre>
 <p>这里主要有四个核心变量，定义如下:</p>
-<pre><code class="c">EXP_ST u8* trace_bits;                /* SHM with instrumentation bitmap  */
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">EXP_ST u8* trace_bits;                <span class="comment">/* SHM with instrumentation bitmap  */</span></span><br><span class="line"></span><br><span class="line">EXP_ST u8  virgin_bits[MAP_SIZE],     <span class="comment">/* Regions yet untouched by fuzzing */</span></span><br><span class="line">           virgin_tmout[MAP_SIZE],    <span class="comment">/* Bits we haven&#x27;t seen in tmouts   */</span></span><br><span class="line">           virgin_crash[MAP_SIZE];    <span class="comment">/* Bits we haven&#x27;t seen in crashes  */</span></span><br></pre></td></tr></table></figure>
 
-EXP_ST u8  virgin_bits[MAP_SIZE],     /* Regions yet untouched by fuzzing */
-           virgin_tmout[MAP_SIZE],    /* Bits we haven&#39;t seen in tmouts   */
-           virgin_crash[MAP_SIZE];    /* Bits we haven&#39;t seen in crashes  */
-</code></pre>
 <p>从注释我们可以看到，<code>trace_bits</code>指向存放插桩情况位图的共享内存，<code>virgin_bits[MAP_SIZE]</code>主要是用于记录未到达区域，而<code>virgin_tmout</code>和<code>virgin_crash</code>则是记录timeout和crash的情况。</p>
 <h2 id="文件及模式选择"><a href="#文件及模式选择" class="headerlink" title="文件及模式选择"></a>文件及模式选择</h2><p>然后仍是一些处理函数，我用注释标识函数用途</p>
-<pre><code class="c">  ...
-  setup_dirs_fds();		/*	Prepare output directories and fds.	*/
-  read_testcases();		/*	Read all testcases from the input directory, then queue them for testing.
-                               Called at startup.	*/
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">setup_dirs_fds();		<span class="comment">/*	Prepare output directories and fds.	*/</span></span><br><span class="line">read_testcases();		<span class="comment">/*	Read all testcases from the input directory, then queue them for testing.</span></span><br><span class="line"><span class="comment"> 							Called at startup.	*/</span></span><br><span class="line"></span><br><span class="line">load_auto();			<span class="comment">/* Load automatically generated extras. */</span></span><br><span class="line"></span><br><span class="line">pivot_inputs();		<span class="comment">/* Create hard links for input test cases in the output directory, choosing</span></span><br><span class="line"><span class="comment">						   good names and pivoting accordingly. */</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (extras_dir) load_extras(extras_dir);	<span class="comment">/* Read extras from the extras directory and sort them by size. */</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (!timeout_given) find_timeout();		<span class="comment">/* The same, but for timeouts. The idea is that when resuming sessions without</span></span><br><span class="line"><span class="comment">									   -t given, we don&#x27;t want to keep auto-scaling the timeout over and over</span></span><br><span class="line"><span class="comment">									   again to prevent it from growing due to random flukes. */</span></span><br><span class="line"></span><br><span class="line">detect_file_args(argv + optind + <span class="number">1</span>);		<span class="comment">/* Detect @@ in args. */</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (!out_file) setup_stdio_file();		<span class="comment">/* Setup the output file for fuzzed data, if not using -f. */</span></span><br><span class="line"></span><br><span class="line">check_binary(argv[optind]);				<span class="comment">/* Do a PATH search and find target binary to see that it exists and</span></span><br><span class="line"><span class="comment">									   isn&#x27;t a shell script - a common and painful mistake. We also check for</span></span><br><span class="line"><span class="comment">									   a valid ELF header and for evidence of AFL instrumentation. */</span></span><br><span class="line"></span><br><span class="line">start_time = get_cur_time();</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">*		处理qemu模式下的参数</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">if</span> (qemu_mode)</span><br><span class="line">  use_argv = get_qemu_argv(argv[<span class="number">0</span>], argv + optind, argc - optind);</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">  use_argv = argv + optind;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
 
-  load_auto();			/* Load automatically generated extras. */
-
-  pivot_inputs();		/* Create hard links for input test cases in the output directory, choosing
-                             good names and pivoting accordingly. */
-
-  if (extras_dir) load_extras(extras_dir);	/* Read extras from the extras directory and sort them by size. */
-
-  if (!timeout_given) find_timeout();		/* The same, but for timeouts. The idea is that when resuming sessions without
-                                               -t given, we don&#39;t want to keep auto-scaling the timeout over and over
-                                               again to prevent it from growing due to random flukes. */
-
-  detect_file_args(argv + optind + 1);		/* Detect @@ in args. */
-
-  if (!out_file) setup_stdio_file();		/* Setup the output file for fuzzed data, if not using -f. */
-
-  check_binary(argv[optind]);				/* Do a PATH search and find target binary to see that it exists and
-                                               isn&#39;t a shell script - a common and painful mistake. We also check for
-                                               a valid ELF header and for evidence of AFL instrumentation. */
-
-  start_time = get_cur_time();
-  
-  /*
-  *		处理qemu模式下的参数
-  */
-  if (qemu_mode)
-    use_argv = get_qemu_argv(argv[0], argv + optind, argc - optind);
-  else
-    use_argv = argv + optind;
-  ...
-</code></pre>
 <h2 id="perform-dry-run"><a href="#perform-dry-run" class="headerlink" title="perform_dry_run"></a>perform_dry_run</h2><p>接下来调用<code>perform_dry_run(use_argv)</code>，这是一个十分核心的函数，函数注释: <strong>Perform dry run of all test cases to confirm that the app is working as expected. This is done only for the initial inputs, and only once.</strong> 大致含义为：试运行所有初始的测试用例以确保应用可以正确运行，且仅执行一次。</p>
-<pre><code class="c">struct queue_entry* q = queue;
-u32 cal_failures = 0;
-u8* skip_crashes = getenv(&quot;AFL_SKIP_CRASHES&quot;);
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">queue_entry</span>* <span class="title">q</span> =</span> <span class="built_in">queue</span>;</span><br><span class="line">u32 cal_failures = <span class="number">0</span>;</span><br><span class="line">u8* skip_crashes = getenv(<span class="string">&quot;AFL_SKIP_CRASHES&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> (q) &#123;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-while (q) &#123;
-  ...
-&#125;
-</code></pre>
 <p>函数开头首先对输入队列进行遍历，queue相关变量含义如下：</p>
-<pre><code class="c">static struct queue_entry *queue,     /* Fuzzing queue (linked list)      */
-                          *queue_cur, /* Current offset within the queue  */
-                          *queue_top, /* Top of the list                  */
-                          *q_prev100; /* Previous 100 marker              */
-</code></pre>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="class"><span class="keyword">struct</span> <span class="title">queue_entry</span> *<span class="title">queue</span>,     /* <span class="title">Fuzzing</span> <span class="title">queue</span> (<span class="title">linked</span> <span class="title">list</span>)      */</span></span><br><span class="line"><span class="class">                          *<span class="title">queue_cur</span>, /* <span class="title">Current</span> <span class="title">offset</span> <span class="title">within</span> <span class="title">the</span> <span class="title">queue</span>  */</span></span><br><span class="line"><span class="class">                          *<span class="title">queue_top</span>, /* <span class="title">Top</span> <span class="title">of</span> <span class="title">the</span> <span class="title">list</span>                  */</span></span><br><span class="line"><span class="class">                          *<span class="title">q_prev100</span>;</span> <span class="comment">/* Previous 100 marker              */</span></span><br></pre></td></tr></table></figure>
+
 <p>在<code>while(q)</code>部分中，首先根据路径，打开输入文件并传入变量<code>use_mem</code>，接着调用函数进行检测</p>
-<pre><code class="c">while(q)&#123;
-    ...
-    /*
-    *		读取样本数据，传入use_mem
-    */
-    u8* fn = strrchr(q-&gt;fname, &#39;/&#39;) + 1;
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span>(q)&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">    *		读取样本数据，传入use_mem</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    u8* fn = <span class="built_in">strrchr</span>(q-&gt;fname, <span class="string">&#x27;/&#x27;</span>) + <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    ACTF(<span class="string">&quot;Attempting dry run with &#x27;%s&#x27;...&quot;</span>, fn);</span><br><span class="line"></span><br><span class="line">    fd = open(q-&gt;fname, O_RDONLY);</span><br><span class="line">    <span class="keyword">if</span> (fd &lt; <span class="number">0</span>) PFATAL(<span class="string">&quot;Unable to open &#x27;%s&#x27;&quot;</span>, q-&gt;fname);</span><br><span class="line"></span><br><span class="line">    use_mem = ck_alloc_nozero(q-&gt;len);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (read(fd, use_mem, q-&gt;len) != q-&gt;len)</span><br><span class="line">      FATAL(<span class="string">&quot;Short read from &#x27;%s&#x27;&quot;</span>, q-&gt;fname);</span><br><span class="line"></span><br><span class="line">    close(fd);</span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">    *		调用calibrate_case校准测试用例</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    res = calibrate_case(argv, q, use_mem, <span class="number">0</span>, <span class="number">1</span>);	<span class="comment">/* Calibrate a new test case. This is done when processing the input directory</span></span><br><span class="line"><span class="comment">													   to warn about flaky or otherwise problematic test cases early on; and when</span></span><br><span class="line"><span class="comment">													   new paths are discovered to detect variable behavior and so on. */</span></span><br><span class="line">    ck_free(use_mem);</span><br><span class="line">    </span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-    ACTF(&quot;Attempting dry run with &#39;%s&#39;...&quot;, fn);
-
-    fd = open(q-&gt;fname, O_RDONLY);
-    if (fd &lt; 0) PFATAL(&quot;Unable to open &#39;%s&#39;&quot;, q-&gt;fname);
-
-    use_mem = ck_alloc_nozero(q-&gt;len);
-
-    if (read(fd, use_mem, q-&gt;len) != q-&gt;len)
-      FATAL(&quot;Short read from &#39;%s&#39;&quot;, q-&gt;fname);
-
-    close(fd);
-    /*
-    *		调用calibrate_case校准测试用例
-    */
-    res = calibrate_case(argv, q, use_mem, 0, 1);	/* Calibrate a new test case. This is done when processing the input directory
-                                                       to warn about flaky or otherwise problematic test cases early on; and when
-                                                       new paths are discovered to detect variable behavior and so on. */
-    ck_free(use_mem);
-    
-    ...
-&#125;
-</code></pre>
 <p>接下来我们关注一下<code>calibrate_case</code>函数的流程：</p>
 <ol>
 <li>初始化设置，user_tmout、stage_name、stage_max</li>
@@ -235,65 +230,8 @@ while (q) &#123;
 </li>
 </ol>
 <p>简化后的函数源码如下：</p>
-<pre><code class="c">static u8 calibrate_case(char** argv, struct queue_entry* q, u8* use_mem,
-                         u32 handicap, u8 from_queue) &#123;
-  ...
-  /*
-  *		初始化
-  */
-  if (!from_queue || resuming_fuzz)
-    use_tmout = MAX(exec_tmout + CAL_TMOUT_ADD,
-                    exec_tmout * CAL_TMOUT_PERC / 100);
-  ...
-  stage_name = &quot;calibration&quot;;
-  stage_max  = fast_cal ? 3 : CAL_CYCLES;
-  /*
-  *		forkserver
-  */
-  if (dumb_mode != 1 &amp;&amp; !no_forkserver &amp;&amp; !forksrv_pid)
-    init_forkserver(argv);
-  ...
-  /*
-  *		loop
-  */
-  for (stage_cur = 0; stage_cur &lt; stage_max; stage_cur++) &#123;
-    ...
-    write_to_testcase(use_mem, q-&gt;len);
-    fault = run_target(argv, use_tmout);
-    /*
-    *		判断是否存在新路径
-    */
-    if (stop_soon || fault != crash_mode) goto abort_calibration;
-    if (!dumb_mode &amp;&amp; !stage_cur &amp;&amp; !count_bytes(trace_bits)) &#123;
-      fault = FAULT_NOINST;
-      goto abort_calibration;
-    &#125;
-    cksum = hash32(trace_bits, MAP_SIZE, HASH_CONST);
-    /*
-    *	存在新路径
-    */
-    if (q-&gt;exec_cksum != cksum) &#123;
-      /*
-      *		更新位图
-      */
-      hnb = has_new_bits(virgin_bits);
-      if (hnb &gt; new_bits) new_bits = hnb;
-      ...
-  &#125;
-  ...
-  /*
-  *		确定more favorable path
-  */
-  update_bitmap_score(q);
-  ...
- /*
- *		不存在新路径
- */
-abort_calibration:
-  ...
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> u8 <span class="title function_">calibrate_case</span><span class="params">(<span class="type">char</span>** argv, <span class="keyword">struct</span> queue_entry* q, u8* use_mem,</span></span><br><span class="line"><span class="params">                         u32 handicap, u8 from_queue)</span> &#123;</span><br><span class="line">  ...</span><br><span class="line">  <span class="comment">/*</span></span><br><span class="line"><span class="comment">  *		初始化</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line">  <span class="keyword">if</span> (!from_queue || resuming_fuzz)</span><br><span class="line">    use_tmout = MAX(exec_tmout + CAL_TMOUT_ADD,</span><br><span class="line">                    exec_tmout * CAL_TMOUT_PERC / <span class="number">100</span>);</span><br><span class="line">  ...</span><br><span class="line">  stage_name = <span class="string">&quot;calibration&quot;</span>;</span><br><span class="line">  stage_max  = fast_cal ? <span class="number">3</span> : CAL_CYCLES;</span><br><span class="line">  <span class="comment">/*</span></span><br><span class="line"><span class="comment">  *		forkserver</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line">  <span class="keyword">if</span> (dumb_mode != <span class="number">1</span> &amp;&amp; !no_forkserver &amp;&amp; !forksrv_pid)</span><br><span class="line">    init_forkserver(argv);</span><br><span class="line">  ...</span><br><span class="line">  <span class="comment">/*</span></span><br><span class="line"><span class="comment">  *		loop</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line">  <span class="keyword">for</span> (stage_cur = <span class="number">0</span>; stage_cur &lt; stage_max; stage_cur++) &#123;</span><br><span class="line">    ...</span><br><span class="line">    write_to_testcase(use_mem, q-&gt;len);</span><br><span class="line">    fault = run_target(argv, use_tmout);</span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	*		判断是否存在新路径</span></span><br><span class="line"><span class="comment">	*/</span></span><br><span class="line">    <span class="keyword">if</span> (stop_soon || fault != crash_mode) <span class="keyword">goto</span> abort_calibration;</span><br><span class="line">    <span class="keyword">if</span> (!dumb_mode &amp;&amp; !stage_cur &amp;&amp; !count_bytes(trace_bits)) &#123;</span><br><span class="line">      fault = FAULT_NOINST;</span><br><span class="line">      <span class="keyword">goto</span> abort_calibration;</span><br><span class="line">    &#125;</span><br><span class="line">    cksum = hash32(trace_bits, MAP_SIZE, HASH_CONST);</span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	*	存在新路径</span></span><br><span class="line"><span class="comment">	*/</span></span><br><span class="line">    <span class="keyword">if</span> (q-&gt;exec_cksum != cksum) &#123;</span><br><span class="line">	  <span class="comment">/*</span></span><br><span class="line"><span class="comment">	  *		更新位图</span></span><br><span class="line"><span class="comment">	  */</span></span><br><span class="line">      hnb = has_new_bits(virgin_bits);</span><br><span class="line">      <span class="keyword">if</span> (hnb &gt; new_bits) new_bits = hnb;</span><br><span class="line">	  ...</span><br><span class="line">  &#125;</span><br><span class="line">  ...</span><br><span class="line">  <span class="comment">/*</span></span><br><span class="line"><span class="comment">  *		确定more favorable path</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line">  update_bitmap_score(q);</span><br><span class="line">  ...</span><br><span class="line"> <span class="comment">/*</span></span><br><span class="line"><span class="comment"> *		不存在新路径</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line">abort_calibration:</span><br><span class="line">  ...</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-&#125;
-</code></pre>
 <p>基本到这里该函数就结束了，剩下的部分都是一些错误信息处理相关内容</p>
 <p><img src="/img/article/fuzzAFL2/image-20230904183850138.png" alt="image-20230904183850138"></p>
 <h2 id="fuzzer与forkserver通信"><a href="#fuzzer与forkserver通信" class="headerlink" title="fuzzer与forkserver通信"></a>fuzzer与forkserver通信</h2><p>在这里我们停顿一下，梳理下fuzzer与forkserver通信的大致流程。首先我们要知道，实际用于fuzz的子进程并不有fuzzer fork得到，而是由fuzzer 启动的forkserver进行fork得到，如图所示</p>
@@ -324,25 +262,8 @@ abort_calibration:
 <li>此时所有tuple都被覆盖，具备”favored’标记的为s1, s2，过程结束。</li>
 </ol>
 <h2 id="主循环"><a href="#主循环" class="headerlink" title="主循环"></a>主循环</h2><p>接下来便要进入主循环，简化版代码如下</p>
-<pre><code class="c">while (1) &#123;
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (<span class="number">1</span>) &#123;</span><br><span class="line"></span><br><span class="line">    u8 skipped_fuzz;</span><br><span class="line"></span><br><span class="line">    cull_queue();<span class="comment">//favored</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!queue_cur) &#123;</span><br><span class="line">      <span class="comment">/*</span></span><br><span class="line"><span class="comment">      *		队列为空，代表已经完成一轮，此处剩余部分为一些参数处理</span></span><br><span class="line"><span class="comment">      */</span></span><br><span class="line">      ...</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    skipped_fuzz = fuzz_one(use_argv);<span class="comment">//核心fuzz case代码</span></span><br><span class="line">   ...</span><br><span class="line"></span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
 
-    u8 skipped_fuzz;
-
-    cull_queue();//favored
-
-    if (!queue_cur) &#123;
-      /*
-      *		队列为空，代表已经完成一轮，此处剩余部分为一些参数处理
-      */
-      ...
-
-    &#125;
-
-    skipped_fuzz = fuzz_one(use_argv);//核心fuzz case代码
-   ...
-
-  &#125;
-</code></pre>
 <p>可以看到主要流程便是<code>cull_queue()</code>–&gt;<code>fuzz_one()</code>，不断循环往复。由于<code>fuzz_one</code>的代码量过长，这里只做功能和流程分析：</p>
 <ol>
 <li>根据是否有<code>pending_favored</code>和<code>queue_cur</code>的情况，按照概率进行跳过；有<code>pending_favored</code>, 对于已经fuzz过的或者non-favored的有99%的概率跳过；无pending_favored，95%跳过fuzzed&amp;non-favored，75%跳过not fuzzed&amp;non-favored，不跳过favored；</li>
@@ -364,34 +285,98 @@ abort_calibration:
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>基本AFL流程由两篇文章叙述，由于时间问题，不能将每个文件与函数分析透彻。比如像样本变异策略这样的核心内容并无介绍，但也希望对大家的AFL学习理解有所帮助。</p>
 <p>文章如有纰漏，请在评论区指出，我会及时修改。</p>
 
-        </div>
+</div> 
 
+<script>
+    window.onload = detectors();
+</script>
+    <div class="post-footer">
+    <div class="h-line-primary"></div>
+    <nav class="post-nav">
+        <div class="prev-item">
+           
+                <div class="icon arrow-left"></div>
+                <div class="post-link">
+                    <a href="/2023/09/07/%E3%80%90trick%E3%80%91house%20of%20blindness/">Prev</a>
+                </div>
+            
+        </div>
+        <div class="next-item">
+            
+                <div class="icon arrow-right"></div>
+                <div class="post-link">
+                  <a href="/2023/08/30/%E3%80%90fuzz%E3%80%91AFL%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%20part%201/">Next</a>  
+                </div>  
+            
+        </div>
+    </nav>
+</div>
+
+    
+      <div class="post-comment">
+
+     
+
+     
+    
     
 
 </div>
-                <div class="footer">
-    <span>Copyright © 2022 Loora1N&#39;s Blog | 鹭雨</span>
-    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
+     
+  
+</article>
+        </div>
+      </div>
+      
+      <div class="footer">
+    <div class="flex-container">
+        <div class="footer-text">
+            
+            
+            
+                Powered by <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> & <a target="_blank" rel="noopener" href="https://github.com/zoeingwingkei/frame/">Frame</a>
+                
+        </div>
+    </div>
 </div>
 
+    </div>
 
-<link rel="stylesheet" href="/css/a11y-dark.min.css">
-
-
-<script src="/js/highlight.min.js"></script>
-
-
-<script src="/js/highlightjs-line-numbers.js"></script>
-
-
-<script>
-    hljs.initHighlightingOnLoad();
-    hljs.initLineNumbersOnLoad();
-</script>
-
+    
+      <div class="search-popup">
+    <div class="search-popup-overlay">  
+    </div>
+    <div class="search-popup-window" >
+        <div class="search-header">
+            <div class="search-input-container">
+              <input autocomplete="off" autocapitalize="off" maxlength="80"
+                     placeholder="Search Anything" spellcheck="false"
+                     type="search" class="search-input">
+            </div>
+            <div class="search-close-btn">
+                <div class="icon close-btn"></div>
             </div>
         </div>
-    <!-- hexo injector body_end start -->
+        <div class="search-result-container">
+        </div>
+    </div>
+</div>
+
+<script>
+    const searchConfig = {
+        path             : "/search.xml",
+        top_n_per_article: "1",
+        unescape         : "false",
+        trigger: "auto",
+        preload: "false"
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js"></script>
+<script src="/js/search.js"></script>
+    
+    
+
+  <!-- hexo injector body_end start -->
   <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
   <script data-pjax>
         function GithubCalendarConfig(){

@@ -1,48 +1,153 @@
 <!DOCTYPE html>
-<html>
-    <head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
-    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
-    <title>Loora1N&#39;s Blog | 鹭雨 | </title>
-    
-<link rel="stylesheet" href="/css/reset.css">
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    
-<link rel="stylesheet" href="/css/style.css">
+    <meta name="author" content="Loora1N">
 
-    
-<link rel="stylesheet" href="/css/markdown.css">
 
-    
-<link rel="stylesheet" href="/css/fonts.css">
 
-<meta name="generator" content="Hexo 6.2.0"></head>
-    <body>
-        <div class="paper">
-            <div class="paper-main">
-                
-                    <div class="post-header">
-    <a class="logo" href="/">Loora1N&#39;s Blog | 鹭雨</a>
-    <a class="go-home" href="/">
-        <svg width="8" height="14" viewBox="0 0 8 14">
-            <path d="M7 1L1 7l6 6" stroke="#000" stroke-width="2" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-    </a>
+    <meta name="description" content="Blog of Loora1N">
+
+
+
+
+
+<title>PWN环境搭建（萌新入门） | Loora1N&#39;s Blog | 鹭雨</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Roboto+Mono&display=swap');
+</style>
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/menu.js"></script>
+    
+    <script src="/js/highlight.min.js"></script>
+    
+    <script src="/js/highlightjs-line-numbers.js"></script>
+    
+    <script src="/js/format.js"></script>
+    
+    <script src="/js/search.js"></script>
+    
+
+
+
+
+
+
+
+
+
+
+  <meta name="generator" content="Hexo 6.2.0"></head>
+  <body>
+    <div class="mask-border">
+    </div>
+
+    <div class="wrapper">
+
+      <div class="header">
+  <div class="flex-container">
+    <div class="header-inner">
+      <div class="site-brand-container">
+        <a href="/">
+          
+            Loora1N&#39;s Blog | 鹭雨
+          
+        </a>
+      </div>
+      <div id="menu-btn" class="menu-btn" onclick="toggleMenu()">
+        Menu
+      </div>
+      <nav class="site-nav">
+        <ul class="menu-list">
+          
+            
+              <li class="menu-item">
+                <a href="/">首页</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/archives/">索引</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/about/">述己</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/links/">友链</a>
+              </li> 
+                   
+          
+          
+            <li class="menu-item search-btn">
+              <a href="#">Search</a>
+            </li>
+          
+        </ul>
+      </nav>
+    </div>
+  </div>
 </div>
-                
-                <div class="post-main">
 
-    
-    
-        <div class="post-main-title">
-            PWN环境搭建（萌新入门）
+
+      <div class="main">
+        <div class="flex-container">
+          <article id="post">
+
+  
+    <div class="post-head">
+    <div class="post-info">
+        <div class="tag-list">
+            
         </div>
-        <div class="post-meta">
-            2022-09-05
+        <div class="post-title">
+            
+            
+                PWN环境搭建（萌新入门）
+            
+            
         </div>
-        <div class="post-md">
-            <h2 id="IDA-PRO-反汇编利器"><a href="#IDA-PRO-反汇编利器" class="headerlink" title="IDA PRO-反汇编利器"></a>IDA PRO-反汇编利器</h2><blockquote>
+        <span class="post-date">
+            9月 5, 2022
+        </span>
+    </div>
+    <div class="post-img">
+        
+            <div class="h-line-primary"></div>
+              
+    </div>
+</div>
+    <div class="post-content">
+    <h2 id="IDA-PRO-反汇编利器"><a href="#IDA-PRO-反汇编利器" class="headerlink" title="IDA PRO-反汇编利器"></a>IDA PRO-反汇编利器</h2><blockquote>
 <p>推荐版本7.6及以上，高版本增添了对于go语言程序的反汇编，寻找资源需要谨慎哦</p>
 <p>写文章的时候顺便看了眼价格，，，，，算了还是自己找资源吧</p>
 </blockquote>
@@ -64,51 +169,34 @@
 <blockquote>
 <p>这里推荐使用python3, 虽然有人说Pwntools对于python2的适配性更好，但由于python2过于古老，新版本反倒在其他方面更加稳定一些。在拥有其他更多插件和包的情况下，个人感觉还是python3更优一些。</p>
 </blockquote>
-<pre><code class="bash">$ sudo apt-get update
-$ sudo apt-get install python3 python3-pip python3-dev git libssl-dev libffi-dev build-essential
-$ sudo python3 -m pip install --upgrade pip
-$ sudo python3 -m pip install --upgrade pwntools
-</code></pre>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-get update</span><br><span class="line">$ sudo apt-get install python3 python3-pip python3-dev git libssl-dev libffi-dev build-essential</span><br><span class="line">$ sudo python3 -m pip install --upgrade pip</span><br><span class="line">$ sudo python3 -m pip install --upgrade pwntools</span><br></pre></td></tr></table></figure>
+
 <p>之后我们可以使用<code>import pwn</code>来测试一些是否成功安装,出现下方情况基本就可以了</p>
 <p><img src="/img/article/pwn-envir/image-20220905162034730.png" alt="image-20220905162034730"></p>
 <h2 id="pwndbg-amp-pwngdb安装"><a href="#pwndbg-amp-pwngdb安装" class="headerlink" title="pwndbg &amp; pwngdb安装"></a>pwndbg &amp; pwngdb安装</h2><p>这两个均是GDB的插件之一，用于在Linux对程序进行动态调试，而动态调试也是PWN最核心的部分之一。拥有这些工具，我们能更加方便的查看程序运行过程中，内存变化。如栈、堆、寄存器等等地方的内容。</p>
 <blockquote>
 <p>pwndbg安装</p>
 </blockquote>
-<pre><code class="bash">git clone https://github.com/pwndbg/pwndbg
-cd pwndbg
-./setup.sh
-</code></pre>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/pwndbg/pwndbg</span><br><span class="line"><span class="built_in">cd</span> pwndbg</span><br><span class="line">./setup.sh</span><br></pre></td></tr></table></figure>
+
 <blockquote>
 <p>pwngdb安装</p>
 </blockquote>
-<pre><code class="bash">cd ~/
-git clone https://github.com/scwuaptx/Pwngdb.git 
-cp ~/Pwngdb/.gdbinit ~/
-</code></pre>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> ~/</span><br><span class="line">git <span class="built_in">clone</span> https://github.com/scwuaptx/Pwngdb.git </span><br><span class="line"><span class="built_in">cp</span> ~/Pwngdb/.gdbinit ~/</span><br></pre></td></tr></table></figure>
+
 <blockquote>
 <p>注意：上述两个插件并不兼容，但可以通过更改.gdbinit文件切换使用</p>
 <p>.gdbinit文件配置如下</p>
 </blockquote>
-<pre><code class="js">source /home/pwnki/pwndbg/gdbinit.py 
-#source ~/peda/peda.py //使用 pwndbg 就要把 peda 注释掉，反过来也一样
-source ~/Pwngdb/pwngdb.py
-source ~/Pwngdb/angelheap/gdbinit.py
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">source /home/pwnki/pwndbg/gdbinit.<span class="property">py</span> </span><br><span class="line">#source ~<span class="regexp">/peda/</span>peda.<span class="property">py</span> <span class="comment">//使用 pwndbg 就要把 peda 注释掉，反过来也一样</span></span><br><span class="line">source ~<span class="regexp">/Pwngdb/</span>pwngdb.<span class="property">py</span></span><br><span class="line">source ~<span class="regexp">/Pwngdb/</span>angelheap/gdbinit.<span class="property">py</span></span><br><span class="line"></span><br><span class="line">define hook-run</span><br><span class="line">python</span><br><span class="line"><span class="keyword">import</span> angelheap</span><br><span class="line">angelheap.<span class="title function_">init_angelheap</span>()</span><br><span class="line">end</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
 
-define hook-run
-python
-import angelheap
-angelheap.init_angelheap()
-end
-end
-</code></pre>
 <p><img src="/img/article/pwn-envir/image-20220905165859512.png" alt="image-20220905165859512"></p>
 <h2 id="checksec安装"><a href="#checksec安装" class="headerlink" title="checksec安装"></a>checksec安装</h2><p>用于检测程序开启了哪些保护机制，往往是PWN解题的第一步，安装方式：</p>
-<pre><code class="bash">$ sudo apt install checksec
-</code></pre>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt install checksec</span><br></pre></td></tr></table></figure>
+
 <p>使用方式:</p>
-<pre><code class="bash">$ checksec 程序文件
-</code></pre>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ checksec 程序文件</span><br></pre></td></tr></table></figure>
+
 <p><img src="/img/article/pwn-envir/image-20220905164504590.png" alt="image-20220905164504590"></p>
 <h2 id="更多插件"><a href="#更多插件" class="headerlink" title="更多插件"></a>更多插件</h2><blockquote>
 <p>虽然还有很多插件并没有提及，但对于刚刚接触pwn的同学来说，以上插件已经够完成一部分简单的pwn题目，更多的插件需要在将来自己学习的过程中慢慢补充。下面只做一列举，有兴趣的同学可以自行搜索查看</p>
@@ -126,34 +214,98 @@ end
 <p>该工具往往用于确定libc版本并确定其libc版本下的函数偏移，可以被网页端的libc库替代</p>
 </blockquote>
 
-        </div>
+</div> 
 
+<script>
+    window.onload = detectors();
+</script>
+    <div class="post-footer">
+    <div class="h-line-primary"></div>
+    <nav class="post-nav">
+        <div class="prev-item">
+           
+                <div class="icon arrow-left"></div>
+                <div class="post-link">
+                    <a href="/2022/09/12/%E9%9D%99%E6%80%81pwn/">Prev</a>
+                </div>
+            
+        </div>
+        <div class="next-item">
+            
+                <div class="icon arrow-right"></div>
+                <div class="post-link">
+                  <a href="/2022/06/30/LLVM%20Pass%20%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/">Next</a>  
+                </div>  
+            
+        </div>
+    </nav>
+</div>
+
+    
+      <div class="post-comment">
+
+     
+
+     
+    
     
 
 </div>
-                <div class="footer">
-    <span>Copyright © 2022 Loora1N&#39;s Blog | 鹭雨</span>
-    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
+     
+  
+</article>
+        </div>
+      </div>
+      
+      <div class="footer">
+    <div class="flex-container">
+        <div class="footer-text">
+            
+            
+            
+                Powered by <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> & <a target="_blank" rel="noopener" href="https://github.com/zoeingwingkei/frame/">Frame</a>
+                
+        </div>
+    </div>
 </div>
 
+    </div>
 
-<link rel="stylesheet" href="/css/a11y-dark.min.css">
-
-
-<script src="/js/highlight.min.js"></script>
-
-
-<script src="/js/highlightjs-line-numbers.js"></script>
-
-
-<script>
-    hljs.initHighlightingOnLoad();
-    hljs.initLineNumbersOnLoad();
-</script>
-
+    
+      <div class="search-popup">
+    <div class="search-popup-overlay">  
+    </div>
+    <div class="search-popup-window" >
+        <div class="search-header">
+            <div class="search-input-container">
+              <input autocomplete="off" autocapitalize="off" maxlength="80"
+                     placeholder="Search Anything" spellcheck="false"
+                     type="search" class="search-input">
+            </div>
+            <div class="search-close-btn">
+                <div class="icon close-btn"></div>
             </div>
         </div>
-    <!-- hexo injector body_end start -->
+        <div class="search-result-container">
+        </div>
+    </div>
+</div>
+
+<script>
+    const searchConfig = {
+        path             : "/search.xml",
+        top_n_per_article: "1",
+        unescape         : "false",
+        trigger: "auto",
+        preload: "false"
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js"></script>
+<script src="/js/search.js"></script>
+    
+    
+
+  <!-- hexo injector body_end start -->
   <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
   <script data-pjax>
         function GithubCalendarConfig(){

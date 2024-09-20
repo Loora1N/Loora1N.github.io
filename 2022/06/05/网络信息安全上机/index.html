@@ -1,48 +1,153 @@
 <!DOCTYPE html>
-<html>
-    <head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
-    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
-    <title>Loora1N&#39;s Blog | 鹭雨 | </title>
-    
-<link rel="stylesheet" href="/css/reset.css">
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    
-<link rel="stylesheet" href="/css/style.css">
+    <meta name="author" content="Loora1N">
 
-    
-<link rel="stylesheet" href="/css/markdown.css">
 
-    
-<link rel="stylesheet" href="/css/fonts.css">
 
-<meta name="generator" content="Hexo 6.2.0"></head>
-    <body>
-        <div class="paper">
-            <div class="paper-main">
-                
-                    <div class="post-header">
-    <a class="logo" href="/">Loora1N&#39;s Blog | 鹭雨</a>
-    <a class="go-home" href="/">
-        <svg width="8" height="14" viewBox="0 0 8 14">
-            <path d="M7 1L1 7l6 6" stroke="#000" stroke-width="2" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-    </a>
+    <meta name="description" content="Blog of Loora1N">
+
+
+
+
+
+<title>Python实现shamir加密和图像加密隐写 | Loora1N&#39;s Blog | 鹭雨</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Roboto+Mono&display=swap');
+</style>
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/menu.js"></script>
+    
+    <script src="/js/highlight.min.js"></script>
+    
+    <script src="/js/highlightjs-line-numbers.js"></script>
+    
+    <script src="/js/format.js"></script>
+    
+    <script src="/js/search.js"></script>
+    
+
+
+
+
+
+
+
+
+
+
+  <meta name="generator" content="Hexo 6.2.0"></head>
+  <body>
+    <div class="mask-border">
+    </div>
+
+    <div class="wrapper">
+
+      <div class="header">
+  <div class="flex-container">
+    <div class="header-inner">
+      <div class="site-brand-container">
+        <a href="/">
+          
+            Loora1N&#39;s Blog | 鹭雨
+          
+        </a>
+      </div>
+      <div id="menu-btn" class="menu-btn" onclick="toggleMenu()">
+        Menu
+      </div>
+      <nav class="site-nav">
+        <ul class="menu-list">
+          
+            
+              <li class="menu-item">
+                <a href="/">首页</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/archives/">索引</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/about/">述己</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/links/">友链</a>
+              </li> 
+                   
+          
+          
+            <li class="menu-item search-btn">
+              <a href="#">Search</a>
+            </li>
+          
+        </ul>
+      </nav>
+    </div>
+  </div>
 </div>
-                
-                <div class="post-main">
 
-    
-    
-        <div class="post-main-title">
-            Python实现shamir加密和图像加密隐写
+
+      <div class="main">
+        <div class="flex-container">
+          <article id="post">
+
+  
+    <div class="post-head">
+    <div class="post-info">
+        <div class="tag-list">
+            
         </div>
-        <div class="post-meta">
-            2022-06-05
+        <div class="post-title">
+            
+            
+                Python实现shamir加密和图像加密隐写
+            
+            
         </div>
-        <div class="post-md">
-            <blockquote>
+        <span class="post-date">
+            6月 5, 2022
+        </span>
+    </div>
+    <div class="post-img">
+        
+            <div class="h-line-primary"></div>
+              
+    </div>
+</div>
+    <div class="post-content">
+    <blockquote>
 <p>网络信息安全上机作业罢了，人已经麻了</p>
 </blockquote>
 <h2 id="shamir秘密共享协议"><a href="#shamir秘密共享协议" class="headerlink" title="shamir秘密共享协议"></a>shamir秘密共享协议</h2><h3 id="加密过程"><a href="#加密过程" class="headerlink" title="加密过程"></a>加密过程</h3><p>假设有秘密S要保护，任意取t-1个随机数，构造如下多项式： <img src="https://www.zhihu.com/equation?tex=f(x)=a_0+a_1x+a_2x%5E2+%5Ccdots+a_%7Bt-1%7Dx%5E%7Bt-1%7D" alt="[公式]"> ，其中， <img src="https://www.zhihu.com/equation?tex=a_0=S" alt="[公式]"> ，所有运算均在有有限域中进行。</p>
@@ -52,151 +157,118 @@
 </ul>
 <h3 id="解密过程"><a href="#解密过程" class="headerlink" title="解密过程"></a>解密过程</h3><p>从任意t个服务器上取得数据，假设取得 <img src="https://www.zhihu.com/equation?tex=(x_1,y_1),%5Ccdots+,(x_t,y_t)" alt="[公式]"> ，带入并求解多项式系数；<br><img src="https://www.zhihu.com/equation?tex=%5Cbegin%7Baligned%7D+a_0+a_1x_1+%5Ccdots+,a_%7Bt-1%7Dx_1%5E%7Bt-1%7D=y_1+%5C%5C+a_0+a_1x_2+%5Ccdots+,a_%7Bt-1%7Dx_2%5E%7Bt-1%7D=y_2+%5C%5C+%5Ccdots+%5C%5C+a_0+a_1x_t+%5Ccdots+,a_%7Bt-1%7Dx_%7Bt%7D%5E%7Bt-1%7D=y_%7Bt%7D+%5C%5C+%5Cend%7Baligned%7D" alt="[公式]"><br>用矩阵乘法表示为：<br><img src="/img/article/shamir/matrix.png" alt="img"><br>在求得 <img src="https://www.zhihu.com/equation?tex=a_0,a_1,%5Ccdots,a_%7Bt-1%7D" alt="[公式]"> 之后便可以构造出多项式 <img src="https://www.zhihu.com/equation?tex=f(x)=a_0+a_1x+a_2x%5E2+%5Ccdots+a_%7Bt-1%7Dx%5E%7Bt-1%7D" alt="[公式]"></p>
 <p>将 <img src="https://www.zhihu.com/equation?tex=x=0" alt="[公式]"> 带入到多项式中，可以求的原秘密 <img src="https://www.zhihu.com/equation?tex=S=a_0" alt="[公式]"></p>
-<h3 id="算法实现"><a href="#算法实现" class="headerlink" title="算法实现"></a>算法实现</h3><pre><code class="python">from math import ceil
-from decimal import Decimal
-import random
+<h3 id="算法实现"><a href="#算法实现" class="headerlink" title="算法实现"></a>算法实现</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> math <span class="keyword">import</span> ceil</span><br><span class="line"><span class="keyword">from</span> decimal <span class="keyword">import</span> Decimal</span><br><span class="line"><span class="keyword">import</span> random</span><br><span class="line"></span><br><span class="line"><span class="comment">##测试数据</span></span><br><span class="line"><span class="built_in">max</span> = <span class="number">1000000</span></span><br><span class="line">t = <span class="number">5</span></span><br><span class="line">n = <span class="number">8</span></span><br><span class="line">secret = <span class="number">31298123678</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;before:&#x27;</span>,secret)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;ENCRYPTING.......&#x27;</span>)</span><br><span class="line"><span class="comment">##构造多项式f(x)</span></span><br><span class="line">fx = [random.randrange(<span class="number">0</span>,<span class="built_in">max</span>) <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(t-<span class="number">1</span>)]</span><br><span class="line">fx.append(secret)</span><br><span class="line"></span><br><span class="line"><span class="comment">##任取n个x，分别带入多项式，产生对应的(x,y)</span></span><br><span class="line">share = []</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(n):</span><br><span class="line">    x = random.randrange(<span class="number">1</span>,<span class="built_in">max</span>)</span><br><span class="line">    y = <span class="number">0</span> </span><br><span class="line">    <span class="keyword">for</span> idx, value <span class="keyword">in</span> <span class="built_in">enumerate</span>(fx[::-<span class="number">1</span>]):</span><br><span class="line">        y += value * x**idx</span><br><span class="line">    share.append((x,y))         <span class="comment">##每人分到的(x,y)序列</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;share:(&#x27;</span>,x,<span class="string">&#x27;,&#x27;</span>,y,<span class="string">&#x27;)&#x27;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;DECRYPTING......&#x27;</span>)</span><br><span class="line"><span class="comment">##任取t个(x,y)序列,并解密</span></span><br><span class="line">key = random.sample(share,t)</span><br><span class="line"><span class="built_in">sum</span> =<span class="number">0</span></span><br><span class="line"><span class="keyword">for</span> i, key_i <span class="keyword">in</span> <span class="built_in">enumerate</span>(key):</span><br><span class="line">    x_i,y_i = key_i</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;key:(&#x27;</span>,x_i,<span class="string">&#x27;,&#x27;</span>,y_i,<span class="string">&#x27;)&#x27;</span>)</span><br><span class="line">    temp = Decimal(<span class="number">1</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span> j, key_j <span class="keyword">in</span> <span class="built_in">enumerate</span>(key):</span><br><span class="line">        x_j,y_j = key_j</span><br><span class="line">        <span class="keyword">if</span> i != j:</span><br><span class="line">            temp *= Decimal(Decimal(x_j)/Decimal(x_j-x_i))</span><br><span class="line">    temp *= y_i</span><br><span class="line">    <span class="built_in">sum</span> += Decimal(temp)</span><br><span class="line"></span><br><span class="line"><span class="built_in">sum</span> = <span class="built_in">int</span>(<span class="built_in">round</span>(Decimal(<span class="built_in">sum</span>),<span class="number">0</span>))</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;after:&#x27;</span>,<span class="built_in">sum</span>)</span><br></pre></td></tr></table></figure>
 
-##测试数据
-max = 1000000
-t = 5
-n = 8
-secret = 31298123678
-print(&#39;before:&#39;,secret)
-print(&#39;ENCRYPTING.......&#39;)
-##构造多项式f(x)
-fx = [random.randrange(0,max) for _ in range(t-1)]
-fx.append(secret)
+<h4 id="运行示范"><a href="#运行示范" class="headerlink" title="运行示范"></a>运行示范</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">┌─[loorain@ubuntu] - [~/crypto/shamir] - [2304]shamir</span><br><span class="line">└─[$] python3 shamir.py                                                                                                                                                                                             [20:33:27]</span><br><span class="line">before: 31298123678</span><br><span class="line">ENCRYPTING.......</span><br><span class="line">share:( 385490 , 19613871609040056923504678528 )</span><br><span class="line">share:( 208439 , 1676593182288704748621405212 )</span><br><span class="line">share:( 111980 , 139661059121519203627546778 )</span><br><span class="line">share:( 287787 , 6092505271995476798344376612 )</span><br><span class="line">share:( 57978 , 10036212148635231635583656 )</span><br><span class="line">share:( 8027 , 3687858811716396682052 )</span><br><span class="line">share:( 640969 , 149919642500298401999699916572 )</span><br><span class="line">share:( 444105 , 34550423234050839227167648028 )</span><br><span class="line">DECRYPTING......</span><br><span class="line">key:( 444105 , 34550423234050839227167648028 )</span><br><span class="line">key:( 111980 , 139661059121519203627546778 )</span><br><span class="line">key:( 208439 , 1676593182288704748621405212 )</span><br><span class="line">key:( 287787 , 6092505271995476798344376612 )</span><br><span class="line">key:( 385490 , 19613871609040056923504678528 )</span><br><span class="line">after: 31298123800</span><br></pre></td></tr></table></figure>
 
-##任取n个x，分别带入多项式，产生对应的(x,y)
-share = []
-
-for i in range(n):
-    x = random.randrange(1,max)
-    y = 0 
-    for idx, value in enumerate(fx[::-1]):
-        y += value * x**idx
-    share.append((x,y))         ##每人分到的(x,y)序列
-    print(&#39;share:(&#39;,x,&#39;,&#39;,y,&#39;)&#39;)
-
-
-print(&#39;DECRYPTING......&#39;)
-##任取t个(x,y)序列,并解密
-key = random.sample(share,t)
-sum =0
-for i, key_i in enumerate(key):
-    x_i,y_i = key_i
-    print(&#39;key:(&#39;,x_i,&#39;,&#39;,y_i,&#39;)&#39;)
-    temp = Decimal(1)
-    
-    for j, key_j in enumerate(key):
-        x_j,y_j = key_j
-        if i != j:
-            temp *= Decimal(Decimal(x_j)/Decimal(x_j-x_i))
-    temp *= y_i
-    sum += Decimal(temp)
-
-sum = int(round(Decimal(sum),0))
-
-print(&#39;after:&#39;,sum)
-</code></pre>
-<h4 id="运行示范"><a href="#运行示范" class="headerlink" title="运行示范"></a>运行示范</h4><pre><code class="bash">┌─[loorain@ubuntu] - [~/crypto/shamir] - [2304]shamir
-└─[$] python3 shamir.py                                                                                                                                                                                             [20:33:27]
-before: 31298123678
-ENCRYPTING.......
-share:( 385490 , 19613871609040056923504678528 )
-share:( 208439 , 1676593182288704748621405212 )
-share:( 111980 , 139661059121519203627546778 )
-share:( 287787 , 6092505271995476798344376612 )
-share:( 57978 , 10036212148635231635583656 )
-share:( 8027 , 3687858811716396682052 )
-share:( 640969 , 149919642500298401999699916572 )
-share:( 444105 , 34550423234050839227167648028 )
-DECRYPTING......
-key:( 444105 , 34550423234050839227167648028 )
-key:( 111980 , 139661059121519203627546778 )
-key:( 208439 , 1676593182288704748621405212 )
-key:( 287787 , 6092505271995476798344376612 )
-key:( 385490 , 19613871609040056923504678528 )
-after: 31298123800
-</code></pre>
 <h2 id="图像加密隐写"><a href="#图像加密隐写" class="headerlink" title="图像加密隐写"></a>图像加密隐写</h2><blockquote>
 <p>这里用0-255的矩阵模拟灰度图像</p>
 </blockquote>
 <h3 id="加密过程-1"><a href="#加密过程-1" class="headerlink" title="加密过程"></a>加密过程</h3><p><img src="/img/article/shamir/cry.png" alt="加密示意图"></p>
 <p>随机生成 O 和 S，并计算 d 和 si</p>
-<pre><code class="python">S_img = rd.randint(0,256,(10,10))
-O_img = rd.randint(0,256,(20,20))
-Q_img = rd.randint(0,1,(20,20))
-m = number.getPrime(4) #随机生成一个素数m
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">S_img = rd.randint(<span class="number">0</span>,<span class="number">256</span>,(<span class="number">10</span>,<span class="number">10</span>))</span><br><span class="line">O_img = rd.randint(<span class="number">0</span>,<span class="number">256</span>,(<span class="number">20</span>,<span class="number">20</span>))</span><br><span class="line">Q_img = rd.randint(<span class="number">0</span>,<span class="number">1</span>,(<span class="number">20</span>,<span class="number">20</span>))</span><br><span class="line">m = number.getPrime(<span class="number">4</span>) <span class="comment">#随机生成一个素数m</span></span><br><span class="line"></span><br><span class="line">d = O_img % m</span><br><span class="line">S_i = S_img % m</span><br></pre></td></tr></table></figure>
 
-d = O_img % m
-S_i = S_img % m
-</code></pre>
 <p>生成Q</p>
-<pre><code class="python">for i in range(20):
-    for j in range (20):
-        Q_img[i,j] = math.floor(O_img[i,j] / m) * m
-</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">20</span>):</span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span> (<span class="number">20</span>):</span><br><span class="line">        Q_img[i,j] = math.floor(O_img[i,j] / m) * m</span><br></pre></td></tr></table></figure>
+
 <p>生成y &#x3D; f(x),求得y与Q相加的到n个Oi</p>
-<pre><code class="python">O_i = []
-##生成y = f(x),求得y与Q相加的到n个Oi
-for n in range(400):
-    key = random.randrange(1,max)
-    y = 0
-    for i in range(10):
-        for j in range(10):
-            y += S_i[i,j]* (key ** (i*10+j))
-    y += d[n] * (key ** (i*10+j))
-    O_i.append((Q_img + y)) 
-</code></pre>
-<h3 id="解密过程-1"><a href="#解密过程-1" class="headerlink" title="解密过程"></a>解密过程</h3><pre><code class="python">for i in range(101):
-    Q_img.append((O_i[i, 0] // m) * m)
-    so1.append(d[i] - (O_i[i, 0] // m) * m)
-for i in range(101):
-    d.append(Q_img[i])
-sol = []
-for i in range(101):
-    d1 = np(0,m,(10, 10)) 
-    for j in range(10):
-        for k in range(10):
-            d1[j, k] = S_img[i, j]**k
-    sol.append(d1.solve_right(O_img[i])[0])
-for i in range(101):
-    assert sol[i]&gt;m
-solve = []
-for i in range(101):
-    solve.append(so1[i]+Q_img[i])
-print(solve == d)
-</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">O_i = []</span><br><span class="line"><span class="comment">##生成y = f(x),求得y与Q相加的到n个Oi</span></span><br><span class="line"><span class="keyword">for</span> n <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">400</span>):</span><br><span class="line">    key = random.randrange(<span class="number">1</span>,<span class="built_in">max</span>)</span><br><span class="line">    y = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">10</span>):</span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">10</span>):</span><br><span class="line">            y += S_i[i,j]* (key ** (i*<span class="number">10</span>+j))</span><br><span class="line">    y += d[n] * (key ** (i*<span class="number">10</span>+j))</span><br><span class="line">    O_i.append((Q_img + y)) </span><br></pre></td></tr></table></figure>
 
+<h3 id="解密过程-1"><a href="#解密过程-1" class="headerlink" title="解密过程"></a>解密过程</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">101</span>):</span><br><span class="line">    Q_img.append((O_i[i, <span class="number">0</span>] // m) * m)</span><br><span class="line">    so1.append(d[i] - (O_i[i, <span class="number">0</span>] // m) * m)</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">101</span>):</span><br><span class="line">    d.append(Q_img[i])</span><br><span class="line">sol = []</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">101</span>):</span><br><span class="line">    d1 = np(<span class="number">0</span>,m,(<span class="number">10</span>, <span class="number">10</span>)) </span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">10</span>):</span><br><span class="line">        <span class="keyword">for</span> k <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">10</span>):</span><br><span class="line">            d1[j, k] = S_img[i, j]**k</span><br><span class="line">    sol.append(d1.solve_right(O_img[i])[<span class="number">0</span>])</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">101</span>):</span><br><span class="line">    <span class="keyword">assert</span> sol[i]&gt;m</span><br><span class="line">solve = []</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">101</span>):</span><br><span class="line">    solve.append(so1[i]+Q_img[i])</span><br><span class="line"><span class="built_in">print</span>(solve == d)</span><br></pre></td></tr></table></figure>
+
+
+</div> 
+
+<script>
+    window.onload = detectors();
+</script>
+    <div class="post-footer">
+    <div class="h-line-primary"></div>
+    <nav class="post-nav">
+        <div class="prev-item">
+           
+                <div class="icon arrow-left"></div>
+                <div class="post-link">
+                    <a href="/2022/06/05/%E3%80%8A%E6%A0%BC%E8%B0%83%EF%BC%9A%E7%A4%BE%E4%BC%9A%E7%AD%89%E7%BA%A7%E4%B8%8E%E7%94%9F%E6%B4%BB%E5%93%81%E5%91%B3%E3%80%8B/">Prev</a>
+                </div>
+            
         </div>
+        <div class="next-item">
+            
+                <div class="icon arrow-right"></div>
+                <div class="post-link">
+                  <a href="/2022/06/03/HEAP%20%E6%94%BB%E5%87%BB%E6%96%B9%E5%BC%8F%E8%AE%B0%E5%BD%95%E4%BB%A5%E5%8F%8A%E6%80%BB%E7%BB%93/">Next</a>  
+                </div>  
+            
+        </div>
+    </nav>
+</div>
 
+    
+      <div class="post-comment">
+
+     
+
+     
+    
     
 
 </div>
-                <div class="footer">
-    <span>Copyright © 2022 Loora1N&#39;s Blog | 鹭雨</span>
-    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
+     
+  
+</article>
+        </div>
+      </div>
+      
+      <div class="footer">
+    <div class="flex-container">
+        <div class="footer-text">
+            
+            
+            
+                Powered by <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> & <a target="_blank" rel="noopener" href="https://github.com/zoeingwingkei/frame/">Frame</a>
+                
+        </div>
+    </div>
 </div>
 
+    </div>
 
-<link rel="stylesheet" href="/css/a11y-dark.min.css">
-
-
-<script src="/js/highlight.min.js"></script>
-
-
-<script src="/js/highlightjs-line-numbers.js"></script>
-
-
-<script>
-    hljs.initHighlightingOnLoad();
-    hljs.initLineNumbersOnLoad();
-</script>
-
+    
+      <div class="search-popup">
+    <div class="search-popup-overlay">  
+    </div>
+    <div class="search-popup-window" >
+        <div class="search-header">
+            <div class="search-input-container">
+              <input autocomplete="off" autocapitalize="off" maxlength="80"
+                     placeholder="Search Anything" spellcheck="false"
+                     type="search" class="search-input">
+            </div>
+            <div class="search-close-btn">
+                <div class="icon close-btn"></div>
             </div>
         </div>
-    <!-- hexo injector body_end start -->
+        <div class="search-result-container">
+        </div>
+    </div>
+</div>
+
+<script>
+    const searchConfig = {
+        path             : "/search.xml",
+        top_n_per_article: "1",
+        unescape         : "false",
+        trigger: "auto",
+        preload: "false"
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js"></script>
+<script src="/js/search.js"></script>
+    
+    
+
+  <!-- hexo injector body_end start -->
   <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
   <script data-pjax>
         function GithubCalendarConfig(){

@@ -1,48 +1,153 @@
 <!DOCTYPE html>
-<html>
-    <head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
-    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
-    <title>Loora1N&#39;s Blog | 鹭雨 | </title>
-    
-<link rel="stylesheet" href="/css/reset.css">
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    
-<link rel="stylesheet" href="/css/style.css">
+    <meta name="author" content="Loora1N">
 
-    
-<link rel="stylesheet" href="/css/markdown.css">
 
-    
-<link rel="stylesheet" href="/css/fonts.css">
 
-<meta name="generator" content="Hexo 6.2.0"></head>
-    <body>
-        <div class="paper">
-            <div class="paper-main">
-                
-                    <div class="post-header">
-    <a class="logo" href="/">Loora1N&#39;s Blog | 鹭雨</a>
-    <a class="go-home" href="/">
-        <svg width="8" height="14" viewBox="0 0 8 14">
-            <path d="M7 1L1 7l6 6" stroke="#000" stroke-width="2" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-    </a>
+    <meta name="description" content="Blog of Loora1N">
+
+
+
+
+
+<title>【IOT PWN】 环境搭建 | Loora1N&#39;s Blog | 鹭雨</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Roboto+Mono&display=swap');
+</style>
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/menu.js"></script>
+    
+    <script src="/js/highlight.min.js"></script>
+    
+    <script src="/js/highlightjs-line-numbers.js"></script>
+    
+    <script src="/js/format.js"></script>
+    
+    <script src="/js/search.js"></script>
+    
+
+
+
+
+
+
+
+
+
+
+  <meta name="generator" content="Hexo 6.2.0"></head>
+  <body>
+    <div class="mask-border">
+    </div>
+
+    <div class="wrapper">
+
+      <div class="header">
+  <div class="flex-container">
+    <div class="header-inner">
+      <div class="site-brand-container">
+        <a href="/">
+          
+            Loora1N&#39;s Blog | 鹭雨
+          
+        </a>
+      </div>
+      <div id="menu-btn" class="menu-btn" onclick="toggleMenu()">
+        Menu
+      </div>
+      <nav class="site-nav">
+        <ul class="menu-list">
+          
+            
+              <li class="menu-item">
+                <a href="/">首页</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/archives/">索引</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/about/">述己</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/links/">友链</a>
+              </li> 
+                   
+          
+          
+            <li class="menu-item search-btn">
+              <a href="#">Search</a>
+            </li>
+          
+        </ul>
+      </nav>
+    </div>
+  </div>
 </div>
-                
-                <div class="post-main">
 
-    
-    
-        <div class="post-main-title">
-            【IOT PWN】 环境搭建
+
+      <div class="main">
+        <div class="flex-container">
+          <article id="post">
+
+  
+    <div class="post-head">
+    <div class="post-info">
+        <div class="tag-list">
+            
         </div>
-        <div class="post-meta">
-            2022-09-13
+        <div class="post-title">
+            
+            
+                【IOT PWN】 环境搭建
+            
+            
         </div>
-        <div class="post-md">
-            <h2 id="硬件资源"><a href="#硬件资源" class="headerlink" title="硬件资源"></a>硬件资源</h2><p>太多辣，以后看需求慢慢购入吧</p>
+        <span class="post-date">
+            9月 13, 2022
+        </span>
+    </div>
+    <div class="post-img">
+        
+            <div class="h-line-primary"></div>
+              
+    </div>
+</div>
+    <div class="post-content">
+    <h2 id="硬件资源"><a href="#硬件资源" class="headerlink" title="硬件资源"></a>硬件资源</h2><p>太多辣，以后看需求慢慢购入吧</p>
 <ul>
 <li>万用表，主要的功能是用来测试UART(TLL)中的几个接口，比如<code>RX</code>、<code>TX</code>、<code>GND</code>。</li>
 <li>CH340G设备(USB转TTL)，这个设备主要的将电脑与IoT设备用TTL线连接，方便进入IoT设备的终端(Shell)。</li>
@@ -55,91 +160,142 @@
 <li>免拆芯片通用测试夹，这设备主要也是帮助用来dump芯片固件的，我们买的编程器夹子一般只能用来夹8脚，当超过8脚就不好用了，所以可以用这种通用测试夹来夹住芯片然后dump估计。</li>
 </ul>
 <h2 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h2><h3 id="Binwalk"><a href="#Binwalk" class="headerlink" title="Binwalk"></a>Binwalk</h3><p>binwalk是一个固件解包的工具，当我们用编程器dump出一个固件用，需要用binwalk来解压。一般做misc也会经常用到。</p>
-<pre><code class="bash">sudo apt install binwalk
-</code></pre>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install binwalk</span><br></pre></td></tr></table></figure>
+
 <p><img src="/img/article/iot-envir/image-20220913113915723.png" alt="image-20220913113915723"></p>
 <p>固件解包命令</p>
-<pre><code class="bash">binwalk -Me file.bin
-</code></pre>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">binwalk -Me file.bin</span><br></pre></td></tr></table></figure>
+
 <p>家里旧路由器解包出来的文件，太多了没截全</p>
 <p><img src="/img/article/iot-envir/image-20220913114057712.png" alt="家里旧路由器的固件"></p>
 <h3 id="Firmadyne（固件仿真）"><a href="#Firmadyne（固件仿真）" class="headerlink" title="Firmadyne（固件仿真）"></a>Firmadyne（固件仿真）</h3><p>这工具主要是用来仿真，将固件用qemu模拟启动起来，不过不是百分百模拟成功的，经常会仿失败，常见就是环境等问题。(建议还是买真机好)</p>
 <blockquote>
 <p>安装可参考github上的文章：<a target="_blank" rel="noopener" href="https://github.com/firmadyne/firmadyne#introduction">https://github.com/firmadyne/firmadyne#introduction</a></p>
 </blockquote>
-<h4 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h4><pre><code class="bash">sudo apt-get install busybox-static fakeroot git dmsetup kpartx netcat-openbsd nmap python-psycopg2 python3-psycopg2 snmp uml-utilities util-linux vlan
-git clone --recursive https://github.com/firmadyne/firmadyne.git
-</code></pre>
-<h4 id="重新构建binwalk"><a href="#重新构建binwalk" class="headerlink" title="重新构建binwalk"></a>重新构建binwalk</h4><pre><code class="bash">git clone https://github.com/ReFirmLabs/binwalk.git
-cd binwalk
-sudo ./deps.sh
-sudo python3 ./setup.py install
-</code></pre>
-<h4 id="数据库安装"><a href="#数据库安装" class="headerlink" title="数据库安装"></a>数据库安装</h4><pre><code class="bash">sudo apt-get install postgresql
-sudo -u postgres createuser -P firmadyne，带密码firmadyne
-sudo -u postgres createdb -O firmadyne firmware
-sudo -u postgres psql -d firmware &lt; ./firmadyne/database/schema
-</code></pre>
+<h4 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install busybox-static fakeroot git dmsetup kpartx netcat-openbsd nmap python-psycopg2 python3-psycopg2 snmp uml-utilities util-linux vlan</span><br><span class="line">git <span class="built_in">clone</span> --recursive https://github.com/firmadyne/firmadyne.git</span><br></pre></td></tr></table></figure>
+
+<h4 id="重新构建binwalk"><a href="#重新构建binwalk" class="headerlink" title="重新构建binwalk"></a>重新构建binwalk</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/ReFirmLabs/binwalk.git</span><br><span class="line"><span class="built_in">cd</span> binwalk</span><br><span class="line">sudo ./deps.sh</span><br><span class="line">sudo python3 ./setup.py install</span><br></pre></td></tr></table></figure>
+
+<h4 id="数据库安装"><a href="#数据库安装" class="headerlink" title="数据库安装"></a>数据库安装</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install postgresql</span><br><span class="line">sudo -u postgres createuser -P firmadyne，带密码firmadyne</span><br><span class="line">sudo -u postgres createdb -O firmadyne firmware</span><br><span class="line">sudo -u postgres psql -d firmware &lt; ./firmadyne/database/schema</span><br></pre></td></tr></table></figure>
+
 <h4 id="设置Firmadyne"><a href="#设置Firmadyne" class="headerlink" title="设置Firmadyne"></a>设置Firmadyne</h4><p>替换config文件中的绝对文件路径</p>
 <p><img src="/img/article/iot-envir/image-20220913122554653.png" alt="image-20220913122554653"></p>
 <p>构建二进制文件</p>
-<pre><code class="bash">cd ./firmadyne; ./download.sh
-</code></pre>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> ./firmadyne; ./download.sh</span><br></pre></td></tr></table></figure>
+
 <p>安装所需的其他<code>qemu</code>相关依赖</p>
-<pre><code class="bash">sudo apt-get install qemu-system-arm qemu-system-mips qemu-system-x86 qemu-utils
-</code></pre>
-<h2 id="仿真Netgear-网络路由器-WNAP320测试"><a href="#仿真Netgear-网络路由器-WNAP320测试" class="headerlink" title="仿真Netgear(网络路由器) WNAP320测试"></a>仿真Netgear(网络路由器) WNAP320测试</h2><h4 id="固件包下载"><a href="#固件包下载" class="headerlink" title="固件包下载"></a>固件包下载</h4><pre><code class="bash">wget http://www.downloads.netgear.com/files/GDC/WNAP320/WNAP320%20Firmware%20Version%202.0.3.zip
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install qemu-system-arm qemu-system-mips qemu-system-x86 qemu-utils</span><br></pre></td></tr></table></figure>
 
-mv WNAP320\ Firmware\ Version\ 2.0.3.zip WNAP320.zip  
-</code></pre>
+
+
+<h2 id="仿真Netgear-网络路由器-WNAP320测试"><a href="#仿真Netgear-网络路由器-WNAP320测试" class="headerlink" title="仿真Netgear(网络路由器) WNAP320测试"></a>仿真Netgear(网络路由器) WNAP320测试</h2><h4 id="固件包下载"><a href="#固件包下载" class="headerlink" title="固件包下载"></a>固件包下载</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">wget http://www.downloads.netgear.com/files/GDC/WNAP320/WNAP320%20Firmware%20Version%202.0.3.zip</span><br><span class="line"></span><br><span class="line"><span class="built_in">mv</span> WNAP320\ Firmware\ Version\ 2.0.3.zip WNAP320.zip  </span><br></pre></td></tr></table></figure>
+
 <p><img src="/img/article/iot-envir/image-20220913133114466.png" alt="image-20220913133114466"></p>
-<h4 id="解压固件包"><a href="#解压固件包" class="headerlink" title="解压固件包"></a>解压固件包</h4><pre><code class="bash">sudo python3 ./sources/extractor/extractor.py -b Netgear -sql 127.0.0.1 -np -nk &quot;WNAP320.zip&quot; images
+<h4 id="解压固件包"><a href="#解压固件包" class="headerlink" title="解压固件包"></a>解压固件包</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">sudo python3 ./sources/extractor/extractor.py -b Netgear -sql 127.0.0.1 -np -nk <span class="string">&quot;WNAP320.zip&quot;</span> images</span><br><span class="line"></span><br><span class="line"><span class="comment">#参数解释</span></span><br><span class="line">-b   <span class="string">&quot;brand 品牌&quot;</span></span><br><span class="line">-sql <span class="string">&quot;连接本地数据库&quot;</span></span><br><span class="line">-np  <span class="string">&quot;代表没有并行操作&quot;</span></span><br><span class="line">-nk  <span class="string">&quot;代表不提取内核&quot;</span></span><br></pre></td></tr></table></figure>
 
-#参数解释
--b   &quot;brand 品牌&quot;
--sql &quot;连接本地数据库&quot;
--np  &quot;代表没有并行操作&quot;
--nk  &quot;代表不提取内核&quot;
-</code></pre>
 <blockquote>
 <p>如出现No module named ‘magic’错误，可以尝试使用pip3 install python-magic解决</p>
 </blockquote>
 <p><img src="/img/article/iot-envir/image-20220913133817467.png" alt="image-20220913133817467"></p>
 <h4 id="识别CPU框架"><a href="#识别CPU框架" class="headerlink" title="识别CPU框架"></a>识别CPU框架</h4><p>接着是执行<code>./script/getArch.sh</code>脚本来获取路由器固件的CPU架构。</p>
-<pre><code class="bash">sudo ./scripts/getArch.sh ./images/1.tar.gz
-</code></pre>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo ./scripts/getArch.sh ./images/1.tar.gz</span><br></pre></td></tr></table></figure>
+
 <p>焯，这里卡住了. 但是找到了一个issue: <a target="_blank" rel="noopener" href="https://github.com/attify/firmware-analysis-toolkit/issues/27">.&#x2F;images&#x2F;1.tar.gz: Cannot open: No such file or directory · Issue #27 · attify&#x2F;firmware-analysis-toolkit (github.com)</a></p>
 <p>暂时不知道怎么解决</p>
 <p><img src="/img/article/iot-envir/image-20220913143102694.png" alt="image-20220913143102694"></p>
 
-        </div>
+</div> 
 
+<script>
+    window.onload = detectors();
+</script>
+    <div class="post-footer">
+    <div class="h-line-primary"></div>
+    <nav class="post-nav">
+        <div class="prev-item">
+           
+                <div class="icon arrow-left"></div>
+                <div class="post-link">
+                    <a href="/2022/09/14/%E3%80%90IOT%20%E5%AD%A6%E4%B9%A0%E4%B8%80%E3%80%91%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E4%B8%8E%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/">Prev</a>
+                </div>
+            
+        </div>
+        <div class="next-item">
+            
+                <div class="icon arrow-right"></div>
+                <div class="post-link">
+                  <a href="/2022/09/13/nc%20%E6%98%AF%E4%BB%80%E4%B9%88/">Next</a>  
+                </div>  
+            
+        </div>
+    </nav>
+</div>
+
+    
+      <div class="post-comment">
+
+     
+
+     
+    
     
 
 </div>
-                <div class="footer">
-    <span>Copyright © 2022 Loora1N&#39;s Blog | 鹭雨</span>
-    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
+     
+  
+</article>
+        </div>
+      </div>
+      
+      <div class="footer">
+    <div class="flex-container">
+        <div class="footer-text">
+            
+            
+            
+                Powered by <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> & <a target="_blank" rel="noopener" href="https://github.com/zoeingwingkei/frame/">Frame</a>
+                
+        </div>
+    </div>
 </div>
 
+    </div>
 
-<link rel="stylesheet" href="/css/a11y-dark.min.css">
-
-
-<script src="/js/highlight.min.js"></script>
-
-
-<script src="/js/highlightjs-line-numbers.js"></script>
-
-
-<script>
-    hljs.initHighlightingOnLoad();
-    hljs.initLineNumbersOnLoad();
-</script>
-
+    
+      <div class="search-popup">
+    <div class="search-popup-overlay">  
+    </div>
+    <div class="search-popup-window" >
+        <div class="search-header">
+            <div class="search-input-container">
+              <input autocomplete="off" autocapitalize="off" maxlength="80"
+                     placeholder="Search Anything" spellcheck="false"
+                     type="search" class="search-input">
+            </div>
+            <div class="search-close-btn">
+                <div class="icon close-btn"></div>
             </div>
         </div>
-    <!-- hexo injector body_end start -->
+        <div class="search-result-container">
+        </div>
+    </div>
+</div>
+
+<script>
+    const searchConfig = {
+        path             : "/search.xml",
+        top_n_per_article: "1",
+        unescape         : "false",
+        trigger: "auto",
+        preload: "false"
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js"></script>
+<script src="/js/search.js"></script>
+    
+    
+
+  <!-- hexo injector body_end start -->
   <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
   <script data-pjax>
         function GithubCalendarConfig(){

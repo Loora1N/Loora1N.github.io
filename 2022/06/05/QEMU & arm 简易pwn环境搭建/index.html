@@ -1,126 +1,275 @@
 <!DOCTYPE html>
-<html>
-    <head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
-    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
-    <title>Loora1N&#39;s Blog | 鹭雨 | </title>
-    
-<link rel="stylesheet" href="/css/reset.css">
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    
-<link rel="stylesheet" href="/css/style.css">
+    <meta name="author" content="Loora1N">
 
-    
-<link rel="stylesheet" href="/css/markdown.css">
 
-    
-<link rel="stylesheet" href="/css/fonts.css">
 
-<meta name="generator" content="Hexo 6.2.0"></head>
-    <body>
-        <div class="paper">
-            <div class="paper-main">
-                
-                    <div class="post-header">
-    <a class="logo" href="/">Loora1N&#39;s Blog | 鹭雨</a>
-    <a class="go-home" href="/">
-        <svg width="8" height="14" viewBox="0 0 8 14">
-            <path d="M7 1L1 7l6 6" stroke="#000" stroke-width="2" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-    </a>
+    <meta name="description" content="Blog of Loora1N">
+
+
+
+
+
+<title>QEMU &amp; arm 简易pwn环境搭建 | Loora1N&#39;s Blog | 鹭雨</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Roboto+Mono&display=swap');
+</style>
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/menu.js"></script>
+    
+    <script src="/js/highlight.min.js"></script>
+    
+    <script src="/js/highlightjs-line-numbers.js"></script>
+    
+    <script src="/js/format.js"></script>
+    
+    <script src="/js/search.js"></script>
+    
+
+
+
+
+
+
+
+
+
+
+  <meta name="generator" content="Hexo 6.2.0"></head>
+  <body>
+    <div class="mask-border">
+    </div>
+
+    <div class="wrapper">
+
+      <div class="header">
+  <div class="flex-container">
+    <div class="header-inner">
+      <div class="site-brand-container">
+        <a href="/">
+          
+            Loora1N&#39;s Blog | 鹭雨
+          
+        </a>
+      </div>
+      <div id="menu-btn" class="menu-btn" onclick="toggleMenu()">
+        Menu
+      </div>
+      <nav class="site-nav">
+        <ul class="menu-list">
+          
+            
+              <li class="menu-item">
+                <a href="/">首页</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/archives/">索引</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/about/">述己</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/links/">友链</a>
+              </li> 
+                   
+          
+          
+            <li class="menu-item search-btn">
+              <a href="#">Search</a>
+            </li>
+          
+        </ul>
+      </nav>
+    </div>
+  </div>
 </div>
-                
-                <div class="post-main">
 
-    
-    
-        <div class="post-main-title">
-            QEMU &amp; arm 简易pwn环境搭建
+
+      <div class="main">
+        <div class="flex-container">
+          <article id="post">
+
+  
+    <div class="post-head">
+    <div class="post-info">
+        <div class="tag-list">
+            
         </div>
-        <div class="post-meta">
-            2022-06-05
+        <div class="post-title">
+            
+            
+                QEMU &amp; arm 简易pwn环境搭建
+            
+            
         </div>
-        <div class="post-md">
-            <blockquote>
+        <span class="post-date">
+            6月 5, 2022
+        </span>
+    </div>
+    <div class="post-img">
+        
+            <div class="h-line-primary"></div>
+              
+    </div>
+</div>
+    <div class="post-content">
+    <blockquote>
 <p>填坑了，填坑了！学了堆之后很久没有学新东西了，来入门下arm架构下的PWN，为国赛打一点基础。</p>
 </blockquote>
 <h2 id="环境搭建-Ubuntu-20-04"><a href="#环境搭建-Ubuntu-20-04" class="headerlink" title="环境搭建(Ubuntu 20.04)"></a>环境搭建(Ubuntu 20.04)</h2><h3 id="安装QEMU"><a href="#安装QEMU" class="headerlink" title="安装QEMU"></a>安装QEMU</h3><blockquote>
 <p>QEMU是一种通用的开源计算机仿真器和虚拟器。QEMU共有两种操作模式<br><strong>全系统仿真</strong>：能够在任意支持的架构上为任何机器运行一个完整的操作系统<br><strong>用户模式仿真</strong>：能够在任意支持的架构上为另一个Linux&#x2F;BSD运行程序 因此我们可以在linux操作系统中安装它，然后用它来调试其它架构平台的程序。</p>
 </blockquote>
-<pre><code class="bash">##首先安装qemu
-sudo apt update
-sudo apt install qemu
-</code></pre>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">##首先安装qemu</span></span><br><span class="line">sudo apt update</span><br><span class="line">sudo apt install qemu</span><br></pre></td></tr></table></figure>
 <p>安装好后可以用tab补全看看是否正确安装。在安装qemu后，对于静态链接的arm程序就已经可以直接运行了，使用命令<code>qemu-arm prog</code>运行32位的arm程序，其中prog指代程序名,对于64位程序使用<code>qemu-aarch64</code>但对于动态链接的程序还是无法正常运行，此时需要安装对应架构的动态链接库才可以正常运行。</p>
 <p><img src="/img/article/qemu-arm/qemu.png" alt="Untitled"></p>
 <h3 id="安装动态链接库"><a href="#安装动态链接库" class="headerlink" title="安装动态链接库"></a>安装动态链接库</h3><p>我们可以使用如下命令来搜索可安装的动态链接库。这里我们以64位为例，安装debug版本的libc</p>
-<pre><code class="bash">##搜索libc
-sudo apt search &quot;libc6&quot; | grep arm
-##安装libc
-sudo apt install libc6-dbg-arm64-cross
-</code></pre>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">##搜索libc</span></span><br><span class="line">sudo apt search <span class="string">&quot;libc6&quot;</span> | grep arm</span><br><span class="line"><span class="comment">##安装libc</span></span><br><span class="line">sudo apt install libc6-dbg-arm64-cross</span><br></pre></td></tr></table></figure>
+
 <p><img src="/img/article/qemu-arm/qemu2.png" alt="Untitled"></p>
 <p>安装完后，在<code>/usr</code>目录下会出现<code>aarch64-linux-gnu</code>这个文件夹，该文件夹即对应刚安装好的arm64位libc库，之后我们使用下面的命令指定arm程序的动态链接器，即可运行程序。</p>
-<pre><code class="bash">qemu-aarch64 -g 12345 -L /usr/aarch64-linux-gnu/ ./prog
-## -g 代表为程序运行分配的进程端口号，一般用于gdb调试，不填时系统自动分配
-## -L 代表动态链接库的文件夹地址，静态链接程序可以不需要
-</code></pre>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">qemu-aarch64 -g 12345 -L /usr/aarch64-linux-gnu/ ./prog</span><br><span class="line"><span class="comment">## -g 代表为程序运行分配的进程端口号，一般用于gdb调试，不填时系统自动分配</span></span><br><span class="line"><span class="comment">## -L 代表动态链接库的文件夹地址，静态链接程序可以不需要</span></span><br></pre></td></tr></table></figure>
 <p><code>qemu-arm</code>指的是<strong>arm32架构</strong>，用这个命令来运行32位的arm程序，而<code>qemu-aarch64</code>对应的才是<strong>arm64位架构的程序</strong>，上面两者默认都是小端程序；<code>qemu-armeb</code>用来运行<strong>大端的arm程序</strong>。当然在<strong>上面安装包截图中显示的是arm64，其实和aarch64指的是同一种体系结构，只不过命名略有不同</strong>。</p>
 <h2 id="使用gdb-multiarch进行调试"><a href="#使用gdb-multiarch进行调试" class="headerlink" title="使用gdb-multiarch进行调试"></a>使用gdb-multiarch进行调试</h2><p>首先使用如下命令安装gdb-multiarch</p>
-<pre><code class="bash">sudo apt update
-sudo apt install gdb-multiarch
-</code></pre>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo apt update</span><br><span class="line">sudo apt install gdb-multiarch</span><br></pre></td></tr></table></figure>
+
 <p>以平台上的ez-arch为例，我们先使用qemu启动程序，并为其分配一个端口</p>
-<pre><code class="bash">qemu-aarch64 -g 12345 -L /usr/aarch64-linux-gnu/ ./stack
-</code></pre>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">qemu-aarch64 -g 12345 -L /usr/aarch64-linux-gnu/ ./stack</span><br></pre></td></tr></table></figure>
+
 <p>使用另外一个终端，打开qemu-multiarch</p>
-<pre><code class="bash">┌─[loorain@ubuntu] - [~/dest0g3-520/ez-aarch] - [1568]
-└─[$] sudo gdb-multiarch                                                                             [22:22:12]
-......
-......
-pwndbg&gt; set architecture aarch64
-The target architecture is assumed to be aarch64
-pwndbg&gt; target remote localhost:12345
-Remote debugging using localhost:12345
-warning: No executable has been specified and target does not support
-determining executable automatically.  Try using the &quot;file&quot; command.
-</code></pre>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">┌─[loorain@ubuntu] - [~/dest0g3-520/ez-aarch] - [1568]</span><br><span class="line">└─[$] sudo gdb-multiarch                                                                             [22:22:12]</span><br><span class="line">......</span><br><span class="line">......</span><br><span class="line">pwndbg&gt; <span class="built_in">set</span> architecture aarch64</span><br><span class="line">The target architecture is assumed to be aarch64</span><br><span class="line">pwndbg&gt; target remote localhost:12345</span><br><span class="line">Remote debugging using localhost:12345</span><br><span class="line">warning: No executable has been specified and target does not support</span><br><span class="line">determining executable automatically.  Try using the <span class="string">&quot;file&quot;</span> <span class="built_in">command</span>.</span><br></pre></td></tr></table></figure>
+
 <p><img src="/img/article/qemu-arm/qemu3.png" alt="Untitled"></p>
 <p>另外在pwntools中，我们可以使用如下代码来动态调试程序。</p>
-<pre><code class="python">p = process([&quot;qemu-aarch64&quot;, &quot;-g&quot;, &quot;12345&quot;,&quot;-L&quot;,&quot;/usr/aarch64-linux-gnu/&quot;, &quot;./stack&quot;])
-##32arm只需要替换指令为qemu-arm，并更换对应的动态链接库
-</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">p = process([<span class="string">&quot;qemu-aarch64&quot;</span>, <span class="string">&quot;-g&quot;</span>, <span class="string">&quot;12345&quot;</span>,<span class="string">&quot;-L&quot;</span>,<span class="string">&quot;/usr/aarch64-linux-gnu/&quot;</span>, <span class="string">&quot;./stack&quot;</span>])</span><br><span class="line"><span class="comment">##32arm只需要替换指令为qemu-arm，并更换对应的动态链接库</span></span><br></pre></td></tr></table></figure>
+
 <p><strong>注意：不进行调试时不建议使用</strong><code>-p</code><strong>不然可能会导致程序停滞，只能等待gdb链接</strong></p>
 
-        </div>
+</div> 
 
+<script>
+    window.onload = detectors();
+</script>
+    <div class="post-footer">
+    <div class="h-line-primary"></div>
+    <nav class="post-nav">
+        <div class="prev-item">
+           
+                <div class="icon arrow-left"></div>
+                <div class="post-link">
+                    <a href="/2022/06/07/Hexo%E9%83%A8%E7%BD%B2%E5%87%BA%E7%8E%B0%E9%94%99%E8%AF%AF%20Error%20Spawn%20failed%20%E8%A7%A3%E5%86%B3%E6%96%B9%E5%BC%8F/">Prev</a>
+                </div>
+            
+        </div>
+        <div class="next-item">
+            
+                <div class="icon arrow-right"></div>
+                <div class="post-link">
+                  <a href="/2022/06/05/srop/">Next</a>  
+                </div>  
+            
+        </div>
+    </nav>
+</div>
+
+    
+      <div class="post-comment">
+
+     
+
+     
+    
     
 
 </div>
-                <div class="footer">
-    <span>Copyright © 2022 Loora1N&#39;s Blog | 鹭雨</span>
-    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
+     
+  
+</article>
+        </div>
+      </div>
+      
+      <div class="footer">
+    <div class="flex-container">
+        <div class="footer-text">
+            
+            
+            
+                Powered by <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> & <a target="_blank" rel="noopener" href="https://github.com/zoeingwingkei/frame/">Frame</a>
+                
+        </div>
+    </div>
 </div>
 
+    </div>
 
-<link rel="stylesheet" href="/css/a11y-dark.min.css">
-
-
-<script src="/js/highlight.min.js"></script>
-
-
-<script src="/js/highlightjs-line-numbers.js"></script>
-
-
-<script>
-    hljs.initHighlightingOnLoad();
-    hljs.initLineNumbersOnLoad();
-</script>
-
+    
+      <div class="search-popup">
+    <div class="search-popup-overlay">  
+    </div>
+    <div class="search-popup-window" >
+        <div class="search-header">
+            <div class="search-input-container">
+              <input autocomplete="off" autocapitalize="off" maxlength="80"
+                     placeholder="Search Anything" spellcheck="false"
+                     type="search" class="search-input">
+            </div>
+            <div class="search-close-btn">
+                <div class="icon close-btn"></div>
             </div>
         </div>
-    <!-- hexo injector body_end start -->
+        <div class="search-result-container">
+        </div>
+    </div>
+</div>
+
+<script>
+    const searchConfig = {
+        path             : "/search.xml",
+        top_n_per_article: "1",
+        unescape         : "false",
+        trigger: "auto",
+        preload: "false"
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js"></script>
+<script src="/js/search.js"></script>
+    
+    
+
+  <!-- hexo injector body_end start -->
   <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
   <script data-pjax>
         function GithubCalendarConfig(){

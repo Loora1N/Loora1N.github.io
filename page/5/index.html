@@ -1,271 +1,211 @@
 <!DOCTYPE html>
-<html>
-    <head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
-    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
-    <title>Loora1N&#39;s Blog | 鹭雨 | </title>
-    
-<link rel="stylesheet" href="/css/reset.css">
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    
-<link rel="stylesheet" href="/css/style.css">
+    <meta name="author" content="Loora1N">
 
-    
-<link rel="stylesheet" href="/css/markdown.css">
 
-    
-<link rel="stylesheet" href="/css/fonts.css">
 
-<meta name="generator" content="Hexo 6.2.0"></head>
-    <body>
-        <div class="paper">
-            <div class="paper-main">
+    <meta name="description" content="Blog of Loora1N">
+
+
+
+
+
+<title>Loora1N&#39;s Blog | 鹭雨</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Roboto+Mono&display=swap');
+</style>
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/menu.js"></script>
+    
+    <script src="/js/highlight.min.js"></script>
+    
+    <script src="/js/highlightjs-line-numbers.js"></script>
+    
+    <script src="/js/format.js"></script>
+    
+    <script src="/js/search.js"></script>
+    
+
+
+
+
+
+
+
+
+
+
+  <meta name="generator" content="Hexo 6.2.0"></head>
+  <body>
+    <div class="mask-border">
+    </div>
+
+    <div class="wrapper">
+
+      <div class="header">
+  <div class="flex-container">
+    <div class="header-inner">
+      <div class="site-brand-container">
+        <a href="/">
+          
+            Loora1N&#39;s Blog | 鹭雨
+          
+        </a>
+      </div>
+      <div id="menu-btn" class="menu-btn" onclick="toggleMenu()">
+        Menu
+      </div>
+      <nav class="site-nav">
+        <ul class="menu-list">
+          
+            
+              <li class="menu-item">
+                <a href="/">首页</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/archives/">索引</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/about/">述己</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/links/">友链</a>
+              </li> 
+                   
+          
+          
+            <li class="menu-item search-btn">
+              <a href="#">Search</a>
+            </li>
+          
+        </ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+      <div class="main">
+        <div class="flex-container">
+          <div class="profile">
+    <div class="profile-image">
+        
+            <img src="/image.png" alt="featured_image">
+          
+    </div>
+    <div class="post-content profile-content">
+        <div class="profile-title">
+            鹭雨 | Loora1N
+        </div>
+        <div class="profile-body">
+            2024/9/20更新博客框架主题，文章总览全部放入索引页面，增添搜索栏功能，评论功能正在测试，旧版博客一去不反。（左图为旧博客的最后一张遗像）
+        </div>
+        
+            <div class="profile-link">
+                <a href="/">首页</a> 
+            </div>           
+        
+            <div class="profile-link">
+                <a href="/archives/">索引</a> 
+            </div>           
+        
+            <div class="profile-link">
+                <a href="/about/">述己</a> 
+            </div>           
+        
+            <div class="profile-link">
+                <a href="/links/">友链</a> 
+            </div>           
+        
+    </div>
+    
+</div>
+        </div>
+      </div>
+      
+      <div class="footer">
+    <div class="flex-container">
+        <div class="footer-text">
+            
+            
+            
+                Powered by <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> & <a target="_blank" rel="noopener" href="https://github.com/zoeingwingkei/frame/">Frame</a>
                 
-                    <div class="header">
-    <a class="logo" href="/">Loora1N&#39;s Blog | 鹭雨</a>
-    <ul class="nav">
-        
-        <li><a href="/">扉页</a></li>
-        
-        <li><a href="/archives">索引</a></li>
-        
-        <li><a href="/about">述己</a></li>
-        
-        <li><a href="/links">友链</a></li>
-        
-    </ul>
-</div>
-                
-                <div class="post-list">
-    
-    <div class="post">
-        <a class="post-title" href="/2022/10/27/%5BIO_FILE%5DHouse%20of%20kiwi/">【IO_FILE】House of kiwi</a>
-        <div class="post-except">
-            前言
-参考博客如下：
-从PWN题NULL_FXCK中学到的glibc知识
-House OF Kiwi
-
-CTF的Pwn题里面,通常就会遇到一些加了沙盒的题目,这种加沙盒的题目,在2.29之后的堆题中,通常为以下两种方式
-
-劫持__free_hook,利用特定的gadget,将栈进行迁移
-劫持__malloc_hook为setcontext+61的gadget,以及劫持IO_list_all单链表中的指针在exit结束中,在_IO_cleanup函数会进行缓冲区的刷新,从而读取
-            <a class="read-more" href="/2022/10/27/%5BIO_FILE%5DHouse%20of%20kiwi/"> ... </a>
         </div>
-        <div class="post-date">2022.10.27</div>
     </div>
-    
-    <div class="post">
-        <a class="post-title" href="/2022/10/25/vscode%E4%BD%BF%E7%94%A8pwntools%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE%E5%87%BA%E9%94%99/">vscode使用pwntools代码高亮出错</a>
-        <div class="post-except">
-            
-vscode在使用pwntools的send系列函数时，会出现高亮错误的情况，目前最好的解决办法时对pwntools源码进行更改
-
-右键send函数，选择Go to Definition，打开pwntools源码
-
-ctrl+F搜索send_raw函数
-
-把函数末尾的raise EOFError(&#39;Not implemented&#39;)更换成raise NotImplementedError()既可
-
-            <a class="read-more" href="/2022/10/25/vscode%E4%BD%BF%E7%94%A8pwntools%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE%E5%87%BA%E9%94%99/"> ... </a>
-        </div>
-        <div class="post-date">2022.10.25</div>
-    </div>
-    
-    <div class="post">
-        <a class="post-title" href="/2022/10/20/how2heap%E2%91%A0%20botcake,einherjar,lore/">【how2heap】 botcake,einherjar,lore</a>
-        <div class="post-except">
-            
-本系列将针对glibc2.31及glibc2.35两个版本进行讨论，其他版本可以根据特性进行类推，建议先对各种堆块的基本特性和数据结构做已了解之后进行学习。
-
-house_of_botcakehouse_of_botcake利用的是块的分割，使得只存在uaf漏洞的前提下实现堆块的溢出,达到获取任意地址的目的，下面我们用how2heap中的例子进行理解。
-#include &lt;stdio.h&gt;
-#include &lt;stdlib.h&gt;
-#include &
-            <a class="read-more" href="/2022/10/20/how2heap%E2%91%A0%20botcake,einherjar,lore/"> ... </a>
-        </div>
-        <div class="post-date">2022.10.20</div>
-    </div>
-    
-    <div class="post">
-        <a class="post-title" href="/2022/10/18/Kernel-pwnbase%E8%AF%A6%E8%A7%A3/">Kernel-pwnbase详解</a>
-        <div class="post-except">
-            
-参加starnewctf week4后，想要复现一道kernel的题。网上基本找不到Kernel-pwn的base，因此做了这个pwnbase用于在ctfd上提供动态kernel题目。base下载地址kernelbase
-
-DockfileFROM ubuntu:20.04
-
-RUN sed -i &quot;s/http:\/\/archive.ubuntu.com/http:\/\/mirrors.tuna.tsinghua.edu.cn/g&quot; /etc/ap
-            <a class="read-more" href="/2022/10/18/Kernel-pwnbase%E8%AF%A6%E8%A7%A3/"> ... </a>
-        </div>
-        <div class="post-date">2022.10.18</div>
-    </div>
-    
-    <div class="post">
-        <a class="post-title" href="/2022/10/17/NewStarCTF%20Week4%20PWN%20WP/">NewStarCTF Week4 PWN WP</a>
-        <div class="post-except">
-            前言
-由于知道这个比赛比较晚，正式参与比赛是第四周的周三晚上，还差一道堆🐎，没有完成AK(但是拿了四个一血也好爽)。最后一题未解主要原因确实是自己在_IO_File相关利用了解不足，赛后找夜悠师傅拿到了exp，真的好感谢🌹
-
-
-Canary比较简单的一道题，等我开始做题的时候已经有4个解了
-expfrom pwn import *
-
-io = process(&#39;./pwn&#39;)
-# io = remote(&#39;node4.buuoj.cn&#39;,2
-            <a class="read-more" href="/2022/10/17/NewStarCTF%20Week4%20PWN%20WP/"> ... </a>
-        </div>
-        <div class="post-date">2022.10.17</div>
-    </div>
-    
-    <div class="post">
-        <a class="post-title" href="/2022/10/11/%E3%80%90CTFd%20%E4%BA%8C%E6%AC%A1%E5%BC%80%E5%8F%91%E3%80%91%E8%A7%A3%E9%A2%98%E6%92%AD%E6%8A%A5%E6%9C%BA%E5%99%A8%E4%BA%BA%20V1/">【CTFd 二次开发】解题播报机器人 V1</a>
-        <div class="post-except">
-            
-本文基于 CTFd Version 3.4.3 开发，可能存在源码不相同的情况，阅读时请注意文章时效性。机器人会一直更新，后续应该会有一二三血播报等更详尽的功能
-注：本文不做机器人相关代码更改，直接利用nonebot自带接口实现
-
-前端页面修改config.html打开CTFd/CTFd/themes/admin/templates/config.html，更改左侧栏目标题
-
-apperance.html打开CTFd/CTFd/themes/admin/templates/
-            <a class="read-more" href="/2022/10/11/%E3%80%90CTFd%20%E4%BA%8C%E6%AC%A1%E5%BC%80%E5%8F%91%E3%80%91%E8%A7%A3%E9%A2%98%E6%92%AD%E6%8A%A5%E6%9C%BA%E5%99%A8%E4%BA%BA%20V1/"> ... </a>
-        </div>
-        <div class="post-date">2022.10.11</div>
-    </div>
-    
-    <div class="post">
-        <a class="post-title" href="/2022/10/03/gdb%E8%B0%83%E8%AF%95%E5%B8%B8%E7%94%A8%E6%8C%87%E4%BB%A4/">gdb调试常用指令</a>
-        <div class="post-except">
-            
-gdb常用调试指令，包含pwngdb、pwndbg、peda、gef等插件的指令
-
-
-
-
-命令名称
-命令缩写
-命令说明
-
-
-
-run
-r
-运行一个待调试的程序
-
-
-continue
-c
-让暂停的程序继续运行
-
-
-next
-n
-运行到下一行
-
-
-step
-s
-单步执行，遇到函数会进入
-
-
-until
-u
-运行到指定行停下来
-
-
-finish
-fi
-结束当前调用函数，回到上一层调用函数处
-
-
-return
-return
-结束当前调用函数并返回指定值，到上一层函数调用处
-
-
-ju
-            <a class="read-more" href="/2022/10/03/gdb%E8%B0%83%E8%AF%95%E5%B8%B8%E7%94%A8%E6%8C%87%E4%BB%A4/"> ... </a>
-        </div>
-        <div class="post-date">2022.10.03</div>
-    </div>
-    
-    <div class="post">
-        <a class="post-title" href="/2022/09/16/%E3%80%90IOT%20%E5%AD%A6%E4%B9%A0%E4%B8%89%E3%80%91CVE-2019-17621%E5%A4%8D%E7%8E%B0/">【IOT 学习三】DLink路由器RCE漏洞 CVE-2019-17621复现</a>
-        <div class="post-except">
-            前言
-链接：CVE - CVE-2019-17621 (mitre.org). The UPnP endpoint URL %2Fgena.cgi in the,UPnP service when connecting to the local network.)
-The UPnP endpoint URL &#x2F;gena.cgi in the D-Link DIR-859 Wi-Fi router 1.05 and 1.06B01 Beta01 allows an U
-            <a class="read-more" href="/2022/09/16/%E3%80%90IOT%20%E5%AD%A6%E4%B9%A0%E4%B8%89%E3%80%91CVE-2019-17621%E5%A4%8D%E7%8E%B0/"> ... </a>
-        </div>
-        <div class="post-date">2022.09.16</div>
-    </div>
-    
-    <div class="post">
-        <a class="post-title" href="/2022/09/16/%E3%80%90IOT%E3%80%91%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8C%85%E5%8F%8A%E6%89%93%E5%8C%85/">【IOT】固件解包及打包</a>
-        <div class="post-except">
-            解包binwalk -eM file.bin
-
-打包首先查看原.bin文件文件结构
-
-然后切割出文件目录之前的头部
-sudo dd if=file.bin of=head.bin bs=1 skip=0 count=1376400
-#if是原固件，of是输出文件，bs是单位长度，skip是偏移量，count是分区大小取到文件目录之前
-
-正常解包，然后更改文件内容，随后制作文件目录的bin文件
-sudo mksquashfs squashfs-root rootfs.bin -
-            <a class="read-more" href="/2022/09/16/%E3%80%90IOT%E3%80%91%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8C%85%E5%8F%8A%E6%89%93%E5%8C%85/"> ... </a>
-        </div>
-        <div class="post-date">2022.09.16</div>
-    </div>
-    
-    <div class="post">
-        <a class="post-title" href="/2022/09/15/%E3%80%90IOT%20%E5%AD%A6%E4%B9%A0%E4%BA%8C%E3%80%91%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E4%B8%8E%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8/">【IOT 学习二】固件分析与漏洞利用</a>
-        <div class="post-except">
-            
-本文内容是基于《物联网渗透测试》-美·亚伦古兹曼的学习总结
-
-基于固件仿真的动态分析前期准备
-书接上一篇文章的安装错误，在我几乎连续不断的尝试了10余个小时后，环境终于搭建完毕，这里采用Ubuntu20.04，Kali有各种各样奇葩问题是真有点麻烦。
-本篇文章写于2020&#x2F;9&#x2F;15，由于时间有效性的存在，本篇文章仅供参考
-
-
-项目下载首先下载下来项目FAT
-git clone https://github.com/attify/firmware-anal
-            <a class="read-more" href="/2022/09/15/%E3%80%90IOT%20%E5%AD%A6%E4%B9%A0%E4%BA%8C%E3%80%91%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E4%B8%8E%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8/"> ... </a>
-        </div>
-        <div class="post-date">2022.09.15</div>
-    </div>
-    
 </div>
 
-<div class="paginator">
-    <a class="extend prev" rel="prev" href="/page/4/">上一页</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/6/">下一页</a>
-</div>
+    </div>
 
-                <div class="footer">
-    <span>Copyright © 2022 Loora1N&#39;s Blog | 鹭雨</span>
-    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
-</div>
-
-
-<link rel="stylesheet" href="/css/a11y-dark.min.css">
-
-
-<script src="/js/highlight.min.js"></script>
-
-
-<script src="/js/highlightjs-line-numbers.js"></script>
-
-
-<script>
-    hljs.initHighlightingOnLoad();
-    hljs.initLineNumbersOnLoad();
-</script>
-
+    
+      <div class="search-popup">
+    <div class="search-popup-overlay">  
+    </div>
+    <div class="search-popup-window" >
+        <div class="search-header">
+            <div class="search-input-container">
+              <input autocomplete="off" autocapitalize="off" maxlength="80"
+                     placeholder="Search Anything" spellcheck="false"
+                     type="search" class="search-input">
+            </div>
+            <div class="search-close-btn">
+                <div class="icon close-btn"></div>
             </div>
         </div>
-    <!-- hexo injector body_end start -->
+        <div class="search-result-container">
+        </div>
+    </div>
+</div>
+
+<script>
+    const searchConfig = {
+        path             : "/search.xml",
+        top_n_per_article: "1",
+        unescape         : "false",
+        trigger: "auto",
+        preload: "false"
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js"></script>
+<script src="/js/search.js"></script>
+    
+    
+
+  <!-- hexo injector body_end start -->
   <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
   <script data-pjax>
         function GithubCalendarConfig(){

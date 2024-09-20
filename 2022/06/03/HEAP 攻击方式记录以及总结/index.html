@@ -1,48 +1,153 @@
 <!DOCTYPE html>
-<html>
-    <head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
-    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
-    <title>Loora1N&#39;s Blog | 鹭雨 | </title>
-    
-<link rel="stylesheet" href="/css/reset.css">
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    
-<link rel="stylesheet" href="/css/style.css">
+    <meta name="author" content="Loora1N">
 
-    
-<link rel="stylesheet" href="/css/markdown.css">
 
-    
-<link rel="stylesheet" href="/css/fonts.css">
 
-<meta name="generator" content="Hexo 6.2.0"></head>
-    <body>
-        <div class="paper">
-            <div class="paper-main">
-                
-                    <div class="post-header">
-    <a class="logo" href="/">Loora1N&#39;s Blog | 鹭雨</a>
-    <a class="go-home" href="/">
-        <svg width="8" height="14" viewBox="0 0 8 14">
-            <path d="M7 1L1 7l6 6" stroke="#000" stroke-width="2" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-    </a>
+    <meta name="description" content="Blog of Loora1N">
+
+
+
+
+
+<title>HEAP 攻击方式记录以及总结 | Loora1N&#39;s Blog | 鹭雨</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Roboto+Mono&display=swap');
+</style>
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/menu.js"></script>
+    
+    <script src="/js/highlight.min.js"></script>
+    
+    <script src="/js/highlightjs-line-numbers.js"></script>
+    
+    <script src="/js/format.js"></script>
+    
+    <script src="/js/search.js"></script>
+    
+
+
+
+
+
+
+
+
+
+
+  <meta name="generator" content="Hexo 6.2.0"></head>
+  <body>
+    <div class="mask-border">
+    </div>
+
+    <div class="wrapper">
+
+      <div class="header">
+  <div class="flex-container">
+    <div class="header-inner">
+      <div class="site-brand-container">
+        <a href="/">
+          
+            Loora1N&#39;s Blog | 鹭雨
+          
+        </a>
+      </div>
+      <div id="menu-btn" class="menu-btn" onclick="toggleMenu()">
+        Menu
+      </div>
+      <nav class="site-nav">
+        <ul class="menu-list">
+          
+            
+              <li class="menu-item">
+                <a href="/">首页</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/archives/">索引</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/about/">述己</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/links/">友链</a>
+              </li> 
+                   
+          
+          
+            <li class="menu-item search-btn">
+              <a href="#">Search</a>
+            </li>
+          
+        </ul>
+      </nav>
+    </div>
+  </div>
 </div>
-                
-                <div class="post-main">
 
-    
-    
-        <div class="post-main-title">
-            HEAP 攻击方式记录以及总结
+
+      <div class="main">
+        <div class="flex-container">
+          <article id="post">
+
+  
+    <div class="post-head">
+    <div class="post-info">
+        <div class="tag-list">
+            
         </div>
-        <div class="post-meta">
-            2022-06-03
+        <div class="post-title">
+            
+            
+                HEAP 攻击方式记录以及总结
+            
+            
         </div>
-        <div class="post-md">
-            <blockquote>
+        <span class="post-date">
+            6月 3, 2022
+        </span>
+    </div>
+    <div class="post-img">
+        
+            <div class="h-line-primary"></div>
+              
+    </div>
+</div>
+    <div class="post-content">
+    <blockquote>
 <p>文章很多图源来自NTUSTISC例会视频，油管链接：<a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=ItpJY9Lpw-o&list=PLHP-B3mcSY_5r5AJsZyTZLwjX9z8v_b5x">NTUSTISC - Pwn 3 - YouTube</a><br>目前只支持到libc2.34版本</p>
 </blockquote>
 <h2 id="Heap-Based-Buffer-Overflow"><a href="#Heap-Based-Buffer-Overflow" class="headerlink" title="Heap-Based Buffer Overflow"></a>Heap-Based Buffer Overflow</h2><p>最最基本的攻击方式，由于未对输入长度限制，且堆块是一片连续存储的内存空间特性。导致可以对其后高地址的chunk的各种信息进行覆写。</p>
@@ -55,10 +160,10 @@
 </blockquote>
 <h2 id="Fastbin-Dup"><a href="#Fastbin-Dup" class="headerlink" title="Fastbin Dup"></a>Fastbin Dup</h2><p>fastbin dup 实际是在fastbin链上实现的狭义的double free。由于fastbin 自身源码的缺陷，在对double free 的检测机制仅仅验证了当前free掉的chunk与fast bin 第一个chunk是否相同，而对于其他chunk则没有做检测。另外fastbin在free时会检测当前当前的chunk于头部chunk的size大小是否相同。</p>
 <p>那么构造double free 时只需要穿插一块其他的chunk即可实现</p>
-<pre><code class="c">free(1);
-free(2);
-free(1);
-</code></pre>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">free</span>(<span class="number">1</span>);</span><br><span class="line"><span class="built_in">free</span>(<span class="number">2</span>);</span><br><span class="line"><span class="built_in">free</span>(<span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+
+
+
 <p><img src="/img/article/3.png"></p>
 <p>在完成double free 之后我们只需要malloc 这里的chunk1 就能得到一块 既是allocated 又是 free 状态的chunk。接下来我们就能对其fd指针进行修改，从而控制fastbin链表的方向是我们想要的地方，便能实现对任意地址的控制(读写)</p>
 <p><img src="/img/article/4.png"></p>
@@ -79,56 +184,20 @@ free(1);
 <p>绕过方式：存在UAF漏洞的情况下，我们可以直接更改，tcache中chunk的key值即可</p>
 </blockquote>
 <h3 id="libc2-32"><a href="#libc2-32" class="headerlink" title="libc2.32"></a>libc2.32</h3><h4 id="Safe-linking-ptr-xor"><a href="#Safe-linking-ptr-xor" class="headerlink" title="Safe-linking(ptr xor)"></a>Safe-linking(ptr xor)</h4><p>libc2.32中引入了Safe-linking机制，应用于fastbin和tcache中</p>
-<pre><code class="c">static __always_inline void
-tcache_put (mchunkptr chunk, size_t tc_idx)
-&#123;
-tcache_entry *e = (tcache_entry *) chunk2mem (chunk);
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> __always_inline <span class="type">void</span></span><br><span class="line"><span class="title function_">tcache_put</span> <span class="params">(mchunkptr chunk, <span class="type">size_t</span> tc_idx)</span></span><br><span class="line">&#123;</span><br><span class="line">tcache_entry *e = (tcache_entry *) chunk2mem (chunk);</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Mark this chunk as “in the tcache” so the test in _int_free will</span></span><br><span class="line"><span class="comment">detect a double free.  */</span></span><br><span class="line">e-&gt;key = tcache;</span><br><span class="line"></span><br><span class="line">e-&gt;next = PROTECT_PTR (&amp;e-&gt;next, tcache-&gt;entries[tc_idx]);</span><br><span class="line">tcache-&gt;entries[tc_idx] = e;</span><br><span class="line">++(tcache-&gt;counts[tc_idx]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-/* Mark this chunk as “in the tcache” so the test in _int_free will
-detect a double free.  */
-e-&gt;key = tcache;
-
-e-&gt;next = PROTECT_PTR (&amp;e-&gt;next, tcache-&gt;entries[tc_idx]);
-tcache-&gt;entries[tc_idx] = e;
-++(tcache-&gt;counts[tc_idx]);
-&#125;
-</code></pre>
 <p>可以看到经glibc-2.32更新后，e-&gt;next不再是直接指向原来的tcache头指针，而是指向了经PROTECT_PTR处理过的指针，查看PROTECT_PTR定义：</p>
-<pre><code class="c">#define PROTECT_PTR(pos, ptr) \
-((__typeof (ptr)) ((((size_t) pos) &gt;&gt; 12) ^ ((size_t) ptr)));
-</code></pre>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> PROTECT_PTR(pos, ptr) \</span></span><br><span class="line"><span class="meta">((__typeof (ptr)) ((((size_t) pos) &gt;&gt; 12) ^ ((size_t) ptr)));</span></span><br></pre></td></tr></table></figure>
+
 <p>结合tcache_put()函数可以得出e-&gt;next最终指向了e-&gt;next地址右移12位后的值与当前tcache头指针值异或的结果，这里引用Safe-Linking设计师文章[1]中的一张图描述此过程：</p>
 <p><img src="/img/article/5.png" alt="img"></p>
 <p>其实就是一个简单的异或操作，这里所有的指针都进行了处理，具体细节可以自行查询，不过多赘述</p>
 <h4 id="内存对齐检测"><a href="#内存对齐检测" class="headerlink" title="内存对齐检测"></a>内存对齐检测</h4><p>此外，在glibc-2.32版本中还引入了对tcache和fastbins中申请及释放内存地址的对齐检测，以tcache_get()为例：</p>
-<pre><code class="c">static __always_inline void *
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> __always_inline <span class="type">void</span> *</span><br><span class="line"></span><br><span class="line"><span class="title function_">tcache_get</span> <span class="params">(<span class="type">size_t</span> tc_idx)</span></span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">tcache_entry *e = tcache-&gt;entries[tc_idx];</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (__glibc_unlikely (!aligned_OK (e)))</span><br><span class="line"></span><br><span class="line">malloc_printerr (“<span class="built_in">malloc</span>(): unaligned tcache chunk detected”);</span><br><span class="line"></span><br><span class="line">tcache-&gt;entries[tc_idx] = REVEAL_PTR (e-&gt;next);</span><br><span class="line"></span><br><span class="line">–(tcache-&gt;counts[tc_idx]);</span><br><span class="line"></span><br><span class="line">e-&gt;key = <span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> (<span class="type">void</span> *) e;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-tcache_get (size_t tc_idx)
-
-&#123;
-
-tcache_entry *e = tcache-&gt;entries[tc_idx];
-
-if (__glibc_unlikely (!aligned_OK (e)))
-
-malloc_printerr (“malloc(): unaligned tcache chunk detected”);
-
-tcache-&gt;entries[tc_idx] = REVEAL_PTR (e-&gt;next);
-
-–(tcache-&gt;counts[tc_idx]);
-
-e-&gt;key = NULL;
-
-return (void *) e;
-
-&#125;
-</code></pre>
 <p>aligned_OK()定义为：</p>
-<pre><code class="c">#define aligned_OK(m)  (((unsigned long)(m) &amp; MALLOC_ALIGN_MASK) == 0)
-#define MALLOC_ALIGN_MASK (MALLOC_ALIGNMENT – 1)
-#define MALLOC_ALIGNMENT (2 * SIZE_SZ &lt; __alignof__ (long double) \
-? __alignof__ (long double) : 2 * SIZE_SZ)
-</code></pre>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> aligned_OK(m)  (((unsigned long)(m) &amp; MALLOC_ALIGN_MASK) == 0)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> MALLOC_ALIGN_MASK (MALLOC_ALIGNMENT – 1)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> MALLOC_ALIGNMENT (2 * SIZE_SZ &lt; __alignof__ (long double) \</span></span><br><span class="line"><span class="meta">? __alignof__ (long double) : 2 * SIZE_SZ)</span></span><br></pre></td></tr></table></figure>
+
 <p>可以看到内存地址需要以0x10字节对齐。</p>
 <h3 id="libc-2-34"><a href="#libc-2-34" class="headerlink" title="libc-2.34"></a>libc-2.34</h3><p>glibc-2.34 的到来给予了hook劫持沉重的一击，移除了以下几个hook符号：</p>
 <blockquote>
@@ -150,83 +219,97 @@ return (void *) e;
 <li>能够利用溢出或其他漏洞，将某chunk的size域的最低16进制位修改为0，例: 0x91 –&gt; 0x90</li>
 </ul>
 </blockquote>
-<pre><code class="c">/*这是一段unsafe-unlink的示例代码，我们在最后成功利用这个漏洞，
-实现了对非堆上地址victimstring的内容更改*/
-#include &lt;stdio.h&gt;
-#include &lt;stdlib.h&gt;
-#include &lt;stdint.h&gt;
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*这是一段unsafe-unlink的示例代码，我们在最后成功利用这个漏洞，</span></span><br><span class="line"><span class="comment">实现了对非堆上地址victimstring的内容更改*/</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdint.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">uint64_t</span> * chunk0_ptr;</span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">    chunk0_ptr = (<span class="type">uint64_t</span>*)<span class="built_in">malloc</span>(<span class="number">0x80</span>);       <span class="comment">//chunk0</span></span><br><span class="line">    <span class="type">uint64_t</span> *chunk1_ptr = (<span class="type">uint64_t</span>*) <span class="built_in">malloc</span>(<span class="number">0x80</span>);        <span class="comment">//chunk1</span></span><br><span class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;chunk0_ptr: %p -&gt; %p\n&quot;</span>,&amp;chunk0_ptr, chunk0_ptr);</span><br><span class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;victim chunk: %p\n\n&quot;</span>,chunk1_ptr);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/*pass the check:   (chunksize(p) != prev_size(next_chunk(P)) == False)</span></span><br><span class="line"><span class="comment">                        chunk0_ptr[1] = 0x0;// or 0x8, 0x80*/</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//pass the check:   (p-&gt;fd-&gt;bk != p || p-&gt;bk-&gt;fd != p) == False</span></span><br><span class="line"></span><br><span class="line">    chunk0_ptr [<span class="number">2</span>] = (<span class="type">uint64_t</span>) &amp;chunk0_ptr - <span class="number">0x18</span>;</span><br><span class="line">    chunk0_ptr [<span class="number">3</span>] = (<span class="type">uint64_t</span>) &amp;chunk0_ptr - <span class="number">0x10</span>;</span><br><span class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;fake fd: %p = &amp;chunk0_ptr - 0x18&quot;</span>, (<span class="type">void</span>*)chunk0_ptr[<span class="number">2</span>]);</span><br><span class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;fake bk: %p = &amp;chunk0_ptr - 0x10&quot;</span>, (<span class="type">void</span>*)chunk0_ptr[<span class="number">3</span>]);</span><br><span class="line">    </span><br><span class="line">    <span class="type">uint64_t</span> *chunk1_hdr = (<span class="type">void</span>*) chunk1_ptr - <span class="number">0x10</span>;</span><br><span class="line">    chunk1_hdr[<span class="number">0</span>] = <span class="number">0x80</span>;</span><br><span class="line">    chunk1_hdr[<span class="number">1</span>] &amp;= ~<span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/*  int *t[10], i;                  //tcache</span></span><br><span class="line"><span class="comment">        for(i=0; i&lt;7; i++)&#123;</span></span><br><span class="line"><span class="comment">            t[i] = malloc(0x80);</span></span><br><span class="line"><span class="comment">        &#125;</span></span><br><span class="line"><span class="comment">        for(i=0;i&lt;7;i++)&#123;</span></span><br><span class="line"><span class="comment">            free(t[i]);</span></span><br><span class="line"><span class="comment">        &#125;;  */</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">free</span>(chunk1_ptr);               <span class="comment">//unlink</span></span><br><span class="line"></span><br><span class="line">    <span class="type">char</span> victim_string[<span class="number">8</span>] = <span class="string">&quot;AAAAAAA&quot;</span>;</span><br><span class="line">    chunk0_ptr[<span class="number">3</span>] = (<span class="type">uint64_t</span>) victim_string;   <span class="comment">//overwrite itself</span></span><br><span class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;old value: %s\n&quot;</span>, victim_string);</span><br><span class="line"></span><br><span class="line">    chunk0_ptr[<span class="number">0</span>] = <span class="number">0x42424242424242</span>LL;     <span class="comment">//over wirting victim_string</span></span><br><span class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;new Value: %s\n&quot;</span>, victim_string);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-uint64_t * chunk0_ptr;
-int main()
-&#123;
-    chunk0_ptr = (uint64_t*)malloc(0x80);       //chunk0
-    uint64_t *chunk1_ptr = (uint64_t*) malloc(0x80);        //chunk1
-    fprintf(stderr, &quot;chunk0_ptr: %p -&gt; %p\n&quot;,&amp;chunk0_ptr, chunk0_ptr);
-    fprintf(stderr, &quot;victim chunk: %p\n\n&quot;,chunk1_ptr);
-
-    /*pass the check:   (chunksize(p) != prev_size(next_chunk(P)) == False)
-                        chunk0_ptr[1] = 0x0;// or 0x8, 0x80*/
-
-    //pass the check:   (p-&gt;fd-&gt;bk != p || p-&gt;bk-&gt;fd != p) == False
-
-    chunk0_ptr [2] = (uint64_t) &amp;chunk0_ptr - 0x18;
-    chunk0_ptr [3] = (uint64_t) &amp;chunk0_ptr - 0x10;
-    fprintf(stderr, &quot;fake fd: %p = &amp;chunk0_ptr - 0x18&quot;, (void*)chunk0_ptr[2]);
-    fprintf(stderr, &quot;fake bk: %p = &amp;chunk0_ptr - 0x10&quot;, (void*)chunk0_ptr[3]);
-    
-    uint64_t *chunk1_hdr = (void*) chunk1_ptr - 0x10;
-    chunk1_hdr[0] = 0x80;
-    chunk1_hdr[1] &amp;= ~1;
-
-    /*  int *t[10], i;                  //tcache
-        for(i=0; i&lt;7; i++)&#123;
-            t[i] = malloc(0x80);
-        &#125;
-        for(i=0;i&lt;7;i++)&#123;
-            free(t[i]);
-        &#125;;  */
-
-    free(chunk1_ptr);               //unlink
-
-    char victim_string[8] = &quot;AAAAAAA&quot;;
-    chunk0_ptr[3] = (uint64_t) victim_string;   //overwrite itself
-    fprintf(stderr, &quot;old value: %s\n&quot;, victim_string);
-
-    chunk0_ptr[0] = 0x42424242424242LL;     //over wirting victim_string
-    fprintf(stderr, &quot;new Value: %s\n&quot;, victim_string);
-
-&#125;
-</code></pre>
 <h4 id="示例图"><a href="#示例图" class="headerlink" title="示例图"></a>示例图</h4><p><img src="/img/article/6.png"></p>
 
-        </div>
+</div> 
 
+<script>
+    window.onload = detectors();
+</script>
+    <div class="post-footer">
+    <div class="h-line-primary"></div>
+    <nav class="post-nav">
+        <div class="prev-item">
+           
+                <div class="icon arrow-left"></div>
+                <div class="post-link">
+                    <a href="/2022/06/05/%E7%BD%91%E7%BB%9C%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E4%B8%8A%E6%9C%BA/">Prev</a>
+                </div>
+            
+        </div>
+        <div class="next-item">
+            
+        </div>
+    </nav>
+</div>
+
+    
+      <div class="post-comment">
+
+     
+
+     
+    
     
 
 </div>
-                <div class="footer">
-    <span>Copyright © 2022 Loora1N&#39;s Blog | 鹭雨</span>
-    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
+     
+  
+</article>
+        </div>
+      </div>
+      
+      <div class="footer">
+    <div class="flex-container">
+        <div class="footer-text">
+            
+            
+            
+                Powered by <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> & <a target="_blank" rel="noopener" href="https://github.com/zoeingwingkei/frame/">Frame</a>
+                
+        </div>
+    </div>
 </div>
 
+    </div>
 
-<link rel="stylesheet" href="/css/a11y-dark.min.css">
-
-
-<script src="/js/highlight.min.js"></script>
-
-
-<script src="/js/highlightjs-line-numbers.js"></script>
-
-
-<script>
-    hljs.initHighlightingOnLoad();
-    hljs.initLineNumbersOnLoad();
-</script>
-
+    
+      <div class="search-popup">
+    <div class="search-popup-overlay">  
+    </div>
+    <div class="search-popup-window" >
+        <div class="search-header">
+            <div class="search-input-container">
+              <input autocomplete="off" autocapitalize="off" maxlength="80"
+                     placeholder="Search Anything" spellcheck="false"
+                     type="search" class="search-input">
+            </div>
+            <div class="search-close-btn">
+                <div class="icon close-btn"></div>
             </div>
         </div>
-    <!-- hexo injector body_end start -->
+        <div class="search-result-container">
+        </div>
+    </div>
+</div>
+
+<script>
+    const searchConfig = {
+        path             : "/search.xml",
+        top_n_per_article: "1",
+        unescape         : "false",
+        trigger: "auto",
+        preload: "false"
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js"></script>
+<script src="/js/search.js"></script>
+    
+    
+
+  <!-- hexo injector body_end start -->
   <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
   <script data-pjax>
         function GithubCalendarConfig(){

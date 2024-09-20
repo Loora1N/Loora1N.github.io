@@ -1,48 +1,153 @@
 <!DOCTYPE html>
-<html>
-    <head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
-    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
-    <title>Loora1N&#39;s Blog | 鹭雨 | </title>
-    
-<link rel="stylesheet" href="/css/reset.css">
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    
-<link rel="stylesheet" href="/css/style.css">
+    <meta name="author" content="Loora1N">
 
-    
-<link rel="stylesheet" href="/css/markdown.css">
 
-    
-<link rel="stylesheet" href="/css/fonts.css">
 
-<meta name="generator" content="Hexo 6.2.0"></head>
-    <body>
-        <div class="paper">
-            <div class="paper-main">
-                
-                    <div class="post-header">
-    <a class="logo" href="/">Loora1N&#39;s Blog | 鹭雨</a>
-    <a class="go-home" href="/">
-        <svg width="8" height="14" viewBox="0 0 8 14">
-            <path d="M7 1L1 7l6 6" stroke="#000" stroke-width="2" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-    </a>
+    <meta name="description" content="Blog of Loora1N">
+
+
+
+
+
+<title>网络协议栈CH1-CH3 | Loora1N&#39;s Blog | 鹭雨</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Roboto+Mono&display=swap');
+</style>
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/menu.js"></script>
+    
+    <script src="/js/highlight.min.js"></script>
+    
+    <script src="/js/highlightjs-line-numbers.js"></script>
+    
+    <script src="/js/format.js"></script>
+    
+    <script src="/js/search.js"></script>
+    
+
+
+
+
+
+
+
+
+
+
+  <meta name="generator" content="Hexo 6.2.0"></head>
+  <body>
+    <div class="mask-border">
+    </div>
+
+    <div class="wrapper">
+
+      <div class="header">
+  <div class="flex-container">
+    <div class="header-inner">
+      <div class="site-brand-container">
+        <a href="/">
+          
+            Loora1N&#39;s Blog | 鹭雨
+          
+        </a>
+      </div>
+      <div id="menu-btn" class="menu-btn" onclick="toggleMenu()">
+        Menu
+      </div>
+      <nav class="site-nav">
+        <ul class="menu-list">
+          
+            
+              <li class="menu-item">
+                <a href="/">首页</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/archives/">索引</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/about/">述己</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/links/">友链</a>
+              </li> 
+                   
+          
+          
+            <li class="menu-item search-btn">
+              <a href="#">Search</a>
+            </li>
+          
+        </ul>
+      </nav>
+    </div>
+  </div>
 </div>
-                
-                <div class="post-main">
 
-    
-    
-        <div class="post-main-title">
-            网络协议栈CH1-CH3
+
+      <div class="main">
+        <div class="flex-container">
+          <article id="post">
+
+  
+    <div class="post-head">
+    <div class="post-info">
+        <div class="tag-list">
+            
         </div>
-        <div class="post-meta">
-            2023-04-24
+        <div class="post-title">
+            
+            
+                网络协议栈CH1-CH3
+            
+            
         </div>
-        <div class="post-md">
-            <blockquote>
+        <span class="post-date">
+            4月 24, 2023
+        </span>
+    </div>
+    <div class="post-img">
+        
+            <div class="h-line-primary"></div>
+              
+    </div>
+</div>
+    <div class="post-content">
+    <blockquote>
 <p>参考教材《TCP&#x2F;IP详解 卷2：实现》，文内示意图大多取自该教材。本文为复习时自行总结，难免存在不全或者错误，求求大伙轻喷。如有问题可以留言在文末评论区，或者直接私聊，我会及时更改文章内容。</p>
 </blockquote>
 <h2 id="第一章-概述"><a href="#第一章-概述" class="headerlink" title="第一章 概述"></a>第一章 概述</h2><h3 id="基本框架"><a href="#基本框架" class="headerlink" title="基本框架"></a>基本框架</h3><h4 id="网络输入输出层间框架"><a href="#网络输入输出层间框架" class="headerlink" title="网络输入输出层间框架"></a>网络输入输出层间框架</h4><p>基本框架如下图所示，我们会在后面详细讨论输入输出</p>
@@ -50,48 +155,8 @@
 <h4 id="UDP示例socket程序框架"><a href="#UDP示例socket程序框架" class="headerlink" title="UDP示例socket程序框架"></a>UDP示例socket程序框架</h4><blockquote>
 <p>这段C代码也充当后续我们分析输入输出时的例子</p>
 </blockquote>
-<pre><code class="c">/*
-* Send a UDP datagram to the daytime server on some other host,
-* read the reply. and print the time and date on the server .
-*/
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">* Send a UDP datagram to the daytime server on some other host,</span></span><br><span class="line"><span class="comment">* read the reply. and print the time and date on the server .</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span>    <span class="string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span>    <span class="string">&lt;sys/socket.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span>    <span class="string">&lt;netinet/in.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span>    <span class="string">&lt;arpa/inet.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span>    <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span>    <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span>    <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> BUFFSIZE    150     <span class="comment">/* arbitrary size */</span></span></span><br><span class="line"><span class="type">int</span></span><br><span class="line"><span class="title function_">main</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_in</span> <span class="title">serv</span>;</span></span><br><span class="line">    <span class="type">char</span> buff [BUFFSIZE] ;</span><br><span class="line">    <span class="type">int</span> sockfd, n;</span><br><span class="line">    <span class="keyword">if</span> ((sockfd = socket(PF_INET, SOCK_DGRAM,<span class="number">0</span>)) &lt; <span class="number">0</span>)</span><br><span class="line">        err_sys (<span class="string">&quot; socket error&quot;</span>) ;</span><br><span class="line">    </span><br><span class="line">    bzero((<span class="type">char</span> *) &amp;serv, <span class="keyword">sizeof</span> (serv));</span><br><span class="line">    </span><br><span class="line">    serv.sin_family = AF_INET;</span><br><span class="line">    serv.sin_addr.s_addr = inet_addr(<span class="string">&quot;140.252.1.32&quot;</span>);</span><br><span class="line">    serv.sin_port = htons(<span class="number">13</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (sendto (sockfd, buff, BUFFSIZE,<span class="number">0</span>,</span><br><span class="line">        (<span class="keyword">struct</span> sockaddr *) &amp;serv, <span class="keyword">sizeof</span>(serv)) != BUFFSIZE)</span><br><span class="line">    err_sys (<span class="string">&quot;sendto error&quot;</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> ((n = recvfrom(sockfd, buff, BUFFSIZE, <span class="number">0</span>,</span><br><span class="line">        (<span class="keyword">struct</span> sockaddr *) <span class="literal">NULL</span>, (<span class="type">int</span> *) <span class="literal">NULL</span>))&lt; <span class="number">2</span>)</span><br><span class="line">    err_sys(<span class="string">&quot;recvfrom error&quot;</span>);</span><br><span class="line">    buff[n - <span class="number">2</span>] = <span class="number">0</span>;        <span class="comment">/* null terminate */</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;&amp;s\n&quot;</span>, buff);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-#include    &lt;sys/types.h&gt;
-#include    &lt;sys/socket.h&gt;
-#include    &lt;netinet/in.h&gt;
-#include    &lt;arpa/inet.h&gt;
-#include    &lt;stdio.h&gt;
-#include    &lt;stdlib.h&gt;
-#include    &lt;string.h&gt;
-
-#define BUFFSIZE    150     /* arbitrary size */
-int
-main()
-&#123;
-    struct sockaddr_in serv;
-    char buff [BUFFSIZE] ;
-    int sockfd, n;
-    if ((sockfd = socket(PF_INET, SOCK_DGRAM,0)) &lt; 0)
-        err_sys (&quot; socket error&quot;) ;
-    
-    bzero((char *) &amp;serv, sizeof (serv));
-    
-    serv.sin_family = AF_INET;
-    serv.sin_addr.s_addr = inet_addr(&quot;140.252.1.32&quot;);
-    serv.sin_port = htons(13);
-
-    if (sendto (sockfd, buff, BUFFSIZE,0,
-        (struct sockaddr *) &amp;serv, sizeof(serv)) != BUFFSIZE)
-    err_sys (&quot;sendto error&quot;);
-    
-    if ((n = recvfrom(sockfd, buff, BUFFSIZE, 0,
-        (struct sockaddr *) NULL, (int *) NULL))&lt; 2)
-    err_sys(&quot;recvfrom error&quot;);
-    buff[n - 2] = 0;        /* null terminate */
-    printf(&quot;&amp;s\n&quot;, buff);
-
-    exit(0);
-&#125;
-</code></pre>
 <h3 id="输出流程"><a href="#输出流程" class="headerlink" title="输出流程"></a>输出流程</h3><p>下面考虑插口层调用<code>sendto()</code>函数时发生的流程</p>
 <h4 id="mbuf结构"><a href="#mbuf结构" class="headerlink" title="mbuf结构"></a>mbuf结构</h4><p><img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88%E5%A4%8D%E4%B9%A0.assets/image-20230424135820569.png" alt="用两个mbuf来存储150字节的数据"></p>
 <p>如图是一个含有150字节的mbuf分组。宏观来看，可以发现<code>mbuf</code>是由<code>m_next</code>指针链接的单链表，这种安排方式叫做<strong>mbuf链表</strong>. </p>
@@ -191,18 +256,8 @@ main()
 <li><code>m_ext.ext_free</code>，在Net&#x2F;3中不使用</li>
 <li><code>m_ext.ext_size</code>，额外空间的大小，一般为1024或2048，本书以2048为主mub</li>
 </ul>
-<h3 id="简单的mbuf宏和函数"><a href="#简单的mbuf宏和函数" class="headerlink" title="简单的mbuf宏和函数"></a>简单的mbuf宏和函数</h3><h4 id="MGET宏"><a href="#MGET宏" class="headerlink" title="MGET宏"></a>MGET宏</h4><pre><code class="c">#define MGET(m, how, type) &#123; \
-    MALLOC((m), struct mbuf *, MSIZE, mbtypes [type], (how)); \
-    if(m)&#123;\
-        (m)-&gt;m_type = (type); \
-        MBUFLOCK (mbstat.m_mtypes [type]++;) \
-        (n)-&gt;m_next = (struct mbuf * )NULL; \
-        (m)-&gt;m_nextpkt = (struct mbuf *)NULL; \
-        (m) -&gt;m_data = (m)-&gt;m_dat; \
-        (m)-&gt;m_flags = 0; \
-    &#125; else \
-        (m) = m_retry((how)，(type)); \
-</code></pre>
+<h3 id="简单的mbuf宏和函数"><a href="#简单的mbuf宏和函数" class="headerlink" title="简单的mbuf宏和函数"></a>简单的mbuf宏和函数</h3><h4 id="MGET宏"><a href="#MGET宏" class="headerlink" title="MGET宏"></a>MGET宏</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> MGET(m, how, type) &#123; \</span></span><br><span class="line"><span class="meta">	MALLOC((m), struct mbuf *, MSIZE, mbtypes [type], (how)); \</span></span><br><span class="line"><span class="meta">	<span class="keyword">if</span>(m)&#123;\</span></span><br><span class="line"><span class="meta">		(m)-&gt;m_type = (type); \</span></span><br><span class="line"><span class="meta">		MBUFLOCK (mbstat.m_mtypes [type]++;) \</span></span><br><span class="line"><span class="meta">		(n)-&gt;m_next = (struct mbuf * )NULL; \</span></span><br><span class="line"><span class="meta">		(m)-&gt;m_nextpkt = (struct mbuf *)NULL; \</span></span><br><span class="line"><span class="meta">		(m) -&gt;m_data = (m)-&gt;m_dat; \</span></span><br><span class="line"><span class="meta">		(m)-&gt;m_flags = 0; \</span></span><br><span class="line"><span class="meta">	&#125; <span class="keyword">else</span> \</span></span><br><span class="line"><span class="meta">		(m) = m_retry((how)，(type)); \</span></span><br></pre></td></tr></table></figure>
+
 <p> 这里就不做源码上详细解释，自己看应该能懂。只稍微说几个点：</p>
 <ul>
 <li><code>MBUFLOCK</code>宏是用来保证执行<code>mbstat.m_mtypes[type]++</code>的优先级，防止+1时被打断</li>
@@ -212,36 +267,18 @@ main()
 <blockquote>
 <p>mbstat 是一个用来管理mbuf的全局变量，前面我并没有提到。是因为我觉得这个东西可能不是那么重要，没详细去看😀</p>
 </blockquote>
-<h4 id="m-get函数"><a href="#m-get函数" class="headerlink" title="m_get函数"></a>m_get函数</h4><pre><code class="c">struct mbuf* m_get(nowait, type)
-int 	nowait, type;
-&#123;
-    struct mbuf *m;
-    
-    MGET(m, nowait, type);
-    retrun (m);
-&#125;
-</code></pre>
+<h4 id="m-get函数"><a href="#m-get函数" class="headerlink" title="m_get函数"></a>m_get函数</h4> <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> mbuf* <span class="title function_">m_get</span><span class="params">(nowait, type)</span></span><br><span class="line"><span class="type">int</span> 	nowait, type;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">mbuf</span> *<span class="title">m</span>;</span></span><br><span class="line">    </span><br><span class="line">    MGET(m, nowait, type);</span><br><span class="line">    retrun (m);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>没什么东西，就是MGET宏套了个函数外套。nowait的值为M_WAIT或M_DONTWAIT，取决于在存储器不可用时是否等待。</p>
-<h4 id="m-retry函数"><a href="#m-retry函数" class="headerlink" title="m_retry函数"></a>m_retry函数</h4><pre><code class="c">struct mbuf* m_retry(i, t)
-int 	i, t;
-&#123;
-    struct mbuf *m;
-    
-    m_relaim();
-#define m_retry(i,t)	(struct mbuf *)0
-    MGET(m, nowait, type);
-#undef m_retry
-    retrun (m);
-&#125;
-</code></pre>
+<h4 id="m-retry函数"><a href="#m-retry函数" class="headerlink" title="m_retry函数"></a>m_retry函数</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> mbuf* <span class="title function_">m_retry</span><span class="params">(i, t)</span></span><br><span class="line"><span class="type">int</span> 	i, t;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">mbuf</span> *<span class="title">m</span>;</span></span><br><span class="line">    </span><br><span class="line">    m_relaim();</span><br><span class="line"><span class="meta">#<span class="keyword">define</span> m_retry(i,t)	(struct mbuf *)0</span></span><br><span class="line">    MGET(m, nowait, type);</span><br><span class="line"><span class="meta">#<span class="keyword">undef</span> m_retry</span></span><br><span class="line">    retrun (m);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>这是MGET宏的else分支执行的函数，通过<code>m_relaim()</code>试图腾出一部分空间，然后再次尝试MGET</p>
 <h4 id="m-devget函数"><a href="#m-devget函数" class="headerlink" title="m_devget函数"></a>m_devget函数</h4><p>当接收到以太网帧时，设备驱动程序调用函数<code>m_devget()</code>创建mbuf来接受数据，根据数据长度不同，会形成四种类型的mbuf链表,如下面所示：</p>
 <p><img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88%E5%A4%8D%E4%B9%A0.assets/image-20230424194426443.png" alt="image-20230424194426443"></p>
 <p><img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88%E5%A4%8D%E4%B9%A0.assets/image-20230424194444638.png" alt="image-20230424194444638"></p>
 <p><img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88%E5%A4%8D%E4%B9%A0.assets/image-20230424194434240.png" alt="image-20230424194434240"></p>
-<h4 id="mtod和dtom宏"><a href="#mtod和dtom宏" class="headerlink" title="mtod和dtom宏"></a>mtod和dtom宏</h4><pre><code class="c">#define	mtod(m, t)	((t) ((m)-&gt;m_data) )
-#define	dtom(x)	((struct mbuf *) ((int) (x) &amp; ~ (MSIZE-1)))
-</code></pre>
+<h4 id="mtod和dtom宏"><a href="#mtod和dtom宏" class="headerlink" title="mtod和dtom宏"></a>mtod和dtom宏</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span>	mtod(m, t)	((t) ((m)-&gt;m_data) )</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>	dtom(x)	((struct mbuf *) ((int) (x) &amp; ~ (MSIZE-1)))</span></span><br></pre></td></tr></table></figure>
+
 <p><code>mtod()</code>宏可以直接理解成<strong>mbuf to data</strong>，即返回mbuf中的m_data指针，不过额外做了类型转换</p>
 <p> <code>dtom()</code>可以理解为<strong>data to mbuf</strong>，即通过data指针返回指向mbuf的指针</p>
 <blockquote>
@@ -277,33 +314,8 @@ int 	i, t;
 <p>簇引用计数用来表示一个簇同时被几个mbuf指向。每当释放一个mbuf，该mbuf所指向的簇的引用计数-1，当且仅当簇的引用计数为0时，簇可以被释放。这是为了防止在共享簇时，上述操作中的释放mbuf可能会导致释放掉共享的簇而导致数据丢失。</p>
 </blockquote>
 <h2 id="第三章-接口层"><a href="#第三章-接口层" class="headerlink" title="第三章 接口层"></a>第三章 接口层</h2><h3 id="ifnet结构"><a href="#ifnet结构" class="headerlink" title="ifnet结构"></a>ifnet结构</h3><p>结构ifnet中包含所有接口的通用信息，每个网络设备拥有独立的ifnet结构。ifnet结构有一个列表，包含这个设备的一个或多个协议地址。</p>
-<pre><code class="c">struct ifnet &#123;
-    struct ifnet *if_next;		/* a11 struct ifnets are chained */
-    struct ifaddr *if_addrlist; /* linked list of addresses per if */
-    char *if_name;				/* name, e.g. &#39;le&#39; or &#39;lo&#39; */
-    short if_unit;				/* sub-unit for lower level driver */
-    u_short if_index;			/* numeric abbreviation for this if */
-    short if_flags ;			/* Figure 3.7 */
-    short if_timer ;			/* time &#39;ti1 if_watchdog called */
-    int if_pcount;				/* number of promiscuous listeners */
-    caddr_t if_bpf;				/* packet filter structure */
-    struct if_ _data &#123;
-        /* generic interface information */
-        u_char ifi_type;		/* Figure 3.9 */
-        u_char ifi_addr1en;		/* media address 1ength */
-        u_char ifi_harlen;		/* media header length */
-        u_1ong ifi_mtu;			/* maximum transmission unit */
-        u_long ifi_metric ;		/* lrouting metric (external on1y) */
-        u_1ong ifi_baudrate;	/* linespeed */
-        
-                    /* other ifner members */
-    #define if_mtu if_data.ifi_mtu
-    #define if_type if_data.ifi_type
-    #define if_addrlen if_data.ifi_addrlen
-    #define if_hdrlen if_data.ifi_hdrlen
-    #define if_metric if_data.ifi_metric
-    #define if_baudrate if_data.ifi_baudrate
-</code></pre>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">ifnet</span> &#123;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">ifnet</span> *<span class="title">if_next</span>;</span>		<span class="comment">/* a11 struct ifnets are chained */</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">ifaddr</span> *<span class="title">if_addrlist</span>;</span> <span class="comment">/* linked list of addresses per if */</span></span><br><span class="line">    <span class="type">char</span> *if_name;				<span class="comment">/* name, e.g. &#x27;le&#x27; or &#x27;lo&#x27; */</span></span><br><span class="line">    <span class="type">short</span> if_unit;				<span class="comment">/* sub-unit for lower level driver */</span></span><br><span class="line">    u_short if_index;			<span class="comment">/* numeric abbreviation for this if */</span></span><br><span class="line">    <span class="type">short</span> if_flags ;			<span class="comment">/* Figure 3.7 */</span></span><br><span class="line">    <span class="type">short</span> if_timer ;			<span class="comment">/* time &#x27;ti1 if_watchdog called */</span></span><br><span class="line">    <span class="type">int</span> if_pcount;				<span class="comment">/* number of promiscuous listeners */</span></span><br><span class="line">    <span class="type">caddr_t</span> if_bpf;				<span class="comment">/* packet filter structure */</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">if_</span> _<span class="title">data</span> &#123;</span></span><br><span class="line">        <span class="comment">/* generic interface information */</span></span><br><span class="line">        u_char ifi_type;		<span class="comment">/* Figure 3.9 */</span></span><br><span class="line">        u_char ifi_addr1en;		<span class="comment">/* media address 1ength */</span></span><br><span class="line">        u_char ifi_harlen;		<span class="comment">/* media header length */</span></span><br><span class="line">        u_1ong ifi_mtu;			<span class="comment">/* maximum transmission unit */</span></span><br><span class="line">        u_long ifi_metric ;		<span class="comment">/* lrouting metric (external on1y) */</span></span><br><span class="line">        u_1ong ifi_baudrate;	<span class="comment">/* linespeed */</span></span><br><span class="line">        </span><br><span class="line">        			<span class="comment">/* other ifner members */</span></span><br><span class="line">    <span class="meta">#<span class="keyword">define</span> if_mtu if_data.ifi_mtu</span></span><br><span class="line">    <span class="meta">#<span class="keyword">define</span> if_type if_data.ifi_type</span></span><br><span class="line">    <span class="meta">#<span class="keyword">define</span> if_addrlen if_data.ifi_addrlen</span></span><br><span class="line">    <span class="meta">#<span class="keyword">define</span> if_hdrlen if_data.ifi_hdrlen</span></span><br><span class="line">    <span class="meta">#<span class="keyword">define</span> if_metric if_data.ifi_metric</span></span><br><span class="line">    <span class="meta">#<span class="keyword">define</span> if_baudrate if_data.ifi_baudrate</span></span><br></pre></td></tr></table></figure>
+
 <blockquote>
 <p>这里每个部分都有注释，就不用我解释了吧😭，困死了要，这些b东西能考什么，哥们也背不下来啊</p>
 </blockquote>
@@ -318,19 +330,8 @@ int 	i, t;
 <li>if_pcount和if_bpf，支持BSD分组过滤器</li>
 </ul>
 <h3 id="ifaddr结构"><a href="#ifaddr结构" class="headerlink" title="ifaddr结构"></a>ifaddr结构</h3><p><img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88%E5%A4%8D%E4%B9%A0.assets/image-20230424220517917.png" alt="image-20230424220517917"></p>
-<pre><code class="c">struct ifaddr &#123;
-    struct ifaddr *ifa_next;			/* next address for interface */
-    struct ifnet *ifa_ifp;				/* back-pointer to interface */
-    struct sockaddr *ifa_addr ; 		/* address of interface */
-    struct sockaddr *ifa_dstaddr ;		/* other end of p-to-p link */
-    #define ifa_broadaddr ifa_dstaddr	/* broadcast address interface */
-    struct sockaddr* ifa_netmask;		/* used to determine subnet */
-    void (*ifa_rtrequest) ();			/* check or clean routes */
-    u_short ifa_f1ags;					/*mostly rt_ flags for cloning */
-    short ifa_refcnt;					/* references to this structure */
-    int ifa_metric;						/* cost for this interface */
-&#125;;
-</code></pre>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">ifaddr</span> &#123;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">ifaddr</span> *<span class="title">ifa_next</span>;</span>			<span class="comment">/* next address for interface */</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">ifnet</span> *<span class="title">ifa_ifp</span>;</span>				<span class="comment">/* back-pointer to interface */</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr</span> *<span class="title">ifa_addr</span> ;</span> 		<span class="comment">/* address of interface */</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr</span> *<span class="title">ifa_dstaddr</span> ;</span>		<span class="comment">/* other end of p-to-p link */</span></span><br><span class="line">    <span class="meta">#<span class="keyword">define</span> ifa_broadaddr ifa_dstaddr	<span class="comment">/* broadcast address interface */</span></span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr</span>* <span class="title">ifa_netmask</span>;</span>		<span class="comment">/* used to determine subnet */</span></span><br><span class="line">    <span class="type">void</span> (*ifa_rtrequest) ();			<span class="comment">/* check or clean routes */</span></span><br><span class="line">    u_short ifa_f1ags;					<span class="comment">/*mostly rt_ flags for cloning */</span></span><br><span class="line">    <span class="type">short</span> ifa_refcnt;					<span class="comment">/* references to this structure */</span></span><br><span class="line">    <span class="type">int</span> ifa_metric;						<span class="comment">/* cost for this interface */</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
 <blockquote>
 <p>感觉这两个结构只要搞懂图就差不多了吧😭</p>
 </blockquote>
@@ -344,34 +345,98 @@ int 	i, t;
 <p><img src="/img/article/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88%E5%A4%8D%E4%B9%A0.assets/image-20230424222838348.png" alt="image-20230424222838348"></p>
 <p><code>if_attach</code>被调用了三次: 以一个<code>le_softc</code>结构为参数从<code>leattach</code>调用，以一个<code>sl_softc</code>结构为数从<code>slattach</code>调用，以一个通用<code>ifnet</code>结构为参数从<code>loopattach</code>调用。每次调用时，它向ifnet列表中添加一个的<code>ifnet</code>结构，为这个接口创建一个链路层<code>ifaddr</code>结构(包含两个<code>sockaddr_dl</code>结构)，并且初始化<code>ifnet_addrs</code>数组中的一项。</p>
 
-        </div>
+</div> 
 
+<script>
+    window.onload = detectors();
+</script>
+    <div class="post-footer">
+    <div class="h-line-primary"></div>
+    <nav class="post-nav">
+        <div class="prev-item">
+           
+                <div class="icon arrow-left"></div>
+                <div class="post-link">
+                    <a href="/2023/04/25/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A0%88CH8%E5%8F%8ACH23/">Prev</a>
+                </div>
+            
+        </div>
+        <div class="next-item">
+            
+                <div class="icon arrow-right"></div>
+                <div class="post-link">
+                  <a href="/2023/03/31/%E3%80%90Linux%20kernel%E5%85%A5%E9%97%A8%E3%80%91%E5%86%85%E6%A0%B8%E6%9C%AC%E5%9C%B0%E8%B0%83%E8%AF%95/">Next</a>  
+                </div>  
+            
+        </div>
+    </nav>
+</div>
+
+    
+      <div class="post-comment">
+
+     
+
+     
+    
     
 
 </div>
-                <div class="footer">
-    <span>Copyright © 2022 Loora1N&#39;s Blog | 鹭雨</span>
-    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
+     
+  
+</article>
+        </div>
+      </div>
+      
+      <div class="footer">
+    <div class="flex-container">
+        <div class="footer-text">
+            
+            
+            
+                Powered by <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> & <a target="_blank" rel="noopener" href="https://github.com/zoeingwingkei/frame/">Frame</a>
+                
+        </div>
+    </div>
 </div>
 
+    </div>
 
-<link rel="stylesheet" href="/css/a11y-dark.min.css">
-
-
-<script src="/js/highlight.min.js"></script>
-
-
-<script src="/js/highlightjs-line-numbers.js"></script>
-
-
-<script>
-    hljs.initHighlightingOnLoad();
-    hljs.initLineNumbersOnLoad();
-</script>
-
+    
+      <div class="search-popup">
+    <div class="search-popup-overlay">  
+    </div>
+    <div class="search-popup-window" >
+        <div class="search-header">
+            <div class="search-input-container">
+              <input autocomplete="off" autocapitalize="off" maxlength="80"
+                     placeholder="Search Anything" spellcheck="false"
+                     type="search" class="search-input">
+            </div>
+            <div class="search-close-btn">
+                <div class="icon close-btn"></div>
             </div>
         </div>
-    <!-- hexo injector body_end start -->
+        <div class="search-result-container">
+        </div>
+    </div>
+</div>
+
+<script>
+    const searchConfig = {
+        path             : "/search.xml",
+        top_n_per_article: "1",
+        unescape         : "false",
+        trigger: "auto",
+        preload: "false"
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js"></script>
+<script src="/js/search.js"></script>
+    
+    
+
+  <!-- hexo injector body_end start -->
   <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
   <script data-pjax>
         function GithubCalendarConfig(){

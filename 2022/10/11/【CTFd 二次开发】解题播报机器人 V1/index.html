@@ -1,48 +1,153 @@
 <!DOCTYPE html>
-<html>
-    <head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
-    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
-    <title>Loora1N&#39;s Blog | 鹭雨 | </title>
-    
-<link rel="stylesheet" href="/css/reset.css">
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    
-<link rel="stylesheet" href="/css/style.css">
+    <meta name="author" content="Loora1N">
 
-    
-<link rel="stylesheet" href="/css/markdown.css">
 
-    
-<link rel="stylesheet" href="/css/fonts.css">
 
-<meta name="generator" content="Hexo 6.2.0"></head>
-    <body>
-        <div class="paper">
-            <div class="paper-main">
-                
-                    <div class="post-header">
-    <a class="logo" href="/">Loora1N&#39;s Blog | 鹭雨</a>
-    <a class="go-home" href="/">
-        <svg width="8" height="14" viewBox="0 0 8 14">
-            <path d="M7 1L1 7l6 6" stroke="#000" stroke-width="2" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-    </a>
+    <meta name="description" content="Blog of Loora1N">
+
+
+
+
+
+<title>【CTFd 二次开发】解题播报机器人 V1 | Loora1N&#39;s Blog | 鹭雨</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Roboto+Mono&display=swap');
+</style>
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/menu.js"></script>
+    
+    <script src="/js/highlight.min.js"></script>
+    
+    <script src="/js/highlightjs-line-numbers.js"></script>
+    
+    <script src="/js/format.js"></script>
+    
+    <script src="/js/search.js"></script>
+    
+
+
+
+
+
+
+
+
+
+
+  <meta name="generator" content="Hexo 6.2.0"></head>
+  <body>
+    <div class="mask-border">
+    </div>
+
+    <div class="wrapper">
+
+      <div class="header">
+  <div class="flex-container">
+    <div class="header-inner">
+      <div class="site-brand-container">
+        <a href="/">
+          
+            Loora1N&#39;s Blog | 鹭雨
+          
+        </a>
+      </div>
+      <div id="menu-btn" class="menu-btn" onclick="toggleMenu()">
+        Menu
+      </div>
+      <nav class="site-nav">
+        <ul class="menu-list">
+          
+            
+              <li class="menu-item">
+                <a href="/">首页</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/archives/">索引</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/about/">述己</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/links/">友链</a>
+              </li> 
+                   
+          
+          
+            <li class="menu-item search-btn">
+              <a href="#">Search</a>
+            </li>
+          
+        </ul>
+      </nav>
+    </div>
+  </div>
 </div>
-                
-                <div class="post-main">
 
-    
-    
-        <div class="post-main-title">
-            【CTFd 二次开发】解题播报机器人 V1
+
+      <div class="main">
+        <div class="flex-container">
+          <article id="post">
+
+  
+    <div class="post-head">
+    <div class="post-info">
+        <div class="tag-list">
+            
         </div>
-        <div class="post-meta">
-            2022-10-11
+        <div class="post-title">
+            
+            
+                【CTFd 二次开发】解题播报机器人 V1
+            
+            
         </div>
-        <div class="post-md">
-            <blockquote>
+        <span class="post-date">
+            10月 11, 2022
+        </span>
+    </div>
+    <div class="post-img">
+        
+            <div class="h-line-primary"></div>
+              
+    </div>
+</div>
+    <div class="post-content">
+    <blockquote>
 <p>本文基于 CTFd Version 3.4.3 开发，可能存在源码不相同的情况，阅读时请注意文章时效性。机器人会一直更新，后续应该会有一二三血播报等更详尽的功能</p>
 <p>注：本文不做机器人相关代码更改，直接利用nonebot自带接口实现</p>
 </blockquote>
@@ -52,80 +157,10 @@
 <blockquote>
 <p>因可能存在CTFd不同版本页面不同的问题，请视具体情况更改html页面</p>
 </blockquote>
-<pre><code class="html">&lt;div role=&quot;tabpanel&quot; class=&quot;tab-pane config-section active&quot; id=&quot;appearance&quot;&gt;
-    &lt;form method=&quot;POST&quot; autocomplete=&quot;off&quot; class=&quot;w-100&quot;&gt;
-        &lt;div class=&quot;form-group&quot;&gt;
-            &lt;label for=&quot;ctf_name&quot;&gt;
-                Competition Name
-                &lt;small class=&quot;form-text text-muted&quot;&gt;Competition name displayed instead of a logo&lt;/small&gt;
-            &lt;/label&gt;
-            &lt;input class=&quot;form-control&quot; id=&#39;ctf_name&#39; name=&#39;ctf_name&#39; type=&#39;text&#39; placeholder=&quot;CTF Name&quot;
-                   &#123;% if ctf_name is defined and ctf_name != None %&#125;value="&#123;&#123; ctf_name &#125;&#125;"&#123;% endif %&#125;&gt;
-        &lt;/div&gt;
-
-        &lt;div class=&quot;form-group&quot;&gt;
-            &lt;label&gt;
-                CTF Description&lt;br&gt;
-                &lt;small class=&quot;form-text text-muted&quot;&gt;
-                    Description for the CTF
-                &lt;/small&gt;
-            &lt;/label&gt;
-            &lt;textarea class=&quot;form-control&quot; type=&quot;text&quot; id=&quot;ctf_description&quot; name=&quot;ctf_description&quot; rows=&quot;5&quot;&gt;&#123;&#123; ctf_description &#125;&#125;&lt;/textarea&gt;
-        &lt;/div&gt;
-        &lt;div class=&quot;form-group&quot;&gt;
-            &lt;label for=&quot;bot-ip&quot;&gt;
-                Bot Address&lt;br&gt;
-                &lt;small class=&quot;form-text text-muted&quot;&gt;
-                    the address of QQ-bot
-                &lt;/small&gt;
-                &lt;small class=&quot;form-text text-muted&quot;&gt;
-                    eg. 127.0.0.1:1234
-                &lt;/small&gt;
-            &lt;/label&gt;
-            &lt;input class=&quot;form-control&quot; id=&#39;bot-ip&#39; name=&#39;bot_ip&#39; type=&#39;text&#39;
-                    &#123;% if bot_ip is defined and bot_ip != None %&#125;value="&#123;&#123; bot_ip &#125;&#125;"&#123;% endif %&#125;&gt;
-        &lt;/div&gt;
-
-        &lt;div class=&quot;form-group&quot;&gt;
-            &lt;label for=&quot;group-id&quot;&gt;
-                QQ Group Number&lt;br&gt;
-            &lt;/label&gt;
-            &lt;input class=&quot;form-control&quot; id=&#39;group-id&#39; name=&#39;group_id&#39; type=&#39;text&#39;
-                    &#123;% if group_id is defined and group_id != None %&#125;value="&#123;&#123; group_id &#125;&#125;"&#123;% endif %&#125;&gt;
-        &lt;/div&gt;
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">role</span>=<span class="string">&quot;tabpanel&quot;</span> <span class="attr">class</span>=<span class="string">&quot;tab-pane config-section active&quot;</span> <span class="attr">id</span>=<span class="string">&quot;appearance&quot;</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">form</span> <span class="attr">method</span>=<span class="string">&quot;POST&quot;</span> <span class="attr">autocomplete</span>=<span class="string">&quot;off&quot;</span> <span class="attr">class</span>=<span class="string">&quot;w-100&quot;</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;form-group&quot;</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;ctf_name&quot;</span>&gt;</span></span><br><span class="line">				Competition Name</span><br><span class="line">				<span class="tag">&lt;<span class="name">small</span> <span class="attr">class</span>=<span class="string">&quot;form-text text-muted&quot;</span>&gt;</span>Competition name displayed instead of a logo<span class="tag">&lt;/<span class="name">small</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">input</span> <span class="attr">class</span>=<span class="string">&quot;form-control&quot;</span> <span class="attr">id</span>=<span class="string">&#x27;ctf_name&#x27;</span> <span class="attr">name</span>=<span class="string">&#x27;ctf_name&#x27;</span> <span class="attr">type</span>=<span class="string">&#x27;text&#x27;</span> <span class="attr">placeholder</span>=<span class="string">&quot;CTF Name&quot;</span></span></span><br><span class="line"><span class="tag">				   &#123;% <span class="attr">if</span> <span class="attr">ctf_name</span> <span class="attr">is</span> <span class="attr">defined</span> <span class="attr">and</span> <span class="attr">ctf_name</span> != <span class="string">None</span> %&#125;<span class="attr">value</span>=<span class="string">&quot;&#123;&#123; ctf_name &#125;&#125;&quot;</span>&#123;% <span class="attr">endif</span> %&#125;&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line">		<span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;form-group&quot;</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">label</span>&gt;</span></span><br><span class="line">				CTF Description<span class="tag">&lt;<span class="name">br</span>&gt;</span></span><br><span class="line">				<span class="tag">&lt;<span class="name">small</span> <span class="attr">class</span>=<span class="string">&quot;form-text text-muted&quot;</span>&gt;</span></span><br><span class="line">					Description for the CTF</span><br><span class="line">				<span class="tag">&lt;/<span class="name">small</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">textarea</span> <span class="attr">class</span>=<span class="string">&quot;form-control&quot;</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">id</span>=<span class="string">&quot;ctf_description&quot;</span> <span class="attr">name</span>=<span class="string">&quot;ctf_description&quot;</span> <span class="attr">rows</span>=<span class="string">&quot;5&quot;</span>&gt;</span>&#123;&#123; ctf_description &#125;&#125;<span class="tag">&lt;/<span class="name">textarea</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;form-group&quot;</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;bot-ip&quot;</span>&gt;</span></span><br><span class="line">                Bot Address<span class="tag">&lt;<span class="name">br</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">small</span> <span class="attr">class</span>=<span class="string">&quot;form-text text-muted&quot;</span>&gt;</span></span><br><span class="line">                    the address of QQ-bot</span><br><span class="line">                <span class="tag">&lt;/<span class="name">small</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">small</span> <span class="attr">class</span>=<span class="string">&quot;form-text text-muted&quot;</span>&gt;</span></span><br><span class="line">                    eg. 127.0.0.1:1234</span><br><span class="line">                <span class="tag">&lt;/<span class="name">small</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">input</span> <span class="attr">class</span>=<span class="string">&quot;form-control&quot;</span> <span class="attr">id</span>=<span class="string">&#x27;bot-ip&#x27;</span> <span class="attr">name</span>=<span class="string">&#x27;bot_ip&#x27;</span> <span class="attr">type</span>=<span class="string">&#x27;text&#x27;</span></span></span><br><span class="line"><span class="tag">					&#123;% <span class="attr">if</span> <span class="attr">bot_ip</span> <span class="attr">is</span> <span class="attr">defined</span> <span class="attr">and</span> <span class="attr">bot_ip</span> != <span class="string">None</span> %&#125;<span class="attr">value</span>=<span class="string">&quot;&#123;&#123; bot_ip &#125;&#125;&quot;</span>&#123;% <span class="attr">endif</span> %&#125;&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;form-group&quot;</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;group-id&quot;</span>&gt;</span></span><br><span class="line">                QQ Group Number<span class="tag">&lt;<span class="name">br</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">input</span> <span class="attr">class</span>=<span class="string">&quot;form-control&quot;</span> <span class="attr">id</span>=<span class="string">&#x27;group-id&#x27;</span> <span class="attr">name</span>=<span class="string">&#x27;group_id&#x27;</span> <span class="attr">type</span>=<span class="string">&#x27;text&#x27;</span></span></span><br><span class="line"><span class="tag">					&#123;% <span class="attr">if</span> <span class="attr">group_id</span> <span class="attr">is</span> <span class="attr">defined</span> <span class="attr">and</span> <span class="attr">group_id</span> != <span class="string">None</span> %&#125;<span class="attr">value</span>=<span class="string">&quot;&#123;&#123; group_id &#125;&#125;&quot;</span>&#123;% <span class="attr">endif</span> %&#125;&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;form-group&quot;</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;bot-text&quot;</span>&gt;</span></span><br><span class="line">                Message<span class="tag">&lt;<span class="name">br</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">small</span> <span class="attr">class</span>=<span class="string">&quot;form-text text-muted&quot;</span>&gt;</span></span><br><span class="line">                    ep. 恭喜%s做出题目%s，默认第一个参数为用户名，第二个参数为题目名称</span><br><span class="line">                <span class="tag">&lt;/<span class="name">small</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">input</span> <span class="attr">class</span>=<span class="string">&quot;form-control&quot;</span> <span class="attr">id</span>=<span class="string">&#x27;bot-text&#x27;</span> <span class="attr">name</span>=<span class="string">&#x27;bottext&#x27;</span> <span class="attr">type</span>=<span class="string">&#x27;text&#x27;</span></span></span><br><span class="line"><span class="tag">				   &#123;% <span class="attr">if</span> <span class="attr">bottext</span> <span class="attr">is</span> <span class="attr">defined</span> <span class="attr">and</span> <span class="attr">bottext</span> != <span class="string">None</span> %&#125;<span class="attr">value</span>=<span class="string">&quot;&#123;&#123; bottext &#125;&#125;&quot;</span>&#123;% <span class="attr">endif</span> %&#125;&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;form-group&quot;</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;botof&quot;</span>&gt;</span></span><br><span class="line">                Turn on the Bot</span><br><span class="line">            <span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">select</span> <span class="attr">class</span>=<span class="string">&quot;form-control custom-select&quot;</span> <span class="attr">id</span>=<span class="string">&quot;botof&quot;</span> <span class="attr">name</span>=<span class="string">&quot;bot&quot;</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">option</span> <span class="attr">value</span>=<span class="string">0</span> &#123;% <span class="attr">if</span> <span class="attr">bot</span> == <span class="string">0</span> %&#125;<span class="attr">selected</span>&#123;% <span class="attr">endif</span> %&#125;&gt;</span></span><br><span class="line">                        OFF</span><br><span class="line">                    <span class="tag">&lt;/<span class="name">option</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">option</span> <span class="attr">value</span>=<span class="string">1</span> &#123;% <span class="attr">if</span> <span class="attr">bot</span> == <span class="string">1</span> %&#125;<span class="attr">selected</span>&#123;% <span class="attr">endif</span> %&#125;&gt;</span></span><br><span class="line">                        ON</span><br><span class="line">                    <span class="tag">&lt;/<span class="name">option</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line">		<span class="tag">&lt;<span class="name">button</span> <span class="attr">type</span>=<span class="string">&quot;submit&quot;</span> <span class="attr">class</span>=<span class="string">&quot;btn btn-md btn-primary float-right&quot;</span>&gt;</span>Update<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
 
-        &lt;div class=&quot;form-group&quot;&gt;
-            &lt;label for=&quot;bot-text&quot;&gt;
-                Message&lt;br&gt;
-                &lt;small class=&quot;form-text text-muted&quot;&gt;
-                    ep. 恭喜%s做出题目%s，默认第一个参数为用户名，第二个参数为题目名称
-                &lt;/small&gt;
-            &lt;/label&gt;
-            &lt;input class=&quot;form-control&quot; id=&#39;bot-text&#39; name=&#39;bottext&#39; type=&#39;text&#39;
-                   &#123;% if bottext is defined and bottext != None %&#125;value="&#123;&#123; bottext &#125;&#125;"&#123;% endif %&#125;&gt;
-        &lt;/div&gt;
 
-        &lt;div class=&quot;form-group&quot;&gt;
-            &lt;label for=&quot;botof&quot;&gt;
-                Turn on the Bot
-            &lt;/label&gt;
-            &lt;div&gt;
-                &lt;select class=&quot;form-control custom-select&quot; id=&quot;botof&quot; name=&quot;bot&quot;&gt;
-                    &lt;option value=0 &#123;% if bot == 0 %&#125;selected&#123;% endif %&#125;&gt;
-                        OFF
-                    &lt;/option&gt;
-                    &lt;option value=1 &#123;% if bot == 1 %&#125;selected&#123;% endif %&#125;&gt;
-                        ON
-                    &lt;/option&gt;
-                &lt;/select&gt;
-            &lt;/div&gt;
-        &lt;/div&gt;
-
-        &lt;button type=&quot;submit&quot; class=&quot;btn btn-md btn-primary float-right&quot;&gt;Update&lt;/button&gt;
-    &lt;/form&gt;
-&lt;/div&gt;
-</code></pre>
 <h3 id="效果展示"><a href="#效果展示" class="headerlink" title="效果展示"></a>效果展示</h3><p><img src="/img/article/botv1/image-20221011093547622.png" alt="前端效果"></p>
 <p>这样就可以在设置页面随时更改了， <code>Bot Address</code>是Bot接收http请求的地址，<code>QQ Group Number</code>是机器人所在的qq群号。如果机器人运行的地址发生变化，或想更改发消息的群号，只需在这里更改即可，目前还不支持同时多个群发送消息，准备等到添加一二三血功能时一起添加。</p>
 <h2 id="后端更改"><a href="#后端更改" class="headerlink" title="后端更改"></a>后端更改</h2><h3 id="view-py"><a href="#view-py" class="headerlink" title="view.py"></a>view.py</h3><p>打开<code>CTFd/CTFd/views.py</code>，添加几个变量，用于接收html页面数据</p>
@@ -135,34 +170,98 @@
 <h3 id="运行演示"><a href="#运行演示" class="headerlink" title="运行演示"></a>运行演示</h3><p><img src="/img/article/botv1/image-20221011094014448.png" alt="提交flag"></p>
 <p><img src="/img/article/botv1/image-20221011094033270.png" alt="群消息成功发送"></p>
 
-        </div>
+</div> 
 
+<script>
+    window.onload = detectors();
+</script>
+    <div class="post-footer">
+    <div class="h-line-primary"></div>
+    <nav class="post-nav">
+        <div class="prev-item">
+           
+                <div class="icon arrow-left"></div>
+                <div class="post-link">
+                    <a href="/2022/10/17/NewStarCTF%20Week4%20PWN%20WP/">Prev</a>
+                </div>
+            
+        </div>
+        <div class="next-item">
+            
+                <div class="icon arrow-right"></div>
+                <div class="post-link">
+                  <a href="/2022/10/03/gdb%E8%B0%83%E8%AF%95%E5%B8%B8%E7%94%A8%E6%8C%87%E4%BB%A4/">Next</a>  
+                </div>  
+            
+        </div>
+    </nav>
+</div>
+
+    
+      <div class="post-comment">
+
+     
+
+     
+    
     
 
 </div>
-                <div class="footer">
-    <span>Copyright © 2022 Loora1N&#39;s Blog | 鹭雨</span>
-    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
+     
+  
+</article>
+        </div>
+      </div>
+      
+      <div class="footer">
+    <div class="flex-container">
+        <div class="footer-text">
+            
+            
+            
+                Powered by <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> & <a target="_blank" rel="noopener" href="https://github.com/zoeingwingkei/frame/">Frame</a>
+                
+        </div>
+    </div>
 </div>
 
+    </div>
 
-<link rel="stylesheet" href="/css/a11y-dark.min.css">
-
-
-<script src="/js/highlight.min.js"></script>
-
-
-<script src="/js/highlightjs-line-numbers.js"></script>
-
-
-<script>
-    hljs.initHighlightingOnLoad();
-    hljs.initLineNumbersOnLoad();
-</script>
-
+    
+      <div class="search-popup">
+    <div class="search-popup-overlay">  
+    </div>
+    <div class="search-popup-window" >
+        <div class="search-header">
+            <div class="search-input-container">
+              <input autocomplete="off" autocapitalize="off" maxlength="80"
+                     placeholder="Search Anything" spellcheck="false"
+                     type="search" class="search-input">
+            </div>
+            <div class="search-close-btn">
+                <div class="icon close-btn"></div>
             </div>
         </div>
-    <!-- hexo injector body_end start -->
+        <div class="search-result-container">
+        </div>
+    </div>
+</div>
+
+<script>
+    const searchConfig = {
+        path             : "/search.xml",
+        top_n_per_article: "1",
+        unescape         : "false",
+        trigger: "auto",
+        preload: "false"
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js"></script>
+<script src="/js/search.js"></script>
+    
+    
+
+  <!-- hexo injector body_end start -->
   <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
   <script data-pjax>
         function GithubCalendarConfig(){

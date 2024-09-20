@@ -1,48 +1,153 @@
 <!DOCTYPE html>
-<html>
-    <head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
-    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
-    <title>Loora1N&#39;s Blog | 鹭雨 | </title>
-    
-<link rel="stylesheet" href="/css/reset.css">
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    
-<link rel="stylesheet" href="/css/style.css">
+    <meta name="author" content="Loora1N">
 
-    
-<link rel="stylesheet" href="/css/markdown.css">
 
-    
-<link rel="stylesheet" href="/css/fonts.css">
 
-<meta name="generator" content="Hexo 6.2.0"></head>
-    <body>
-        <div class="paper">
-            <div class="paper-main">
-                
-                    <div class="post-header">
-    <a class="logo" href="/">Loora1N&#39;s Blog | 鹭雨</a>
-    <a class="go-home" href="/">
-        <svg width="8" height="14" viewBox="0 0 8 14">
-            <path d="M7 1L1 7l6 6" stroke="#000" stroke-width="2" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-    </a>
+    <meta name="description" content="Blog of Loora1N">
+
+
+
+
+
+<title>【CTFd 二次开发】解题播报机器人 V2 | Loora1N&#39;s Blog | 鹭雨</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Roboto+Mono&display=swap');
+</style>
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/menu.js"></script>
+    
+    <script src="/js/highlight.min.js"></script>
+    
+    <script src="/js/highlightjs-line-numbers.js"></script>
+    
+    <script src="/js/format.js"></script>
+    
+    <script src="/js/search.js"></script>
+    
+
+
+
+
+
+
+
+
+
+
+  <meta name="generator" content="Hexo 6.2.0"></head>
+  <body>
+    <div class="mask-border">
+    </div>
+
+    <div class="wrapper">
+
+      <div class="header">
+  <div class="flex-container">
+    <div class="header-inner">
+      <div class="site-brand-container">
+        <a href="/">
+          
+            Loora1N&#39;s Blog | 鹭雨
+          
+        </a>
+      </div>
+      <div id="menu-btn" class="menu-btn" onclick="toggleMenu()">
+        Menu
+      </div>
+      <nav class="site-nav">
+        <ul class="menu-list">
+          
+            
+              <li class="menu-item">
+                <a href="/">首页</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/archives/">索引</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/about/">述己</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/links/">友链</a>
+              </li> 
+                   
+          
+          
+            <li class="menu-item search-btn">
+              <a href="#">Search</a>
+            </li>
+          
+        </ul>
+      </nav>
+    </div>
+  </div>
 </div>
-                
-                <div class="post-main">
 
-    
-    
-        <div class="post-main-title">
-            【CTFd 二次开发】解题播报机器人 V2
+
+      <div class="main">
+        <div class="flex-container">
+          <article id="post">
+
+  
+    <div class="post-head">
+    <div class="post-info">
+        <div class="tag-list">
+            
         </div>
-        <div class="post-meta">
-            2022-11-08
+        <div class="post-title">
+            
+            
+                【CTFd 二次开发】解题播报机器人 V2
+            
+            
         </div>
-        <div class="post-md">
-            <blockquote>
+        <span class="post-date">
+            11月 8, 2022
+        </span>
+    </div>
+    <div class="post-img">
+        
+            <div class="h-line-primary"></div>
+              
+    </div>
+</div>
+    <div class="post-content">
+    <blockquote>
 <p>本文基于 CTFd Version 3.4.3 开发，可能存在源码不相同的情况，阅读时请注意文章时效性。</p>
 </blockquote>
 <h2 id="更新内容"><a href="#更新内容" class="headerlink" title="更新内容"></a>更新内容</h2><ul>
@@ -51,188 +156,114 @@
 </ul>
 <p><img src="/img/article/botv2/image-20221108200108487.png" alt="效果展示"></p>
 <h2 id="前端页面修改"><a href="#前端页面修改" class="headerlink" title="前端页面修改"></a>前端页面修改</h2><h3 id="appearance-html"><a href="#appearance-html" class="headerlink" title="appearance.html"></a>appearance.html</h3><p>打开<code>CTFd/CTFd/themes/admin/templates/configs/appearance.html</code>，在上次更新的基础上增加题目创建播报文案，和题目信息更新播报文案接口。这里直接放出完整html，可自行对照</p>
-<pre><code class="html">&lt;div role=&quot;tabpanel&quot; class=&quot;tab-pane config-section active&quot; id=&quot;appearance&quot;&gt;
-    &lt;form method=&quot;POST&quot; autocomplete=&quot;off&quot; class=&quot;w-100&quot;&gt;
-        &lt;div class=&quot;form-group&quot;&gt;
-            &lt;label for=&quot;ctf_name&quot;&gt;
-                Competition Name
-                &lt;small class=&quot;form-text text-muted&quot;&gt;Competition name displayed instead of a logo&lt;/small&gt;
-            &lt;/label&gt;
-            &lt;input class=&quot;form-control&quot; id=&#39;ctf_name&#39; name=&#39;ctf_name&#39; type=&#39;text&#39; placeholder=&quot;CTF Name&quot;
-                   &#123;% if ctf_name is defined and ctf_name != None %&#125;value="&#123;&#123; ctf_name &#125;&#125;"&#123;% endif %&#125;&gt;
-        &lt;/div&gt;
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">role</span>=<span class="string">&quot;tabpanel&quot;</span> <span class="attr">class</span>=<span class="string">&quot;tab-pane config-section active&quot;</span> <span class="attr">id</span>=<span class="string">&quot;appearance&quot;</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">form</span> <span class="attr">method</span>=<span class="string">&quot;POST&quot;</span> <span class="attr">autocomplete</span>=<span class="string">&quot;off&quot;</span> <span class="attr">class</span>=<span class="string">&quot;w-100&quot;</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;form-group&quot;</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;ctf_name&quot;</span>&gt;</span></span><br><span class="line">				Competition Name</span><br><span class="line">				<span class="tag">&lt;<span class="name">small</span> <span class="attr">class</span>=<span class="string">&quot;form-text text-muted&quot;</span>&gt;</span>Competition name displayed instead of a logo<span class="tag">&lt;/<span class="name">small</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">input</span> <span class="attr">class</span>=<span class="string">&quot;form-control&quot;</span> <span class="attr">id</span>=<span class="string">&#x27;ctf_name&#x27;</span> <span class="attr">name</span>=<span class="string">&#x27;ctf_name&#x27;</span> <span class="attr">type</span>=<span class="string">&#x27;text&#x27;</span> <span class="attr">placeholder</span>=<span class="string">&quot;CTF Name&quot;</span></span></span><br><span class="line"><span class="tag">				   &#123;% <span class="attr">if</span> <span class="attr">ctf_name</span> <span class="attr">is</span> <span class="attr">defined</span> <span class="attr">and</span> <span class="attr">ctf_name</span> != <span class="string">None</span> %&#125;<span class="attr">value</span>=<span class="string">&quot;&#123;&#123; ctf_name &#125;&#125;&quot;</span>&#123;% <span class="attr">endif</span> %&#125;&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line">		<span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;form-group&quot;</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">label</span>&gt;</span></span><br><span class="line">				CTF Description<span class="tag">&lt;<span class="name">br</span>&gt;</span></span><br><span class="line">				<span class="tag">&lt;<span class="name">small</span> <span class="attr">class</span>=<span class="string">&quot;form-text text-muted&quot;</span>&gt;</span></span><br><span class="line">					Description for the CTF</span><br><span class="line">				<span class="tag">&lt;/<span class="name">small</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">textarea</span> <span class="attr">class</span>=<span class="string">&quot;form-control&quot;</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">id</span>=<span class="string">&quot;ctf_description&quot;</span> <span class="attr">name</span>=<span class="string">&quot;ctf_description&quot;</span> <span class="attr">rows</span>=<span class="string">&quot;5&quot;</span>&gt;</span>&#123;&#123; ctf_description &#125;&#125;<span class="tag">&lt;/<span class="name">textarea</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;form-group&quot;</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;bot-ip&quot;</span>&gt;</span></span><br><span class="line">                Bot Address<span class="tag">&lt;<span class="name">br</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">small</span> <span class="attr">class</span>=<span class="string">&quot;form-text text-muted&quot;</span>&gt;</span></span><br><span class="line">                    the address of QQ-bot</span><br><span class="line">                <span class="tag">&lt;/<span class="name">small</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">small</span> <span class="attr">class</span>=<span class="string">&quot;form-text text-muted&quot;</span>&gt;</span></span><br><span class="line">                    eg. 127.0.0.1:1234</span><br><span class="line">                <span class="tag">&lt;/<span class="name">small</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">input</span> <span class="attr">class</span>=<span class="string">&quot;form-control&quot;</span> <span class="attr">id</span>=<span class="string">&#x27;bot-ip&#x27;</span> <span class="attr">name</span>=<span class="string">&#x27;bot_ip&#x27;</span> <span class="attr">type</span>=<span class="string">&#x27;text&#x27;</span></span></span><br><span class="line"><span class="tag">					&#123;% <span class="attr">if</span> <span class="attr">bot_ip</span> <span class="attr">is</span> <span class="attr">defined</span> <span class="attr">and</span> <span class="attr">bot_ip</span> != <span class="string">None</span> %&#125;<span class="attr">value</span>=<span class="string">&quot;&#123;&#123; bot_ip &#125;&#125;&quot;</span>&#123;% <span class="attr">endif</span> %&#125;&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;form-group&quot;</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;group-id&quot;</span>&gt;</span></span><br><span class="line">                QQ Group Number<span class="tag">&lt;<span class="name">br</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">input</span> <span class="attr">class</span>=<span class="string">&quot;form-control&quot;</span> <span class="attr">id</span>=<span class="string">&#x27;group-id&#x27;</span> <span class="attr">name</span>=<span class="string">&#x27;group_id&#x27;</span> <span class="attr">type</span>=<span class="string">&#x27;text&#x27;</span></span></span><br><span class="line"><span class="tag">					&#123;% <span class="attr">if</span> <span class="attr">group_id</span> <span class="attr">is</span> <span class="attr">defined</span> <span class="attr">and</span> <span class="attr">group_id</span> != <span class="string">None</span> %&#125;<span class="attr">value</span>=<span class="string">&quot;&#123;&#123; group_id &#125;&#125;&quot;</span>&#123;% <span class="attr">endif</span> %&#125;&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;form-group&quot;</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;bot-text&quot;</span>&gt;</span></span><br><span class="line">                解题播报消息格式<span class="tag">&lt;<span class="name">br</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">small</span> <span class="attr">class</span>=<span class="string">&quot;form-text text-muted&quot;</span>&gt;</span></span><br><span class="line">                    ep. 恭喜%s做出题目%s，默认第一个参数为用户名，第二个参数为题目名称</span><br><span class="line">                <span class="tag">&lt;/<span class="name">small</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">input</span> <span class="attr">class</span>=<span class="string">&quot;form-control&quot;</span> <span class="attr">id</span>=<span class="string">&#x27;bot-text&#x27;</span> <span class="attr">name</span>=<span class="string">&#x27;bottext&#x27;</span> <span class="attr">type</span>=<span class="string">&#x27;text&#x27;</span></span></span><br><span class="line"><span class="tag">				   &#123;% <span class="attr">if</span> <span class="attr">bottext</span> <span class="attr">is</span> <span class="attr">defined</span> <span class="attr">and</span> <span class="attr">bottext</span> != <span class="string">None</span> %&#125;<span class="attr">value</span>=<span class="string">&quot;&#123;&#123; bottext &#125;&#125;&quot;</span>&#123;% <span class="attr">endif</span> %&#125;&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;form-group&quot;</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;create-text&quot;</span>&gt;</span></span><br><span class="line">                题目可见播报<span class="tag">&lt;<span class="name">br</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">small</span> <span class="attr">class</span>=<span class="string">&quot;form-text text-muted&quot;</span>&gt;</span></span><br><span class="line">                    ep. 题目%s已登入平台</span><br><span class="line">                <span class="tag">&lt;/<span class="name">small</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">input</span> <span class="attr">class</span>=<span class="string">&quot;form-control&quot;</span> <span class="attr">id</span>=<span class="string">&#x27;create-text&#x27;</span> <span class="attr">name</span>=<span class="string">&#x27;createtext&#x27;</span> <span class="attr">type</span>=<span class="string">&#x27;text&#x27;</span></span></span><br><span class="line"><span class="tag">				   &#123;% <span class="attr">if</span> <span class="attr">createtext</span> <span class="attr">is</span> <span class="attr">defined</span> <span class="attr">and</span> <span class="attr">createtext</span> != <span class="string">None</span> %&#125;<span class="attr">value</span>=<span class="string">&quot;&#123;&#123; createtext &#125;&#125;&quot;</span>&#123;% <span class="attr">endif</span> %&#125;&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;form-group&quot;</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;update-text&quot;</span>&gt;</span></span><br><span class="line">                题目更新播报<span class="tag">&lt;<span class="name">br</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">small</span> <span class="attr">class</span>=<span class="string">&quot;form-text text-muted&quot;</span>&gt;</span></span><br><span class="line">                    ep. 题目%s内容已更新</span><br><span class="line">                <span class="tag">&lt;/<span class="name">small</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">input</span> <span class="attr">class</span>=<span class="string">&quot;form-control&quot;</span> <span class="attr">id</span>=<span class="string">&#x27;update-text&#x27;</span> <span class="attr">name</span>=<span class="string">&#x27;updatetext&#x27;</span> <span class="attr">type</span>=<span class="string">&#x27;text&#x27;</span></span></span><br><span class="line"><span class="tag">				   &#123;% <span class="attr">if</span> <span class="attr">updatetext</span> <span class="attr">is</span> <span class="attr">defined</span> <span class="attr">and</span> <span class="attr">updatetext</span> != <span class="string">None</span> %&#125;<span class="attr">value</span>=<span class="string">&quot;&#123;&#123; updatetext &#125;&#125;&quot;</span>&#123;% <span class="attr">endif</span> %&#125;&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;form-group&quot;</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;botof&quot;</span>&gt;</span></span><br><span class="line">                Turn on the Bot</span><br><span class="line">            <span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">select</span> <span class="attr">class</span>=<span class="string">&quot;form-control custom-select&quot;</span> <span class="attr">id</span>=<span class="string">&quot;botof&quot;</span> <span class="attr">name</span>=<span class="string">&quot;bot&quot;</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">option</span> <span class="attr">value</span>=<span class="string">0</span> &#123;% <span class="attr">if</span> <span class="attr">bot</span> == <span class="string">0</span> %&#125;<span class="attr">selected</span>&#123;% <span class="attr">endif</span> %&#125;&gt;</span></span><br><span class="line">                        OFF</span><br><span class="line">                    <span class="tag">&lt;/<span class="name">option</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">option</span> <span class="attr">value</span>=<span class="string">1</span> &#123;% <span class="attr">if</span> <span class="attr">bot</span> == <span class="string">1</span> %&#125;<span class="attr">selected</span>&#123;% <span class="attr">endif</span> %&#125;&gt;</span></span><br><span class="line">                        ON</span><br><span class="line">                    <span class="tag">&lt;/<span class="name">option</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line">		<span class="tag">&lt;<span class="name">button</span> <span class="attr">type</span>=<span class="string">&quot;submit&quot;</span> <span class="attr">class</span>=<span class="string">&quot;btn btn-md btn-primary float-right&quot;</span>&gt;</span>Update<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
-        &lt;div class=&quot;form-group&quot;&gt;
-            &lt;label&gt;
-                CTF Description&lt;br&gt;
-                &lt;small class=&quot;form-text text-muted&quot;&gt;
-                    Description for the CTF
-                &lt;/small&gt;
-            &lt;/label&gt;
-            &lt;textarea class=&quot;form-control&quot; type=&quot;text&quot; id=&quot;ctf_description&quot; name=&quot;ctf_description&quot; rows=&quot;5&quot;&gt;&#123;&#123; ctf_description &#125;&#125;&lt;/textarea&gt;
-        &lt;/div&gt;
-        &lt;div class=&quot;form-group&quot;&gt;
-            &lt;label for=&quot;bot-ip&quot;&gt;
-                Bot Address&lt;br&gt;
-                &lt;small class=&quot;form-text text-muted&quot;&gt;
-                    the address of QQ-bot
-                &lt;/small&gt;
-                &lt;small class=&quot;form-text text-muted&quot;&gt;
-                    eg. 127.0.0.1:1234
-                &lt;/small&gt;
-            &lt;/label&gt;
-            &lt;input class=&quot;form-control&quot; id=&#39;bot-ip&#39; name=&#39;bot_ip&#39; type=&#39;text&#39;
-                    &#123;% if bot_ip is defined and bot_ip != None %&#125;value="&#123;&#123; bot_ip &#125;&#125;"&#123;% endif %&#125;&gt;
-        &lt;/div&gt;
-
-        &lt;div class=&quot;form-group&quot;&gt;
-            &lt;label for=&quot;group-id&quot;&gt;
-                QQ Group Number&lt;br&gt;
-            &lt;/label&gt;
-            &lt;input class=&quot;form-control&quot; id=&#39;group-id&#39; name=&#39;group_id&#39; type=&#39;text&#39;
-                    &#123;% if group_id is defined and group_id != None %&#125;value="&#123;&#123; group_id &#125;&#125;"&#123;% endif %&#125;&gt;
-        &lt;/div&gt;
-
-
-        &lt;div class=&quot;form-group&quot;&gt;
-            &lt;label for=&quot;bot-text&quot;&gt;
-                解题播报消息格式&lt;br&gt;
-                &lt;small class=&quot;form-text text-muted&quot;&gt;
-                    ep. 恭喜%s做出题目%s，默认第一个参数为用户名，第二个参数为题目名称
-                &lt;/small&gt;
-            &lt;/label&gt;
-            &lt;input class=&quot;form-control&quot; id=&#39;bot-text&#39; name=&#39;bottext&#39; type=&#39;text&#39;
-                   &#123;% if bottext is defined and bottext != None %&#125;value="&#123;&#123; bottext &#125;&#125;"&#123;% endif %&#125;&gt;
-        &lt;/div&gt;
-
-        &lt;div class=&quot;form-group&quot;&gt;
-            &lt;label for=&quot;create-text&quot;&gt;
-                题目可见播报&lt;br&gt;
-                &lt;small class=&quot;form-text text-muted&quot;&gt;
-                    ep. 题目%s已登入平台
-                &lt;/small&gt;
-            &lt;/label&gt;
-            &lt;input class=&quot;form-control&quot; id=&#39;create-text&#39; name=&#39;createtext&#39; type=&#39;text&#39;
-                   &#123;% if createtext is defined and createtext != None %&#125;value="&#123;&#123; createtext &#125;&#125;"&#123;% endif %&#125;&gt;
-        &lt;/div&gt;
-
-        &lt;div class=&quot;form-group&quot;&gt;
-            &lt;label for=&quot;update-text&quot;&gt;
-                题目更新播报&lt;br&gt;
-                &lt;small class=&quot;form-text text-muted&quot;&gt;
-                    ep. 题目%s内容已更新
-                &lt;/small&gt;
-            &lt;/label&gt;
-            &lt;input class=&quot;form-control&quot; id=&#39;update-text&#39; name=&#39;updatetext&#39; type=&#39;text&#39;
-                   &#123;% if updatetext is defined and updatetext != None %&#125;value="&#123;&#123; updatetext &#125;&#125;"&#123;% endif %&#125;&gt;
-        &lt;/div&gt;
-
-        &lt;div class=&quot;form-group&quot;&gt;
-            &lt;label for=&quot;botof&quot;&gt;
-                Turn on the Bot
-            &lt;/label&gt;
-            &lt;div&gt;
-                &lt;select class=&quot;form-control custom-select&quot; id=&quot;botof&quot; name=&quot;bot&quot;&gt;
-                    &lt;option value=0 &#123;% if bot == 0 %&#125;selected&#123;% endif %&#125;&gt;
-                        OFF
-                    &lt;/option&gt;
-                    &lt;option value=1 &#123;% if bot == 1 %&#125;selected&#123;% endif %&#125;&gt;
-                        ON
-                    &lt;/option&gt;
-                &lt;/select&gt;
-            &lt;/div&gt;
-        &lt;/div&gt;
-
-        &lt;button type=&quot;submit&quot; class=&quot;btn btn-md btn-primary float-right&quot;&gt;Update&lt;/button&gt;
-    &lt;/form&gt;
-&lt;/div&gt;
-</code></pre>
 <h3 id="效果图"><a href="#效果图" class="headerlink" title="效果图"></a>效果图</h3><p><img src="/img/article/botv2/image-20221108200540771.png" alt="image-20221108200540771"></p>
 <h2 id="后端更改"><a href="#后端更改" class="headerlink" title="后端更改"></a>后端更改</h2><h3 id="views-py"><a href="#views-py" class="headerlink" title="views.py"></a>views.py</h3><p>打开<code>CTFd/CTFd/views.py</code>，添加变量<code>createtext</code>和<code>updatetext</code>，用于接收html页面数据</p>
 <p><img src="/img/article/botv2/image-20221108200717361.png" alt="image-20221108200717361"></p>
-<pre><code class="python"># Robot
-bot = request.form.get(&quot;bot&quot;)
-bottext = request.form.get(&quot;bottext&quot;)
-createtext = request.form.get(&quot;createtext&quot;)
-updatetext = updatetext.form.get(&quot;updatetext&quot;)
-group_id = request.form.get(&quot;group_id&quot;) #qq群号
-bot_ip = request.form.get(&quot;bot_ip&quot;) #机器人服务地址,如 127.0.0.1:8000
-set_config(&quot;bot&quot;, bot)
-set_config(&quot;bottext&quot;, bottext)
-set_config(&quot;createtext&quot;, createtext)
-set_config(&quot;updatetext&quot;, updatetext)
-set_config(&quot;group_id&quot;,group_id)
-set_config(&quot;bot_ip&quot;,bot_ip)
-</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Robot</span></span><br><span class="line">bot = request.form.get(<span class="string">&quot;bot&quot;</span>)</span><br><span class="line">bottext = request.form.get(<span class="string">&quot;bottext&quot;</span>)</span><br><span class="line">createtext = request.form.get(<span class="string">&quot;createtext&quot;</span>)</span><br><span class="line">updatetext = updatetext.form.get(<span class="string">&quot;updatetext&quot;</span>)</span><br><span class="line">group_id = request.form.get(<span class="string">&quot;group_id&quot;</span>) <span class="comment">#qq群号</span></span><br><span class="line">bot_ip = request.form.get(<span class="string">&quot;bot_ip&quot;</span>) <span class="comment">#机器人服务地址,如 127.0.0.1:8000</span></span><br><span class="line">set_config(<span class="string">&quot;bot&quot;</span>, bot)</span><br><span class="line">set_config(<span class="string">&quot;bottext&quot;</span>, bottext)</span><br><span class="line">set_config(<span class="string">&quot;createtext&quot;</span>, createtext)</span><br><span class="line">set_config(<span class="string">&quot;updatetext&quot;</span>, updatetext)</span><br><span class="line">set_config(<span class="string">&quot;group_id&quot;</span>,group_id)</span><br><span class="line">set_config(<span class="string">&quot;bot_ip&quot;</span>,bot_ip)</span><br></pre></td></tr></table></figure>
+
 <h3 id="challenge-py"><a href="#challenge-py" class="headerlink" title="challenge.py"></a>challenge.py</h3><p>打开<code>CTFd/CTFD/api/v1/challenges.py</code>，在<code>patch</code>函数内增加一段代码，在更新题目信息后进行逻辑判断，后调用机器人的API</p>
 <p><img src="/img/article/botv2/image-20221108201009252.png" alt="image-20221108201009252"></p>
 <p>完整函数代码如下：</p>
-<pre><code class="python">def patch(self, challenge_id):
-    data = request.get_json()
-    #TODO:
-    # Load data through schema for validation but not for insertion
-    schema = ChallengeSchema()
-    response = schema.load(data)
-    if response.errors:
-        return &#123;&quot;success&quot;: False, &quot;errors&quot;: response.errors&#125;, 400
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">patch</span>(<span class="params">self, challenge_id</span>):</span><br><span class="line">    data = request.get_json()</span><br><span class="line">    <span class="comment">#<span class="doctag">TODO:</span></span></span><br><span class="line">    <span class="comment"># Load data through schema for validation but not for insertion</span></span><br><span class="line">    schema = ChallengeSchema()</span><br><span class="line">    response = schema.load(data)</span><br><span class="line">    <span class="keyword">if</span> response.errors:</span><br><span class="line">        <span class="keyword">return</span> &#123;<span class="string">&quot;success&quot;</span>: <span class="literal">False</span>, <span class="string">&quot;errors&quot;</span>: response.errors&#125;, <span class="number">400</span></span><br><span class="line"></span><br><span class="line">    challenge = Challenges.query.filter_by(<span class="built_in">id</span>=challenge_id).first_or_404()</span><br><span class="line">    state_before = challenge.state</span><br><span class="line">    challenge_class = get_chal_class(challenge.<span class="built_in">type</span>)</span><br><span class="line">    challenge = challenge_class.update(challenge, request)</span><br><span class="line">    response = challenge_class.read(challenge)</span><br><span class="line">    <span class="comment">#ROBOT send message when update the information of challenge</span></span><br><span class="line">    bot = get_config(<span class="string">&quot;bot&quot;</span>)</span><br><span class="line">    <span class="keyword">if</span> (bot):</span><br><span class="line">        group_id = get_config(<span class="string">&quot;group_id&quot;</span>)</span><br><span class="line">        bot_ip = get_config(<span class="string">&quot;bot_ip&quot;</span>)</span><br><span class="line">        boturl = <span class="string">&quot;http://&quot;</span>+<span class="built_in">str</span>(bot_ip)+<span class="string">&quot;/send_group_msg?group_id=&quot;</span>+<span class="built_in">str</span>(group_id)+<span class="string">&quot;&amp;message=&quot;</span></span><br><span class="line">        <span class="keyword">if</span>(challenge.state!=<span class="string">&quot;hidden&quot;</span> <span class="keyword">and</span> challenge.state!=<span class="string">&quot;locked&quot;</span>):</span><br><span class="line">            <span class="keyword">if</span>(state_before==<span class="string">&quot;hidden&quot;</span>):</span><br><span class="line">                bottext = get_config(<span class="string">&quot;createtext&quot;</span>)</span><br><span class="line">                botmessage = (bottext) % (challenge.name)</span><br><span class="line">                url = boturl + botmessage</span><br><span class="line">                requests.get(<span class="built_in">str</span>(url))</span><br><span class="line">             <span class="keyword">elif</span>(state_before!=<span class="string">&quot;hidden&quot;</span>):</span><br><span class="line">                bottext = get_config(<span class="string">&quot;updatetext&quot;</span>)</span><br><span class="line">                botmessage = (bottext) % (challenge.name)</span><br><span class="line">                url = boturl + botmessage</span><br><span class="line">                requests.get(<span class="built_in">str</span>(url))</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="string">&quot;success&quot;</span>: <span class="literal">True</span>, <span class="string">&quot;data&quot;</span>: response&#125;</span><br></pre></td></tr></table></figure>
 
-    challenge = Challenges.query.filter_by(id=challenge_id).first_or_404()
-    state_before = challenge.state
-    challenge_class = get_chal_class(challenge.type)
-    challenge = challenge_class.update(challenge, request)
-    response = challenge_class.read(challenge)
-    #ROBOT send message when update the information of challenge
-    bot = get_config(&quot;bot&quot;)
-    if (bot):
-        group_id = get_config(&quot;group_id&quot;)
-        bot_ip = get_config(&quot;bot_ip&quot;)
-        boturl = &quot;http://&quot;+str(bot_ip)+&quot;/send_group_msg?group_id=&quot;+str(group_id)+&quot;&amp;message=&quot;
-        if(challenge.state!=&quot;hidden&quot; and challenge.state!=&quot;locked&quot;):
-            if(state_before==&quot;hidden&quot;):
-                bottext = get_config(&quot;createtext&quot;)
-                botmessage = (bottext) % (challenge.name)
-                url = boturl + botmessage
-                requests.get(str(url))
-             elif(state_before!=&quot;hidden&quot;):
-                bottext = get_config(&quot;updatetext&quot;)
-                botmessage = (bottext) % (challenge.name)
-                url = boturl + botmessage
-                requests.get(str(url))
-
-    return &#123;&quot;success&quot;: True, &quot;data&quot;: response&#125;
-</code></pre>
 <blockquote>
 <p>后续在增加一二三血吧，这个功能略有点麻烦</p>
 </blockquote>
 
-        </div>
+</div> 
 
+<script>
+    window.onload = detectors();
+</script>
+    <div class="post-footer">
+    <div class="h-line-primary"></div>
+    <nav class="post-nav">
+        <div class="prev-item">
+           
+                <div class="icon arrow-left"></div>
+                <div class="post-link">
+                    <a href="/2022/11/13/%E3%80%90IO_FILE%E3%80%91house%20of%20cat/">Prev</a>
+                </div>
+            
+        </div>
+        <div class="next-item">
+            
+                <div class="icon arrow-right"></div>
+                <div class="post-link">
+                  <a href="/2022/11/03/i%E6%98%A5%E7%A7%8B%E6%98%A5%E5%AD%A3%E8%B5%9B-%E5%8B%87%E8%80%85%E5%B7%85%E5%B3%B0-chunqiuIOT/">Next</a>  
+                </div>  
+            
+        </div>
+    </nav>
+</div>
+
+    
+      <div class="post-comment">
+
+     
+
+     
+    
     
 
 </div>
-                <div class="footer">
-    <span>Copyright © 2022 Loora1N&#39;s Blog | 鹭雨</span>
-    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
+     
+  
+</article>
+        </div>
+      </div>
+      
+      <div class="footer">
+    <div class="flex-container">
+        <div class="footer-text">
+            
+            
+            
+                Powered by <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> & <a target="_blank" rel="noopener" href="https://github.com/zoeingwingkei/frame/">Frame</a>
+                
+        </div>
+    </div>
 </div>
 
+    </div>
 
-<link rel="stylesheet" href="/css/a11y-dark.min.css">
-
-
-<script src="/js/highlight.min.js"></script>
-
-
-<script src="/js/highlightjs-line-numbers.js"></script>
-
-
-<script>
-    hljs.initHighlightingOnLoad();
-    hljs.initLineNumbersOnLoad();
-</script>
-
+    
+      <div class="search-popup">
+    <div class="search-popup-overlay">  
+    </div>
+    <div class="search-popup-window" >
+        <div class="search-header">
+            <div class="search-input-container">
+              <input autocomplete="off" autocapitalize="off" maxlength="80"
+                     placeholder="Search Anything" spellcheck="false"
+                     type="search" class="search-input">
+            </div>
+            <div class="search-close-btn">
+                <div class="icon close-btn"></div>
             </div>
         </div>
-    <!-- hexo injector body_end start -->
+        <div class="search-result-container">
+        </div>
+    </div>
+</div>
+
+<script>
+    const searchConfig = {
+        path             : "/search.xml",
+        top_n_per_article: "1",
+        unescape         : "false",
+        trigger: "auto",
+        preload: "false"
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js"></script>
+<script src="/js/search.js"></script>
+    
+    
+
+  <!-- hexo injector body_end start -->
   <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
   <script data-pjax>
         function GithubCalendarConfig(){

@@ -1,229 +1,211 @@
 <!DOCTYPE html>
-<html>
-    <head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
-    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
-    <title>Loora1N&#39;s Blog | 鹭雨 | </title>
-    
-<link rel="stylesheet" href="/css/reset.css">
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    
-<link rel="stylesheet" href="/css/style.css">
+    <meta name="author" content="Loora1N">
 
-    
-<link rel="stylesheet" href="/css/markdown.css">
 
-    
-<link rel="stylesheet" href="/css/fonts.css">
 
-<meta name="generator" content="Hexo 6.2.0"></head>
-    <body>
-        <div class="paper">
-            <div class="paper-main">
+    <meta name="description" content="Blog of Loora1N">
+
+
+
+
+
+<title>Loora1N&#39;s Blog | 鹭雨</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Roboto+Mono&display=swap');
+</style>
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/menu.js"></script>
+    
+    <script src="/js/highlight.min.js"></script>
+    
+    <script src="/js/highlightjs-line-numbers.js"></script>
+    
+    <script src="/js/format.js"></script>
+    
+    <script src="/js/search.js"></script>
+    
+
+
+
+
+
+
+
+
+
+
+  <meta name="generator" content="Hexo 6.2.0"></head>
+  <body>
+    <div class="mask-border">
+    </div>
+
+    <div class="wrapper">
+
+      <div class="header">
+  <div class="flex-container">
+    <div class="header-inner">
+      <div class="site-brand-container">
+        <a href="/">
+          
+            Loora1N&#39;s Blog | 鹭雨
+          
+        </a>
+      </div>
+      <div id="menu-btn" class="menu-btn" onclick="toggleMenu()">
+        Menu
+      </div>
+      <nav class="site-nav">
+        <ul class="menu-list">
+          
+            
+              <li class="menu-item menu-item-active">
+                <a href="/">首页</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/archives/">索引</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/about/">述己</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/links/">友链</a>
+              </li> 
+                   
+          
+          
+            <li class="menu-item search-btn">
+              <a href="#">Search</a>
+            </li>
+          
+        </ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+      <div class="main">
+        <div class="flex-container">
+          <div class="profile">
+    <div class="profile-image">
+        
+            <img src="/image.png" alt="featured_image">
+          
+    </div>
+    <div class="post-content profile-content">
+        <div class="profile-title">
+            鹭雨 | Loora1N
+        </div>
+        <div class="profile-body">
+            2024/9/20更新博客框架主题，文章总览全部放入索引页面，增添搜索栏功能，评论功能正在测试，旧版博客一去不反。（左图为旧博客的最后一张遗像）
+        </div>
+        
+            <div class="profile-link">
+                <a href="/">首页</a> 
+            </div>           
+        
+            <div class="profile-link">
+                <a href="/archives/">索引</a> 
+            </div>           
+        
+            <div class="profile-link">
+                <a href="/about/">述己</a> 
+            </div>           
+        
+            <div class="profile-link">
+                <a href="/links/">友链</a> 
+            </div>           
+        
+    </div>
+    
+</div>
+        </div>
+      </div>
+      
+      <div class="footer">
+    <div class="flex-container">
+        <div class="footer-text">
+            
+            
+            
+                Powered by <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> & <a target="_blank" rel="noopener" href="https://github.com/zoeingwingkei/frame/">Frame</a>
                 
-                    <div class="header">
-    <a class="logo" href="/">Loora1N&#39;s Blog | 鹭雨</a>
-    <ul class="nav">
-        
-        <li><a href="/">扉页</a></li>
-        
-        <li><a href="/archives">索引</a></li>
-        
-        <li><a href="/about">述己</a></li>
-        
-        <li><a href="/links">友链</a></li>
-        
-    </ul>
-</div>
-                
-                <div class="post-list">
-    
-    <div class="post">
-        <a class="post-title" href="/2024/09/20/%E3%80%90V8%E3%80%91HeapSpary/">【V8】V8利用手法-HeapSpary</a>
-        <div class="post-except">
-            
-本文讲解V8中的HeapSpary也就是常说的“堆喷”手法的基本原理和思想。后续会写一篇复现CVE-2021-38001的文章，讲解实际HeapSpary的利用和效果。
-
-V8中的堆结构
-图源：https://deepu.tech/memory-management-in-v8/
-
-首先，我们需要对V8中的堆结构有个基本认识。V8内存结构总体如下所示
-
-从图中可以看到，整个堆区域总体可以分为几个小区域：
-
-New space(Young generation)
-Old sp
-            <a class="read-more" href="/2024/09/20/%E3%80%90V8%E3%80%91HeapSpary/"> ... </a>
         </div>
-        <div class="post-date">2024.09.20</div>
     </div>
-    
-    <div class="post">
-        <a class="post-title" href="/2024/09/12/%E3%80%90V8%E3%80%91%E6%97%A7%E7%89%88%E6%9C%ACV8%E7%BC%96%E8%AF%91jinja2%E6%8A%A5%E9%94%99%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3/">【V8】旧版本V8编译jinja2报错问题解决</a>
-        <div class="post-except">
-            
-最近经常编译许多不同版本的V8，用来做漏洞复现和研究学习，但是由于python和jinjia版本较高，经常出现同一个报错，这里写个通用解决方式。
-
-报错信息基本报错如下
-ninja: Entering directory `out/x64_9.5.172.21.release&#39;
-[209/1834] ACTION //src/inspector:protocol_generated_sources(//build/toolchain/linux:clang_x64)
-            <a class="read-more" href="/2024/09/12/%E3%80%90V8%E3%80%91%E6%97%A7%E7%89%88%E6%9C%ACV8%E7%BC%96%E8%AF%91jinja2%E6%8A%A5%E9%94%99%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3/"> ... </a>
-        </div>
-        <div class="post-date">2024.09.12</div>
-    </div>
-    
-    <div class="post">
-        <a class="post-title" href="/2024/08/14/%E3%80%90V8%E3%80%91%E6%B7%B1%E5%85%A5turbofan/">【V8】深入turbofan</a>
-        <div class="post-except">
-            
-Dive in to sea of nodes!
-
-前置V8环境构建可见我博客之前部分的内容V8研究环境搭建，不再过多阐述。
-TurbolizerTurbolizer是一个图形化的工具，可以用辅助调试Turbofan的sea of nodes
-# 安装 
-cd tools/turbolizer
-npm i
-npm run-script build
-python3 -m http.server 8000
-
-当使用d8运行JS文件时，可以使用参数--trace-turbo参数，
-            <a class="read-more" href="/2024/08/14/%E3%80%90V8%E3%80%91%E6%B7%B1%E5%85%A5turbofan/"> ... </a>
-        </div>
-        <div class="post-date">2024.08.14</div>
-    </div>
-    
-    <div class="post">
-        <a class="post-title" href="/2024/07/29/%E3%80%90V8%E3%80%91CVE-2020-6507%E5%A4%8D%E7%8E%B0/">【V8】CVE-2020-6507复现</a>
-        <div class="post-except">
-            相关信息
-issue：https://issues.chromium.org/issues/40052419
-commit：commit
-受影响的Chrome最高版本为：83.0.4103.97
-受影响的V8最高版本为：8.3.110.9
-
-编译环境time ./build_v8.sh 8.3.110.9
-...
-...
-Done. Made 149 targets from 88 files in 214ms
-ninja: Entering directory `out/x
-            <a class="read-more" href="/2024/07/29/%E3%80%90V8%E3%80%91CVE-2020-6507%E5%A4%8D%E7%8E%B0/"> ... </a>
-        </div>
-        <div class="post-date">2024.07.29</div>
-    </div>
-    
-    <div class="post">
-        <a class="post-title" href="/2024/07/25/%E3%80%90V8%E3%80%91%E9%80%9A%E7%94%A8%E5%88%A9%E7%94%A8%E9%93%BE%E7%A0%94%E7%A9%B6/">【V8】通用利用链研究</a>
-        <div class="post-except">
-            概述在v8利用上，我觉得也有一个明确的目标，就是执行任意shellcode。当有了这个目标后，下一步就是思考，怎么写shellcode呢？那么就需要有写内存相关的洞，能写到可读可写可执行的内存段，最好是能任意地址写。配套的还需要有任意读，因为需要知道rwx内存段的地址。就算没有任意读，也需要有办法能把改地址泄漏出来（V8的binary保护基本是全开的）。接下来就是需要能控制RIP，能让RIP跳转到shellcode的内存段
-WASM现如今的浏览器基本都支持WASM，v8会专门
-            <a class="read-more" href="/2024/07/25/%E3%80%90V8%E3%80%91%E9%80%9A%E7%94%A8%E5%88%A9%E7%94%A8%E9%93%BE%E7%A0%94%E7%A9%B6/"> ... </a>
-        </div>
-        <div class="post-date">2024.07.25</div>
-    </div>
-    
-    <div class="post">
-        <a class="post-title" href="/2024/07/24/%E3%80%90V8%E3%80%91V8%E7%A0%94%E7%A9%B6%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/">【V8】V8研究环境搭建</a>
-        <div class="post-except">
-            
-博客停更了好久，最近尝试学学v8，希望能坚持坚持，并有所成果
-
-参考文章
-https://www.anquanke.com/post/id/267518
-https://tokameine.gitbook.io/chose-me-or-javascript-v8
-
-环境搭建运行环境搭建clone开发者工具，下载v8源码以及依赖
-sudo apt install bison cdbs curl flex g++ git python vim pkg-config
-git cl
-            <a class="read-more" href="/2024/07/24/%E3%80%90V8%E3%80%91V8%E7%A0%94%E7%A9%B6%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/"> ... </a>
-        </div>
-        <div class="post-date">2024.07.24</div>
-    </div>
-    
-    <div class="post">
-        <a class="post-title" href="/2023/12/21/%E3%80%90cloud%E3%80%91k8s%20kubectl%20%E8%AE%BF%E9%97%AEAPI%20%E5%87%BA%E7%8E%B0connection%20reser%20by%20peer/">【Cloud】kubectl 报错connection reset by peer</a>
-        <div class="post-except">
-            情景配置k8s环境时，使用minikube start启动集群，尝试使用kubectl命令与其交互时出现报错如下：
-┌─[loorain@ubuntu] - [~] - [8040]
-└─[$] kubectl cluster-info                                                                 [14:47:50]
-E1220 14:52:11.375271  103903 memcache.go:265]
-            <a class="read-more" href="/2023/12/21/%E3%80%90cloud%E3%80%91k8s%20kubectl%20%E8%AE%BF%E9%97%AEAPI%20%E5%87%BA%E7%8E%B0connection%20reser%20by%20peer/"> ... </a>
-        </div>
-        <div class="post-date">2023.12.21</div>
-    </div>
-    
-    <div class="post">
-        <a class="post-title" href="/2023/12/20/%E3%80%90cloud%E3%80%91%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AE%89%E5%85%A8%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/">【Cloud】云原生安全环境搭建</a>
-        <div class="post-except">
-            
-毕设要搞个什么网络安全检测系统，干脆直接做ebpf开发，走容器安全，顺便研究研究云原生安全
-环境为ubuntu22.04，架构为x86_64
-
-kubernetes使用curl安装kubectl下载发行版curl -LO &quot;https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl&quot;
-
-验证文件curl -LO &
-            <a class="read-more" href="/2023/12/20/%E3%80%90cloud%E3%80%91%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AE%89%E5%85%A8%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/"> ... </a>
-        </div>
-        <div class="post-date">2023.12.20</div>
-    </div>
-    
-    <div class="post">
-        <a class="post-title" href="/2023/11/21/%E3%80%90Kernel%E3%80%91%E4%B8%80%E4%BA%9B%E5%85%B3%E9%94%AE%E7%BB%93%E6%9E%84%E4%BD%93%E8%AE%B0%E5%BD%95/">【Kernel】一些trick和struct记录（持续更新）</a>
-        <div class="post-except">
-            pt_regs用于保存用户态–&gt;内核态切换时的用户态信息，在内核态返回时会从pt_regs恢复数据。因而若我们能控制rsp到达此位置，即可以使用用户态寄存器值辅助实现ROP
-
-list_head结构体简单的内核双链表结构，在内核中经常作为实现双链表结构的基础，定义如下
-//	https://elixir.bootlin.com/linux/latest/source/include/linux/types.h#L184
-
-struct list_head &#123;
-
-            <a class="read-more" href="/2023/11/21/%E3%80%90Kernel%E3%80%91%E4%B8%80%E4%BA%9B%E5%85%B3%E9%94%AE%E7%BB%93%E6%9E%84%E4%BD%93%E8%AE%B0%E5%BD%95/"> ... </a>
-        </div>
-        <div class="post-date">2023.11.21</div>
-    </div>
-    
-    <div class="post">
-        <a class="post-title" href="/2023/11/21/%E6%A0%87%E5%BF%97%E4%BD%8D/">【OS】8086标志位汇总</a>
-        <div class="post-except">
-            
-CF:进位标志位。在无符号运算时，记录了运算结果的最高有效位向更高位的进位值或从更高位借位，产生进位或借位时CF&#x3D;1，否则CF&#x3D;0；
-PF:奇偶标志位。相关指令执行后结果所有bit中1的个数为偶数，那么PF&#x3D;1，1的个数为奇数则PF&#x3D;0；
-AF:辅助进位标志位。运算过程中看最后四位，不论长度为多少。最后四位向前有进位或者借位，AF&#x3D;1,否则AF&#x3D;0;
-ZF:零标志位。相关指令执行后结果为0那么ZF&#x3D;1,结
-            <a class="read-more" href="/2023/11/21/%E6%A0%87%E5%BF%97%E4%BD%8D/"> ... </a>
-        </div>
-        <div class="post-date">2023.11.21</div>
-    </div>
-    
 </div>
 
-<div class="paginator">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/2/">下一页</a>
-</div>
+    </div>
 
-                <div class="footer">
-    <span>Copyright © 2022 Loora1N&#39;s Blog | 鹭雨</span>
-    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
-</div>
-
-
-<link rel="stylesheet" href="/css/a11y-dark.min.css">
-
-
-<script src="/js/highlight.min.js"></script>
-
-
-<script src="/js/highlightjs-line-numbers.js"></script>
-
-
-<script>
-    hljs.initHighlightingOnLoad();
-    hljs.initLineNumbersOnLoad();
-</script>
-
+    
+      <div class="search-popup">
+    <div class="search-popup-overlay">  
+    </div>
+    <div class="search-popup-window" >
+        <div class="search-header">
+            <div class="search-input-container">
+              <input autocomplete="off" autocapitalize="off" maxlength="80"
+                     placeholder="Search Anything" spellcheck="false"
+                     type="search" class="search-input">
+            </div>
+            <div class="search-close-btn">
+                <div class="icon close-btn"></div>
             </div>
         </div>
-    <!-- hexo injector body_end start -->
+        <div class="search-result-container">
+        </div>
+    </div>
+</div>
+
+<script>
+    const searchConfig = {
+        path             : "/search.xml",
+        top_n_per_article: "1",
+        unescape         : "false",
+        trigger: "auto",
+        preload: "false"
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js"></script>
+<script src="/js/search.js"></script>
+    
+    
+
+  <!-- hexo injector body_end start -->
   <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
   <script data-pjax>
         function GithubCalendarConfig(){

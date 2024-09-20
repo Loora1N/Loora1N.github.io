@@ -1,48 +1,153 @@
 <!DOCTYPE html>
-<html>
-    <head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
-    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
-    <title>Loora1N&#39;s Blog | 鹭雨 | </title>
-    
-<link rel="stylesheet" href="/css/reset.css">
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    
-<link rel="stylesheet" href="/css/style.css">
+    <meta name="author" content="Loora1N">
 
-    
-<link rel="stylesheet" href="/css/markdown.css">
 
-    
-<link rel="stylesheet" href="/css/fonts.css">
 
-<meta name="generator" content="Hexo 6.2.0"></head>
-    <body>
-        <div class="paper">
-            <div class="paper-main">
-                
-                    <div class="post-header">
-    <a class="logo" href="/">Loora1N&#39;s Blog | 鹭雨</a>
-    <a class="go-home" href="/">
-        <svg width="8" height="14" viewBox="0 0 8 14">
-            <path d="M7 1L1 7l6 6" stroke="#000" stroke-width="2" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-    </a>
+    <meta name="description" content="Blog of Loora1N">
+
+
+
+
+
+<title>【V8】V8研究环境搭建 | Loora1N&#39;s Blog | 鹭雨</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Roboto+Mono&display=swap');
+</style>
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/menu.js"></script>
+    
+    <script src="/js/highlight.min.js"></script>
+    
+    <script src="/js/highlightjs-line-numbers.js"></script>
+    
+    <script src="/js/format.js"></script>
+    
+    <script src="/js/search.js"></script>
+    
+
+
+
+
+
+
+
+
+
+
+  <meta name="generator" content="Hexo 6.2.0"></head>
+  <body>
+    <div class="mask-border">
+    </div>
+
+    <div class="wrapper">
+
+      <div class="header">
+  <div class="flex-container">
+    <div class="header-inner">
+      <div class="site-brand-container">
+        <a href="/">
+          
+            Loora1N&#39;s Blog | 鹭雨
+          
+        </a>
+      </div>
+      <div id="menu-btn" class="menu-btn" onclick="toggleMenu()">
+        Menu
+      </div>
+      <nav class="site-nav">
+        <ul class="menu-list">
+          
+            
+              <li class="menu-item">
+                <a href="/">首页</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/archives/">索引</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/about/">述己</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/links/">友链</a>
+              </li> 
+                   
+          
+          
+            <li class="menu-item search-btn">
+              <a href="#">Search</a>
+            </li>
+          
+        </ul>
+      </nav>
+    </div>
+  </div>
 </div>
-                
-                <div class="post-main">
 
-    
-    
-        <div class="post-main-title">
-            【V8】V8研究环境搭建
+
+      <div class="main">
+        <div class="flex-container">
+          <article id="post">
+
+  
+    <div class="post-head">
+    <div class="post-info">
+        <div class="tag-list">
+            
         </div>
-        <div class="post-meta">
-            2024-07-24
+        <div class="post-title">
+            
+            
+                【V8】V8研究环境搭建
+            
+            
         </div>
-        <div class="post-md">
-            <blockquote>
+        <span class="post-date">
+            7月 24, 2024
+        </span>
+    </div>
+    <div class="post-img">
+        
+            <div class="h-line-primary"></div>
+              
+    </div>
+</div>
+    <div class="post-content">
+    <blockquote>
 <p>博客停更了好久，最近尝试学学v8，希望能坚持坚持，并有所成果</p>
 </blockquote>
 <h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><blockquote>
@@ -50,57 +155,23 @@
 <p><a target="_blank" rel="noopener" href="https://tokameine.gitbook.io/chose-me-or-javascript-v8">https://tokameine.gitbook.io/chose-me-or-javascript-v8</a></p>
 </blockquote>
 <h2 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h2><h3 id="运行环境搭建"><a href="#运行环境搭建" class="headerlink" title="运行环境搭建"></a>运行环境搭建</h3><p>clone开发者工具，下载v8源码以及依赖</p>
-<pre><code class="sh">sudo apt install bison cdbs curl flex g++ git python vim pkg-config
-git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
-echo &#39;export PATH=$PATH:&quot;/path/to/depot_tools&quot;&#39; &gt;&gt; ~/.bashrc
-# /path/to/depot_tools改成depot_tools的目录
-fetch v8
-./v8/build/install-build-deps.sh --no-chromeos-fonts
-</code></pre>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install bison cdbs curl flex g++ git python vim pkg-config</span><br><span class="line">git <span class="built_in">clone</span> https://chromium.googlesource.com/chromium/tools/depot_tools.git</span><br><span class="line"><span class="built_in">echo</span> <span class="string">&#x27;export PATH=$PATH:&quot;/path/to/depot_tools&quot;&#x27;</span> &gt;&gt; ~/.bashrc</span><br><span class="line"><span class="comment"># /path/to/depot_tools改成depot_tools的目录</span></span><br><span class="line">fetch v8</span><br><span class="line">./v8/build/install-build-deps.sh --no-chromeos-fonts</span><br></pre></td></tr></table></figure>
+
 <blockquote>
 <p><code>fetch v8</code>命令会下载v8的源码，具体时间视网络情况而定</p>
 <p><code>--no-chromeos-fonts</code>为去除字体依赖，有需要可以去掉参数</p>
 </blockquote>
 <p>编译源码，为便于编译不同版本的源码，使用如下脚本：</p>
-<pre><code class="shell">#!/bin/bash
-VER=$1 
-if [ -z $2 ]; then
-        NAME=$VER
-else
-        NAME=$2
-fi
-cd /path/depot_tools/v8
-# /path/depot_tools/v8 换成自己的路径
-git reset --hard $VER
-gclient sync -D
-gn gen out/x64_$NAME.release --args=&#39;v8_monolithic=true v8_use_external_startup_data=false is_component_build=false is_debug=false target_cpu =&quot;x64&quot; use_goma=false goma_dir=&quot;None&quot; v8_enable_backtrace=true v8_enable_disassembler=true v8_enable_object_print=true v8_enable_verify_heap=true&#39;
-ninja -C out/x64_$NAME.release d8
-</code></pre>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">!/bin/bash</span></span><br><span class="line">VER=$1 </span><br><span class="line">if [ -z $2 ]; then</span><br><span class="line">        NAME=$VER</span><br><span class="line">else</span><br><span class="line">        NAME=$2</span><br><span class="line">fi</span><br><span class="line">cd /path/depot_tools/v8</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">/path/depot_tools/v8 换成自己的路径</span></span><br><span class="line">git reset --hard $VER</span><br><span class="line">gclient sync -D</span><br><span class="line">gn gen out/x64_$NAME.release --args=&#x27;v8_monolithic=true v8_use_external_startup_data=false is_component_build=false is_debug=false target_cpu =&quot;x64&quot; use_goma=false goma_dir=&quot;None&quot; v8_enable_backtrace=true v8_enable_disassembler=true v8_enable_object_print=true v8_enable_verify_heap=true&#x27;</span><br><span class="line">ninja -C out/x64_$NAME.release d8</span><br></pre></td></tr></table></figure>
+
 <p>例，只需替换对应版本号即可</p>
-<pre><code>./build.sh &quot;9.6.180.6&quot;
-</code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./build.sh &quot;9.6.180.6&quot;</span><br></pre></td></tr></table></figure>
+
 <p>编译时间视机器性能而定，本人使用wsl2，编译完成大致需要十多分钟，在可接受范围内</p>
 <p><img src="/img/article/v8-1/325633f1d8bbd92195913fa0aab37c3.png" alt="325633f1d8bbd92195913fa0aab37c3"></p>
 <h4 id="报错处理"><a href="#报错处理" class="headerlink" title="报错处理"></a>报错处理</h4><p>在编译时，若python3版本较新，可能出现报错如下：</p>
-<pre><code class="sh">FAILED: gen/src/inspector/protocol/Forward.h gen/src/inspector/protocol/Protocol.cpp gen/src/inspector/protocol/Protocol.h gen/src/inspector/protocol/Console.cpp gen/src/inspector/protocol/Console.h gen/src/inspector/protocol/Debugger.cpp gen/src/inspector/protocol/Debugger.h gen/src/inspector/protocol/HeapProfiler.cpp gen/src/inspector/protocol/HeapProfiler.h gen/src/inspector/protocol/Profiler.cpp gen/src/inspector/protocol/Profiler.h gen/src/inspector/protocol/Runtime.cpp gen/src/inspector/protocol/Runtime.h gen/src/inspector/protocol/Schema.cpp gen/src/inspector/protocol/Schema.h gen/include/inspector/Debugger.h gen/include/inspector/Runtime.h gen/include/inspector/Schema.h 
-python3 ../../third_party/inspector_protocol/code_generator.py --jinja_dir ../../third_party/ --output_base gen/src/inspector --config ../../src/inspector/inspector_protocol_config.json --inspector_protocol_dir ///third_party/inspector_protocol
-Traceback (most recent call last):
-  File &quot;/home/loorain/v8/v8/out/x64_9.6.180.6.release/../../third_party/inspector_protocol/code_generator.py&quot;, line 702, in &lt;module&gt;
-    main()
-  File &quot;/home/loorain/v8/v8/out/x64_9.6.180.6.release/../../third_party/inspector_protocol/code_generator.py&quot;, line 584, in main
-    jinja_env = initialize_jinja_env(jinja_dir, config.protocol.output, config)
-  File &quot;/home/loorain/v8/v8/out/x64_9.6.180.6.release/../../third_party/inspector_protocol/code_generator.py&quot;, line 190, in initialize_jinja_env
-    import jinja2
-  File &quot;/home/loorain/v8/v8/third_party/jinja2/__init__.py&quot;, line 33, in &lt;module&gt;
-    from jinja2.environment import Environment, Template
-  File &quot;/home/loorain/v8/v8/third_party/jinja2/environment.py&quot;, line 16, in &lt;module&gt;
-    from jinja2.defaults import BLOCK_START_STRING, \
-  File &quot;/home/loorain/v8/v8/third_party/jinja2/defaults.py&quot;, line 32, in &lt;module&gt;
-    from jinja2.tests import TESTS as DEFAULT_TESTS
-  File &quot;/home/loorain/v8/v8/third_party/jinja2/tests.py&quot;, line 13, in &lt;module&gt;
-    from collections import Mapping
-ImportError: cannot import name &#39;Mapping&#39; from &#39;collections&#39;
-</code></pre>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">FAILED: gen/src/inspector/protocol/Forward.h gen/src/inspector/protocol/Protocol.cpp gen/src/inspector/protocol/Protocol.h gen/src/inspector/protocol/Console.cpp gen/src/inspector/protocol/Console.h gen/src/inspector/protocol/Debugger.cpp gen/src/inspector/protocol/Debugger.h gen/src/inspector/protocol/HeapProfiler.cpp gen/src/inspector/protocol/HeapProfiler.h gen/src/inspector/protocol/Profiler.cpp gen/src/inspector/protocol/Profiler.h gen/src/inspector/protocol/Runtime.cpp gen/src/inspector/protocol/Runtime.h gen/src/inspector/protocol/Schema.cpp gen/src/inspector/protocol/Schema.h gen/include/inspector/Debugger.h gen/include/inspector/Runtime.h gen/include/inspector/Schema.h </span><br><span class="line">python3 ../../third_party/inspector_protocol/code_generator.py --jinja_dir ../../third_party/ --output_base gen/src/inspector --config ../../src/inspector/inspector_protocol_config.json --inspector_protocol_dir ///third_party/inspector_protocol</span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File <span class="string">&quot;/home/loorain/v8/v8/out/x64_9.6.180.6.release/../../third_party/inspector_protocol/code_generator.py&quot;</span>, line 702, <span class="keyword">in</span> &lt;module&gt;</span><br><span class="line">    main()</span><br><span class="line">  File <span class="string">&quot;/home/loorain/v8/v8/out/x64_9.6.180.6.release/../../third_party/inspector_protocol/code_generator.py&quot;</span>, line 584, <span class="keyword">in</span> main</span><br><span class="line">    jinja_env = initialize_jinja_env(jinja_dir, config.protocol.output, config)</span><br><span class="line">  File <span class="string">&quot;/home/loorain/v8/v8/out/x64_9.6.180.6.release/../../third_party/inspector_protocol/code_generator.py&quot;</span>, line 190, <span class="keyword">in</span> initialize_jinja_env</span><br><span class="line">    import jinja2</span><br><span class="line">  File <span class="string">&quot;/home/loorain/v8/v8/third_party/jinja2/__init__.py&quot;</span>, line 33, <span class="keyword">in</span> &lt;module&gt;</span><br><span class="line">    from jinja2.environment import Environment, Template</span><br><span class="line">  File <span class="string">&quot;/home/loorain/v8/v8/third_party/jinja2/environment.py&quot;</span>, line 16, <span class="keyword">in</span> &lt;module&gt;</span><br><span class="line">    from jinja2.defaults import BLOCK_START_STRING, \</span><br><span class="line">  File <span class="string">&quot;/home/loorain/v8/v8/third_party/jinja2/defaults.py&quot;</span>, line 32, <span class="keyword">in</span> &lt;module&gt;</span><br><span class="line">    from jinja2.tests import TESTS as DEFAULT_TESTS</span><br><span class="line">  File <span class="string">&quot;/home/loorain/v8/v8/third_party/jinja2/tests.py&quot;</span>, line 13, <span class="keyword">in</span> &lt;module&gt;</span><br><span class="line">    from collections import Mapping</span><br><span class="line">ImportError: cannot import name <span class="string">&#x27;Mapping&#x27;</span> from <span class="string">&#x27;collections&#x27;</span></span><br></pre></td></tr></table></figure>
+
 <p>这个错误是由于在Python 3.10及以后的版本中，<code>collections.Mapping</code>已经被移动到了<code>collections.abc</code>模块中。解决方式：</p>
 <ol>
 <li><strong>定位出错文件</strong>：根据错误信息，出错的文件是<code>jinja2/tests.py</code></li>
@@ -108,186 +179,134 @@ ImportError: cannot import name &#39;Mapping&#39; from &#39;collections&#39;
 <li><strong>修改导入语句</strong>：将<code>from collections import Mapping</code>修改为<code>from collections.abc import Mapping</code></li>
 </ol>
 <h3 id="调试环境"><a href="#调试环境" class="headerlink" title="调试环境"></a>调试环境</h3><p>将文件<code>v8/tools/gdbinit</code>，加入到<code>~/.gdbinit</code>中：</p>
-<pre><code class="shell">┌─[loorain@LAPTOP-Loora1N] - [~/v8/workdir] - [10125]
-└─[$] cat ~/.gdbinit                                                                                                               [9:59:35]
-source /home/loorain/pwndbg/gdbinit.py 
-#source ~/peda/peda.py
-source ~/Pwngdb/pwngdb.py
-source ~/Pwngdb/angelheap/gdbinit.py
-source /home/loorain/v8/v8/tools/gdbinit #这里是v8的路径
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">┌─[loorain@LAPTOP-Loora1N] - [~/v8/workdir] - [10125]</span><br><span class="line">└─[$] cat ~/.gdbinit                                                                                                               [9:59:35]</span><br><span class="line">source /home/loorain/pwndbg/gdbinit.py </span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="built_in">source</span> ~/peda/peda.py</span></span><br><span class="line">source ~/Pwngdb/pwngdb.py</span><br><span class="line">source ~/Pwngdb/angelheap/gdbinit.py</span><br><span class="line">source /home/loorain/v8/v8/tools/gdbinit #这里是v8的路径</span><br><span class="line"></span><br><span class="line">define hook-run</span><br><span class="line">python</span><br><span class="line">import angelheap</span><br><span class="line">angelheap.init_angelheap()</span><br><span class="line">end</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
 
-define hook-run
-python
-import angelheap
-angelheap.init_angelheap()
-end
-end
-</code></pre>
 <h4 id="测试引擎"><a href="#测试引擎" class="headerlink" title="测试引擎"></a>测试引擎</h4><p>首先测试下编译好的引擎能否使用,编写test.js</p>
-<pre><code class="javascript">a = [1];
-%DebugPrint(a);
-%SystemBreak();
-</code></pre>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">a = [<span class="number">1</span>];</span><br><span class="line">%<span class="title class_">DebugPrint</span>(a);</span><br><span class="line">%<span class="title class_">SystemBreak</span>();</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><code>%DebugPrint(x);</code> 打印变量x相关信息</li>
 <li><code>%SystemBreak();</code>抛出中断，使得gdb在此处断点</li>
 </ul>
 <p>在 v8&#x2F;out&#x2F;x64_$name.release 目录下可以找到二进制程序 d8，它才是解析执行 js 代码的引擎。使用d8解析<code>test.js</code>，会报错如下：</p>
-<pre><code class="sh">┌─[loorain@LAPTOP-Loora1N] - [~/v8/workdir] - [10126]
-└─[$] ../v8/out/x64_9.6.180.6.release/d8 test.js                                                             [9:59:47]
-test.js:2: SyntaxError: Unexpected token &#39;%&#39;
-%DebugPrint(a);
-^
-SyntaxError: Unexpected token &#39;%&#39;
-</code></pre>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">┌─[loorain@LAPTOP-Loora1N] - [~/v8/workdir] - [10126]</span><br><span class="line">└─[$] ../v8/out/x64_9.6.180.6.release/d8 test.js                                                             [9:59:47]</span><br><span class="line">test.js:2: SyntaxError: Unexpected token <span class="string">&#x27;%&#x27;</span></span><br><span class="line">%DebugPrint(a);</span><br><span class="line">^</span><br><span class="line">SyntaxError: Unexpected token <span class="string">&#x27;%&#x27;</span></span><br></pre></td></tr></table></figure>
+
 <p>这是由于类似<code>%DebugPrint(a);</code>这样的代码，原生引擎无法直接解析，需要加入参数<code>--allow-natives-syntax</code>，运行结果如下：</p>
-<pre><code class="sh">┌─[loorain@LAPTOP-Loora1N] - [~/v8/workdir] - [10127]
-└─[$] ../v8/out/x64_9.6.180.6.release/d8 test.js --allow-natives-syntax                                                           [10:01:35]
-DebugPrint: 0x3b2608049921: [JSArray]
- - map: 0x3b2608203a41 &lt;Map(PACKED_SMI_ELEMENTS)&gt; [FastProperties]
- - prototype: 0x3b26081cc0e9 &lt;JSArray[0]&gt;
- - elements: 0x3b26081d3181 &lt;FixedArray[1]&gt; [PACKED_SMI_ELEMENTS (COW)]
- - length: 1
- - properties: 0x3b260800222d &lt;FixedArray[0]&gt;
- - All own properties (excluding elements): &#123;
-    0x3b26080048f1: [String] in ReadOnlySpace: #length: 0x3b260814215d &lt;AccessorInfo&gt; (const accessor descriptor), location: descriptor
- &#125;
- - elements: 0x3b26081d3181 &lt;FixedArray[1]&gt; &#123;
-           0: 1
- &#125;
-0x3b2608203a41: [Map]
- - type: JS_ARRAY_TYPE
- - instance size: 16
- - inobject properties: 0
- - elements kind: PACKED_SMI_ELEMENTS
- - unused property fields: 0
- - enum length: invalid
- - back pointer: 0x3b26080023b5 &lt;undefined&gt;
- - prototype_validity cell: 0x3b2608142405 &lt;Cell value= 1&gt;
- - instance descriptors #1: 0x3b26081cc59d &lt;DescriptorArray[1]&gt;
- - transitions #1: 0x3b26081cc5b9 &lt;TransitionArray[4]&gt;Transition array #1:
-     0x3b260800524d &lt;Symbol: (elements_transition_symbol)&gt;: (transition to HOLEY_SMI_ELEMENTS) -&gt; 0x3b2608203ab9 &lt;Map(HOLEY_SMI_ELEMENTS)&gt;
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">┌─[loorain@LAPTOP-Loora1N] - [~/v8/workdir] - [10127]</span><br><span class="line">└─[$] ../v8/out/x64_9.6.180.6.release/d8 test.js --allow-natives-syntax                                                           [10:01:35]</span><br><span class="line">DebugPrint: 0x3b2608049921: [JSArray]</span><br><span class="line"> - map: 0x3b2608203a41 &lt;Map(PACKED_SMI_ELEMENTS)&gt; [FastProperties]</span><br><span class="line"> - prototype: 0x3b26081cc0e9 &lt;JSArray[0]&gt;</span><br><span class="line"> - elements: 0x3b26081d3181 &lt;FixedArray[1]&gt; [PACKED_SMI_ELEMENTS (COW)]</span><br><span class="line"> - length: 1</span><br><span class="line"> - properties: 0x3b260800222d &lt;FixedArray[0]&gt;</span><br><span class="line"> - All own properties (excluding elements): &#123;</span><br><span class="line">    0x3b26080048f1: [String] <span class="keyword">in</span> ReadOnlySpace: <span class="comment">#length: 0x3b260814215d &lt;AccessorInfo&gt; (const accessor descriptor), location: descriptor</span></span><br><span class="line"> &#125;</span><br><span class="line"> - elements: 0x3b26081d3181 &lt;FixedArray[1]&gt; &#123;</span><br><span class="line">           0: 1</span><br><span class="line"> &#125;</span><br><span class="line">0x3b2608203a41: [Map]</span><br><span class="line"> - <span class="built_in">type</span>: JS_ARRAY_TYPE</span><br><span class="line"> - instance size: 16</span><br><span class="line"> - inobject properties: 0</span><br><span class="line"> - elements kind: PACKED_SMI_ELEMENTS</span><br><span class="line"> - unused property fields: 0</span><br><span class="line"> - enum length: invalid</span><br><span class="line"> - back pointer: 0x3b26080023b5 &lt;undefined&gt;</span><br><span class="line"> - prototype_validity cell: 0x3b2608142405 &lt;Cell value= 1&gt;</span><br><span class="line"> - instance descriptors <span class="comment">#1: 0x3b26081cc59d &lt;DescriptorArray[1]&gt;</span></span><br><span class="line"> - transitions <span class="comment">#1: 0x3b26081cc5b9 &lt;TransitionArray[4]&gt;Transition array #1:</span></span><br><span class="line">     0x3b260800524d &lt;Symbol: (elements_transition_symbol)&gt;: (transition to HOLEY_SMI_ELEMENTS) -&gt; 0x3b2608203ab9 &lt;Map(HOLEY_SMI_ELEMENTS)&gt;</span><br><span class="line"></span><br><span class="line"> - prototype: 0x3b26081cc0e9 &lt;JSArray[0]&gt;</span><br><span class="line"> - constructor: 0x3b26081cbe85 &lt;JSFunction Array (sfi = 0x3b260814adc9)&gt;</span><br><span class="line"> - dependent code: 0x3b26080021b9 &lt;Other heap object (WEAK_FIXED_ARRAY_TYPE)&gt;</span><br><span class="line"> - construction counter: 0</span><br><span class="line"></span><br><span class="line">[1]    5022 trace <span class="built_in">trap</span>  ../v8/out/x64_9.6.180.6.release/d8 test.js --allow-natives-syntax</span><br></pre></td></tr></table></figure>
 
- - prototype: 0x3b26081cc0e9 &lt;JSArray[0]&gt;
- - constructor: 0x3b26081cbe85 &lt;JSFunction Array (sfi = 0x3b260814adc9)&gt;
- - dependent code: 0x3b26080021b9 &lt;Other heap object (WEAK_FIXED_ARRAY_TYPE)&gt;
- - construction counter: 0
-
-[1]    5022 trace trap  ../v8/out/x64_9.6.180.6.release/d8 test.js --allow-natives-syntax
-</code></pre>
 <h4 id="调试程序"><a href="#调试程序" class="headerlink" title="调试程序"></a>调试程序</h4><p>接下来就可以使用gdb调试d8引擎</p>
-<pre><code class="sh"> gdb ../v8/out/x64_9.6.180.6.release/d8 
- ...
- pwndbg&gt; r --allow-natives-syntax test.js
- Starting program: /home/loorain/v8/v8/out/x64_9.6.180.6.release/d8 ./test.js  --allow-natives-syntax
-[Thread debugging using libthread_db enabled]
-Using host libthread_db library &quot;/usr/lib/x86_64-linux-gnu/libthread_db.so.1&quot;.
-[New Thread 0x7f692cbb1640 (LWP 11776)]
-[New Thread 0x7f692c3b0640 (LWP 11777)]
-[New Thread 0x7f692bbaf640 (LWP 11778)]
-[New Thread 0x7f692b3ae640 (LWP 11779)]
-[New Thread 0x7f692abad640 (LWP 11780)]
-[New Thread 0x7f692a3ac640 (LWP 11781)]
-[New Thread 0x7f6929bab640 (LWP 11782)]
-[New Thread 0x7f69293aa640 (LWP 11783)]
-[New Thread 0x7f6928ba9640 (LWP 11784)]
-[New Thread 0x7f69283a8640 (LWP 11785)]
-[New Thread 0x7f6927ba7640 (LWP 11786)]
-[New Thread 0x7f69273a6640 (LWP 11787)]
-[New Thread 0x7f6926ba5640 (LWP 11788)]
-[New Thread 0x7f69263a4640 (LWP 11789)]
-[New Thread 0x7f6925ba3640 (LWP 11790)]
-DebugPrint: 0x2e008049931: [JSArray]
- - map: 0x02e008203a41 &lt;Map(PACKED_SMI_ELEMENTS)&gt; [FastProperties]
- - prototype: 0x02e0081cc0e9 &lt;JSArray[0]&gt;
- - elements: 0x02e0081d3181 &lt;FixedArray[1]&gt; [PACKED_SMI_ELEMENTS (COW)]
- - length: 1
- - properties: 0x02e00800222d &lt;FixedArray[0]&gt;
- - All own properties (excluding elements): &#123;
-    0x2e0080048f1: [String] in ReadOnlySpace: #length: 0x02e00814215d &lt;AccessorInfo&gt; (const accessor descriptor), location: descriptor
- &#125;
- - elements: 0x02e0081d3181 &lt;FixedArray[1]&gt; &#123;
-           0: 1
- &#125;
-0x2e008203a41: [Map]
- - type: JS_ARRAY_TYPE
- - instance size: 16
- - inobject properties: 0
- - elements kind: PACKED_SMI_ELEMENTS
- - unused property fields: 0
- - enum length: invalid
- - back pointer: 0x02e0080023b5 &lt;undefined&gt;
- - prototype_validity cell: 0x02e008142405 &lt;Cell value= 1&gt;
- - instance descriptors #1: 0x02e0081cc59d &lt;DescriptorArray[1]&gt;
- - transitions #1: 0x02e0081cc5b9 &lt;TransitionArray[4]&gt;Transition array #1:
-     0x02e00800524d &lt;Symbol: (elements_transition_symbol)&gt;: (transition to HOLEY_SMI_ELEMENTS) -&gt; 0x02e008203ab9 &lt;Map(HOLEY_SMI_ELEMENTS)&gt;
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"> gdb ../v8/out/x64_9.6.180.6.release/d8 </span><br><span class="line"> ...</span><br><span class="line"> pwndbg&gt; r --allow-natives-syntax test.js</span><br><span class="line"> Starting program: /home/loorain/v8/v8/out/x64_9.6.180.6.release/d8 ./test.js  --allow-natives-syntax</span><br><span class="line">[Thread debugging using libthread_db enabled]</span><br><span class="line">Using host libthread_db library <span class="string">&quot;/usr/lib/x86_64-linux-gnu/libthread_db.so.1&quot;</span>.</span><br><span class="line">[New Thread 0x7f692cbb1640 (LWP 11776)]</span><br><span class="line">[New Thread 0x7f692c3b0640 (LWP 11777)]</span><br><span class="line">[New Thread 0x7f692bbaf640 (LWP 11778)]</span><br><span class="line">[New Thread 0x7f692b3ae640 (LWP 11779)]</span><br><span class="line">[New Thread 0x7f692abad640 (LWP 11780)]</span><br><span class="line">[New Thread 0x7f692a3ac640 (LWP 11781)]</span><br><span class="line">[New Thread 0x7f6929bab640 (LWP 11782)]</span><br><span class="line">[New Thread 0x7f69293aa640 (LWP 11783)]</span><br><span class="line">[New Thread 0x7f6928ba9640 (LWP 11784)]</span><br><span class="line">[New Thread 0x7f69283a8640 (LWP 11785)]</span><br><span class="line">[New Thread 0x7f6927ba7640 (LWP 11786)]</span><br><span class="line">[New Thread 0x7f69273a6640 (LWP 11787)]</span><br><span class="line">[New Thread 0x7f6926ba5640 (LWP 11788)]</span><br><span class="line">[New Thread 0x7f69263a4640 (LWP 11789)]</span><br><span class="line">[New Thread 0x7f6925ba3640 (LWP 11790)]</span><br><span class="line">DebugPrint: 0x2e008049931: [JSArray]</span><br><span class="line"> - map: 0x02e008203a41 &lt;Map(PACKED_SMI_ELEMENTS)&gt; [FastProperties]</span><br><span class="line"> - prototype: 0x02e0081cc0e9 &lt;JSArray[0]&gt;</span><br><span class="line"> - elements: 0x02e0081d3181 &lt;FixedArray[1]&gt; [PACKED_SMI_ELEMENTS (COW)]</span><br><span class="line"> - length: 1</span><br><span class="line"> - properties: 0x02e00800222d &lt;FixedArray[0]&gt;</span><br><span class="line"> - All own properties (excluding elements): &#123;</span><br><span class="line">    0x2e0080048f1: [String] <span class="keyword">in</span> ReadOnlySpace: <span class="comment">#length: 0x02e00814215d &lt;AccessorInfo&gt; (const accessor descriptor), location: descriptor</span></span><br><span class="line"> &#125;</span><br><span class="line"> - elements: 0x02e0081d3181 &lt;FixedArray[1]&gt; &#123;</span><br><span class="line">           0: 1</span><br><span class="line"> &#125;</span><br><span class="line">0x2e008203a41: [Map]</span><br><span class="line"> - <span class="built_in">type</span>: JS_ARRAY_TYPE</span><br><span class="line"> - instance size: 16</span><br><span class="line"> - inobject properties: 0</span><br><span class="line"> - elements kind: PACKED_SMI_ELEMENTS</span><br><span class="line"> - unused property fields: 0</span><br><span class="line"> - enum length: invalid</span><br><span class="line"> - back pointer: 0x02e0080023b5 &lt;undefined&gt;</span><br><span class="line"> - prototype_validity cell: 0x02e008142405 &lt;Cell value= 1&gt;</span><br><span class="line"> - instance descriptors <span class="comment">#1: 0x02e0081cc59d &lt;DescriptorArray[1]&gt;</span></span><br><span class="line"> - transitions <span class="comment">#1: 0x02e0081cc5b9 &lt;TransitionArray[4]&gt;Transition array #1:</span></span><br><span class="line">     0x02e00800524d &lt;Symbol: (elements_transition_symbol)&gt;: (transition to HOLEY_SMI_ELEMENTS) -&gt; 0x02e008203ab9 &lt;Map(HOLEY_SMI_ELEMENTS)&gt;</span><br><span class="line"></span><br><span class="line"> - prototype: 0x02e0081cc0e9 &lt;JSArray[0]&gt;</span><br><span class="line"> - constructor: 0x02e0081cbe85 &lt;JSFunction Array (sfi = 0x2e00814adc9)&gt;</span><br><span class="line"> - dependent code: 0x02e0080021b9 &lt;Other heap object (WEAK_FIXED_ARRAY_TYPE)&gt;</span><br><span class="line"> - construction counter: 0</span><br></pre></td></tr></table></figure>
 
- - prototype: 0x02e0081cc0e9 &lt;JSArray[0]&gt;
- - constructor: 0x02e0081cbe85 &lt;JSFunction Array (sfi = 0x2e00814adc9)&gt;
- - dependent code: 0x02e0080021b9 &lt;Other heap object (WEAK_FIXED_ARRAY_TYPE)&gt;
- - construction counter: 0
-</code></pre>
 <p>在刚刚添加的v8的<code>gbdinit</code>中，包含了一下新的辅助指令，如<code>job</code>，可以用来输出对象信息。其他具体命令可以查看刚刚的<code>gdbinit</code>文件，或者网址<a target="_blank" rel="noopener" href="https://chromium.googlesource.com/v8/v8/+/refs/heads/main/tools/gdbinit%EF%BC%8C%E5%9C%A8%E5%85%B6%E4%B8%AD%E7%9A%84define%E9%83%A8%E5%88%86%E6%9C%89%E6%89%80%E5%AE%9A%E4%B9%89%E3%80%82">https://chromium.googlesource.com/v8/v8/+/refs/heads/main/tools/gdbinit，在其中的define部分有所定义。</a></p>
 <p><img src="/img/article/v8-1/image-20240724110559162-1721790381538-2.png" alt="image-20240724110559162"></p>
 <p><img src="/img/article/v8-1/image-20240724110614457.png" alt="image-20240724110614457"></p>
 <p>用<code>job</code>输出刚刚的a可以得到结果</p>
-<pre><code class="sh">pwndbg&gt; job 0x2e008049931
-0x2e008049931: [JSArray]
- - map: 0x02e008203a41 &lt;Map(PACKED_SMI_ELEMENTS)&gt; [FastProperties]
- - prototype: 0x02e0081cc0e9 &lt;JSArray[0]&gt;
- - elements: 0x02e0081d3181 &lt;FixedArray[1]&gt; [PACKED_SMI_ELEMENTS (COW)]
- - length: 1
- - properties: 0x02e00800222d &lt;FixedArray[0]&gt;
- - All own properties (excluding elements): &#123;
-    0x2e0080048f1: [String] in ReadOnlySpace: #length: 0x02e00814215d &lt;AccessorInfo&gt; (const accessor descriptor), location: descriptor
- &#125;
- - elements: 0x02e0081d3181 &lt;FixedArray[1]&gt; &#123;
-           0: 1
- &#125;
-</code></pre>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">pwndbg&gt; job 0x2e008049931</span><br><span class="line">0x2e008049931: [JSArray]</span><br><span class="line"> - map: 0x02e008203a41 &lt;Map(PACKED_SMI_ELEMENTS)&gt; [FastProperties]</span><br><span class="line"> - prototype: 0x02e0081cc0e9 &lt;JSArray[0]&gt;</span><br><span class="line"> - elements: 0x02e0081d3181 &lt;FixedArray[1]&gt; [PACKED_SMI_ELEMENTS (COW)]</span><br><span class="line"> - length: 1</span><br><span class="line"> - properties: 0x02e00800222d &lt;FixedArray[0]&gt;</span><br><span class="line"> - All own properties (excluding elements): &#123;</span><br><span class="line">    0x2e0080048f1: [String] <span class="keyword">in</span> ReadOnlySpace: <span class="comment">#length: 0x02e00814215d &lt;AccessorInfo&gt; (const accessor descriptor), location: descriptor</span></span><br><span class="line"> &#125;</span><br><span class="line"> - elements: 0x02e0081d3181 &lt;FixedArray[1]&gt; &#123;</span><br><span class="line">           0: 1</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
 <p>这里有经验的话，可以看到我们job查看的地址并不符合常理，末尾居然为1。这是因为使用job命令的时候，其地址要是其真实地址+1，也就是说，在上面的样例中，其真实地址为：<code>0x2e008049930</code></p>
-<pre><code class="sh">pwndbg&gt; x/4gx 0x2e008049930
-0x2e008049930:  0x0800222d08203a41      0x00000002081d3181
-0x2e008049940:  0x0000000000000000      0x0000000000000000
-</code></pre>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">pwndbg&gt; x/4gx 0x2e008049930</span><br><span class="line">0x2e008049930:  0x0800222d08203a41      0x00000002081d3181</span><br><span class="line">0x2e008049940:  0x0000000000000000      0x0000000000000000</span><br></pre></td></tr></table></figure>
+
 <p>如果使用job命令，后面跟着的是其真实地址，会被解析成SMI（small integer）类型：</p>
-<pre><code class="sh">pwndbg&gt; job 0x2e008049930
-Smi: 0x4024c98 (67259544)
-</code></pre>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pwndbg&gt; job 0x2e008049930</span><br><span class="line">Smi: 0x4024c98 (67259544)</span><br></pre></td></tr></table></figure>
+
 <blockquote>
 <p>另外可以注意到 <strong>0x4024c98 * 2</strong>正好等于地址的低32位 <strong>0x8049930</strong></p>
 <p>这是因为job将其解析成了一个数据，v8 储存数据的方式有些特别，它会让这些整数都乘以二，也包括数组的长度，因此当 job 认为该地址是一个数字类型时，会将其除以二后的值当作本来的值，或者说，将原值左移一位后储存</p>
 </blockquote>
 <p>基本调试环境到这种程度就可以了。</p>
 
-        </div>
+</div> 
 
+<script>
+    window.onload = detectors();
+</script>
+    <div class="post-footer">
+    <div class="h-line-primary"></div>
+    <nav class="post-nav">
+        <div class="prev-item">
+           
+                <div class="icon arrow-left"></div>
+                <div class="post-link">
+                    <a href="/2024/07/25/%E3%80%90V8%E3%80%91%E9%80%9A%E7%94%A8%E5%88%A9%E7%94%A8%E9%93%BE%E7%A0%94%E7%A9%B6/">Prev</a>
+                </div>
+            
+        </div>
+        <div class="next-item">
+            
+                <div class="icon arrow-right"></div>
+                <div class="post-link">
+                  <a href="/2023/12/21/%E3%80%90cloud%E3%80%91k8s%20kubectl%20%E8%AE%BF%E9%97%AEAPI%20%E5%87%BA%E7%8E%B0connection%20reser%20by%20peer/">Next</a>  
+                </div>  
+            
+        </div>
+    </nav>
+</div>
+
+    
+      <div class="post-comment">
+
+     
+
+     
+    
     
 
 </div>
-                <div class="footer">
-    <span>Copyright © 2022 Loora1N&#39;s Blog | 鹭雨</span>
-    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
+     
+  
+</article>
+        </div>
+      </div>
+      
+      <div class="footer">
+    <div class="flex-container">
+        <div class="footer-text">
+            
+            
+            
+                Powered by <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> & <a target="_blank" rel="noopener" href="https://github.com/zoeingwingkei/frame/">Frame</a>
+                
+        </div>
+    </div>
 </div>
 
+    </div>
 
-<link rel="stylesheet" href="/css/a11y-dark.min.css">
-
-
-<script src="/js/highlight.min.js"></script>
-
-
-<script src="/js/highlightjs-line-numbers.js"></script>
-
-
-<script>
-    hljs.initHighlightingOnLoad();
-    hljs.initLineNumbersOnLoad();
-</script>
-
+    
+      <div class="search-popup">
+    <div class="search-popup-overlay">  
+    </div>
+    <div class="search-popup-window" >
+        <div class="search-header">
+            <div class="search-input-container">
+              <input autocomplete="off" autocapitalize="off" maxlength="80"
+                     placeholder="Search Anything" spellcheck="false"
+                     type="search" class="search-input">
+            </div>
+            <div class="search-close-btn">
+                <div class="icon close-btn"></div>
             </div>
         </div>
-    <!-- hexo injector body_end start -->
+        <div class="search-result-container">
+        </div>
+    </div>
+</div>
+
+<script>
+    const searchConfig = {
+        path             : "/search.xml",
+        top_n_per_article: "1",
+        unescape         : "false",
+        trigger: "auto",
+        preload: "false"
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js"></script>
+<script src="/js/search.js"></script>
+    
+    
+
+  <!-- hexo injector body_end start -->
   <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
   <script data-pjax>
         function GithubCalendarConfig(){

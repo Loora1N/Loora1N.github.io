@@ -1,48 +1,153 @@
 <!DOCTYPE html>
-<html>
-    <head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
-    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
-    <title>Loora1N&#39;s Blog | 鹭雨 | </title>
-    
-<link rel="stylesheet" href="/css/reset.css">
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    
-<link rel="stylesheet" href="/css/style.css">
+    <meta name="author" content="Loora1N">
 
-    
-<link rel="stylesheet" href="/css/markdown.css">
 
-    
-<link rel="stylesheet" href="/css/fonts.css">
 
-<meta name="generator" content="Hexo 6.2.0"></head>
-    <body>
-        <div class="paper">
-            <div class="paper-main">
-                
-                    <div class="post-header">
-    <a class="logo" href="/">Loora1N&#39;s Blog | 鹭雨</a>
-    <a class="go-home" href="/">
-        <svg width="8" height="14" viewBox="0 0 8 14">
-            <path d="M7 1L1 7l6 6" stroke="#000" stroke-width="2" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-    </a>
+    <meta name="description" content="Blog of Loora1N">
+
+
+
+
+
+<title>setcontext &amp; SROP | Loora1N&#39;s Blog | 鹭雨</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Roboto+Mono&display=swap');
+</style>
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/menu.js"></script>
+    
+    <script src="/js/highlight.min.js"></script>
+    
+    <script src="/js/highlightjs-line-numbers.js"></script>
+    
+    <script src="/js/format.js"></script>
+    
+    <script src="/js/search.js"></script>
+    
+
+
+
+
+
+
+
+
+
+
+  <meta name="generator" content="Hexo 6.2.0"></head>
+  <body>
+    <div class="mask-border">
+    </div>
+
+    <div class="wrapper">
+
+      <div class="header">
+  <div class="flex-container">
+    <div class="header-inner">
+      <div class="site-brand-container">
+        <a href="/">
+          
+            Loora1N&#39;s Blog | 鹭雨
+          
+        </a>
+      </div>
+      <div id="menu-btn" class="menu-btn" onclick="toggleMenu()">
+        Menu
+      </div>
+      <nav class="site-nav">
+        <ul class="menu-list">
+          
+            
+              <li class="menu-item">
+                <a href="/">首页</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/archives/">索引</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/about/">述己</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/links/">友链</a>
+              </li> 
+                   
+          
+          
+            <li class="menu-item search-btn">
+              <a href="#">Search</a>
+            </li>
+          
+        </ul>
+      </nav>
+    </div>
+  </div>
 </div>
-                
-                <div class="post-main">
 
-    
-    
-        <div class="post-main-title">
-            setcontext &amp; SROP
+
+      <div class="main">
+        <div class="flex-container">
+          <article id="post">
+
+  
+    <div class="post-head">
+    <div class="post-info">
+        <div class="tag-list">
+            
         </div>
-        <div class="post-meta">
-            2022-06-05
+        <div class="post-title">
+            
+            
+                setcontext &amp; SROP
+            
+            
         </div>
-        <div class="post-md">
-            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><blockquote>
+        <span class="post-date">
+            6月 5, 2022
+        </span>
+    </div>
+    <div class="post-img">
+        
+            <div class="h-line-primary"></div>
+              
+    </div>
+</div>
+    <div class="post-content">
+    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><blockquote>
 <p>SROP(Sigreturn Oriented Programming) 于 2014 年被 Vrije Universiteit Amsterdam 的 Erik Bosman 提出，其相关研究<strong>Framing Signals — A Return to Portable Shellcode</strong> 其中相关的 paper 以及如下：<br><a target="_blank" rel="noopener" href="https://www.ieee-security.org/TC/SP2014/papers/FramingSignals-AReturntoPortableShellcode.pdf">paper</a></p>
 </blockquote>
 <h2 id="机制详解"><a href="#机制详解" class="headerlink" title="机制详解"></a>机制详解</h2><p>signal 机制是类 unix 系统中进程之间相互传递信息的一种方法。一般，我们也称其为软中断信号，或者软中断。比如说，进程之间可以通过系统调用 kill 来发送软中断信号。一般来说，信号机制常见的步骤如下图所示：</p>
@@ -57,85 +162,11 @@
 <p><img src="/img/article/srop/srop3.png" alt="Untitled"></p>
 <p>我们可以看到，从指令<code>mov rsp, [rdi+0A0h]</code>开始，便是一连串对于寄存器的恢复操作。而且结构由Signal Frame结构体实现，以下是结构源码</p>
 <p><strong>X86</strong></p>
-<pre><code class="c">struct sigcontext
-&#123;
-  unsigned short gs, __gsh;
-  unsigned short fs, __fsh;
-  unsigned short es, __esh;
-  unsigned short ds, __dsh;
-  unsigned long edi;
-  unsigned long esi;
-  unsigned long ebp;
-  unsigned long esp;
-  unsigned long ebx;
-  unsigned long edx;
-  unsigned long ecx;
-  unsigned long eax;
-  unsigned long trapno;
-  unsigned long err;
-  unsigned long eip;
-  unsigned short cs, __csh;
-  unsigned long eflags;
-  unsigned long esp_at_signal;
-  unsigned short ss, __ssh;
-  struct _fpstate * fpstate;
-  unsigned long oldmask;
-  unsigned long cr2;
-&#125;;
-</code></pre>
-<p><strong>X64</strong></p>
-<pre><code class="c">struct _fpstate
-&#123;
-  /* FPU environment matching the 64-bit FXSAVE layout.  */
-  __uint16_t        cwd;
-  __uint16_t        swd;
-  __uint16_t        ftw;
-  __uint16_t        fop;
-  __uint64_t        rip;
-  __uint64_t        rdp;
-  __uint32_t        mxcsr;
-  __uint32_t        mxcr_mask;
-  struct _fpxreg    _st[8];
-  struct _xmmreg    _xmm[16];
-  __uint32_t        padding[24];
-&#125;;
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sigcontext</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">  <span class="type">unsigned</span> <span class="type">short</span> gs, __gsh;</span><br><span class="line">  <span class="type">unsigned</span> <span class="type">short</span> fs, __fsh;</span><br><span class="line">  <span class="type">unsigned</span> <span class="type">short</span> es, __esh;</span><br><span class="line">  <span class="type">unsigned</span> <span class="type">short</span> ds, __dsh;</span><br><span class="line">  <span class="type">unsigned</span> <span class="type">long</span> edi;</span><br><span class="line">  <span class="type">unsigned</span> <span class="type">long</span> esi;</span><br><span class="line">  <span class="type">unsigned</span> <span class="type">long</span> ebp;</span><br><span class="line">  <span class="type">unsigned</span> <span class="type">long</span> esp;</span><br><span class="line">  <span class="type">unsigned</span> <span class="type">long</span> ebx;</span><br><span class="line">  <span class="type">unsigned</span> <span class="type">long</span> edx;</span><br><span class="line">  <span class="type">unsigned</span> <span class="type">long</span> ecx;</span><br><span class="line">  <span class="type">unsigned</span> <span class="type">long</span> eax;</span><br><span class="line">  <span class="type">unsigned</span> <span class="type">long</span> trapno;</span><br><span class="line">  <span class="type">unsigned</span> <span class="type">long</span> err;</span><br><span class="line">  <span class="type">unsigned</span> <span class="type">long</span> eip;</span><br><span class="line">  <span class="type">unsigned</span> <span class="type">short</span> cs, __csh;</span><br><span class="line">  <span class="type">unsigned</span> <span class="type">long</span> eflags;</span><br><span class="line">  <span class="type">unsigned</span> <span class="type">long</span> esp_at_signal;</span><br><span class="line">  <span class="type">unsigned</span> <span class="type">short</span> ss, __ssh;</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> _<span class="title">fpstate</span> * <span class="title">fpstate</span>;</span></span><br><span class="line">  <span class="type">unsigned</span> <span class="type">long</span> oldmask;</span><br><span class="line">  <span class="type">unsigned</span> <span class="type">long</span> cr2;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 
-struct sigcontext
-&#123;
-  __uint64_t r8;
-  __uint64_t r9;
-  __uint64_t r10;
-  __uint64_t r11;
-  __uint64_t r12;
-  __uint64_t r13;
-  __uint64_t r14;
-  __uint64_t r15;
-  __uint64_t rdi;
-  __uint64_t rsi;
-  __uint64_t rbp;
-  __uint64_t rbx;
-  __uint64_t rdx;
-  __uint64_t rax;
-  __uint64_t rcx;
-  __uint64_t rsp;
-  __uint64_t rip;
-  __uint64_t eflags;
-  unsigned short cs;
-  unsigned short gs;
-  unsigned short fs;
-  unsigned short __pad0;
-  __uint64_t err;
-  __uint64_t trapno;
-  __uint64_t oldmask;
-  __uint64_t cr2;
-  __extension__ union
-    &#123;
-      struct _fpstate * fpstate;
-      __uint64_t __fpstate_word;
-    &#125;;
-  __uint64_t __reserved1 [8];
-&#125;;
-</code></pre>
+<p><strong>X64</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> _<span class="title">fpstate</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">  <span class="comment">/* FPU environment matching the 64-bit FXSAVE layout.  */</span></span><br><span class="line">  <span class="type">__uint16_t</span>        cwd;</span><br><span class="line">  <span class="type">__uint16_t</span>        swd;</span><br><span class="line">  <span class="type">__uint16_t</span>        ftw;</span><br><span class="line">  <span class="type">__uint16_t</span>        fop;</span><br><span class="line">  <span class="type">__uint64_t</span>        rip;</span><br><span class="line">  <span class="type">__uint64_t</span>        rdp;</span><br><span class="line">  <span class="type">__uint32_t</span>        mxcsr;</span><br><span class="line">  <span class="type">__uint32_t</span>        mxcr_mask;</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> _<span class="title">fpxreg</span>    _<span class="title">st</span>[8];</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> _<span class="title">xmmreg</span>    _<span class="title">xmm</span>[16];</span></span><br><span class="line">  <span class="type">__uint32_t</span>        padding[<span class="number">24</span>];</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sigcontext</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">  <span class="type">__uint64_t</span> r8;</span><br><span class="line">  <span class="type">__uint64_t</span> r9;</span><br><span class="line">  <span class="type">__uint64_t</span> r10;</span><br><span class="line">  <span class="type">__uint64_t</span> r11;</span><br><span class="line">  <span class="type">__uint64_t</span> r12;</span><br><span class="line">  <span class="type">__uint64_t</span> r13;</span><br><span class="line">  <span class="type">__uint64_t</span> r14;</span><br><span class="line">  <span class="type">__uint64_t</span> r15;</span><br><span class="line">  <span class="type">__uint64_t</span> rdi;</span><br><span class="line">  <span class="type">__uint64_t</span> rsi;</span><br><span class="line">  <span class="type">__uint64_t</span> rbp;</span><br><span class="line">  <span class="type">__uint64_t</span> rbx;</span><br><span class="line">  <span class="type">__uint64_t</span> rdx;</span><br><span class="line">  <span class="type">__uint64_t</span> rax;</span><br><span class="line">  <span class="type">__uint64_t</span> rcx;</span><br><span class="line">  <span class="type">__uint64_t</span> rsp;</span><br><span class="line">  <span class="type">__uint64_t</span> rip;</span><br><span class="line">  <span class="type">__uint64_t</span> eflags;</span><br><span class="line">  <span class="type">unsigned</span> <span class="type">short</span> cs;</span><br><span class="line">  <span class="type">unsigned</span> <span class="type">short</span> gs;</span><br><span class="line">  <span class="type">unsigned</span> <span class="type">short</span> fs;</span><br><span class="line">  <span class="type">unsigned</span> <span class="type">short</span> __pad0;</span><br><span class="line">  <span class="type">__uint64_t</span> err;</span><br><span class="line">  <span class="type">__uint64_t</span> trapno;</span><br><span class="line">  <span class="type">__uint64_t</span> oldmask;</span><br><span class="line">  <span class="type">__uint64_t</span> cr2;</span><br><span class="line">  __extension__ <span class="class"><span class="keyword">union</span></span></span><br><span class="line"><span class="class">    &#123;</span></span><br><span class="line">      <span class="class"><span class="keyword">struct</span> _<span class="title">fpstate</span> * <span class="title">fpstate</span>;</span></span><br><span class="line">      <span class="type">__uint64_t</span> __fpstate_word;</span><br><span class="line">    &#125;;</span><br><span class="line">  <span class="type">__uint64_t</span> __reserved1 [<span class="number">8</span>];</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
 <h2 id="攻击方式"><a href="#攻击方式" class="headerlink" title="攻击方式"></a>攻击方式</h2><h3 id="直接getshell"><a href="#直接getshell" class="headerlink" title="直接getshell"></a>直接getshell</h3><p><strong>示意图</strong></p>
 <p><img src="/img/article/srop/srop4.png" alt="Untitled"></p>
 <p>我们可以直接在栈上伪造Signal Frame，利用syscall(0xF)来触发对于伪造寄存器的恢复，在<code>setcontext</code> 执行完毕后，便会getshell（或利用栈转移到其他地址也可以，但无论怎样都要保证在syscall时，rsp需指向Fake Frame 的开头)</p>
@@ -146,34 +177,98 @@ struct sigcontext
 <h3 id="堆中直接利用setcontext"><a href="#堆中直接利用setcontext" class="headerlink" title="堆中直接利用setcontext"></a>堆中直接利用setcontext</h3><p>在面对堆题目时，我们很难直接在栈上构造内容并且控制rsp指向frame开头。此时可以直接通过劫持hook为<code>setcontext+53</code> 处(<strong>mov rsp, [rdi+0A0h]</strong>)，直接触发对于寄存器的一系列pop操作。且由于free时，rip指向chunk的mem域，那么我们只需要在将要free的chunk里写上Fake Frame，并合理控制与rip的距离即可。</p>
 <h2 id="例题"><a href="#例题" class="headerlink" title="例题"></a>例题</h2><p>平台题目SROP、 ciscn 2021 silverwolf</p>
 
-        </div>
+</div> 
 
+<script>
+    window.onload = detectors();
+</script>
+    <div class="post-footer">
+    <div class="h-line-primary"></div>
+    <nav class="post-nav">
+        <div class="prev-item">
+           
+                <div class="icon arrow-left"></div>
+                <div class="post-link">
+                    <a href="/2022/06/05/QEMU%20&amp;%20arm%20%E7%AE%80%E6%98%93pwn%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/">Prev</a>
+                </div>
+            
+        </div>
+        <div class="next-item">
+            
+                <div class="icon arrow-right"></div>
+                <div class="post-link">
+                  <a href="/2022/06/05/%E3%80%8A%E6%A0%BC%E8%B0%83%EF%BC%9A%E7%A4%BE%E4%BC%9A%E7%AD%89%E7%BA%A7%E4%B8%8E%E7%94%9F%E6%B4%BB%E5%93%81%E5%91%B3%E3%80%8B/">Next</a>  
+                </div>  
+            
+        </div>
+    </nav>
+</div>
+
+    
+      <div class="post-comment">
+
+     
+
+     
+    
     
 
 </div>
-                <div class="footer">
-    <span>Copyright © 2022 Loora1N&#39;s Blog | 鹭雨</span>
-    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
+     
+  
+</article>
+        </div>
+      </div>
+      
+      <div class="footer">
+    <div class="flex-container">
+        <div class="footer-text">
+            
+            
+            
+                Powered by <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> & <a target="_blank" rel="noopener" href="https://github.com/zoeingwingkei/frame/">Frame</a>
+                
+        </div>
+    </div>
 </div>
 
+    </div>
 
-<link rel="stylesheet" href="/css/a11y-dark.min.css">
-
-
-<script src="/js/highlight.min.js"></script>
-
-
-<script src="/js/highlightjs-line-numbers.js"></script>
-
-
-<script>
-    hljs.initHighlightingOnLoad();
-    hljs.initLineNumbersOnLoad();
-</script>
-
+    
+      <div class="search-popup">
+    <div class="search-popup-overlay">  
+    </div>
+    <div class="search-popup-window" >
+        <div class="search-header">
+            <div class="search-input-container">
+              <input autocomplete="off" autocapitalize="off" maxlength="80"
+                     placeholder="Search Anything" spellcheck="false"
+                     type="search" class="search-input">
+            </div>
+            <div class="search-close-btn">
+                <div class="icon close-btn"></div>
             </div>
         </div>
-    <!-- hexo injector body_end start -->
+        <div class="search-result-container">
+        </div>
+    </div>
+</div>
+
+<script>
+    const searchConfig = {
+        path             : "/search.xml",
+        top_n_per_article: "1",
+        unescape         : "false",
+        trigger: "auto",
+        preload: "false"
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js"></script>
+<script src="/js/search.js"></script>
+    
+    
+
+  <!-- hexo injector body_end start -->
   <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
   <script data-pjax>
         function GithubCalendarConfig(){

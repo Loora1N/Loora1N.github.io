@@ -1,167 +1,263 @@
 <!DOCTYPE html>
-<html>
-    <head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
-    <link rel="alternate icon" type="image/png" href="/img/favicon.png">
-    <title>Loora1N&#39;s Blog | 鹭雨 | </title>
-    
-<link rel="stylesheet" href="/css/reset.css">
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    
-<link rel="stylesheet" href="/css/style.css">
+    <meta name="author" content="Loora1N">
 
-    
-<link rel="stylesheet" href="/css/markdown.css">
 
-    
-<link rel="stylesheet" href="/css/fonts.css">
 
-<meta name="generator" content="Hexo 6.2.0"></head>
-    <body>
-        <div class="paper">
-            <div class="paper-main">
-                
-                    <div class="post-header">
-    <a class="logo" href="/">Loora1N&#39;s Blog | 鹭雨</a>
-    <a class="go-home" href="/">
-        <svg width="8" height="14" viewBox="0 0 8 14">
-            <path d="M7 1L1 7l6 6" stroke="#000" stroke-width="2" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-    </a>
+    <meta name="description" content="Blog of Loora1N">
+
+
+
+
+
+<title>Kernel-pwnbase详解 | Loora1N&#39;s Blog | 鹭雨</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Roboto+Mono&display=swap');
+</style>
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/menu.js"></script>
+    
+    <script src="/js/highlight.min.js"></script>
+    
+    <script src="/js/highlightjs-line-numbers.js"></script>
+    
+    <script src="/js/format.js"></script>
+    
+    <script src="/js/search.js"></script>
+    
+
+
+
+
+
+
+
+
+
+
+  <meta name="generator" content="Hexo 6.2.0"></head>
+  <body>
+    <div class="mask-border">
+    </div>
+
+    <div class="wrapper">
+
+      <div class="header">
+  <div class="flex-container">
+    <div class="header-inner">
+      <div class="site-brand-container">
+        <a href="/">
+          
+            Loora1N&#39;s Blog | 鹭雨
+          
+        </a>
+      </div>
+      <div id="menu-btn" class="menu-btn" onclick="toggleMenu()">
+        Menu
+      </div>
+      <nav class="site-nav">
+        <ul class="menu-list">
+          
+            
+              <li class="menu-item">
+                <a href="/">首页</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/archives/">索引</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/about/">述己</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/links/">友链</a>
+              </li> 
+                   
+          
+          
+            <li class="menu-item search-btn">
+              <a href="#">Search</a>
+            </li>
+          
+        </ul>
+      </nav>
+    </div>
+  </div>
 </div>
-                
-                <div class="post-main">
 
-    
-    
-        <div class="post-main-title">
-            Kernel-pwnbase详解
+
+      <div class="main">
+        <div class="flex-container">
+          <article id="post">
+
+  
+    <div class="post-head">
+    <div class="post-info">
+        <div class="tag-list">
+            
         </div>
-        <div class="post-meta">
-            2022-10-18
+        <div class="post-title">
+            
+            
+                Kernel-pwnbase详解
+            
+            
         </div>
-        <div class="post-md">
-            <blockquote>
+        <span class="post-date">
+            10月 18, 2022
+        </span>
+    </div>
+    <div class="post-img">
+        
+            <div class="h-line-primary"></div>
+              
+    </div>
+</div>
+    <div class="post-content">
+    <blockquote>
 <p>参加starnewctf week4后，想要复现一道kernel的题。网上基本找不到Kernel-pwn的base，因此做了这个pwnbase用于在ctfd上提供动态kernel题目。<br>base下载地址<a target="_blank" rel="noopener" href="https://github.com/Loora1N/pwnbase/tree/main/kernelbase">kernelbase</a></p>
 </blockquote>
-<h2 id="Dockfile"><a href="#Dockfile" class="headerlink" title="Dockfile"></a>Dockfile</h2><pre><code class="dockerfile">FROM ubuntu:20.04
+<h2 id="Dockfile"><a href="#Dockfile" class="headerlink" title="Dockfile"></a>Dockfile</h2><figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> ubuntu:<span class="number">20.04</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> sed -i <span class="string">&quot;s/http:\/\/archive.ubuntu.com/http:\/\/mirrors.tuna.tsinghua.edu.cn/g&quot;</span> /etc/apt/sources.list &amp;&amp; \</span></span><br><span class="line"><span class="language-bash">    apt-get update &amp;&amp; apt-get -y dist-upgrade &amp;&amp; \</span></span><br><span class="line"><span class="language-bash">    DEBIAN_FRONTEND=noninteractive apt-get install -y lib32z1 xinetd git libglib2.0-dev libfdt-dev libpixman-1-dev zlib1g-dev qemu qemu-system-x86</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> useradd -m ctf</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="language-bash"> /home/ctf</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> ./ctf.xinetd /etc/xinetd.d/ctf</span></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> ./start.sh /start.sh</span></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> <span class="built_in">echo</span> <span class="string">&quot;Blocked by ctf_xinetd&quot;</span> &gt; /etc/banner_fail</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> <span class="built_in">chmod</span> +x /start.sh</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> ./files/ /home/ctf/</span></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> <span class="built_in">chown</span> -R root:ctf /home/ctf &amp;&amp; \</span></span><br><span class="line"><span class="language-bash">    <span class="built_in">chmod</span> -R 750 /home/ctf</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">CMD</span><span class="language-bash"> [<span class="string">&quot;/start.sh&quot;</span>]</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">EXPOSE</span> <span class="number">9999</span></span><br></pre></td></tr></table></figure>
 
-RUN sed -i &quot;s/http:\/\/archive.ubuntu.com/http:\/\/mirrors.tuna.tsinghua.edu.cn/g&quot; /etc/apt/sources.list &amp;&amp; \
-    apt-get update &amp;&amp; apt-get -y dist-upgrade &amp;&amp; \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y lib32z1 xinetd git libglib2.0-dev libfdt-dev libpixman-1-dev zlib1g-dev qemu qemu-system-x86
-
-RUN useradd -m ctf
-
-WORKDIR /home/ctf
-
-COPY ./ctf.xinetd /etc/xinetd.d/ctf
-COPY ./start.sh /start.sh
-RUN echo &quot;Blocked by ctf_xinetd&quot; &gt; /etc/banner_fail
-
-RUN chmod +x /start.sh
-
-COPY ./files/ /home/ctf/
-RUN chown -R root:ctf /home/ctf &amp;&amp; \
-    chmod -R 750 /home/ctf
-
-CMD [&quot;/start.sh&quot;]
-
-EXPOSE 9999
-</code></pre>
 <p>docker基础是ubuntu20.04，整个dockerfile主要是下载一些关键库，以及对目录权限的管理，最后会调用<code>start.sh</code>, 并且开放9999端口</p>
-<h2 id="start-sh"><a href="#start-sh" class="headerlink" title="start.sh"></a>start.sh</h2><pre><code class="sh">#!/bin/sh
-# Add your startup script
+<h2 id="start-sh"><a href="#start-sh" class="headerlink" title="start.sh"></a>start.sh</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line"><span class="comment"># Add your startup script</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># DO NOT DELETE</span></span><br><span class="line">/etc/init.d/xinetd start;</span><br><span class="line"><span class="built_in">sleep</span> infinity;</span><br></pre></td></tr></table></figure>
 
-# DO NOT DELETE
-/etc/init.d/xinetd start;
-sleep infinity;
-</code></pre>
 <p>东西很短，其实就是调用<code>ctf.xinetd</code></p>
-<h2 id="ctf-xinetd"><a href="#ctf-xinetd" class="headerlink" title="ctf.xinetd"></a>ctf.xinetd</h2><pre><code>service ctf
-&#123;
-    disable = no
-    socket_type = stream
-    protocol    = tcp
-    wait        = no
-    user        = root
-    type        = UNLISTED
-    port        = 9999
-    bind        = 0.0.0.0
-    server      = /usr/sbin/chroot
-    # replace helloworld to your program
-    server_args = --userspec=1000:1000 / ./home/ctf/helloworld
-    banner_fail = /etc/banner_fail
-    # safety options
-    per_source	= 10 # the maximum instances of this service per source IP address
-    rlimit_cpu	= 20 # the maximum number of CPU seconds that the service may use
-    #rlimit_as  = 1024M # the Address Space resource limit for the service
-    #access_times = 2:00-9:00 12:00-24:00
-&#125;
-</code></pre>
+<h2 id="ctf-xinetd"><a href="#ctf-xinetd" class="headerlink" title="ctf.xinetd"></a>ctf.xinetd</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">service ctf</span><br><span class="line">&#123;</span><br><span class="line">    disable = no</span><br><span class="line">    socket_type = stream</span><br><span class="line">    protocol    = tcp</span><br><span class="line">    wait        = no</span><br><span class="line">    user        = root</span><br><span class="line">    type        = UNLISTED</span><br><span class="line">    port        = 9999</span><br><span class="line">    bind        = 0.0.0.0</span><br><span class="line">    server      = /usr/sbin/chroot</span><br><span class="line">    # replace helloworld to your program</span><br><span class="line">    server_args = --userspec=1000:1000 / ./home/ctf/helloworld</span><br><span class="line">    banner_fail = /etc/banner_fail</span><br><span class="line">    # safety options</span><br><span class="line">    per_source	= 10 # the maximum instances of this service per source IP address</span><br><span class="line">    rlimit_cpu	= 20 # the maximum number of CPU seconds that the service may use</span><br><span class="line">    #rlimit_as  = 1024M # the Address Space resource limit for the service</span><br><span class="line">    #access_times = 2:00-9:00 12:00-24:00</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>核心在13行的后半，nc连接后会调用helloworld程序</p>
-<h2 id="helloworld"><a href="#helloworld" class="headerlink" title="helloworld"></a>helloworld</h2><pre><code class="c">#include &lt;stdio.h&gt;
-#include &lt;stdlib.h&gt;
-#include &lt;unistd.h&gt;
-#include &lt;signal.h&gt;
+<h2 id="helloworld"><a href="#helloworld" class="headerlink" title="helloworld"></a>helloworld</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;signal.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">init</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">    setvbuf(<span class="built_in">stdin</span>, <span class="number">0LL</span>, <span class="number">2</span>, <span class="number">0LL</span>);</span><br><span class="line">    setvbuf(<span class="built_in">stdout</span>, <span class="number">0LL</span>, <span class="number">2</span>, <span class="number">0LL</span>);</span><br><span class="line">    setvbuf(<span class="built_in">stderr</span>, <span class="number">0LL</span>, <span class="number">2</span>, <span class="number">0LL</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">    init();   </span><br><span class="line">    signal(SIGCHLD, SIG_DFL);</span><br><span class="line">    system(<span class="string">&quot;/home/ctf/boot.sh&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-void init()
-&#123;
-    setvbuf(stdin, 0LL, 2, 0LL);
-    setvbuf(stdout, 0LL, 2, 0LL);
-    setvbuf(stderr, 0LL, 2, 0LL);
-&#125;
-
-int main()
-&#123;
-    init();   
-    signal(SIGCHLD, SIG_DFL);
-    system(&quot;/home/ctf/boot.sh&quot;);
-&#125;
-</code></pre>
 <p>这个程序与普通的pwn题目类似，先初始化输入输出，随后调用boot.sh启动qemu即可。signal函数是为了防止system函数可能出现的错误。</p>
-<h2 id="boot-sh"><a href="#boot-sh" class="headerlink" title="boot.sh"></a>boot.sh</h2><pre><code class="sh">#!/bin/sh
+<h2 id="boot-sh"><a href="#boot-sh" class="headerlink" title="boot.sh"></a>boot.sh</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line"></span><br><span class="line">qemu-system-x86_64  \</span><br><span class="line">-m 128M \</span><br><span class="line">-kernel /home/ctf/bzImage \</span><br><span class="line">-initrd /home/ctf/rootfs.cpio \</span><br><span class="line">-monitor /dev/null \</span><br><span class="line">-cpu kvm64,+smep,+smap \</span><br><span class="line">-append <span class="string">&quot;root=/dev/ram console=ttyS0 oops=panic quiet panic=1 kaslr noapic&quot;</span> \</span><br><span class="line">-nographic \</span><br><span class="line">-no-reboot </span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
-qemu-system-x86_64  \
--m 128M \
--kernel /home/ctf/bzImage \
--initrd /home/ctf/rootfs.cpio \
--monitor /dev/null \
--cpu kvm64,+smep,+smap \
--append &quot;root=/dev/ram console=ttyS0 oops=panic quiet panic=1 kaslr noapic&quot; \
--nographic \
--no-reboot 
-</code></pre>
 <p>关键在于 kernel和initrd一定要使用绝对路径，即便它们与<code>helloworld</code>在一个目录下，system调用时依然可能会出现找不到文件的情况出现，建议在 <code>-append</code>里加入 <code>noapic</code> 可以防止出现AIPC错误。</p>
 
-        </div>
+</div> 
 
+<script>
+    window.onload = detectors();
+</script>
+    <div class="post-footer">
+    <div class="h-line-primary"></div>
+    <nav class="post-nav">
+        <div class="prev-item">
+           
+                <div class="icon arrow-left"></div>
+                <div class="post-link">
+                    <a href="/2022/10/20/how2heap%E2%91%A0%20botcake,einherjar,lore/">Prev</a>
+                </div>
+            
+        </div>
+        <div class="next-item">
+            
+                <div class="icon arrow-right"></div>
+                <div class="post-link">
+                  <a href="/2022/10/17/NewStarCTF%20Week4%20PWN%20WP/">Next</a>  
+                </div>  
+            
+        </div>
+    </nav>
+</div>
+
+    
+      <div class="post-comment">
+
+     
+
+     
+    
     
 
 </div>
-                <div class="footer">
-    <span>Copyright © 2022 Loora1N&#39;s Blog | 鹭雨</span>
-    <span>Theme Designed By <a target="_blank" href="https://zheli.design/one-paper">這李設計</a></span>
+     
+  
+</article>
+        </div>
+      </div>
+      
+      <div class="footer">
+    <div class="flex-container">
+        <div class="footer-text">
+            
+            
+            
+                Powered by <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> & <a target="_blank" rel="noopener" href="https://github.com/zoeingwingkei/frame/">Frame</a>
+                
+        </div>
+    </div>
 </div>
 
+    </div>
 
-<link rel="stylesheet" href="/css/a11y-dark.min.css">
-
-
-<script src="/js/highlight.min.js"></script>
-
-
-<script src="/js/highlightjs-line-numbers.js"></script>
-
-
-<script>
-    hljs.initHighlightingOnLoad();
-    hljs.initLineNumbersOnLoad();
-</script>
-
+    
+      <div class="search-popup">
+    <div class="search-popup-overlay">  
+    </div>
+    <div class="search-popup-window" >
+        <div class="search-header">
+            <div class="search-input-container">
+              <input autocomplete="off" autocapitalize="off" maxlength="80"
+                     placeholder="Search Anything" spellcheck="false"
+                     type="search" class="search-input">
+            </div>
+            <div class="search-close-btn">
+                <div class="icon close-btn"></div>
             </div>
         </div>
-    <!-- hexo injector body_end start -->
+        <div class="search-result-container">
+        </div>
+    </div>
+</div>
+
+<script>
+    const searchConfig = {
+        path             : "/search.xml",
+        top_n_per_article: "1",
+        unescape         : "false",
+        trigger: "auto",
+        preload: "false"
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js"></script>
+<script src="/js/search.js"></script>
+    
+    
+
+  <!-- hexo injector body_end start -->
   <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
   <script data-pjax>
         function GithubCalendarConfig(){
