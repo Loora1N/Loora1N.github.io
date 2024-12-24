@@ -2,18 +2,27 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>http://loora1n.github.io/2024/12/02/%E3%80%90v8%E3%80%91pwncollege%20V8%20Exploitation%20WP-2/</loc>
+    <loc>http://loora1n.github.io/2024/11/27/%E3%80%90v8%E3%80%91pwncollege%20V8%20Exploitation%20WP/</loc>
     
-    <lastmod>2024-12-05</lastmod>
+    <lastmod>2024-12-24</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>http://loora1n.github.io/2024/11/27/%E3%80%90v8%E3%80%91pwncollege%20V8%20Exploitation%20WP/</loc>
+    <loc>http://loora1n.github.io/2024/12/24/%E3%80%90V8%E3%80%91pwncollege%20V8%20Exploitation%20WP%E4%B8%8B/</loc>
     
-    <lastmod>2024-12-04</lastmod>
+    <lastmod>2024-12-24</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://loora1n.github.io/2024/12/02/%E3%80%90v8%E3%80%91pwncollege%20V8%20Exploitation%20WP-2/</loc>
+    
+    <lastmod>2024-12-05</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -643,7 +652,7 @@
 
   <url>
     <loc>http://loora1n.github.io/</loc>
-    <lastmod>2024-12-05</lastmod>
+    <lastmod>2024-12-24</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
