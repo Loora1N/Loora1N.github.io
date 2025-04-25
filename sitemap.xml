@@ -2,6 +2,15 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://loora1n.github.io/2025/04/25/%E3%80%90%E6%9D%82%E9%A1%B9%E3%80%91Windows%20%E6%98%BE%E7%A4%BA%E5%AD%97%E4%BD%93%E6%9B%B4%E6%94%B9/</loc>
+    
+    <lastmod>2025-04-25</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>http://loora1n.github.io/2025/04/15/%E3%80%90V8%E3%80%91Sanbox%20Escape%E5%A4%8D%E7%8E%B0issue%20361862752/</loc>
     
     <lastmod>2025-04-16</lastmod>
@@ -661,7 +670,7 @@
 
   <url>
     <loc>http://loora1n.github.io/</loc>
-    <lastmod>2025-04-16</lastmod>
+    <lastmod>2025-04-25</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
