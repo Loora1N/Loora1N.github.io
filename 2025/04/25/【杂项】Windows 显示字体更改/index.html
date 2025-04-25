@@ -16,7 +16,7 @@
 
 
 
-<title>【杂项】Windows 显示字体更改 | Loora1N&#39;s Blog | 鹭雨</title>
+<title>【杂项】Windows &amp; hexo博客主题字体更改 | Loora1N&#39;s Blog | 鹭雨</title>
 
 
 
@@ -137,7 +137,7 @@
         <div class="post-title">
             
             
-                【杂项】Windows 显示字体更改
+                【杂项】Windows &amp; hexo博客主题字体更改
             
             
         </div>
@@ -155,12 +155,12 @@
     <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近在Github看到了一个很不错的字体项目：<a target="_blank" rel="noopener" href="https://github.com/subframe7536/maple-font">maple-font</a></p>
 <p>无论是代码还是日常网页使用都很舒服，一些自己的截图</p>
 <p><img src="/img/article/other-font/image-20250425140254777.png" alt="image-20250425140254777"></p>
-<p><img src="/img/article/other-font/image-20250425140305479.png" alt="image-20250425140305479"></p>
-<blockquote>
+<p><img src="/img/article/other-font/chatgpt.png" alt="image-20250425140305479"></p>
+<h2 id="Windows-系统字体"><a href="#Windows-系统字体" class="headerlink" title="Windows 系统字体"></a>Windows 系统字体</h2><blockquote>
 <p><strong>注意！注意！注意！</strong></p>
-<p>修改字体目前只能从注册表入手，所以修改之前一定要记得怎么改回去，以防万一</p>
+<p>修改字体目前windows系统字体只能从注册表入手，所以修改之前一定要备份。以防出现可能的错误</p>
 </blockquote>
-<h2 id="备份注册表设置"><a href="#备份注册表设置" class="headerlink" title="备份注册表设置"></a>备份注册表设置</h2><p>以管理员打开cmd，输入以下命令：</p>
+<h3 id="备份注册表设置"><a href="#备份注册表设置" class="headerlink" title="备份注册表设置"></a>备份注册表设置</h3><p>以管理员打开cmd，输入以下命令：</p>
 <figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">REG SAVE &quot;HKCU\Control Panel&quot; <span class="variable">%LOCALAPPDATA%</span>\noMeiryoUI_HKCU.reg /y</span><br></pre></td></tr></table></figure>
 
 <p>操作完成后，将会保存注册表设置到 <strong>%LOCALAPPDATA%</strong> 目录下的 <strong>noMeiryoUI_HKCU.reg</strong> 文件</p>
@@ -171,7 +171,7 @@
 <blockquote>
 <p><strong>注意：命令是cmd使用，不是powershell！！！</strong></p>
 </blockquote>
-<h2 id="更改字体"><a href="#更改字体" class="headerlink" title="更改字体"></a>更改字体</h2><blockquote>
+<h3 id="更改字体"><a href="#更改字体" class="headerlink" title="更改字体"></a>更改字体</h3><blockquote>
 <p>手动去更改注册表内容也是可以的，但是我在github看到了一个工具，用起来会更加方便一点：<a target="_blank" rel="noopener" href="https://github.com/Tatsu-syo/noMeiryoUI">noMeiryoUI</a></p>
 </blockquote>
 <p>下载release，并解压即可</p>
@@ -184,6 +184,22 @@
 <p><img src="/img/article/other-font/image-20250425144637090.png" alt="image-20250425144637090"></p>
 <p>桌面上的效果：</p>
 <p><img src="/img/article/other-font/image-20250425144706881.png" alt="image-20250425144706881"></p>
+<h2 id="Hexo主题字体更改"><a href="#Hexo主题字体更改" class="headerlink" title="Hexo主题字体更改"></a>Hexo主题字体更改</h2><blockquote>
+<p>这里以我自己使用的Frame主题为例，项目地址: <a target="_blank" rel="noopener" href="https://github.com/zoeingwingkei/frame">https://github.com/zoeingwingkei/frame</a></p>
+</blockquote>
+<h3 id="寻找字体文件"><a href="#寻找字体文件" class="headerlink" title="寻找字体文件"></a>寻找字体文件</h3><p>我目前使用的版本信息为：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">(base) ┌─[loorain@Loora1N-16pro] - [~/myBlog] - [10097]</span><br><span class="line">└─[$] hexo --version                                                           [16:37:34]</span><br><span class="line">INFO  Validating config</span><br><span class="line">hexo: 6.2.0</span><br><span class="line">hexo-cli: 4.3.0</span><br><span class="line">os: linux 5.15.167.4-microsoft-standard-WSL2 Ubuntu 22.04.5 LTS 22.04.5 LTS (Jammy Jellyfish)</span><br><span class="line">node: 20.14.0</span><br><span class="line">acorn: 8.11.3</span><br><span class="line">ada: 2.7.8</span><br><span class="line">ares: 1.28.1</span><br><span class="line"><span class="built_in">base64</span>: 0.5.2</span><br><span class="line">brotli: 1.1.0</span><br><span class="line">cjs_module_lexer: 1.2.2</span><br><span class="line">cldr: 45.0</span><br><span class="line">icu: 75.1</span><br><span class="line">llhttp: 8.1.2</span><br><span class="line">modules: 115</span><br><span class="line">napi: 9</span><br><span class="line">nghttp2: 1.61.0</span><br><span class="line">nghttp3: 0.7.0</span><br><span class="line">ngtcp2: 1.1.0</span><br><span class="line">openssl: 3.0.13+quic</span><br><span class="line">simdutf: 5.2.8</span><br><span class="line">tz: 2024a</span><br><span class="line">undici: 6.13.0</span><br><span class="line">unicode: 15.1</span><br><span class="line">uv: 1.46.0</span><br><span class="line">uvwasi: 0.0.21</span><br><span class="line">v8: 11.3.244.8-node.23</span><br><span class="line">zlib: 1.3.0.1-motley-7d77fb7</span><br></pre></td></tr></table></figure>
+
+<p>在这个版本下的hexo主题，只需要将不同主题的压缩文件解压至<code>theme</code>文件夹下即可，因此主题的字体文件也应在这里。</p>
+<p>以frame主题为例，字体格式的文件路径为</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/home/loorain/myBlog/themes/frame/source/css/font.styl</span><br></pre></td></tr></table></figure>
+
+<p><img src="/img/article/other-font/font-path.png" alt="font path"></p>
+<h3 id="更改字体-1"><a href="#更改字体-1" class="headerlink" title="更改字体"></a>更改字体</h3><p><code>ctrl + f</code>搜索<strong>font-family</strong>关键词, 然后替换所有的font-family为对应字体名称即可，这里我同样是改成<strong>Maple Mono NF CN</strong>.</p>
+<p><img src="/img/article/other-font/font-family.png" alt="font change"></p>
+<blockquote>
+<p>这里也是可以不同字体区域使用不同字体的，按需更改即可</p>
+</blockquote>
 
 </div> 
 

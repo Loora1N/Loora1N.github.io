@@ -26,11 +26,6 @@
     <content><![CDATA[]]></content>
   </entry>
   <entry>
-    <title>Linux Syscall Reference(64 bit)</title>
-    <url>//2023/03/29/Linux%20Syscall%20Reference(64%20bit)/</url>
-    <content><![CDATA[]]></content>
-  </entry>
-  <entry>
     <title>NewStarCTF Week4 PWN WP</title>
     <url>//2022/10/17/NewStarCTF%20Week4%20PWN%20WP/</url>
     <content><![CDATA[]]></content>
@@ -48,6 +43,11 @@
   <entry>
     <title>【IO_FILE】House of kiwi</title>
     <url>//2022/10/27/%5BIO_FILE%5DHouse%20of%20kiwi/</url>
+    <content><![CDATA[]]></content>
+  </entry>
+  <entry>
+    <title>Linux Syscall Reference(64 bit)</title>
+    <url>//2023/03/29/Linux%20Syscall%20Reference(64%20bit)/</url>
     <content><![CDATA[]]></content>
   </entry>
   <entry>
@@ -291,7 +291,7 @@
     <content><![CDATA[]]></content>
   </entry>
   <entry>
-    <title>【杂项】Windows 显示字体更改</title>
+    <title>【杂项】Windows &amp; hexo博客主题字体更改</title>
     <url>//2025/04/25/%E3%80%90%E6%9D%82%E9%A1%B9%E3%80%91Windows%20%E6%98%BE%E7%A4%BA%E5%AD%97%E4%BD%93%E6%9B%B4%E6%94%B9/</url>
     <content><![CDATA[]]></content>
   </entry>
