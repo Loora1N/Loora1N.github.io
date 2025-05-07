@@ -60,8 +60,6 @@
 
 
 
-    <script src='https://unpkg.com/valine@1.4.16/dist/Valine.min.js'></script>
-
 
 
 
@@ -250,24 +248,6 @@
     
       <div class="post-comment">
 
-    
-        <div id="vcomments"></div>
-        <script>
-            var META = ['nick', 'mail', 'link'];
-            var meta = 'nick,mail';
-            meta = meta.split(',').filter(item => {
-                return META.includes(item);
-            });
-            new Valine({
-                el: '#vcomments',
-                appId: 'DUED8cgPikeUCRaIp4gFIBme-MdYXbMMI',
-                appKey: '3QIsnGOImCccibpw0MDrZVCk',
-                lang: 'zh-CN',
-                placeholder: '这里是评论区:)',
-                avatar: 'mp',
-                meta: meta
-            })
-        </script>    
      
 
      
