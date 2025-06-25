@@ -1,3 +1,4 @@
+http://loora1n.github.io/2025/06/20/%E3%80%90V8%E3%80%91%E7%BB%95%E8%BF%87JSArray.elements%E7%BB%93%E6%9E%84%E6%A0%A1%E9%AA%8C/
 http://loora1n.github.io/2025/06/17/%E3%80%90V8%E3%80%91UMDCTF2025%20literally-1985/
 http://loora1n.github.io/about/index.html
 http://loora1n.github.io/2025/04/15/%E3%80%90V8%E3%80%91Sanbox%20Escape%E5%A4%8D%E7%8E%B0issue%20361862752/
