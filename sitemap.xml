@@ -2,6 +2,15 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://loora1n.github.io/about/index.html</loc>
+    
+    <lastmod>2025-12-25</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>http://loora1n.github.io/links/index.html</loc>
     
     <lastmod>2025-10-16</lastmod>
@@ -23,15 +32,6 @@
     <loc>http://loora1n.github.io/2025/06/17/%E3%80%90V8%E3%80%91UMDCTF2025%20literally-1985/</loc>
     
     <lastmod>2025-06-25</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>http://loora1n.github.io/about/index.html</loc>
-    
-    <lastmod>2025-06-09</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -679,7 +679,7 @@
 
   <url>
     <loc>http://loora1n.github.io/</loc>
-    <lastmod>2025-10-16</lastmod>
+    <lastmod>2025-12-25</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
